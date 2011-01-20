@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ================================================================== -->
+<!--  Copyright (c) 2006-2010 eBay Inc. All Rights Reserved.            -->
+<!--  Licensed under the Apache License, Version 2.0 (the "License");   -->
+<!--  you may not use this file except in compliance with the License.  -->
+<!--  You may obtain a copy of the License at                           -->
+<!--                                                                    -->
+<!--     http://www.apache.org/licenses/LICENSE-2.0                     -->
+<!-- ================================================================== -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.example.org/policy"
+	targetNamespace="http://www.example.org/policy">
+
+	<simpleType name="email">
+		<annotation>
+			<documentation>
+				The local part must not exceed 64 characters and the
+				domain part cannot be longer than 255 characters. In
+				sum, an email
+				address can be 320 characters long at
+				most. When you create an
+				address, make sure your user
+				name has less than 65 characters.
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<minLength value="3"></minLength>
+			<maxLength value="320"></maxLength>
+			<pattern value="\b[\w\.\_\%\-]{1,64}@[\w\.\-]{1,255}\.[a-zA-Z]{2,4}\b">
+			</pattern>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="name">
+		<restriction base="string">
+			<minLength value="1"></minLength>
+			<maxLength value="128"></maxLength>
+			<pattern value="[\w\.\-\_]{1,128}"></pattern>
+		</restriction>
+	</simpleType>
+	<simpleType name="description">
+		<restriction base="string">
+			<minLength value="1"></minLength>
+			<maxLength value="256"></maxLength>
+			<pattern value="[\w\.\-\_]{1,256}"></pattern>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="button">
+		<restriction base="string"></restriction>
+	</simpleType>
+
+	<complexType name="abstractLevel">
+		<sequence>
+			<element name="resourceType" minOccurs="1" maxOccurs="1">
+				<annotation>
+					<documentation>
+						The resource type that is assigned to the policy
+						that you are searching. You can filter policies
+						under the following
+						resources types: Web (Web
+						application), Service (Web service)
+					</documentation>
+				</annotation>
+				<simpleType>
+					<restriction base="string">
+						<enumeration value="Web"></enumeration>
+						<enumeration value="Service"></enumeration>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="resource" type="tns:name"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="operationLevel" >
+		<complexContent>
+			<extension base="tns:abstractLevel">
+				<sequence>
+					<element name="availableOperations" type="tns:name"
+						minOccurs="1" maxOccurs="unbounded">
+						<annotation>
+							<documentation>
+								The list of all operations corresponding
+								to the
+								selected service
+							</documentation>
+						</annotation>
+					</element>
+					<element name="selectedOperations" type="tns:name"
+						minOccurs="1" maxOccurs="unbounded"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="serviceLevel" >
+		<complexContent>
+			<extension base="tns:abstractLevel"></extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="globalLevel" >
+		<complexContent>
+			<extension base="tns:abstractLevel"></extension>
+		</complexContent>
+	</complexType>
+
+
+</schema>

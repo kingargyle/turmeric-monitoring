@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<getMetricsResponse xmlns:ns2="http://www.ebayopensource.org/turmeric/monitoring/v1/services" xmlns:ns3="http://www.ebayopensource.org/turmeric/common/v1/types">
+    <ns2:returnData>
+        <ns2:criteriaInfo>
+            
+            <ns2:consumerName>ShippingEngineServiceClient</ns2:consumerName>
+            
+        </ns2:criteriaInfo>
+        <ns2:diff>-82.52</ns2:diff>
+        <ns2:count2>715.0</ns2:count2>
+        <ns2:count1>125.0</ns2:count1>
+    </ns2:returnData>
+</getMetricsResponse>

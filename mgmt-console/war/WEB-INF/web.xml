@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app
+   xmlns="http://java.sun.com/xml/ns/javaee"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+   version="2.5">
+  
+ 
+ <!-- Proxy for the SOAMetricsQueryService -->
+  <servlet>
+      <servlet-name>SOAMetricsQueryServiceProxy</servlet-name>
+      <servlet-class>org.eclipse.jetty.servlets.ProxyServlet$Transparent</servlet-class>
+      <init-param>
+        <param-name>Prefix</param-name><param-value>/console/smqs</param-value>
+      </init-param>
+      <init-param>
+        <param-name>ProxyTo</param-name><param-value>https://localhost:8443/security/SOAMetricsQueryServiceV1</param-value>
+      </init-param>
+      <load-on-startup>1</load-on-startup> 
+  </servlet>
+  
+  <servlet-mapping>
+      <servlet-name>SOAMetricsQueryServiceProxy</servlet-name>
+      <url-pattern>/console/smqs/*</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+      <servlet-name>DownloadServlet</servlet-name>
+      <servlet-class>org.ebayopensource.turmeric.monitoring.server.DownloadServlet</servlet-class>
+      <init-param>
+        <param-name>myPrefix</param-name><param-value>/console/dwnld</param-value>
+      </init-param>
+      <init-param>
+        <param-name>SOAMetricsQueryServiceURL</param-name><param-value>https://localhost:8443/security/SOAMetricsQueryServiceV1</param-value>
+      </init-param>
+      <load-on-startup>1</load-on-startup> 
+  </servlet>
+
+  <servlet-mapping>
+      <servlet-name>DownloadServlet</servlet-name>
+      <url-pattern>/console/dwnld/*</url-pattern>
+  </servlet-mapping>
+
+ <!-- Proxy for the PolicyService -->
+  <servlet>
+      <servlet-name>PolicyServiceProxy</servlet-name>
+      <servlet-class>org.eclipse.jetty.servlets.ProxyServlet$Transparent</servlet-class>
+      <init-param>
+        <param-name>Prefix</param-name><param-value>/console/policy</param-value>
+      </init-param>
+      <init-param>
+        <param-name>ProxyTo</param-name><param-value>https://localhost:8443/security/PolicyServiceV1</param-value>
+      </init-param>
+      <load-on-startup>1</load-on-startup> 
+  </servlet>
+  <servlet-mapping>
+      <servlet-name>PolicyServiceProxy</servlet-name>
+      <url-pattern>/console/policy/*</url-pattern>
+  </servlet-mapping>
+  
+  
+ <!-- Proxy for the PolicyEnforcementService -->
+  <servlet>
+      <servlet-name>PolicyEnforcementServiceProxy</servlet-name>
+      <servlet-class>org.eclipse.jetty.servlets.ProxyServlet$Transparent</servlet-class>
+      <init-param>
+        <param-name>Prefix</param-name><param-value>/console/policyEnforcement</param-value>
+      </init-param>
+      <init-param>
+        <param-name>ProxyTo</param-name><param-value>https://localhost:8443/security/PolicyEnforcementServiceV1</param-value>
+      </init-param>
+      <load-on-startup>1</load-on-startup> 
+  </servlet>
+    <servlet-mapping>
+      <servlet-name>PolicyEnforcementServiceProxy</servlet-name>
+      <url-pattern>/console/policyEnforcement/*</url-pattern>
+  </servlet-mapping>
+  
+  <filter>
+      <filter-name>ContinuationFilter</filter-name>
+      <filter-class>org.eclipse.jetty.continuation.ContinuationFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+     <filter-name>ContinuationFilter</filter-name>
+     <url-pattern>/*</url-pattern>
+      <init-param>
+        <param-name>debug</param-name><param-value>true</param-value>
+      </init-param>
+      <init-param>
+        <param-name>jetty6</param-name><param-value>true</param-value>
+      </init-param>
+  </filter-mapping>
+
+  <!-- Default page to serve -->
+  <welcome-file-list>
+    <welcome-file>Console.html</welcome-file>
+  </welcome-file-list>
+
+</web-app>

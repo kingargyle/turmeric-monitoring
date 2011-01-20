@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ================================================================== -->
+<!--  Copyright (c) 2006-2010 eBay Inc. All Rights Reserved.            -->
+<!--  Licensed under the Apache License, Version 2.0 (the "License");   -->
+<!--  you may not use this file except in compliance with the License.  -->
+<!--  You may obtain a copy of the License at                           -->
+<!--                                                                    -->
+<!--     http://www.apache.org/licenses/LICENSE-2.0                     -->
+<!-- ================================================================== -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/policy"
+	xmlns:tns="http://www.example.org/policy" elementFormDefault="qualified">
+
+	<include schemaLocation="policy-custom-types.xsd"></include>
+
+	<complexType name="whiteList">
+		<sequence>
+			<element name="name" type="tns:name" minOccurs="1" maxOccurs="1">
+				<annotation>
+					<documentation>
+						The name of the white list policy you want to
+						create. You can type a maximum of 128 characters
+						including a-z,
+						A-Z, 0-9, period (.), underscore
+						(_), and hyphen (-).
+					</documentation>
+				</annotation>
+			</element>
+
+			<element name="description" type="tns:description" minOccurs="1"
+				maxOccurs="1">
+				<annotation>
+					<documentation>
+						The description of the white list policy you
+						are
+						creating. You can type a maximum of 256
+						characters.
+					</documentation>
+				</annotation>
+			</element>
+
+			<element name="level" minOccurs="1" maxOccurs="1">
+				<annotation>
+					<documentation>
+						Base type for Operation level and Service Level
+					</documentation>
+				</annotation>
+				<complexType>
+					<choice>
+						<element name="operationLevel" type="tns:operationLevel" />
+						<element name="serviceLevel" type="tns:serviceLevel" />
+					</choice>
+				</complexType>
+			</element>
+
+		</sequence>
+	</complexType>
+</schema>
+	

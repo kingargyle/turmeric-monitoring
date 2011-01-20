@@ -1,0 +1,41 @@
+/*******************************************************************************
+ * Copyright (c) 2006-2010 eBay Inc. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *******************************************************************************/
+package org.ebayopensource.turmeric.monitoring.model;
+
+import javax.persistence.Entity;
+
+import org.ebayopensource.turmeric.utils.jpa.model.Persistent;
+
+@Entity
+public class MetricClassifier extends Persistent {
+    private String consumerName;
+    private String sourceDataCenter;
+    private String targetDataCenter;
+
+    protected MetricClassifier() {
+    }
+
+    public MetricClassifier(String consumerName, String sourceDataCenter, String targetDataCenter) {
+        this.consumerName = consumerName;
+        this.sourceDataCenter = sourceDataCenter;
+        this.targetDataCenter = targetDataCenter;
+    }
+
+    public String getConsumerName() {
+        return consumerName;
+    }
+
+    public String getSourceDataCenter() {
+        return sourceDataCenter;
+    }
+
+    public String getTargetDataCenter() {
+        return targetDataCenter;
+    }
+}

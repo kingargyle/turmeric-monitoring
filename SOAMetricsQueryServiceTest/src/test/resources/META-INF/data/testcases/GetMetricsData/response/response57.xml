@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<getMetricsResponse xmlns:ns2="http://www.ebayopensource.org/turmeric/monitoring/v1/services" xmlns:ns3="http://www.ebayopensource.org/turmeric/common/v1/types">
+    
+<ns2:returnData>
+               <ns2:criteriaInfo>
+                  <ns2:consumerName>a:KURANTCORPS5L12G19I1CQ74RFM8K5</ns2:consumerName>
+               </ns2:criteriaInfo>
+               <ns2:diff>-21.09</ns2:diff>
+               <ns2:count2>106.43</ns2:count2>
+               <ns2:count1>83.98</ns2:count1>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:criteriaInfo>
+                  <ns2:consumerName>a:KurantCo-4ad5-4fe1-b1d2-02e2f4ba114b</ns2:consumerName>
+               </ns2:criteriaInfo>
+               <ns2:diff>-35.3</ns2:diff>
+               <ns2:count2>92.94</ns2:count2>
+               <ns2:count1>60.13</ns2:count1>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:criteriaInfo>
+                  <ns2:consumerName>Missing</ns2:consumerName>
+               </ns2:criteriaInfo>
+               <ns2:diff>3.04</ns2:diff>
+               <ns2:count2>20.7</ns2:count2>
+               <ns2:count1>21.33</ns2:count1>
+            </ns2:returnData>
+
+
+           
+
+
+</getMetricsResponse>

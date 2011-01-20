@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<getMetricsResponse xmlns:ns2="http://www.ebayopensource.org/turmeric/monitoring/v1/services" xmlns:ns3="http://www.ebayopensource.org/turmeric/common/v1/types">
+    
+ <ns2:returnData>
+               <ns2:criteriaInfo>
+                  <ns2:consumerName>p:v3contactintl</ns2:consumerName>
+               </ns2:criteriaInfo>
+               <ns2:diff>0.38</ns2:diff>
+               <ns2:count2>1382385.0</ns2:count2>
+               <ns2:count1>1387636.0</ns2:count1>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:criteriaInfo>
+                  <ns2:consumerName>p:v3besm2mcore</ns2:consumerName>
+               </ns2:criteriaInfo>
+               <ns2:diff>-3.43</ns2:diff>
+               <ns2:count2>246631.0</ns2:count2>
+               <ns2:count1>238179.0</ns2:count1>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:criteriaInfo>
+                  <ns2:consumerName>p:v3apiintl</ns2:consumerName>
+               </ns2:criteriaInfo>
+               <ns2:diff>2.36</ns2:diff>
+               <ns2:count2>14559.0</ns2:count2>
+               <ns2:count1>14902.0</ns2:count1>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:criteriaInfo>
+                  <ns2:consumerName>p:v3bundledcore</ns2:consumerName>
+               </ns2:criteriaInfo>
+               <ns2:diff>-45.89</ns2:diff>
+               <ns2:count2>3611.0</ns2:count2>
+               <ns2:count1>1954.0</ns2:count1>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:criteriaInfo>
+                  <ns2:consumerName>p:v3apisandboxcore</ns2:consumerName>
+               </ns2:criteriaInfo>
+               <ns2:diff>166.67</ns2:diff>
+               <ns2:count2>12.0</ns2:count2>
+               <ns2:count1>32.0</ns2:count1>
+            </ns2:returnData>
+
+
+
+
+           
+
+
+</getMetricsResponse>

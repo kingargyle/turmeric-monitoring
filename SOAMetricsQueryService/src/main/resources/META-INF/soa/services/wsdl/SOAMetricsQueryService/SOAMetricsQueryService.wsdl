@@ -1,0 +1,1653 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ================================================================== -->
+<!--  Copyright (c) 2006-2010 eBay Inc. All Rights Reserved.            -->
+<!--  Licensed under the Apache License, Version 2.0 (the "License");   -->
+<!--  you may not use this file except in compliance with the License.  -->
+<!--  You may obtain a copy of the License at                           -->
+<!--                                                                    -->
+<!--     http://www.apache.org/licenses/LICENSE-2.0                     -->
+<!-- ================================================================== -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+	xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+	xmlns:tns="http://www.ebayopensource.org/turmeric/monitoring/v1/services"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	name="SOAMetricsQueryService"
+	targetNamespace="http://www.ebayopensource.org/turmeric/monitoring/v1/services">
+	<wsdl:types>
+		<xs:schema attributeFormDefault="unqualified"
+			elementFormDefault="qualified"
+			targetNamespace="http://www.ebayopensource.org/turmeric/monitoring/v1/services">
+			<xs:simpleType name="AckValue">
+				<xs:annotation>
+					<xs:documentation>
+						Indicates whether the error is a severe error
+						(causing the request to fail) or an
+						informational error (a warning) that should be
+						communicated to the user.
+					</xs:documentation>
+					<xs:appinfo>
+						<typeLibrarySource
+							library="common-type-library"
+							namespace="http://www.ebayopensource.org/turmeric/common/v1/types" />
+					</xs:appinfo>
+				</xs:annotation>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Success">
+						<xs:annotation>
+							<xs:documentation>
+								The request was processed successfully,
+								but something occurred that may affect
+								your application or the user.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="Failure">
+						<xs:annotation>
+							<xs:documentation>
+								The request that triggered the error was
+								not processed successfully. When a
+								serious application-level error occurs,
+								the error is returned instead of the
+								business data.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="Warning">
+						<xs:annotation>
+							<xs:documentation>
+								The request that triggered the error was
+								processed successfully but with some
+								warnings.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="PartialFailure">
+						<xs:annotation>
+							<xs:documentation>
+								The request that triggered the error was
+								processed successfully but with some
+								warnings.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:complexType abstract="true" name="BaseRequest">
+				<xs:annotation>
+					<xs:documentation>
+						This is the base class for request container for
+						all service operations.
+					</xs:documentation>
+					<xs:appinfo>
+						<typeLibrarySource
+							library="common-type-library"
+							namespace="http://www.ebayopensource.org/turmeric/common/v1/types" />
+					</xs:appinfo>
+				</xs:annotation>
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0"
+						name="extension" type="tns:ExtensionType" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType abstract="true" name="BaseResponse">
+				<xs:annotation>
+					<xs:documentation>
+						Base response container for all service
+						operations. Contains error information
+						associated with the request.
+					</xs:documentation>
+					<xs:appinfo>
+						<typeLibrarySource
+							library="common-type-library"
+							namespace="http://www.ebayopensource.org/turmeric/common/v1/types" />
+					</xs:appinfo>
+				</xs:annotation>
+				<xs:sequence>
+					<xs:element name="ack" type="tns:AckValue">
+						<xs:annotation>
+							<xs:documentation />
+							<xs:appinfo>
+								<CallInfo>
+									<AllCalls />
+									<Returned>Always</Returned>
+								</CallInfo>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="errorMessage"
+						type="tns:ErrorMessage">
+						<xs:annotation>
+							<xs:documentation>
+								Information for an error or warning that
+								occurred when eBay processed the
+								request.
+							</xs:documentation>
+							<xs:appinfo>
+								<CallInfo>
+									<AllCalls />
+									<Returned>Conditionally</Returned>
+								</CallInfo>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="version"
+						type="xs:string">
+						<xs:annotation>
+							<xs:documentation />
+							<xs:appinfo>
+								<CallInfo>
+									<AllCalls />
+									<Returned>Always</Returned>
+								</CallInfo>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="timestamp"
+						type="xs:dateTime">
+						<xs:annotation>
+							<xs:documentation />
+							<xs:appinfo>
+								<CallInfo>
+									<AllCalls />
+									<Returned>Always</Returned>
+								</CallInfo>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0"
+						name="extension" type="tns:ExtensionType" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:simpleType name="ErrorCategory">
+				<xs:annotation>
+					<xs:documentation>
+						Documentation goes here.
+					</xs:documentation>
+					<xs:appinfo>
+						<typeLibrarySource
+							library="common-type-library"
+							namespace="http://www.ebayopensource.org/turmeric/common/v1/types" />
+					</xs:appinfo>
+				</xs:annotation>
+				<xs:restriction base="xs:token">
+					<xs:enumeration value="System" />
+					<xs:enumeration value="Application" />
+					<xs:enumeration value="Request" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:complexType name="ErrorData">
+				<xs:annotation>
+					<xs:documentation>
+						Documentation goes here
+					</xs:documentation>
+					<xs:appinfo>
+						<typeLibrarySource
+							library="common-type-library"
+							namespace="http://www.ebayopensource.org/turmeric/common/v1/types" />
+					</xs:appinfo>
+				</xs:annotation>
+				<xs:sequence>
+					<xs:element name="errorId" type="xs:long" />
+					<xs:element name="domain" type="xs:string" />
+					<xs:element minOccurs="0" name="subdomain"
+						type="xs:string" />
+					<xs:element name="severity"
+						type="tns:ErrorSeverity" />
+					<xs:element name="category"
+						type="tns:ErrorCategory" />
+					<xs:element name="message" type="xs:string" />
+					<xs:element minOccurs="0" name="exceptionId"
+						type="xs:token" />
+					<xs:element maxOccurs="unbounded" minOccurs="0"
+						name="parameter" type="tns:ErrorParameter" />
+				</xs:sequence>
+			</xs:complexType>
+		    <xs:complexType name="CommonErrorData">
+				<xs:annotation>
+					<xs:documentation>Documentation goes here</xs:documentation>
+					<xs:appinfo>
+						<typeLibrarySource
+							library="common-type-library"
+							namespace="http://www.ebayopensource.org/turmeric/common/v1/types" />
+					</xs:appinfo>
+				</xs:annotation>
+			
+				<xs:complexContent>
+					<xs:extension base="tns:ErrorData">
+						<xs:sequence>
+							<xs:element name="errorName" type="xs:string"></xs:element>
+							<xs:element name="cause" type="xs:string" minOccurs="0"></xs:element>
+							<xs:element name="resolution" type="xs:string" minOccurs="0"></xs:element>
+							<xs:element name="errorGroups" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Error group values are whitespace separated</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="organization" type="xs:string"></xs:element>
+				    			<xs:any maxOccurs="unbounded" minOccurs="0" processContents="lax"/>
+					    	</xs:sequence>
+					</xs:extension>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:complexType name="ErrorMessage">
+				<xs:annotation>
+					<xs:documentation>
+						Documentation goes here
+					</xs:documentation>
+					<xs:appinfo>
+						<typeLibrarySource
+							library="common-type-library"
+							namespace="http://www.ebayopensource.org/turmeric/common/v1/types" />
+					</xs:appinfo>
+				</xs:annotation>
+				<!--
+					<xs:sequence>
+					<xs:any maxOccurs="unbounded" minOccurs="0"
+					processContents="lax" />
+					</xs:sequence>
+				-->
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0"
+						name="error" type="tns:CommonErrorData" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="ErrorParameter">
+				<xs:annotation>
+					<xs:documentation>
+						Documentation goes here
+					</xs:documentation>
+					<xs:appinfo>
+						<typeLibrarySource
+							library="common-type-library"
+							namespace="http://www.ebayopensource.org/turmeric/common/v1/types" />
+					</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleContent>
+					<xs:extension base="xs:string">
+						<xs:attribute name="name" type="xs:string"
+							use="optional" />
+					</xs:extension>
+				</xs:simpleContent>
+			</xs:complexType>
+			<xs:simpleType name="ErrorSeverity">
+				<xs:annotation>
+					<xs:documentation>
+						Documentation goes here.
+					</xs:documentation>
+					<xs:appinfo>
+						<typeLibrarySource
+							library="common-type-library"
+							namespace="http://www.ebayopensource.org/turmeric/common/v1/types" />
+					</xs:appinfo>
+				</xs:annotation>
+				<xs:restriction base="xs:token">
+					<xs:enumeration value="Error" />
+					<xs:enumeration value="Warning" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:complexType name="ExtensionType">
+				<xs:annotation>
+					<xs:documentation>
+						Documentation goes here
+					</xs:documentation>
+					<xs:appinfo>
+						<typeLibrarySource
+							library="common-type-library"
+							namespace="http://www.ebayopensource.org/turmeric/common/v1/types" />
+					</xs:appinfo>
+				</xs:annotation>
+				<xs:sequence>
+					<xs:element name="id" type="xs:positiveInteger" />
+					<xs:element name="version" type="xs:string" />
+					<xs:element name="contentType" type="xs:string" />
+					<xs:element name="value" type="xs:string" />
+					<xs:any maxOccurs="unbounded" minOccurs="0"
+						processContents="lax" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="getVersionRequest"
+				type="tns:GetVersionRequest" />
+			<xs:complexType name="GetVersionRequest">
+				<xs:annotation>
+					<xs:documentation>
+						Document goes here
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexContent>
+					<xs:extension base="tns:BaseRequest">
+						<xs:sequence />
+					</xs:extension>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:element name="getVersionResponse"
+				type="tns:GetVersionResponse" />
+			<xs:complexType name="GetVersionResponse">
+				<xs:annotation>
+					<xs:documentation>
+						Document goes here
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexContent>
+					<xs:extension base="tns:BaseResponse">
+					</xs:extension>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:element name="getMetricsDataRequest" type="tns:GetMetricsRequest">
+
+			</xs:element>
+			<xs:element name="getMetricsDataResponse" type="tns:GetMetricsResponse">
+
+			</xs:element>
+			<xs:element name="getMetricSummaryDataRequest" type="tns:GetMetricSummaryDataRequest">
+
+			</xs:element>
+			<xs:element name="getMetricSummaryDataResponse" type="tns:GetMetricSummaryDataResponse">
+
+			</xs:element>
+
+
+			<xs:element name="getDetailDataRequest" type="tns:GetDetailDataRequest">
+
+            </xs:element>
+            <xs:element name="getDetailDataResponse" type="tns:GetDetailDataResponse">
+
+            </xs:element>
+
+
+
+            <xs:complexType name="MetricSummaryData">
+            	<xs:sequence>
+            		<xs:element name="callCount1" type="xs:long"></xs:element>
+                    <xs:element name="callCount2" type="xs:long"></xs:element>
+                    <xs:element name="errorCount1" type="xs:long"></xs:element>
+                    <xs:element name="errorCount2" type="xs:long"></xs:element>
+                    <xs:element name="ratio1" type="xs:double"></xs:element>
+                    <xs:element name="ratio2" type="xs:double"></xs:element>
+            		<xs:element name="responseTime1" type="xs:double"></xs:element>
+            		<xs:element name="responseTime2" type="xs:double"></xs:element>
+            		<xs:element name="responseTimeDiff"
+            			type="xs:double">
+            		</xs:element>
+            		<xs:element name="callCountDiff" type="xs:double"></xs:element>
+            		<xs:element name="errorCountDiff"
+            			type="xs:double">
+            		</xs:element>
+            		<xs:element name="ratioDiff" type="xs:double"></xs:element>
+            	</xs:sequence>
+            </xs:complexType>
+
+            <xs:element name="getCustomReportDataResponse" type="tns:GetCustomReportDataResponse">
+
+            </xs:element>
+            <xs:element name="getPolicyMetricDetailDataRequest" type="tns:GetPolicyMetricDetailDataRequest">
+
+            </xs:element>
+            <xs:element name="getPolicyMetricDetailDataResponse" type="tns:GetPolicyMetricDetailDataResponse">
+
+            </xs:element>
+            <xs:element name="getCustomReportDataRequest" type="tns:GetCustomReportDataRequest">
+
+            </xs:element>
+
+            <xs:element name="getStandardReportDataRequest" type="tns:GetStandardReportRequest">
+
+            </xs:element>
+            <xs:element name="getStandardReportDataResponse" type="tns:GetStandardReportResponse">
+
+            </xs:element>
+
+
+            <xs:complexType name="MetricData">
+            	<xs:sequence>
+            		<xs:element name="errorCountDiff"
+            			type="xs:double">
+            		</xs:element>
+            		<xs:element name="callCountDiff" type="xs:double"></xs:element>
+            		<xs:element name="responseTimeDiff"
+            			type="xs:double">
+            		</xs:element>
+            		<xs:element name="ratioDiff" type="xs:double"></xs:element>
+
+            		<xs:element name="criteriaInfo"
+            			type="tns:CriteriaInfo">
+            		</xs:element>
+            		<xs:element name="errorCountRatio2"
+            			type="xs:double">
+            		</xs:element>
+            		<xs:element name="errorCountRatio1"
+            			type="xs:double">
+            		</xs:element>
+            		<xs:element name="errorCount2" type="xs:long"></xs:element>
+            		<xs:element name="errorCount1" type="xs:long"></xs:element>
+
+            		<xs:element name="callCount2" type="xs:long"></xs:element>
+            		<xs:element name="callCount1" type="xs:long"></xs:element>
+            		<xs:element name="responseTime2" type="xs:double"></xs:element>
+            		<xs:element name="responseTime1" type="xs:double"></xs:element>
+            	</xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="CriteriaInfo">
+            	<xs:sequence>
+            		<xs:element name="serviceConsumerType" type="xs:string" maxOccurs="1" minOccurs="0">
+            			<xs:annotation>
+            				<xs:documentation>This field specifies the type of consumer.  There are two types of consumers, external and internal.</xs:documentation>
+            			</xs:annotation></xs:element>
+            		<xs:element name="metricName" type="xs:string" maxOccurs="1" minOccurs="1"></xs:element>
+                    <xs:element name="serviceName" type="xs:string" maxOccurs="1" minOccurs="0"></xs:element>
+                    <xs:element name="operationName" type="xs:string" maxOccurs="1" minOccurs="0"></xs:element>
+            		<xs:element name="consumerName" type="xs:string" maxOccurs="1" minOccurs="0"></xs:element>
+
+
+            		<xs:element name="poolName" type="xs:string" maxOccurs="1" minOccurs="0"></xs:element>
+            		<xs:element name="machineName" type="xs:string" maxOccurs="1" minOccurs="0"></xs:element>
+                    <xs:element name="roleType" type="xs:string" maxOccurs="1" minOccurs="1"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="MetricGroupData">
+            	<xs:sequence>
+            		<xs:element name="criteriaInfo"
+            			type="tns:CriteriaInfo">
+            		</xs:element>
+            		<xs:element name="diff" type="xs:double"></xs:element>
+            		<xs:element name="count2" type="xs:double"></xs:element>
+            		<xs:element name="count1" type="xs:double"></xs:element>
+
+            	</xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="ReportCriteria">
+            	<xs:sequence>
+            		<xs:element name="metric" type="xs:string"
+            			maxOccurs="unbounded" minOccurs="0">
+            		</xs:element>
+            		<xs:element name="criteriaItem" type="tns:ReportCriteriaItem" maxOccurs="unbounded" minOccurs="0"></xs:element>
+            	</xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="ReportCriteriaItem">
+            	<xs:sequence>
+            		<xs:element name="filter" type="xs:string"
+            			maxOccurs="unbounded" minOccurs="0">
+            		</xs:element>
+
+            		<xs:element name="name" type="xs:string"></xs:element>
+            	</xs:sequence>
+            </xs:complexType>
+
+
+
+            <xs:complexType name="PolicyMetricData">
+            	<xs:sequence>
+
+            		<xs:element name="hitCount" type="xs:string"></xs:element>
+            		<xs:element name="listType" type="xs:string"></xs:element>
+            		<xs:element name="subjectType" type="xs:string"></xs:element>
+            		<xs:element name="subjectValue" type="xs:string"></xs:element>
+            		<xs:element name="effectDuration" type="xs:long"></xs:element>
+                    <xs:element name="policyName" type="xs:string"></xs:element>
+                    <xs:element name="operationName" type="xs:string"></xs:element>
+                    <xs:element name="serviceName" type="xs:string"></xs:element>
+                    <xs:element name="effect" type="xs:string"></xs:element>
+
+            	</xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="PolicyMetricGraphData">
+            	<xs:sequence>
+            		<xs:element name="timeSlot" type="xs:long"></xs:element>
+            		<xs:element name="hitCount" type="xs:long"></xs:element>
+            	</xs:sequence>
+            </xs:complexType>
+
+			<xs:complexType name="Error">
+				<xs:sequence>
+					<xs:element name="errorId" type="xs:string"></xs:element>
+					<xs:element name="errorName" type="xs:string"></xs:element>
+				</xs:sequence>
+			</xs:complexType>
+
+
+
+
+
+            <xs:element name="getPolicyMetricDataRequest"
+            	type="tns:GetPolicyMetricDataRequest">
+            </xs:element>
+
+            <xs:complexType name="GetPolicyMetricDataRequest">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseRequest">
+		            	<xs:sequence>
+		            		<xs:element name="startTime" type="xs:long"></xs:element>
+		            		<xs:element name="endTime" type="xs:long"></xs:element>
+		            		<xs:element name="policyType" type="xs:string"></xs:element>
+		            		<xs:element name="policyName" type="xs:string"></xs:element>
+		            		<xs:element name="serviceName" type="xs:string"></xs:element>
+		            		<xs:element name="operationName" type="xs:string"></xs:element>
+		            		<xs:element name="subjectTypeName"
+		            			type="xs:string">
+		            		</xs:element>
+		            		<xs:element name="subjectValue" type="xs:string"></xs:element>
+		            		<xs:element name="effect" type="xs:string"></xs:element>
+		            	</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="GetMetricsRequest">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseRequest">
+            			<xs:sequence>
+		            		<xs:element name="metricCriteria"
+		            			type="tns:MetricCriteria">
+		            		</xs:element>
+		            		<xs:element name="metricResourceCriteria" type="tns:MetricResourceCriteria"></xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="GetMetricsResponse">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseResponse">
+            			<xs:sequence>
+		            		<xs:element minOccurs="0" maxOccurs="unbounded"
+		            			name="returnData" type="tns:MetricGroupData">
+		            		</xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="GetCustomReportDataRequest">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseRequest">
+            			<xs:sequence>
+		            		<xs:element name="reportCriteria"
+		            			type="tns:ReportCriteria">
+		            		</xs:element>
+		            		<xs:element name="metricCriteria" type="tns:MetricCriteria"></xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="GetCustomReportDataResponse">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseResponse">
+            			<xs:sequence>
+		            		<xs:element minOccurs="0" maxOccurs="unbounded"
+		            			name="returnData" type="tns:MetricData">
+		            		</xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="GetDetailDataRequest">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseRequest">
+            			<xs:sequence>
+		            		<xs:element name="dc" type="xs:string"></xs:element>
+		            		<xs:element name="metricCriteria"
+		            			type="tns:MetricCriteria">
+		            		</xs:element>
+		            		<xs:element name="metricResourceCriteria" type="tns:MetricResourceCriteria"></xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="GetDetailDataResponse">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseResponse">
+            			<xs:sequence>
+		            		<xs:element minOccurs="0" maxOccurs="unbounded"
+		            			name="returnData" type="tns:MetricData">
+		            		</xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="GetMetricSummaryDataResponse">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseResponse">
+            			<xs:sequence>
+			            	<xs:element name="returnData"
+			            			type="tns:MetricData">
+	            			</xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="GetMetricSummaryDataRequest">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseRequest">
+            			<xs:sequence>
+		            		<xs:element name="dc" type="xs:string"></xs:element>
+		            		<xs:element name="metricCriteria"
+		            			type="tns:MetricCriteria">
+		            		</xs:element>
+		            		<xs:element name="metricResourceCriteria" type="tns:MetricResourceCriteria"></xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+            <xs:complexType
+            	name="GetStandardReportResponse">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseResponse">
+            			<xs:sequence>
+		            		<xs:element minOccurs="0" maxOccurs="unbounded"
+		            			name="returnData" type="tns:MetricData">
+		            		</xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+            <xs:complexType
+            	name="GetStandardReportRequest">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseRequest">
+            			<xs:sequence>
+		            		<xs:element name="reportType"
+		            			type="tns:ReportType">
+		            		</xs:element>
+		            		<xs:element name="metricCriteria" type="tns:MetricCriteria"></xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+            <xs:complexType
+            	name="GetPolicyMetricDetailDataResponse">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseResponse">
+            			<xs:sequence>
+		            		<xs:element minOccurs="0" maxOccurs="unbounded"
+		            			name="returnData" type="tns:PolicyMetricGraphData">
+		            		</xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+            <xs:complexType
+            	name="GetPolicyMetricDetailDataRequest">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseRequest">
+            			<xs:sequence>
+		            		<xs:element name="policyName" type="xs:string" maxOccurs="1" minOccurs="0"></xs:element>
+		            		<xs:element name="serviceName" type="xs:string" maxOccurs="1" minOccurs="0"></xs:element>
+		            		<xs:element name="operationName" type="xs:string" maxOccurs="1" minOccurs="0"></xs:element>
+		            		<xs:element name="subjectTypeName"
+		            			type="xs:string" maxOccurs="1" minOccurs="0">
+		            		</xs:element>
+		            		<xs:element name="subjectValue" type="xs:string" maxOccurs="1" minOccurs="0"></xs:element>
+		            		<xs:element name="listType" type="xs:string" maxOccurs="1" minOccurs="0"></xs:element>
+		            		<xs:element name="startTime" type="xs:long" maxOccurs="1" minOccurs="1"></xs:element>
+		            		<xs:element name="endTime" type="xs:long" maxOccurs="1" minOccurs="1"></xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="GetPolicyMetricDataResponse">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseResponse">
+            			<xs:sequence>
+            				<xs:element name="returnData" type="tns:PolicyMetricData" maxOccurs="unbounded" minOccurs="0"></xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+            <xs:element name="getPolicyMetricDataResponse"
+            	type="tns:GetPolicyMetricDataResponse">
+            </xs:element>
+            <xs:element name="getErrorGraphRequest" type="tns:GetErrorGraphRequest">
+
+            </xs:element>
+            <xs:element name="getErrorGraphResponse" type="tns:GetErrorGraphResponse">
+
+            </xs:element>
+            <xs:complexType name="GetErrorGraphRequest">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseRequest">
+            			<xs:sequence>
+		            		<xs:element name="serviceName" type="xs:string"></xs:element>
+		            		<xs:element name="operationName" type="xs:string"></xs:element>
+
+		            		<xs:element name="consumerName" type="xs:string"></xs:element>
+		            		<xs:element name="errorId" type="xs:string"></xs:element>
+		            		<xs:element name="errorCategory" type="xs:string"></xs:element>
+
+		            		<xs:element name="errorSeverity" type="xs:string"></xs:element>
+		            		<xs:element name="metricCriteria" type="tns:MetricCriteria" maxOccurs="1" minOccurs="1"></xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="GetErrorGraphResponse">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseResponse">
+            			<xs:sequence>
+            				<xs:element name="returnData" type="tns:MetricGraphData" maxOccurs="unbounded" minOccurs="0"></xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+
+            <xs:element name="getMetricValueRequest" type="tns:GetMetricValueRequest">
+            </xs:element>
+            <xs:element name="getMetricValueResponse" type="tns:GetMetricValueResponse">
+
+            </xs:element>
+            <xs:complexType name="GetMetricValueRequest">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseRequest">
+            			<xs:sequence>
+		            		<xs:element name="criteriaInfo"
+		            			type="tns:CriteriaInfo">
+		            		</xs:element>
+		            		<xs:element name="startTime" type="xs:long"></xs:element>
+		            		<xs:element name="duration" type="xs:long"></xs:element>
+		            		<xs:element name="aggregationPeriod" type="xs:int"></xs:element>
+		            		<xs:element name="autoDelay" type="xs:string"></xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="GetMetricValueResponse">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseResponse">
+            			<xs:sequence>
+            				<xs:element name="returnData" type="tns:MetricGraphData" maxOccurs="unbounded" minOccurs="0"></xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+
+            <xs:complexType name="MetricGraphData">
+            	<xs:sequence>
+            		<xs:element name="timeSlot" type="xs:long"></xs:element>
+            		<xs:element name="criteria" type="xs:string"></xs:element>
+            		<xs:element name="count" type="xs:double"></xs:element>
+            	</xs:sequence>
+            </xs:complexType>
+            <xs:element name="getErrorMetricsMetadataRequest" type="tns:GetErrorMetricsMetadataRequest">
+
+            </xs:element>
+            <xs:element name="getErrorMetricsMetadataResponse" type="tns:GetErrorMetricsMetadataResponse">
+
+            </xs:element>
+            <xs:element name="getErrorViewRequest" type="tns:GetErrorViewRequest">
+
+            </xs:element>
+            <xs:element name="getErrorViewResponse" type="tns:GetErrorViewResponse">
+
+            </xs:element>
+            <xs:element name="getErrorMetricsDataRequest" type="tns:GetErrorMetricsDataRequest">
+
+            </xs:element>
+            <xs:element name="getErrorMetricsDataResponse" type="tns:GetErrorMetricsDataResponse">
+
+            </xs:element>
+            <xs:complexType name="GetErrorMetricsMetadataRequest">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseRequest">
+            			<xs:sequence>
+		            		<xs:choice>
+			            		<xs:element name="errorId" type="xs:string" maxOccurs="1" minOccurs="1"></xs:element>
+			            		<xs:element name="errorName" type="xs:string" maxOccurs="1" minOccurs="1"></xs:element>
+		            		</xs:choice>
+		            		<xs:element name="serviceName" type="xs:string" maxOccurs="1" minOccurs="1"></xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="GetErrorMetricsMetadataResponse">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseResponse">
+            			<xs:sequence>
+            				<xs:element name="returnData" type="tns:ErrorInfos"></xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+
+            <xs:complexType name="ErrorInfos">
+            	<xs:sequence>
+            		<xs:element name="id" type="xs:string"></xs:element>
+            		<xs:element name="name" type="xs:string"></xs:element>
+            		<xs:element name="category" type="xs:string"></xs:element>
+            		<xs:element name="severity" type="xs:string"></xs:element>
+            		<xs:element name="domain" type="xs:string"></xs:element>
+            		<xs:element name="subDomain" type="xs:string"></xs:element>
+            	</xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="GetErrorViewRequest">
+            	<xs:sequence>
+            		<xs:element name="serviceName" type="xs:string"></xs:element>
+            		<xs:element name="operationName" type="xs:string"></xs:element>
+            		<xs:element name="errorName" type="xs:string"></xs:element>
+            		<xs:element name="startTime" type="xs:long"></xs:element>
+            		<xs:element name="duration" type="xs:long"></xs:element>
+            		<xs:element name="step" type="xs:string"></xs:element>
+            		<xs:element name="role" type="xs:string"></xs:element>
+            	</xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="GetErrorViewResponse">
+            	<xs:sequence>
+            		<xs:element name="returnData" type="tns:ErrorGroupData" maxOccurs="unbounded" minOccurs="0"></xs:element>
+            	</xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="ErrorGroupData">
+            	<xs:sequence>
+            		<xs:element name="count" type="xs:long"></xs:element>
+            		<xs:element name="poolName" type="xs:string"></xs:element>
+            		<xs:element name="errorName" type="xs:string"></xs:element>
+            		<xs:element name="operationName" type="xs:string"></xs:element>
+            		<xs:element name="machineName" type="xs:string"></xs:element>
+            		<xs:element name="consumerName" type="xs:string"></xs:element>
+            		<xs:element name="serviceName" type="xs:string"></xs:element>
+            	</xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="GetErrorMetricsDataRequest">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseRequest">
+            			<xs:sequence>
+		            		<xs:element name="errorType" type="tns:ErrorType"
+		            			maxOccurs="1" minOccurs="1">
+
+		            		</xs:element>
+
+		            		<xs:element name="serviceName" type="xs:string"
+		            			maxOccurs="unbounded" minOccurs="0">
+		            		</xs:element>
+		            		<xs:element name="operationName" type="xs:string"
+		            			maxOccurs="unbounded" minOccurs="0">
+		            		</xs:element>
+		            		<xs:element name="consumerName" type="xs:string"
+		            			maxOccurs="unbounded" minOccurs="0">
+		            		</xs:element>
+		            		<xs:choice>
+			            		<xs:element name="errorId" type="xs:string" maxOccurs="1" minOccurs="0"></xs:element>
+			            		<xs:element name="errorName" type="xs:string" maxOccurs="1" minOccurs="0"></xs:element>
+		            		</xs:choice>
+		            		<xs:element name="errorCategory" type="xs:string" maxOccurs="1" minOccurs="0"></xs:element>
+		            		<xs:element name="errorSeverity" type="xs:string" maxOccurs="1" minOccurs="0"></xs:element>
+		            		<xs:element name="responseCriteria" type="xs:string" maxOccurs="1" minOccurs="0">
+			            		<xs:annotation>
+	            					<xs:documentation>This field specifies the response criteria.  The response criteria may be "consumer", "error".
+	            					For example, if the response criteria is "consumer", then, the operation is to return the list of consumers and associated error metrics data.
+	            					</xs:documentation>
+	            				</xs:annotation>
+		            		</xs:element>
+
+		            		<xs:element name="metricCriteria" type="tns:MetricCriteria" maxOccurs="1" minOccurs="1"></xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="GetErrorMetricsDataResponse">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseResponse">
+            			<xs:sequence>
+            				<xs:element name="returnData" type="tns:ErrorViewData" maxOccurs="unbounded" minOccurs="0"></xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+
+            <xs:complexType name="ErrorViewData">
+            	<xs:sequence>
+            		<xs:choice>
+            			<xs:element name="consumer" type="xs:string"></xs:element>
+            			<xs:element name="error" type="tns:Error"></xs:element>
+            		</xs:choice>
+                    <xs:element name="ratioDiff" type="xs:double"></xs:element>
+                    <xs:element name="errorDiff" type="xs:double"></xs:element>
+            		<xs:element name="errorCallRatio2"
+            			type="xs:double">
+            		</xs:element>
+            		<xs:element name="errorCallRatio1"
+            			type="xs:double">
+            		</xs:element>
+            		<xs:element name="errorCount2" type="xs:long"></xs:element>
+            		<xs:element name="errorCount1" type="xs:long"></xs:element>
+
+            	</xs:sequence>
+            </xs:complexType>
+            <xs:element name="getMetricsMetadataRequest"
+            	type="tns:GetMetricsMetadataRequest">
+
+            </xs:element>
+
+
+
+
+            <xs:complexType name="GetMetricsMetadataRequest">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseRequest">
+            			<xs:sequence>
+		            		<xs:element name="resourceEntityType" type="tns:ResourceEntity" maxOccurs="1" minOccurs="1"></xs:element>
+		            		<xs:element name="resourceEntityName" type="xs:string"
+		            			maxOccurs="unbounded" minOccurs="0">
+		            		</xs:element>
+		            		<xs:element name="resourceEntityResponseType" type="tns:ResourceEntity" maxOccurs="1" minOccurs="1"></xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+            <xs:complexType
+            	name="GetDimListByEntityRequest">
+            	<xs:sequence>
+            		<xs:element name="entityType" type="xs:string"></xs:element>
+            		<xs:element name="entityName" type="xs:string" maxOccurs="unbounded" minOccurs="0"></xs:element>
+            		<xs:element name="dimListType" type="xs:string"></xs:element>
+            	</xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType
+            	name="GetDimListByEntityResponse">
+            	<xs:sequence>
+            		<xs:element name="returnDataType"
+            			type="xs:string">
+            		</xs:element>
+            		<xs:element minOccurs="0" maxOccurs="unbounded"
+            			name="returnData" type="xs:string">
+            		</xs:element>
+            	</xs:sequence>
+            </xs:complexType>
+
+
+
+
+
+            <xs:simpleType name="ResourceEntity">
+            	<xs:restriction base="xs:string">
+            		<xs:enumeration value="Pool"></xs:enumeration>
+            		<xs:enumeration value="Machine"></xs:enumeration>
+            		<xs:enumeration value="Service"></xs:enumeration>
+            		<xs:enumeration value="Operation"></xs:enumeration>
+            		<xs:enumeration value="Consumer"></xs:enumeration>
+            	</xs:restriction>
+            </xs:simpleType>
+
+            <xs:complexType name="MetricCriteria">
+            	<xs:sequence>
+            		<xs:element name="firstStartTime" type="xs:long"
+            			maxOccurs="1" minOccurs="1">
+            		</xs:element>
+            		<xs:element name="secondStartTime" type="xs:long"
+            			maxOccurs="1" minOccurs="1">
+            		</xs:element>
+            		<xs:element name="duration" type="xs:long"
+            			maxOccurs="1" minOccurs="1">
+            		</xs:element>
+            		<xs:element name="aggregationPeriod" type="xs:int"
+            			maxOccurs="1" minOccurs="1">
+            		</xs:element>
+            		<xs:element name="sortOrder"
+            			type="tns:SortOrderType" maxOccurs="1" minOccurs="0">
+            		</xs:element>
+            		<xs:element name="numRows" type="xs:string"
+            			maxOccurs="1" minOccurs="0">
+            		</xs:element>
+            		<xs:element name="metricName" type="xs:string"
+            			maxOccurs="1" minOccurs="0">
+            		</xs:element>
+            		<xs:element name="roleType" type="xs:string"></xs:element>
+            		<xs:element name="autoDelay" type="xs:string"></xs:element>
+            	</xs:sequence>
+            </xs:complexType>
+
+            <xs:simpleType name="SortOrderType">
+            	<xs:restriction base="xs:string">
+            		<xs:enumeration value="ascending"></xs:enumeration>
+            		<xs:enumeration value="descending"></xs:enumeration>
+            	</xs:restriction>
+            </xs:simpleType>
+
+
+            <xs:complexType name="MetricResourceCriteria">
+            	<xs:sequence>
+
+
+            		<xs:element name="resourceEntityResponseType"
+            			type="xs:string" maxOccurs="1" minOccurs="1">
+                        <xs:annotation>
+                        	<xs:documentation>This field specifies the response dimension for which the metric data to be returned.  This field is kept as string (and not as enum constant) for supporting(or extending) various other dimensions in future, even combination of dimensions without any changes to wsdl definition.</xs:documentation>
+                        </xs:annotation>
+            		</xs:element>
+            		<xs:element name="resourceEntityResponseName"
+            			type="xs:string" maxOccurs="unbounded" minOccurs="0">
+            		</xs:element>
+            		<xs:element name="resourceRequestEntities" type="tns:ResourceEntityRequest" maxOccurs="unbounded" minOccurs="0"></xs:element>
+            	</xs:sequence>
+            </xs:complexType>
+
+            <xs:simpleType name="ReportType">
+            	<xs:restriction base="xs:string"></xs:restriction>
+            </xs:simpleType>
+
+            <xs:simpleType name="ErrorType">
+            	<xs:restriction base="xs:string"></xs:restriction>
+            </xs:simpleType>
+            <xs:element name="getMetricsMetadataResponse"
+            	type="tns:GetMetricsMetadataResponse">
+            </xs:element>
+
+            <xs:complexType name="GetMetricsMetadataResponse">
+            	<xs:complexContent>
+            		<xs:extension base="tns:BaseResponse">
+            			<xs:sequence>
+            				<xs:element name="resourceEntityResponseNames" type="xs:string" maxOccurs="unbounded" minOccurs="0"></xs:element>
+            			</xs:sequence>
+            		</xs:extension>
+            	</xs:complexContent>
+            </xs:complexType>
+
+            <xs:complexType name="ResourceEntityRequest">
+            	<xs:sequence>
+            		<xs:element name="resourceEntityType"
+            			type="tns:ResourceEntity" maxOccurs="1" minOccurs="1">
+            		</xs:element>
+            		<xs:element name="resourceEntityName" type="xs:string" maxOccurs="unbounded" minOccurs="0"></xs:element>
+            	</xs:sequence>
+            </xs:complexType>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="getVersionRequest">
+		<wsdl:part element="tns:getVersionRequest" name="params" />
+	</wsdl:message>
+	<wsdl:message name="getVersionResponse">
+		<wsdl:part element="tns:getVersionResponse" name="params" />
+	</wsdl:message>
+	<wsdl:message name="getMetricsDataRequest">
+		<wsdl:part name="params"
+			element="tns:getMetricsDataRequest">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getMetricsDataResponse">
+		<wsdl:part name="params" element="tns:getMetricsDataResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getMetricSummaryDataRequest">
+		<wsdl:part name="params"
+			element="tns:getMetricSummaryDataRequest">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getMetricSummaryDataResponse">
+		<wsdl:part name="params"
+			element="tns:getMetricSummaryDataResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getDetailDataRequest">
+		<wsdl:part name="params"
+			element="tns:getDetailDataRequest">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getDetailDataResponse">
+		<wsdl:part name="params" element="tns:getDetailDataResponse"></wsdl:part>
+	</wsdl:message>
+
+	<wsdl:message name="getPolicyMetricDetailDataRequest">
+		<wsdl:part name="params"
+			element="tns:getPolicyMetricDetailDataRequest">
+		</wsdl:part>
+	</wsdl:message>
+
+	<wsdl:message name="getCustomReportDataRequest">
+		<wsdl:part name="params" element="tns:getCustomReportDataRequest"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getCustomReportDataResponse">
+		<wsdl:part name="params"
+			element="tns:getCustomReportDataResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getStandardReportDataRequest">
+		<wsdl:part name="params"
+			element="tns:getStandardReportDataRequest">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getStandardReportDataResponse">
+		<wsdl:part name="params"
+			element="tns:getStandardReportDataResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getPolicyMetricDetailDataResponse">
+		<wsdl:part name="params" element="tns:getPolicyMetricDetailDataResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getPolicyMetricDataResponse">
+		<wsdl:part name="params" element="tns:getPolicyMetricDataResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getPolicyMetricDataRequest">
+		<wsdl:part name="params" element="tns:getPolicyMetricDataRequest"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getErrorGraphRequest">
+		<wsdl:part name="params" element="tns:getErrorGraphRequest"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getErrorGraphResponse">
+		<wsdl:part name="params" element="tns:getErrorGraphResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getMetricValueRequest">
+		<wsdl:part name="params" element="tns:getMetricValueRequest"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getMetricValueResponse">
+		<wsdl:part name="params" element="tns:getMetricValueResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getErrorMetricsMetadataRequest">
+		<wsdl:part name="params" element="tns:getErrorMetricsMetadataRequest"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getErrorMetricsMetadataResponse">
+		<wsdl:part name="params" element="tns:getErrorMetricsMetadataResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getErrorViewRequest">
+		<wsdl:part name="params" element="tns:getErrorViewRequest"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getErrorViewResponse">
+		<wsdl:part name="params" element="tns:getErrorViewResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getErrorMetricsDataRequest">
+		<wsdl:part name="params" element="tns:getErrorMetricsDataRequest"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getErrorMetricsDataResponse">
+		<wsdl:part name="params" element="tns:getErrorMetricsDataResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getMetricsMetadataRequest">
+		<wsdl:part name="params" element="tns:getMetricsMetadataRequest"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getMetricsMetadataResponse">
+		<wsdl:part name="params" element="tns:getMetricsMetadataResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:portType name="SOAMetricsQueryServicePort">
+		<wsdl:operation name="getVersion">
+			<wsdl:input message="tns:getVersionRequest" />
+			<wsdl:output message="tns:getVersionResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="getMetricsData">
+			<wsdl:input message="tns:getMetricsDataRequest"></wsdl:input>
+			<wsdl:output message="tns:getMetricsDataResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getMetricSummaryData">
+			<wsdl:input message="tns:getMetricSummaryDataRequest"></wsdl:input>
+			<wsdl:output message="tns:getMetricSummaryDataResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getDetailData">
+			<wsdl:input message="tns:getDetailDataRequest"></wsdl:input>
+			<wsdl:output message="tns:getDetailDataResponse"></wsdl:output>
+		</wsdl:operation>
+
+		<wsdl:operation name="getPolicyMetricDetailData">
+			<wsdl:input message="tns:getPolicyMetricDetailDataRequest"></wsdl:input>
+			<wsdl:output message="tns:getPolicyMetricDetailDataResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getCustomReportData">
+			<wsdl:input message="tns:getCustomReportDataRequest"></wsdl:input>
+			<wsdl:output message="tns:getCustomReportDataResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getStandardReportData">
+			<wsdl:input message="tns:getStandardReportDataRequest"></wsdl:input>
+			<wsdl:output message="tns:getStandardReportDataResponse"></wsdl:output>
+		</wsdl:operation>
+
+
+		<wsdl:operation name="getPolicyMetricData">
+			<wsdl:input message="tns:getPolicyMetricDataRequest"></wsdl:input>
+			<wsdl:output message="tns:getPolicyMetricDataResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getErrorGraph">
+			<wsdl:input message="tns:getErrorGraphRequest"></wsdl:input>
+			<wsdl:output message="tns:getErrorGraphResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getMetricValue">
+			<wsdl:input message="tns:getMetricValueRequest"></wsdl:input>
+			<wsdl:output message="tns:getMetricValueResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getErrorMetricsMetadata">
+			<wsdl:input message="tns:getErrorMetricsMetadataRequest"></wsdl:input>
+			<wsdl:output message="tns:getErrorMetricsMetadataResponse"></wsdl:output>
+		</wsdl:operation>
+
+		<wsdl:operation name="getErrorMetricsData">
+			<wsdl:input message="tns:getErrorMetricsDataRequest"></wsdl:input>
+			<wsdl:output message="tns:getErrorMetricsDataResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getMetricsMetadata">
+			<wsdl:input message="tns:getMetricsMetadataRequest"></wsdl:input>
+			<wsdl:output message="tns:getMetricsMetadataResponse"></wsdl:output>
+		</wsdl:operation>
+
+	</wsdl:portType>
+
+	<wsdl:binding name="SOAMetricsQueryServiceHttpBinding"
+		type="tns:SOAMetricsQueryServicePort">
+
+		<http:binding verb="POST" />
+		<wsdl:operation name="getVersion">
+
+			<http:operation location="/getVersion" />
+			<wsdl:input>
+				<mime:content part="params"
+					type="application/x-www-form-urlencoded" />
+
+
+
+			</wsdl:input>
+			<wsdl:output>
+				<mime:content part="params" type="text/xml" />
+
+
+
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getMetricsData">
+
+			<http:operation location="/getMetricsData" />
+			<wsdl:input>
+				<mime:content part="params"
+					type="application/x-www-form-urlencoded" />
+
+
+
+			</wsdl:input>
+			<wsdl:output>
+				<mime:content part="params" type="text/xml" />
+
+
+
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getMetricSummaryData">
+
+			<http:operation location="/getMetricSummaryData" />
+			<wsdl:input>
+				<mime:content part="params"
+					type="application/x-www-form-urlencoded" />
+
+
+
+			</wsdl:input>
+			<wsdl:output>
+				<mime:content part="params" type="text/xml" />
+
+
+
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getDetailData">
+
+			<http:operation location="/getDetailData" />
+			<wsdl:input>
+				<mime:content part="params"
+					type="application/x-www-form-urlencoded" />
+
+
+
+			</wsdl:input>
+			<wsdl:output>
+				<mime:content part="params" type="text/xml" />
+
+
+
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getPolicyMetricDetailData">
+
+			<http:operation location="/getPolicyMetricDetailData" />
+			<wsdl:input>
+				<mime:content part="params"
+					type="application/x-www-form-urlencoded" />
+
+
+
+			</wsdl:input>
+			<wsdl:output>
+				<mime:content part="params" type="text/xml" />
+
+
+
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getCustomReportData">
+
+			<http:operation location="/getCustomReportData" />
+			<wsdl:input>
+				<mime:content part="params"
+					type="application/x-www-form-urlencoded" />
+
+
+
+			</wsdl:input>
+			<wsdl:output>
+				<mime:content part="params" type="text/xml" />
+
+
+
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getStandardReportData">
+
+			<http:operation location="/getStandardReportData" />
+			<wsdl:input>
+				<mime:content part="params"
+					type="application/x-www-form-urlencoded" />
+
+
+
+			</wsdl:input>
+			<wsdl:output>
+				<mime:content part="params" type="text/xml" />
+
+
+
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getPolicyMetricData">
+
+			<http:operation location="/getPolicyMetricData" />
+			<wsdl:input>
+				<mime:content part="params"
+					type="application/x-www-form-urlencoded" />
+
+
+
+			</wsdl:input>
+			<wsdl:output>
+				<mime:content part="params" type="text/xml" />
+
+
+
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getErrorGraph">
+
+			<http:operation location="/getErrorGraph" />
+			<wsdl:input>
+				<mime:content part="params"
+					type="application/x-www-form-urlencoded" />
+
+
+
+			</wsdl:input>
+			<wsdl:output>
+				<mime:content part="params" type="text/xml" />
+
+
+
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getMetricValue">
+
+			<http:operation location="/getMetricValue" />
+			<wsdl:input>
+				<mime:content part="params"
+					type="application/x-www-form-urlencoded" />
+
+
+
+			</wsdl:input>
+			<wsdl:output>
+				<mime:content part="params" type="text/xml" />
+
+
+
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getErrorMetricsMetadata">
+
+			<http:operation location="/getErrorMetricsMetadata" />
+			<wsdl:input>
+				<mime:content part="params"
+					type="application/x-www-form-urlencoded" />
+
+
+
+			</wsdl:input>
+			<wsdl:output>
+				<mime:content part="params" type="text/xml" />
+
+
+
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getErrorMetricsData">
+
+			<http:operation location="/getErrorMetricsData" />
+			<wsdl:input>
+				<mime:content part="params"
+					type="application/x-www-form-urlencoded" />
+
+
+
+			</wsdl:input>
+			<wsdl:output>
+				<mime:content part="params" type="text/xml" />
+
+
+
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getMetricsMetadata">
+
+			<http:operation location="/getMetricsMetadata" />
+			<wsdl:input>
+				<mime:content part="params"
+					type="application/x-www-form-urlencoded" />
+
+
+
+			</wsdl:input>
+			<wsdl:output>
+				<mime:content part="params" type="text/xml" />
+
+
+
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="SOAMetricsQueryServiceSOAPBinding"
+		type="tns:SOAMetricsQueryServicePort">
+
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="getVersion">
+
+			<soap:operation
+				soapAction="http://www.ebayopensource.org/turmeric/monitoring/v1/services/getVersion" />
+			<wsdl:input>
+
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+
+
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getMetricsData">
+
+			<soap:operation
+				soapAction="http://www.ebayopensource.org/turmeric/monitoring/v1/services/getMetricsData" />
+			<wsdl:input>
+
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+
+
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getMetricSummaryData">
+
+			<soap:operation
+				soapAction="http://www.ebayopensource.org/turmeric/monitoring/v1/services/getMetricSummaryData" />
+			<wsdl:input>
+
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+
+
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getDetailData">
+
+			<soap:operation
+				soapAction="http://www.ebayopensource.org/turmeric/monitoring/v1/services/getDetailData" />
+			<wsdl:input>
+
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+
+
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getPolicyMetricDetailData">
+
+			<soap:operation
+				soapAction="http://www.ebayopensource.org/turmeric/monitoring/v1/services/getPolicyMetricDetailData" />
+			<wsdl:input>
+
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+
+
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getCustomReportData">
+
+			<soap:operation
+				soapAction="http://www.ebayopensource.org/turmeric/monitoring/v1/services/getCustomReportData" />
+			<wsdl:input>
+
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+
+
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getStandardReportData">
+
+			<soap:operation
+				soapAction="http://www.ebayopensource.org/turmeric/monitoring/v1/services/getStandardReportData" />
+			<wsdl:input>
+
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+
+
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getPolicyMetricData">
+
+			<soap:operation
+				soapAction="http://www.ebayopensource.org/turmeric/monitoring/v1/services/getPolicyMetricData" />
+			<wsdl:input>
+
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+
+
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getErrorGraph">
+
+			<soap:operation
+				soapAction="http://www.ebayopensource.org/turmeric/monitoring/v1/services/getErrorGraph" />
+			<wsdl:input>
+
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+
+
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getMetricValue">
+
+			<soap:operation
+				soapAction="http://www.ebayopensource.org/turmeric/monitoring/v1/services/getMetricValue" />
+			<wsdl:input>
+
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+
+
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getErrorMetricsMetadata">
+
+			<soap:operation
+				soapAction="http://www.ebayopensource.org/turmeric/monitoring/v1/services/getErrorMetricsMetadata" />
+			<wsdl:input>
+
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+
+
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getErrorMetricsData">
+
+			<soap:operation
+				soapAction="http://www.ebayopensource.org/turmeric/monitoring/v1/services/getErrorMetricsData" />
+			<wsdl:input>
+
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+
+
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getMetricsMetadata">
+
+			<soap:operation
+				soapAction="http://www.ebayopensource.org/turmeric/monitoring/v1/services/getMetricsMetadata" />
+			<wsdl:input>
+
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+
+
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+
+	<wsdl:service name="SOAMetricsQueryService">
+		<wsdl:documentation>
+			<Version>2.0.0</Version>
+		</wsdl:documentation>
+		<wsdl:port binding="tns:SOAMetricsQueryServiceHttpBinding"
+			name="SOAMetricsQueryServiceHttpPort">
+			<http:address
+				location="http://www.ebayopensource.org/services/monitoring/v2/SOAMetricsQueryService" />
+		</wsdl:port>
+		<wsdl:port binding="tns:SOAMetricsQueryServiceSOAPBinding"
+			name="SOAMetricsQueryServiceSOAPPort">
+			<soap12:address
+				location="http://www.ebayopensource.org/services/monitoring/v2/SOAMetricsQueryService" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>
+

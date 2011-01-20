@@ -1,0 +1,566 @@
+/** Add css rules here for your application. */
+
+
+h1 {
+  font-size: 2em;
+  font-weight: bold;
+  color: #777777;
+  margin: 40px 0px 70px;
+  text-align: center;
+}
+
+
+.turmeric .hidden {
+	display:none;
+}
+
+.gwt-DialogBox {
+  width: 400px;
+}
+
+
+.turmeric .gwt-Button {
+	background: #fb9605  url(images/o-grad.png) left top repeat;
+    color: #434941;
+	border: 2px outset #fb9605;
+	cursor: pointer;
+    cursor: hand;
+    font-size: 0.9em;
+}
+
+
+.turmeric .gwt-Button:active {
+  border: 2px inset #fb9605;
+}
+
+.turmeric .gwt-Button:hover {
+  border-color:  red;
+}
+
+.turmeric .gwt-Button[disabled] {
+  cursor: default;
+  background: #9a9687;
+  border-color: #9a9687;
+}
+
+.turmeric .gwt-Button[disabled]:hover {
+	border: 2px outset #9a9687;
+	color: #888;
+}
+
+.turmeric .dwnld {
+}
+
+.turmeric .gwt-Label {
+	font-weight: bold;
+	color: #434941;
+}
+	
+.gwt-Label-splash {
+	font-size: 3em;
+	font-family: sans-serif;
+	color: #fb9605;
+	margin: 0.5em 0.5em 0.5em 0.5em;
+	text-align: center;
+}
+
+
+.turmeric .lang-panel a {
+	text-decoration: underline;
+	color: #434941;
+    margin: 4px;
+    cursor: pointer;
+    cursor: hand;
+}
+
+.turmeric .lang-panel .gwt-Anchor[disabled] {
+  color: #9a9687;
+}
+
+.turmeric .lang-panel a:hover {
+  color: #fb9605;
+}
+
+.turmeric .lang-panel a:active {
+  color: #fb9605;
+}
+
+.turmeric .header {
+
+}
+
+
+
+.float-left {
+	float: left;
+}
+
+.float-right {
+	float: right;
+}
+
+
+.turmeric .footer {
+
+}
+	
+
+.turmeric .gwt-TabLayoutPanel .gwt-TabLayoutPanelTab {
+  margin-left: 6px;
+  padding: 3px 6px 3px 6px;
+  cursor: pointer;
+  cursor: hand;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 1.1em;
+  text-align: center;
+  background:  #434941;
+  border-top: 2px outset #34941;
+  border-left: 2px outset #34941;
+  border-right:  2px outset #34941;
+  border-collapse: collapse;
+}
+
+.turmeric .gwt-TabLayoutPanel .gwt-TabLayoutPanelTab .gwt-Label { 
+	background:  #434941; 
+	color: #ffffff;
+}
+
+
+.turmeric .gwt-TabLayoutPanel .gwt-TabLayoutPanelTab-selected {
+  cursor: default;
+  background: #fb9605 url(images/o-grad.png) left top repeat;
+  border-top: 2px inset #fb9605;
+  border-left: 2px inset #fb9605;
+  border-right: 2px inset #fb9605;
+  color: #ffffff;
+  border: collapse;
+}
+
+.turmeric .gwt-TabLayoutPanel .gwt-TabLayoutPanelTab-selected .gwt-Label {  
+	background: #fb9605 url(images/o-grad.png) left top repeat;
+	color: #ffffff;
+}
+
+/*.gwt-TabLayoutPanel*/
+.turmeric .gwt-TabLayoutPanel .gwt-TabLayoutPanelContent {
+  border-color: #fb5500;
+  border-style: ridge;
+  border-width: 3px 3px 3px 3px;
+  padding: 4px;
+}
+
+
+
+/*.gwt-SplitLayoutPanel*/
+.turmeric .gwt-SplitLayoutPanel-VDragger {
+	background: #fb9605 url(console/gwt/standard/images/splitPanelThumb.png) center center no-repeat;
+}
+/*.gwt-SplitLayoutPanel*/
+.turmeric .gwt-SplitLayoutPanel-HDragger {
+	background: #fb9605 url(console/gwt/standard/images/splitPanelThumb.png) center center no-repeat;
+}
+
+.turmeric .gwt-SplitLayoutPanel {
+	border-top: 2px solid #fb9605;
+}
+
+.splash {
+	text-align: center;
+}
+
+.summary-heading-panel {
+	font-weight: normal;
+	color: #434941;
+	float: left;
+}
+
+.summary-heading-panel .gwt-Label {
+	font-size: 1.1em;
+	font-weight: bold;
+	color: #434941;
+}
+
+
+
+/*
+.summary-heading-panel .gwt-Button, .summary-heading-panel .gwt-Label {
+	float: left;
+}
+*/
+.summary-panel-item {
+	float: left;
+	margin: 20px;
+}
+
+
+
+.summary-panel-item .summary-scroll {
+	/*border: 1px solid  silver;*/
+}
+
+
+
+
+.date-select-panel {
+	margin-top: 8px;
+	padding: 4px;
+	color: #434941;
+}
+
+
+.date-select-panel .date-select-panel-item {
+    display: inline;
+	padding: 4px;
+	vertical-align: middle;
+}
+
+.date-select-panel .gwt-Button {
+	margin-left: 4px;
+	margin-right: 4px;
+}
+
+.turmeric .gwt-ListBox {
+	background: #ffffff;
+	color: #434941;
+}
+	
+.dateBoxPopup .gwt-DatePicker {
+	border: 1px solid #f9dd45;
+}
+
+.turmeric .datePickerDayIsToday {
+	background: silver;
+}
+
+.turmeric .datePickerMonth,
+.turmeric .datePickerPreviousButton,
+.turmeric .datePickerNextButton {
+	color: #434941;
+}
+
+.turmeric .datePickerDayIsHighlighted {
+	background: #fb9605;
+	color: #ffffff;
+}
+	
+.turmeric .datePickerMonthSelector {
+	color: #434941;
+	background: #f9dd45 url(images/y-grad.png) left top repeat;
+}
+
+.turmeric .datePickerWeekdayLabel, 
+.turmeric .datePickerWeekendLabel {
+	background:  #f9dd45;
+}
+
+.turmeric .dateBoxFormatError {
+	color: #e80732;
+}
+
+#service-tree-root {
+	font-size: 1em;
+	width: 100%;
+}
+
+.turmeric .gwt-Tree {
+	margin-left: 10px;
+	margin-top: 10px;
+}
+
+.turmeric .gwt-TreeItem .gwt-Label {
+  cursor: pointer;
+  cursor: hand;
+  font-weight: bold;
+  font-size: 1em;
+  padding: 3px;
+  color: #434941;
+  /* background: #fb9605 url(images/o-grad.png) left top repeat; */
+}
+
+.turmeric .gwt-TreeItem .gwt-Label:active {
+  border: 2px inset #c64a0d;
+  color: #fb9605;
+}
+
+.turmeric .gwt-TreeItem .gwt-Label:hover {
+  border-color:  #f9dd45 #f9dd45 #f9dd45 #f9dd45;
+  color: #fb9605;
+}
+
+.turmeric .gwt-TreeItem .gwt-Label[disabled] {
+  cursor: default;
+  background: #9a9687;
+  border-color: #9a9687;
+}
+
+.turmeric .gwt-TreeItem .gwt-Label[disabled]:hover {
+	border: 2px outset #9a9687;
+	color: #888;
+}
+
+
+.turmeric .gwt-TreeItem-selected .gwt-Label{
+	color: #fb9605;
+}
+
+
+#op-highlight {
+	color: #fb9605;
+}
+
+
+.turmeric .turmeric-op .gwt-TreeItem  .gwt-Label {
+	font-size: 1em;
+	font-weight: normal;
+	color:  #434941;
+	background: white;
+	border: 0px;
+	padding: 2px;
+}
+
+.turmeric .turmeric-op .gwt-TreeItem-selected .gwt-Label {
+	color: #fb9605;
+}
+
+.turmeric .tbl {
+  border: 3px solid  #f9dd45;
+  /*margin-bottom:6px;*/
+  border-collapse: collapse;
+}
+
+.turmeric .tbl td {
+	background: white;
+	padding: 6px;
+	border-right: 1px solid silver;	
+	border-collapse: collapse;
+}
+
+.turmeric .tbl td .gwt-Label {
+	font-weight: normal;
+}
+
+.turmeric .tbl-header1 td {
+	background:  #f9dd45 url(images/y-grad.png) left top repeat;
+	font-weight: bold;
+	text-align: left;
+	border-collapse: collapse;
+	border-right: 1px solid silver;
+}
+.turmeric .tbl-header2 td {
+	background:  #f9dd45 url(images/y-grad.png) left top repeat;
+	font-weight: bold;
+	text-align: right;
+	border-collapse: collapse;
+	border-right: 1px solid silver;
+}
+
+.turmeric .tbl-right {
+	text-align: right;
+}
+
+.turmeric .gwt-DialogBox .Caption {
+	background: #f9dd45 url(images/y-grad.png) left top repeat;
+	border-top: 5px solid #f9dd45;
+}
+
+.turmeric .gwt-DialogBox .dialogBottomCenter {
+  background: url(images/y-hborder.png) repeat-x 0px -4px;
+}
+.turmeric .gwt-DialogBox .dialogMiddleLeft {
+  background: url(images/y-vborder.png) repeat-y;
+}
+.turmeric .gwt-DialogBox .dialogMiddleRight {
+  background: url(images/y-vborder.png) repeat-y -4px 0px;
+}
+
+
+
+.turmeric .gwt-DialogBox .gwt-Button {
+	display:block;
+	float: right;
+}
+
+.turmeric .gwt-DialogBox .gwt-ListBox {
+	display: block;
+}
+
+
+
+.turmeric .gwt-DialogBox .dialogTopLeft {
+  background: url(images/y-corner.png) no-repeat -13px 0px;
+}
+.turmeric .gwt-DialogBox .dialogTopRight {
+  background: url(images/y-corner.png) no-repeat -18px 0px;
+}
+.turmeric .gwt-DialogBox .dialogBottomLeft {
+  background: url(images/y-corner.png) no-repeat 0px -15px;
+}
+.turmeric .gwt-DialogBox .dialogBottomRight {
+  background: url(images/y-corner.png) no-repeat -5px -15px;
+}
+
+
+.turmeric .error .Caption {
+	background: #e80732 url(images/r-grad.png) left top repeat-x;
+	color: white;
+	border-top: 5px solid #e80732;
+}
+.turmeric  .error .gwt-Button {
+	background: silver;
+	color:   #e80732;
+	border: 2px outset silver;
+}
+
+.turmeric .error .dialogBottomCenter {
+  background: url(images/r-hborder.png) repeat-x 0px -4px;
+}
+.turmeric .error .dialogMiddleLeft {
+  background: url(images/r-vborder.png) repeat-y;
+}
+.turmeric .error .dialogMiddleRight {
+  background: url(images/r-vborder.png) repeat-y -4px 0px;
+}
+
+.turmeric .error .dialogTopLeft {
+  background: url(images/r-corner.png) no-repeat -13px 0px;
+}
+.turmeric .error .dialogTopRight {
+  background: url(images/r-corner.png) no-repeat -18px 0px;
+}
+.turmeric .error .dialogBottomLeft {
+  background: url(images/r-corner.png) no-repeat 0px -15px;
+}
+.turmeric .error .dialogBottomRight {
+  background: url(images/r-corner.png) no-repeat -5px -15px;
+}
+
+
+.turmeric  .clickable:hover {
+	color: #f9dd45;
+}
+.turmeric .gwt-DisclosurePanel .content {
+  border-left: 3px solid #f9dd45;
+  padding: 4px 0px 4px 8px;
+  margin-left: 6px;
+}
+
+
+
+.turmeric .gwt-PushButton-down {
+  border: 1px inset #fb9605;
+  background: url(images/o-grad.png) repeat-x 0px -27px;
+  cursor: pointer;
+  cursor: hand;
+}
+
+.turmeric .gwt-PushButton-down-hovering {
+  border: 1px inset;
+  border-color: red;
+  background: url(images/o-grad.png) repeat-x 0px -27px;
+  cursor: pointer;
+  cursor: hand;
+}
+
+.turmeric .gwt-PushButton-up {
+  border: 1px outset #fb9605;
+  background: url(images/o-grad.png) repeat-x 0px -27px;
+  cursor: pointer;
+  cursor: hand;
+}
+
+.turmeric .gwt-PushButton-up-hovering {
+  border: 1px outset;
+  border-color: red;
+  background: url(images/o-grad.png) repeat-x 0px -27px;
+  cursor: pointer;
+  cursor: hand;
+}
+
+.turmeric .policymenu:hover {
+  color: #f9dd45;
+  cursor: pointer;
+  cursor: hand;
+}
+
+.turmeric .policymenu-selected {
+  background: #fb9605 url(images/o-grad.png) left top repeat;
+  color: #ffffff;
+}
+
+.turmeric .sg_popup {
+  width: 650px;
+  height: 400px;
+}
+
+.turmeric .edit_popup {
+  width: 650px;
+  height: 400px;
+}
+
+.turmeric .edit_rs_popup {
+  width: 550px;
+  height: 230px;
+}
+
+.turmeric .tbl .borderless {
+	border:0px;
+}
+
+.turmeric .borders {
+	border: 2px solid #f9dd45;
+}
+
+.turmeric .gwt-StackPanel {
+  border-bottom: 1px solid #f9dd45;
+}
+turmeric .gwt-StackLayoutPanel .gwt-StackLayoutPanelHeader {
+  cursor: pointer;
+  cursor: hand;
+  font-weight: bold;
+  font-size: 1.3em;
+  padding: 3px;
+  border: 1px solid #f9dd45;
+  border-bottom: 0px;
+  background: #f9dd45 url(images/y-grad.png) repeat-x 0px -989px;
+}
+
+.turmeric .gwt-StackLayoutPanel .gwt-StackLayoutPanelHeader-hovering {
+  background: #f9dd45 url(images/y-grad.png) repeat-x 0px -1464px;
+}
+
+.turmeric .gwt-StackPanel .gwt-StackPanelItem {
+  cursor: pointer;
+  cursor: hand;
+  font-weight: bold;
+  font-size: 1.3em;
+  padding: 3px;
+  border: 1px solid #f9dd45;
+  border-bottom: 0px;
+  background: #f9dd45 url(images/y-grad.png) repeat-x 0px -989px;
+}
+.turmeric .gwt-StackPanel .gwt-StackPanelContent {
+  border: 1px solid #f9dd45;
+  border-bottom: 0px;
+  background: white;
+  padding: 2px 2px 10px 5px;
+}
+
+
+.turmeric .sg-summary .sg-summary-content {
+	  padding: 2px 2px 10px 5px;
+}
+
+.turmeric .policy-summary .policy-summary-content {
+	  padding: 2px 2px 10px 5px;
+}
+
+.turmeric .sggrid {
+	margin-top: 20px;
+	border-top:2px solid #f9dd45;
+}
+
+.turmeric .nonselectable {
+	font-weight: normal;
+}
+	

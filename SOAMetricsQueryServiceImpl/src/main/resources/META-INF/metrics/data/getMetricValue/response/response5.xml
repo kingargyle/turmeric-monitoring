@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<getMetricValueResponse xmlns:ns2="http://www.ebayopensource.org/turmeric/monitoring/v1/services" xmlns:ns3="http://www.ebayopensource.org/turmeric/common/v1/types">
+    
+
+		  
+          
+           
+          
+            <ns2:returnData>
+               <ns2:timeSlot>1256760000</ns2:timeSlot>
+               <ns2:count>161.25496066666668</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256745600</ns2:timeSlot>
+               <ns2:count>78.244774125</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256688000</ns2:timeSlot>
+               <ns2:count>53.45533897435897</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256702400</ns2:timeSlot>
+               <ns2:count>71.04313596153847</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256716800</ns2:timeSlot>
+               <ns2:count>81.00062032258064</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256731200</ns2:timeSlot>
+               <ns2:count>111.41104653846153</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256749200</ns2:timeSlot>
+               <ns2:count>20.639893214285713</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256706000</ns2:timeSlot>
+               <ns2:count>29.214803863636362</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256763600</ns2:timeSlot>
+               <ns2:count>118.69313518518518</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256691600</ns2:timeSlot>
+               <ns2:count>89.44105810810811</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256720400</ns2:timeSlot>
+               <ns2:count>143.60270487804877</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256734800</ns2:timeSlot>
+               <ns2:count>96.50900605263158</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256724000</ns2:timeSlot>
+               <ns2:count>34.3404825</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256767200</ns2:timeSlot>
+               <ns2:count>52.87814018518519</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256752800</ns2:timeSlot>
+               <ns2:count>124.7498696</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256738400</ns2:timeSlot>
+               <ns2:count>75.85808936708861</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256695200</ns2:timeSlot>
+               <ns2:count>63.568148666666666</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256709600</ns2:timeSlot>
+               <ns2:count>117.07094869565218</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256770800</ns2:timeSlot>
+               <ns2:count>48.88652925</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256756400</ns2:timeSlot>
+               <ns2:count>130.8689865</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256742000</ns2:timeSlot>
+               <ns2:count>70.89657875</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256684400</ns2:timeSlot>
+               <ns2:count>101.0005334</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256698800</ns2:timeSlot>
+               <ns2:count>46.83682533333333</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256713200</ns2:timeSlot>
+               <ns2:count>69.18654555555555</ns2:count>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:timeSlot>1256727600</ns2:timeSlot>
+               <ns2:count>87.18014166666667</ns2:count>
+            </ns2:returnData>
+        
+        
+        
+        
+
+    
+</getMetricValueResponse>

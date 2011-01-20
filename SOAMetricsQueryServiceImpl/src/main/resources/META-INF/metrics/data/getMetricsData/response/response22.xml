@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<getMetricsResponse xmlns:ns2="http://www.ebayopensource.org/turmeric/monitoring/v1/services" xmlns:ns3="http://www.ebayopensource.org/turmeric/common/v1/types">
+    
+            <ns2:returnData>
+               <ns2:criteriaInfo>
+                  <ns2:serviceName>AnonymizerService</ns2:serviceName>
+               </ns2:criteriaInfo>
+               <ns2:diff>41.21</ns2:diff>
+               <ns2:count2>294904.0</ns2:count2>
+               <ns2:count1>416434.0</ns2:count1>
+            </ns2:returnData>
+
+</getMetricsResponse>

@@ -1,0 +1,3 @@
+serviceconsumertype,metricname,servicename,operationname,consumername,poolname,machinename,roletype
+service,RequestCount,FindingService,findItemsAdvanced,consumer1,v3apicore,machine1,server
+consumer,ErrorCount,RemotePortletSoa,portlet,consumer2,v3cgi0core,machine2,server

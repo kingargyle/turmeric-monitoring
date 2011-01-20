@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<getMetricsResponse xmlns:ns2="http://www.ebayopensource.org/turmeric/monitoring/v1/services" xmlns:ns3="http://www.ebayopensource.org/turmeric/common/v1/types">
+    
+     <ns2:returnData>
+               <ns2:criteriaInfo>
+                  <ns2:operationName>calculateBatchRates</ns2:operationName>
+               </ns2:criteriaInfo>
+               <ns2:diff>-21.59</ns2:diff>
+               <ns2:count2>2441.0</ns2:count2>
+               <ns2:count1>1914.0</ns2:count1>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:criteriaInfo>
+                  <ns2:operationName>calculateRates</ns2:operationName>
+               </ns2:criteriaInfo>
+               <ns2:diff>-20.87</ns2:diff>
+               <ns2:count2>2400.0</ns2:count2>
+               <ns2:count1>1899.0</ns2:count1>
+            </ns2:returnData>
+
+
+
+
+
+
+           
+
+
+</getMetricsResponse>

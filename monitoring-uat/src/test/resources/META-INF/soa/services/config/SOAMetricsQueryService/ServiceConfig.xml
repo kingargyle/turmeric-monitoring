@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<service-config xmlns="http://www.ebayopensource.org/turmeric/common/config"
+	group="CommonSOAServiceGroup" service-name="SOAMetricsQueryService">
+	<service-impl-class-name>org.ebayopensource.turmeric.monitoring.impl.SOAMetricsQueryServiceImpl
+	</service-impl-class-name>
+	<service-interface-class-name>org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService
+	</service-interface-class-name>
+	<service-instance-config>
+		<protocol-processor version="1.1" name="SOAP11">
+			<indicator>
+				<transport-header name="X-TURMERIC-MESSAGE-PROTOCOL">SOAP11</transport-header>
+			</indicator>
+			<class-name>org.ebayopensource.turmeric.runtime.spf.impl.protocolprocessor.soap.ServerSOAPProtocolProcessor
+			</class-name>
+		</protocol-processor>
+		<protocol-processor version="1.2" name="SOAP12">
+			<indicator>
+				<transport-header name="X-TURMERIC-MESSAGE-PROTOCOL">SOAP12</transport-header>
+			</indicator>
+			<class-name>org.ebayopensource.turmeric.runtime.spf.impl.protocolprocessor.soap.ServerSOAPProtocolProcessor
+			</class-name>
+		</protocol-processor>
+	</service-instance-config>
+	<provider-options>
+		<supported-data-bindings>XML</supported-data-bindings>
+		<supported-data-bindings>NV</supported-data-bindings>
+		<supported-data-bindings>JSON</supported-data-bindings>
+	</provider-options>
+</service-config>

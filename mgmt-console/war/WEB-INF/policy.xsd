@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ================================================================== -->
+<!-- Copyright (c) 2006-2010 eBay Inc. All Rights Reserved. -->
+<!-- Licensed under the Apache License, Version 2.0 (the "License"); -->
+<!-- you may not use this file except in compliance with the License. -->
+<!-- You may obtain a copy of the License at -->
+<!-- -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<!-- ================================================================== -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/policy"
+	xmlns:tns="http://www.example.org/policy" elementFormDefault="qualified">
+
+	<!-- Policy types -->
+	<include schemaLocation="policy-rate-limiting.xsd"></include>
+	<include schemaLocation="policy-white-list.xsd"></include>
+	<include schemaLocation="policy-black-list.xsd"></include>
+	<include schemaLocation="policy-authorization.xsd"></include>
+
+	  <element name="policies" type="tns:policies"></element>
+	
+	<complexType name="policies">
+		<sequence>
+			<element name="authorization" type="tns:authorization" />
+			<element name="blackList" type="tns:blackList" />
+			<element name="whiteList" type="tns:whiteList" />
+			<element name="rateLimiting" type="tns:rateLimiting" />
+		</sequence>
+	</complexType>
+
+
+  
+</schema>

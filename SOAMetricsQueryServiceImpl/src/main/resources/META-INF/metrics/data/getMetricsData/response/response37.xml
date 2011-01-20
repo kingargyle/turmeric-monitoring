@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<getMetricsResponse xmlns:ns2="http://www.ebayopensource.org/turmeric/monitoring/v1/services" xmlns:ns3="http://www.ebayopensource.org/turmeric/common/v1/types">
+    
+     <ns2:returnData>
+               <ns2:criteriaInfo>
+                  <ns2:operationName>addSubscriber</ns2:operationName>
+               </ns2:criteriaInfo>
+               <ns2:diff>-11.11</ns2:diff>
+               <ns2:count2>126.0</ns2:count2>
+               <ns2:count1>112.0</ns2:count1>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:criteriaInfo>
+                  <ns2:operationName>removeSubscriber</ns2:operationName>
+               </ns2:criteriaInfo>
+               <ns2:diff>0.0</ns2:diff>
+               <ns2:count2>28.0</ns2:count2>
+               <ns2:count1>28.0</ns2:count1>
+            </ns2:returnData>
+
+
+
+
+
+
+           
+
+
+</getMetricsResponse>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<getMetricsResponse xmlns:ns2="http://www.ebayopensource.org/turmeric/monitoring/v1/services" xmlns:ns3="http://www.ebayopensource.org/turmeric/common/v1/types">
+    
+    <ns2:returnData>
+               <ns2:criteriaInfo>
+                  <ns2:operationName>getStems</ns2:operationName>
+               </ns2:criteriaInfo>
+               <ns2:diff>-2.08</ns2:diff>
+               <ns2:count2>809273.0</ns2:count2>
+               <ns2:count1>792467.0</ns2:count1>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:criteriaInfo>
+                  <ns2:operationName>updateUserInformation</ns2:operationName>
+               </ns2:criteriaInfo>
+               <ns2:diff>-60.48</ns2:diff>
+               <ns2:count2>194535.0</ns2:count2>
+               <ns2:count1>76880.0</ns2:count1>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:criteriaInfo>
+                  <ns2:operationName>authenticateConversation</ns2:operationName>
+               </ns2:criteriaInfo>
+               <ns2:diff>7.98</ns2:diff>
+               <ns2:count2>17702.0</ns2:count2>
+               <ns2:count1>19114.0</ns2:count1>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:criteriaInfo>
+                  <ns2:operationName>getRecipientStem</ns2:operationName>
+               </ns2:criteriaInfo>
+               <ns2:diff>-0.96</ns2:diff>
+               <ns2:count2>8712.0</ns2:count2>
+               <ns2:count1>8628.0</ns2:count1>
+            </ns2:returnData>
+            <ns2:returnData>
+               <ns2:criteriaInfo>
+                  <ns2:operationName>getAnonymousUser</ns2:operationName>
+               </ns2:criteriaInfo>
+               <ns2:diff>-1.41</ns2:diff>
+               <ns2:count2>142.0</ns2:count2>
+               <ns2:count1>140.0</ns2:count1>
+            </ns2:returnData>
+
+
+
+
+
+
+
+           
+
+
+</getMetricsResponse>

@@ -1,0 +1,3 @@
+hitcount,listtype,subjecttype,subjectvalue,effectduration,policyname,operationname,servicename,effect
+10,RL,ebayapp,1000,300,Shopping,findItemsAdvanced,FindingService,FLAG
+20,RL,ip,10.10.10.10,200,Shopping24H,findItemsByProduct,FindingService,CHALLENGE

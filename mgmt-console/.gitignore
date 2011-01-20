@@ -1,0 +1,9 @@
+/target
+/.gwt
+/.settings
+/.project
+/.classpath
+/war/WEB-INF/classes
+/war/META-INF
+/war/console
+*.swp
