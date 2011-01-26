@@ -20,4 +20,5 @@ public interface Resource {
     public String getDescription();
     public List<Operation> getOpList();
     
+    
 }
