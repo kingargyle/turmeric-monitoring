@@ -61,7 +61,7 @@ public class SOAMetricsQueryServiceProviderFactory {
 		if (providerImpl == null) {
 			// check the failed set
 			if (s_failedProviders.contains(providerKey)) {
-				new ServiceException(getConfigError(configMngr));
+				throw new ServiceException(getConfigError(configMngr));
 			}
 			synchronized (SOAMetricsQueryServiceProviderFactory.class) {
 				providerImpl = s_serviceDMProviderMap.get(providerKey);
