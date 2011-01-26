@@ -20,8 +20,8 @@ import java.util.Set;
 
 import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 import org.ebayopensource.turmeric.monitoring.client.Display;
-import org.ebayopensource.turmeric.monitoring.client.model.GenericPolicy;
 import org.ebayopensource.turmeric.monitoring.client.model.UserAction;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.GenericPolicy;
 import org.ebayopensource.turmeric.monitoring.client.presenter.policy.PolicySummaryPresenter.PolicySummaryDisplay;
 import org.ebayopensource.turmeric.monitoring.client.view.ErrorDialog;
 import org.ebayopensource.turmeric.monitoring.client.view.common.AbstractGenericView;

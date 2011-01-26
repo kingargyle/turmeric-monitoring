@@ -14,8 +14,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
-import org.ebayopensource.turmeric.monitoring.client.model.GenericPolicy;
-import org.ebayopensource.turmeric.monitoring.client.model.Resource;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.GetPoliciesResponseJS.PolicyJS;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.CreatePolicyResponse;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.GetEntityHistoryResponse;

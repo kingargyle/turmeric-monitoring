@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 import org.ebayopensource.turmeric.monitoring.client.model.AbstractConsoleService;
-import org.ebayopensource.turmeric.monitoring.client.model.GenericPolicy;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectQuery.SubjectTypeKey;
 
 import com.google.gwt.core.client.GWT;
@@ -486,7 +485,7 @@ public class PolicyQueryServiceImpl extends AbstractConsoleService implements Po
 	}
     
     /**
-     * @see org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService#createPolicy(org.ebayopensource.turmeric.monitoring.client.model.policy.GenericPolicy, com.google.gwt.user.client.rpc.AsyncCallback)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService#createPolicy(org.org.ebayopensource.turmeric.monitoring.client.model.policy.GenericPolicy, com.google.gwt.user.client.rpc.AsyncCallback)
      */
     @Override
     public void createPolicy(final GenericPolicy policy,
@@ -778,7 +777,7 @@ public class PolicyQueryServiceImpl extends AbstractConsoleService implements Po
     
     
     /**
-     * @see org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService#updatePolicy(org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.UpdateMode, org.ebayopensource.turmeric.monitoring.client.model.GenericPolicy, com.google.gwt.user.client.rpc.AsyncCallback)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService#updatePolicy(org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.UpdateMode, org.ebayopensource.turmeric.monitoring.client.model.policy.GenericPolicy, com.google.gwt.user.client.rpc.AsyncCallback)
      */
     @Override
     public void updatePolicy(UpdateMode mode, GenericPolicy policy,

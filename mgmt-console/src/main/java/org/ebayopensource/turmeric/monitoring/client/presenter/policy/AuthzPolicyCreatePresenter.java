@@ -16,8 +16,8 @@ import java.util.Map;
 import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 import org.ebayopensource.turmeric.monitoring.client.SupportedService;
 import org.ebayopensource.turmeric.monitoring.client.model.ConsoleService;
-import org.ebayopensource.turmeric.monitoring.client.model.GenericPolicy;
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.GenericPolicy;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.ResourceLevel;
 
 import com.google.gwt.event.dom.client.ClickEvent;

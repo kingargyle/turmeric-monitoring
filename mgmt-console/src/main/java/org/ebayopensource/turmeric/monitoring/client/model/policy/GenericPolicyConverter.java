@@ -10,8 +10,6 @@ package org.ebayopensource.turmeric.monitoring.client.model.policy;
 
 import java.util.List;
 
-import org.ebayopensource.turmeric.monitoring.client.model.GenericPolicy;
-import org.ebayopensource.turmeric.monitoring.client.model.Resource;
 
 /**
  * GenericPolicyConverter

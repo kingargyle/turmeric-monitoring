@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.ebayopensource.turmeric.monitoring.client.model.ConsoleService;
-import org.ebayopensource.turmeric.monitoring.client.model.GenericPolicy;
-import org.ebayopensource.turmeric.monitoring.client.model.Resource;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

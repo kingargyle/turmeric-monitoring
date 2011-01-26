@@ -14,8 +14,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
-import org.ebayopensource.turmeric.monitoring.client.model.GenericPolicy;
-import org.ebayopensource.turmeric.monitoring.client.model.Resource;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.GetResourcesResponseJS.ResourceJS;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.GetPoliciesResponse;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.RuleEffectType;
@@ -43,7 +41,7 @@ public class GetPoliciesResponseJS extends JavaScriptObject implements
 		}
 
 		/**
-		 * @see org.ebayopensource.turmeric.monitoring.client.model.GenericPolicy#getDescription()
+		 * @see org.ebayopensource.turmeric.monitoring.client.model.policy.GenericPolicy#getDescription()
 		 */
 		@Override
 		public final native String getDescription() /*-{
@@ -51,7 +49,7 @@ public class GetPoliciesResponseJS extends JavaScriptObject implements
 		}-*/;
 
 		/**
-		 * @see org.ebayopensource.turmeric.monitoring.client.model.GenericPolicy#getId()
+		 * @see org.ebayopensource.turmeric.monitoring.client.model.policy.GenericPolicy#getId()
 		 */
 		public final native String getIdAsString() /*-{
 			return this["@PolicyId"];
@@ -63,7 +61,7 @@ public class GetPoliciesResponseJS extends JavaScriptObject implements
 		}
 
 		/**
-		 * @see org.ebayopensource.turmeric.monitoring.client.model.GenericPolicy#getName()
+		 * @see org.ebayopensource.turmeric.monitoring.client.model.policy.GenericPolicy#getName()
 		 */
 		@Override
 		public final native String getName() /*-{
@@ -71,7 +69,7 @@ public class GetPoliciesResponseJS extends JavaScriptObject implements
 		}-*/;
 
 		/**
-		 * @see org.ebayopensource.turmeric.monitoring.client.model.GenericPolicy#getType()
+		 * @see org.ebayopensource.turmeric.monitoring.client.model.policy.GenericPolicy#getType()
 		 */
 		@Override
 		public final native String getType() /*-{
@@ -79,7 +77,7 @@ public class GetPoliciesResponseJS extends JavaScriptObject implements
 		}-*/;
 
 		/**
-		 * @see org.ebayopensource.turmeric.monitoring.client.model.GenericPolicy#getRules()
+		 * @see org.ebayopensource.turmeric.monitoring.client.model.policy.GenericPolicy#getRules()
 		 */
 		@Override
 		public final List<Rule> getRules() {
@@ -100,7 +98,7 @@ public class GetPoliciesResponseJS extends JavaScriptObject implements
 		}-*/;
 
 		/**
-		 * @see org.ebayopensource.turmeric.monitoring.client.model.GenericPolicy#getResources()
+		 * @see org.ebayopensource.turmeric.monitoring.client.model.policy.GenericPolicy#getResources()
 		 */
 		@Override
 		public final List<Resource> getResources() {

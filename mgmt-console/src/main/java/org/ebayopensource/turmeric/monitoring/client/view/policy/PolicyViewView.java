@@ -13,11 +13,11 @@ import java.util.List;
 
 import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 import org.ebayopensource.turmeric.monitoring.client.Display;
-import org.ebayopensource.turmeric.monitoring.client.model.Resource;
 import org.ebayopensource.turmeric.monitoring.client.model.UserAction;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.ExtraField;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.Operation;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicySubjectAssignment;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.Resource;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.Subject;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectGroup;
 import org.ebayopensource.turmeric.monitoring.client.presenter.policy.PolicyViewPresenter.PolicyViewDisplay;

@@ -7,11 +7,10 @@
  *    http://www.apache.org/licenses/LICENSE-2.0
  *
  *******************************************************************************/
-package org.ebayopensource.turmeric.monitoring.client.model;
+package org.ebayopensource.turmeric.monitoring.client.model.policy;
 
 import java.util.List;
 
-import org.ebayopensource.turmeric.monitoring.client.model.policy.Operation;
 
 public interface Resource {
     public Long getId();

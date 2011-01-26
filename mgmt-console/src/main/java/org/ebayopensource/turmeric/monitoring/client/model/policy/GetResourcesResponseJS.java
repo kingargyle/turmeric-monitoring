@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.ebayopensource.turmeric.monitoring.client.model.Resource;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.GetResourcesResponse;
 
 import com.google.gwt.core.client.JavaScriptObject;
@@ -34,7 +33,7 @@ public class GetResourcesResponseJS extends JavaScriptObject implements
 
         protected ResourceJS() {}
         /**
-         * @see org.ebayopensource.turmeric.monitoring.client.model.Resource#getDescription()
+         * @see org.ebayopensource.turmeric.monitoring.client.model.policy.Resource#getDescription()
          */
         @Override
         public final native String getDescription() /*-{
@@ -42,7 +41,7 @@ public class GetResourcesResponseJS extends JavaScriptObject implements
         }-*/;
 
         /**
-         * @see org.ebayopensource.turmeric.monitoring.client.model.Resource#getId()
+         * @see org.ebayopensource.turmeric.monitoring.client.model.policy.Resource#getId()
          */
        
         public final native String getIdAsString() /*-{
@@ -56,7 +55,7 @@ public class GetResourcesResponseJS extends JavaScriptObject implements
         
     
         /**
-         * @see org.ebayopensource.turmeric.monitoring.client.model.Resource#getOpList()
+         * @see org.ebayopensource.turmeric.monitoring.client.model.policy.Resource#getOpList()
          */
         @Override
 		public final List<Operation> getOpList() {
@@ -74,7 +73,7 @@ public class GetResourcesResponseJS extends JavaScriptObject implements
 	    }-*/;
 	    
 		/**
-         * @see org.ebayopensource.turmeric.monitoring.client.model.Resource#getResourceName()
+         * @see org.ebayopensource.turmeric.monitoring.client.model.policy.Resource#getResourceName()
          */
         @Override
         public final native String getResourceName() /*-{
@@ -82,7 +81,7 @@ public class GetResourcesResponseJS extends JavaScriptObject implements
         }-*/;
 
         /**
-         * @see org.ebayopensource.turmeric.monitoring.client.model.Resource#getResourceType()
+         * @see org.ebayopensource.turmeric.monitoring.client.model.policy.Resource#getResourceType()
          */
         @Override
         public final native String getResourceType() /*-{

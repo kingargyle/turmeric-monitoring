@@ -13,9 +13,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.ebayopensource.turmeric.monitoring.client.model.GenericPolicy;
-import org.ebayopensource.turmeric.monitoring.client.model.Resource;
-import org.ebayopensource.turmeric.monitoring.client.model.ResourceImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectGroup;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;

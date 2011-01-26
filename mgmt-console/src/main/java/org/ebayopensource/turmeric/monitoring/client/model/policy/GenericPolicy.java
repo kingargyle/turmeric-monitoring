@@ -7,14 +7,11 @@
  *    http://www.apache.org/licenses/LICENSE-2.0
  *
  *******************************************************************************/
-package org.ebayopensource.turmeric.monitoring.client.model;
+package org.ebayopensource.turmeric.monitoring.client.model.policy;
 
 import java.util.Date;
 import java.util.List;
 
-import org.ebayopensource.turmeric.monitoring.client.model.policy.Rule;
-import org.ebayopensource.turmeric.monitoring.client.model.policy.Subject;
-import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectGroup;
 
 
 public interface GenericPolicy {
