@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 import org.ebayopensource.turmeric.monitoring.client.Display;
@@ -26,7 +25,6 @@ import org.ebayopensource.turmeric.monitoring.client.presenter.policy.PolicySumm
 import org.ebayopensource.turmeric.monitoring.client.view.ErrorDialog;
 import org.ebayopensource.turmeric.monitoring.client.view.common.AbstractGenericView;
 
-import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.DateCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -51,9 +49,7 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
-import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.ProvidesKey;
-import com.google.gwt.view.client.SelectionChangeEvent;
 
 public class PolicySummaryView extends AbstractGenericView implements
 		PolicySummaryDisplay {
@@ -833,10 +829,13 @@ public class PolicySummaryView extends AbstractGenericView implements
 		}
 
 		private void updateButton (String label) {
-		    if (label == null) 
+		    if (label == null){ 
 		        label = ConsoleUtil.constants.apply(); 
-		    else
+		    } else{
 		        actionButton.setEnabled(true);
+		    }
+		    
+		    
 		    actionButton.setText(label);
 		}
 

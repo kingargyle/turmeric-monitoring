@@ -15,7 +15,7 @@ import org.ebayopensource.turmeric.monitoring.client.model.policy.ExtraField;
 
 public class AuthzPolicyCreateView extends PolicyCreateView {
 
-	protected static  UserAction SELECTED_ACTION = UserAction.AUTHZ_POLICY_CREATE;
+	protected static final  UserAction SELECTED_ACTION = UserAction.AUTHZ_POLICY_CREATE;
 	private static final String TITLE_FORM= ConsoleUtil.policyAdminConstants.policyInformationAuthzCreate();
 	
 

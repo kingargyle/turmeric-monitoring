@@ -14,7 +14,7 @@ import org.ebayopensource.turmeric.monitoring.client.model.UserAction;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.ExtraField;
 
 public class WLPolicyCreateView extends PolicyCreateView {
-	protected static  UserAction SELECTED_ACTION = UserAction.WL_POLICY_CREATE;
+	protected static final UserAction SELECTED_ACTION = UserAction.WL_POLICY_CREATE;
 	private static final String TITLE_FORM= ConsoleUtil.policyAdminConstants.policyInformationWLCreate();
 	@Override
 	public UserAction getSelectedAction() {

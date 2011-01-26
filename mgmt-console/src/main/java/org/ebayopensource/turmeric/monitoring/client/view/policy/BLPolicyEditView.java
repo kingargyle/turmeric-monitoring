@@ -22,7 +22,7 @@ import com.google.gwt.user.client.ui.TextBox;
 
 public class BLPolicyEditView extends PolicyEditView {
 
-	protected static  UserAction SELECTED_ACTION = UserAction.BL_POLICY_EDIT;
+	protected static  final UserAction SELECTED_ACTION = UserAction.BL_POLICY_EDIT;
 	private static final String TITLE_FORM= ConsoleUtil.policyAdminConstants.policyInformationBLEdit();
 	
 

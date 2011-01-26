@@ -52,8 +52,8 @@ public class PolicyViewPresenter extends AbstractGenericPresenter {
 
 	public final static String PRESENTER_ID = "PolicyView";
 
-	@Override
-	public String getId() {
+	
+	public final String getId() {
 		return PRESENTER_ID;
 	}
 

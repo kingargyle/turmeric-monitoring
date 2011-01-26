@@ -28,7 +28,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class RLPolicyCreateView extends PolicyCreateView implements
 		RLPolicyCreateDisplay {
 
-	protected static UserAction SELECTED_ACTION = UserAction.RL_POLICY_CREATE;
+	protected static final UserAction SELECTED_ACTION = UserAction.RL_POLICY_CREATE;
 	private static final String TITLE_FORM = ConsoleUtil.policyAdminConstants
 			.policyInformationRLCreate();
 

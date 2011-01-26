@@ -17,7 +17,7 @@ import org.ebayopensource.turmeric.monitoring.client.view.policy.PolicyCreateVie
 
 public class WLPolicyEditView extends PolicyEditView  {
 
-	protected static UserAction SELECTED_ACTION = UserAction.WL_POLICY_EDIT;
+	protected static final UserAction SELECTED_ACTION = UserAction.WL_POLICY_EDIT;
 	private static final String TITLE_FORM= ConsoleUtil.policyAdminConstants.policyInformationWLEdit();
 	
 	@Override

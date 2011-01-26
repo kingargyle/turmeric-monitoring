@@ -27,7 +27,7 @@ import com.google.gwt.user.client.ui.TextBox;
 
 public class RLPolicyEditView extends PolicyEditView  implements RLPolicyEditDisplay{
 
-	protected static UserAction SELECTED_ACTION = UserAction.RL_POLICY_EDIT;
+	protected static final UserAction SELECTED_ACTION = UserAction.RL_POLICY_EDIT;
 	private static final String TITLE_FORM= ConsoleUtil.policyAdminConstants.policyInformationRLEdit();
 	List<ExtraField> rlExtraFields = new ArrayList<ExtraField>();
 

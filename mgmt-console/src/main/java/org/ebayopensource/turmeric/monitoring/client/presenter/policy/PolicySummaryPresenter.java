@@ -203,7 +203,7 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 
 		// the user wants to search by resource type
 		this.view.getAvailableTypesBox().addChangeHandler(new ChangeHandler() {
-			@Override
+			
 			public void onChange(ChangeEvent event) {
 				if (view.isResourceCriteriaEnabled()) {
 					if (view.getSelectedType() != null
@@ -228,7 +228,7 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 
 		// the user wants to search by rs name
 		this.view.getResourceNameBox().addChangeHandler(new ChangeHandler() {
-			@Override
+			
 			public void onChange(ChangeEvent event) {
 				if (view.getSelectedType() != null
 						&& !"".equals(view.getSelectedResource())) {
@@ -403,14 +403,14 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
                                                 key,
                                                 new AsyncCallback<DeletePolicyResponse>() {
 
-                                                    @Override
+                                                    
                                                     public void onSuccess(
                                                             DeletePolicyResponse result) {
                                                         removePolicy(policies, key);
                                                         view.setPolicies(policies);
                                                     }
 
-                                                    @Override
+                                                    
                                                     public void onFailure(
                                                             Throwable caught) {
                                                         view.error(ConsoleUtil.messages.serverError(caught
@@ -550,7 +550,7 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 										.getLocalizedMessage()));
 					}
 
-					@Override
+					
 					public void onSuccess(GetPoliciesResponse result) {
 						PolicySummaryPresenter.this.policies = copyToWriteable(result.getPolicies());
 						PolicySummaryPresenter.this.view.setPolicies(policies);
@@ -574,7 +574,7 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 										.getLocalizedMessage()));
 					}
 
-					@Override
+					
 					public void onSuccess(GetResourcesResponse result) {
 						PolicySummaryPresenter.this.resources = new ArrayList<Resource>(
 								result.getResources());
@@ -635,7 +635,7 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 										.getLocalizedMessage()));
 					}
 
-					@Override
+					
 					public void onSuccess(GetPoliciesResponse result) {
 						PolicySummaryPresenter.this.policies = copyToWriteable(result.getPolicies());
 						PolicySummaryPresenter.this.view.setPolicies(policies);
@@ -666,7 +666,7 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 										.getLocalizedMessage()));
 					}
 
-					@Override
+					
 					public void onSuccess(GetPoliciesResponse result) {
 						PolicySummaryPresenter.this.policies = copyToWriteable(result.getPolicies());
 						PolicySummaryPresenter.this.view.setPolicies(policies);
@@ -734,12 +734,13 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 										.getLocalizedMessage()));
 					}
 
-					@Override
+					
 					public void onSuccess(GetPoliciesResponse result) {
 						PolicySummaryPresenter.this.policies = copyToWriteable(result.getPolicies());
 						PolicySummaryPresenter.this.view.setPolicies(policies);
-						for (GenericPolicy p:policies)
+						for (GenericPolicy p:policies){
 						    fetchAccess(p);
+						}
 					}
 				});
 	}
@@ -841,7 +842,7 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 	        }
 
 	        public void onSuccess(VerifyAccessResponse response) {
-	            System.err.println("Response = "+(!response.isErrored())+" for PES for action="+action+" on  policy "+policy.getName());
+	           // System.err.println("Response = "+(!response.isErrored())+" for PES for action="+action+" on  policy "+policy.getName());
 	            callback.onSuccess(Boolean.valueOf(!response.isErrored()));
 	        }
 	    });

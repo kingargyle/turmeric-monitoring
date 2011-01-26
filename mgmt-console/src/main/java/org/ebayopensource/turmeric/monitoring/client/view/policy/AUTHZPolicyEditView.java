@@ -16,7 +16,7 @@ import org.ebayopensource.turmeric.monitoring.client.model.policy.ExtraField;
 
 public class AUTHZPolicyEditView extends PolicyEditView {
 
-	protected static  UserAction SELECTED_ACTION = UserAction.AUTHZ_POLICY_EDIT;
+	protected static  final UserAction SELECTED_ACTION = UserAction.AUTHZ_POLICY_EDIT;
 	
 	private static final String TITLE_FORM= ConsoleUtil.policyAdminConstants.policyInformationAuthzEdit();
 	

@@ -26,7 +26,6 @@ import org.ebayopensource.turmeric.monitoring.client.presenter.policy.PolicyView
 import org.ebayopensource.turmeric.monitoring.client.util.PolicyExtraFieldsUtil;
 import org.ebayopensource.turmeric.monitoring.client.view.ErrorDialog;
 import org.ebayopensource.turmeric.monitoring.client.view.common.AbstractGenericView;
-import org.ebayopensource.turmeric.monitoring.client.view.policy.PolicyCreateView.ContentView;
 
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.cellview.client.CellTable;
@@ -46,16 +45,15 @@ import com.google.gwt.user.client.ui.StackLayoutPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
-import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.ProvidesKey;
 
 public class PolicyViewView extends ResizeComposite implements
 		PolicyViewDisplay {
 
-	private DockLayoutPanel mainPanel;
+	private final DockLayoutPanel mainPanel;
 	private static final String TITLE_FORM = ConsoleUtil.policyAdminConstants
 			.policyInformationView();
-	protected static UserAction SELECTED_ACTION = UserAction.POLICY_VIEW;
+	protected static final UserAction SELECTED_ACTION = UserAction.POLICY_VIEW;
 
 	private Display contentView;
 	private ResourcesContentDisplay resourceContentView;
@@ -107,7 +105,7 @@ public class PolicyViewView extends ResizeComposite implements
 		policyContentPanel.setHeight("90%");
 
 		cancelButton = new Button(ConsoleUtil.constants.cancel());
-		HorizontalPanel buttonsPannel = new HorizontalPanel();
+		final HorizontalPanel buttonsPannel = new HorizontalPanel();
 		buttonsPannel.add(cancelButton);
 
 		mainPanel.addSouth(buttonsPannel, 1);
@@ -117,14 +115,14 @@ public class PolicyViewView extends ResizeComposite implements
 	}
 
 	protected Widget initContentView() {
-		ScrollPanel actionPanel = new ScrollPanel();
+		final ScrollPanel actionPanel = new ScrollPanel();
 		contentView = new ContentView();
 		actionPanel.add(contentView.asWidget());
 		return actionPanel;
 	}
 
 	protected Widget initResourceContentView() {
-		ScrollPanel actionPanel = new ScrollPanel();
+		final ScrollPanel actionPanel = new ScrollPanel();
 		resourceContentView = new ResourceContentView();
 		actionPanel.add(resourceContentView.asWidget());
 
@@ -132,7 +130,7 @@ public class PolicyViewView extends ResizeComposite implements
 	}
 
 	protected Widget initSubjectContentView() {
-		ScrollPanel actionPanel = new ScrollPanel();
+		final ScrollPanel actionPanel = new ScrollPanel();
 		subjectContentView = new SubjectContentView();
 		actionPanel.add(subjectContentView.asWidget());
 
@@ -140,7 +138,7 @@ public class PolicyViewView extends ResizeComposite implements
 	}
 
 	private class ContentView extends AbstractGenericView implements Display {
-		private VerticalPanel mainPanel;
+		final private VerticalPanel mainPanel;
 		private Grid policyInfoGrid;
 
 		public ContentView() {
@@ -202,7 +200,7 @@ public class PolicyViewView extends ResizeComposite implements
 				if (extraField.getFieldType() != null
 						&& "CheckBox".equalsIgnoreCase(extraField
 								.getFieldType())) {
-					CheckBox chBox = new CheckBox();
+					final  CheckBox chBox = new CheckBox();
 					// TODO set value
 					chBox.setEnabled(false);
 					extraField.setCheckBox(chBox);
@@ -216,7 +214,7 @@ public class PolicyViewView extends ResizeComposite implements
 								.getFieldType())
 						|| "ListBox".equalsIgnoreCase(extraField
 								.getFieldType()))) {
-					Label label = new Label(" ");
+					final  Label label = new Label(" ");
 					extraFieldsGrid.setWidget(extraField.getOrder()-1, 1, label);
 				}
 			}
@@ -226,10 +224,10 @@ public class PolicyViewView extends ResizeComposite implements
 
 	private class ResourceContentView extends AbstractGenericView implements
 			ResourcesContentDisplay {
-		private FlowPanel mainPanel;
+		final private FlowPanel mainPanel;
 
 		private CellTable<Resource> cellTable;
-		ProvidesKey<Resource> keyProvider;
+		private ProvidesKey<Resource> keyProvider;
 		private ListDataProvider<Resource> dataProvider;
 
 		public ResourceContentView() {
@@ -247,11 +245,11 @@ public class PolicyViewView extends ResizeComposite implements
 			mainPanel.clear();
 
 			// bottom part of panel is a table with search results
-			Grid summaryGrid = new Grid(2, 1);
+			final Grid summaryGrid = new Grid(2, 1);
 			summaryGrid.setStyleName("sggrid");
 
 			keyProvider = new ProvidesKey<Resource>() {
-				public Object getKey(Resource assignment) {
+				public Object getKey(final Resource assignment) {
 					return assignment == null ? null : assignment
 							.getResourceType() + assignment.getResourceName();
 				}
@@ -261,11 +259,11 @@ public class PolicyViewView extends ResizeComposite implements
 
 			dataProvider = new ListDataProvider<Resource>();
 			dataProvider.addDataDisplay(cellTable);
-			SimplePager pager = new SimplePager();
+			final SimplePager pager = new SimplePager();
 			pager.setDisplay(cellTable);
 			// resource type
-			TextColumn<Resource> resourceTypeCol = new TextColumn<Resource>() {
-				public String getValue(Resource assignment) {
+			final TextColumn<Resource> resourceTypeCol = new TextColumn<Resource>() {
+				public String getValue(final Resource assignment) {
 					if (assignment == null
 							|| assignment.getResourceType() == null) {
 						return null;
@@ -277,8 +275,8 @@ public class PolicyViewView extends ResizeComposite implements
 					ConsoleUtil.policyAdminConstants.resourceType());
 
 			// resource Name
-			TextColumn<Resource> resourceNameCol = new TextColumn<Resource>() {
-				public String getValue(Resource assignment) {
+			final TextColumn<Resource> resourceNameCol = new TextColumn<Resource>() {
+				public String getValue(final Resource assignment) {
 					if (assignment == null
 							|| assignment.getResourceName() == null) {
 						return null;
@@ -291,11 +289,12 @@ public class PolicyViewView extends ResizeComposite implements
 
 			// operations
 			// TODO add operations name into table
-			TextColumn<Resource> resourceOpsCol = new TextColumn<Resource>() {
-				public String getValue(Resource assignment) {
-					if (assignment == null || assignment.getOpList() == null)
+			final TextColumn<Resource> resourceOpsCol = new TextColumn<Resource>() {
+				public String getValue(final Resource assignment) {
+					if (assignment == null || assignment.getOpList() == null){
 						return null;
-
+					}
+						
 					StringBuilder strbuilder = new StringBuilder();
 					for (Operation op : assignment.getOpList()) {
 						strbuilder.append(op.getOperationName() + "\n");
@@ -315,20 +314,20 @@ public class PolicyViewView extends ResizeComposite implements
 			mainPanel.add(summaryGrid);
 		}
 
-		@Override
-		public void error(String msg) {
-			ErrorDialog dialog = new ErrorDialog(true);
+		public void error(final String msg) {
+			final ErrorDialog dialog = new ErrorDialog(true);
 			dialog.setMessage(msg);
 			dialog.getDialog().center();
 			dialog.show();
 
 		}
 
-		public void setAssignments(List<Resource> assignments) {
-			List<Resource> data = dataProvider.getList();
+		public void setAssignments(final List<Resource> assignments) {
+			final List<Resource> data = dataProvider.getList();
 			data.clear();
-			if (assignments != null)
+			if (assignments != null){
 				data.addAll(assignments);
+			}
 			cellTable.redraw();
 		}
 
@@ -336,11 +335,10 @@ public class PolicyViewView extends ResizeComposite implements
 
 	private class SubjectContentView extends AbstractGenericView implements
 			SubjectContentDisplay {
-		private SimplePanel mainPanel;
-		private Grid mainGrid;
+		private final  SimplePanel mainPanel;
+		private final  Grid mainGrid;
 		private CellTable<PolicySubjectAssignment> cellTable;
 		private ProvidesKey<PolicySubjectAssignment> keyProvider;
-		private MultiSelectionModel<PolicySubjectAssignment> selectionModel;
 		private ListDataProvider<PolicySubjectAssignment> dataProvider;
 		private Grid subjectGrid;
 		private SimplePager pager;
@@ -385,10 +383,11 @@ public class PolicyViewView extends ResizeComposite implements
 			pager = new SimplePager();
 			pager.setDisplay(cellTable);
 			// text column for type
-			TextColumn<PolicySubjectAssignment> typeCol = new TextColumn<PolicySubjectAssignment>() {
-				public String getValue(PolicySubjectAssignment assignment) {
-					if (assignment == null || assignment.getSubjects() == null)
+			final TextColumn<PolicySubjectAssignment> typeCol = new TextColumn<PolicySubjectAssignment>() {
+				public String getValue(final PolicySubjectAssignment assignment) {
+					if (assignment == null || assignment.getSubjects() == null){
 						return null;
+					}
 					return assignment.getSubjectType();
 				}
 			};
@@ -396,10 +395,11 @@ public class PolicyViewView extends ResizeComposite implements
 					ConsoleUtil.policyAdminConstants.subjectType());
 
 			// text column for Subject names
-			TextColumn<PolicySubjectAssignment> subjectNamesCol = new TextColumn<PolicySubjectAssignment>() {
-				public String getValue(PolicySubjectAssignment assignment) {
-					if (assignment == null || assignment.getSubjects() == null)
+			final TextColumn<PolicySubjectAssignment> subjectNamesCol = new TextColumn<PolicySubjectAssignment>() {
+				public String getValue(final PolicySubjectAssignment assignment) {
+					if (assignment == null || assignment.getSubjects() == null){
 						return null;
+					}
 
 					StringBuilder strbuilder = new StringBuilder();
 					for (Subject s : assignment.getSubjects()) {
@@ -412,11 +412,12 @@ public class PolicyViewView extends ResizeComposite implements
 					ConsoleUtil.policyAdminConstants.subjects());
 
 			// text column for SubjectGroup names
-			TextColumn<PolicySubjectAssignment> subjectGroupNamesCol = new TextColumn<PolicySubjectAssignment>() {
-				public String getValue(PolicySubjectAssignment assignment) {
+			final TextColumn<PolicySubjectAssignment> sgNamesCol = new TextColumn<PolicySubjectAssignment>() {
+				public String getValue(final PolicySubjectAssignment assignment) {
 					if (assignment == null
-							|| assignment.getSubjectGroups() == null)
+							|| assignment.getSubjectGroups() == null){
 						return null;
+					}
 
 					StringBuilder strbuilder = new StringBuilder();
 					for (SubjectGroup s : assignment.getSubjectGroups()) {
@@ -425,16 +426,17 @@ public class PolicyViewView extends ResizeComposite implements
 					return strbuilder.toString();
 				}
 			};
-			cellTable.addColumn(subjectGroupNamesCol,
+			cellTable.addColumn(sgNamesCol,
 					ConsoleUtil.policyAdminConstants.subjectGroups());
 		}
 
-		public void setAssignments(List<PolicySubjectAssignment> assignments) {
-			List<PolicySubjectAssignment> data = dataProvider.getList();
+		public void setAssignments(final List<PolicySubjectAssignment> assignments) {
+			final List<PolicySubjectAssignment> data = dataProvider.getList();
 			data.clear();
 
-			if (assignments != null)
+			if (assignments != null){
 				data.addAll(assignments);
+			}
 			cellTable.redraw();
 		}
 
@@ -466,17 +468,17 @@ public class PolicyViewView extends ResizeComposite implements
 		return subjectContentView;
 	}
 
-	@Override
+	
 	public void setPolicyDesc(final String policyDesc) {
 		this.policyDesc.setText(policyDesc);
 	}
 	
-	@Override
+	
 	public void setPolicyType(final String policyType) {
 		this.policyType.setText(policyType);
 	}
 	
-	@Override
+	
 	public void setPolicyStatus(final boolean enabled) {
 		if(enabled){
 			this.policyStatus.setText(ConsoleUtil.policyAdminConstants.enable());
@@ -485,18 +487,18 @@ public class PolicyViewView extends ResizeComposite implements
 		}
 	}
 
-	@Override
+	
 	public void setPolicyName(final String policyName) {
 		this.policyName.setText(policyName);
 	}
 
-	@Override
+	
 	public void setExtraFieldAvailable(final boolean available) {
 		this.extraGridAvailable = available;
 	}
 
 	
-	@Override
+	
 	public void setExtraFieldList(List<ExtraField> extraFieldList) {
 
 		for (ExtraField extraField : extraFieldList) {
@@ -504,13 +506,13 @@ public class PolicyViewView extends ResizeComposite implements
 				if (extraField.getFieldType() != null
 						&& "CheckBox".equalsIgnoreCase(extraField
 								.getFieldType())) {
-					CheckBox ch = (CheckBox) extraFieldsGrid.getWidget(
+					final CheckBox ch = (CheckBox) extraFieldsGrid.getWidget(
 							extraField.getOrder()-1, 1);
 					ch.setValue(Boolean.parseBoolean(extraField.getValue()));
 
 				} else if (extraField.getFieldType() != null
 						&& ("Label".equalsIgnoreCase(extraField.getFieldType()))) {
-					Label lbl = (Label) extraFieldsGrid.getWidget(
+					final Label lbl = (Label) extraFieldsGrid.getWidget(
 							extraField.getOrder()-1, 1);
 					lbl.setText(extraField.getValue());
 				
@@ -539,20 +541,19 @@ public class PolicyViewView extends ResizeComposite implements
 		
 	}
 
-	public void error(String msg) {
-		ErrorDialog dialog = new ErrorDialog(true);
+	public void error(final String msg) {
+		final ErrorDialog dialog = new ErrorDialog(true);
 		dialog.setMessage(msg);
 		dialog.getDialog().center();
 		dialog.show();
 	}
 
-	@Override
-	public void setAssociatedId(String id) {
+	
+	public void setAssociatedId(final String id) {
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public String getAssociatedId() {
 		// TODO Auto-generated method stub
 		return null;
