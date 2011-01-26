@@ -150,11 +150,6 @@ public class RLPolicyCreateView extends PolicyCreateView implements
 
 	}
 
-	@Override
-	public void setEnabled(boolean enabled) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void setExtraFieldList(List<ExtraField> extraFieldList) {

@@ -33,6 +33,7 @@ public class AuthzPolicyCreatePresenter extends PolicyCreatePresenter {
 			Map<SupportedService, ConsoleService> serviceMap) {
 		super(eventBus, view, serviceMap);
 		view.setConditionBuilderVisible(false);
+		this.view.setPolicyType("AUTHZ");
 	}
 
 	public final static String PRESENTER_ID = "AuthzPolicyCreate";

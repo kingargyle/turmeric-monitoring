@@ -33,6 +33,7 @@ public class WLPolicyCreatePresenter extends PolicyCreatePresenter {
 			Map<SupportedService, ConsoleService> serviceMap) {
 		super(eventBus, view, serviceMap);
 		view.setConditionBuilderVisible(false);
+		this.view.setPolicyType("WHITELIST");
 	}
 
 	public final static String PRESENTER_ID = "WLPolicyCreate";

@@ -63,10 +63,12 @@ public class PolicyViewView extends ResizeComposite implements
 
 	protected Label policyName;
 	protected Label policyDesc;
+	protected Label policyType;
+	protected Label policyStatus;
+
+	
 	protected boolean extraGridAvailable;
 	
-	protected boolean policyEnabled;
-
 	private Button cancelButton;
 
 	protected Grid extraFieldsGrid = new Grid(1, 1);
@@ -91,6 +93,8 @@ public class PolicyViewView extends ResizeComposite implements
 
 		policyName = new Label();
 		policyDesc = new Label();
+		policyType = new Label();
+		policyStatus = new Label();
 		extraFieldList = new ArrayList<ExtraField>();
 
 		// CONTENT
@@ -155,8 +159,10 @@ public class PolicyViewView extends ResizeComposite implements
 
 			policyName.setWidth("300px");
 			policyDesc.setWidth("250px");
-
-			policyInfoGrid = new Grid(2, 2);
+			policyType.setWidth("300px");
+			policyStatus.setWidth("300px");
+			
+			policyInfoGrid = new Grid(4, 2);
 
 			policyInfoGrid.setWidget(0, 0, new Label(
 					ConsoleUtil.policyAdminConstants.policyName() + ":"));
@@ -169,6 +175,14 @@ public class PolicyViewView extends ResizeComposite implements
 									.policyDescription() + ":"));
 			policyInfoGrid.setWidget(1, 1, policyDesc);
 
+			policyInfoGrid.setWidget(2, 0, new Label(
+					ConsoleUtil.policyAdminConstants.policyType() + ":"));
+			policyInfoGrid.setWidget(2, 1, policyType);
+			
+			policyInfoGrid.setWidget(3, 0, new Label(
+					ConsoleUtil.policyAdminConstants.status() + ":"));
+			policyInfoGrid.setWidget(3, 1, policyStatus);
+			
 			mainPanel.add(policyInfoGrid);
 			setExtraFields();
 			mainPanel.add(extraFieldsGrid);
@@ -456,6 +470,20 @@ public class PolicyViewView extends ResizeComposite implements
 	public void setPolicyDesc(final String policyDesc) {
 		this.policyDesc.setText(policyDesc);
 	}
+	
+	@Override
+	public void setPolicyType(final String policyType) {
+		this.policyType.setText(policyType);
+	}
+	
+	@Override
+	public void setPolicyStatus(final boolean enabled) {
+		if(enabled){
+			this.policyStatus.setText(ConsoleUtil.policyAdminConstants.enable());
+		}else{
+			this.policyStatus.setText(ConsoleUtil.policyAdminConstants.disable());
+		}
+	}
 
 	@Override
 	public void setPolicyName(final String policyName) {
@@ -467,11 +495,7 @@ public class PolicyViewView extends ResizeComposite implements
 		this.extraGridAvailable = available;
 	}
 
-	@Override
-	public void setEnabled(final boolean enabled) {
-		this.policyEnabled = enabled;
-	}
-
+	
 	@Override
 	public void setExtraFieldList(List<ExtraField> extraFieldList) {
 
@@ -498,6 +522,8 @@ public class PolicyViewView extends ResizeComposite implements
 	public void clear() {
 		policyName.setText("");
 		policyDesc.setText("");
+		policyType.setText("");
+		policyStatus.setText("");
 		extraGridAvailable = false;
 		
 		

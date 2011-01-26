@@ -117,7 +117,8 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 									subjectAssignments);
 							view.setPolicyName(policy.getName());
 							view.setPolicyDesc(policy.getDescription());
-							view.setEnabled(policy.getEnabled());
+							view.setPolicyType(policy.getType());
+							view.setPolicyStatus(policy.getEnabled());
 							//TODO improve this
 							if("RL".equalsIgnoreCase(policy.getType())){
 								setExtraFieldView(policy);	

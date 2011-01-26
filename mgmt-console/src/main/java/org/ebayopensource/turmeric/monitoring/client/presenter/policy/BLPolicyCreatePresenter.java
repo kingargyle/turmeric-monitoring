@@ -39,6 +39,7 @@ public class BLPolicyCreatePresenter extends PolicyCreatePresenter {
 			Map<SupportedService, ConsoleService> serviceMap) {
 		super(eventBus, view, serviceMap);
 		view.setConditionBuilderVisible(false);
+		this.view.setPolicyType("BLACKLIST");
 	}
 
 	public final static String PRESENTER_ID = "BLPolicyCreate";

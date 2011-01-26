@@ -77,6 +77,7 @@ public class RLPolicyCreatePresenter extends PolicyCreatePresenter {
 		fetchServices();
 		fetchConditions();
 		view.clearConditionBuilder();
+		this.view.setPolicyType("RL");
 
 	}
 

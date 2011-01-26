@@ -776,7 +776,9 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 
 		void setPolicyName(String policyName);
 
-		void setEnabled(boolean enabled);
+		void setPolicyStatus(boolean enabled);
+		
+		void setPolicyType(String policyType);
 
 		void setExtraFieldList(List<ExtraField> extraFieldList);
 
@@ -989,6 +991,7 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 		this.view.getSubjectContentView()
 				.setAvailableSubjectTypes(subjectTypes);
 
+		this.view.setPolicyStatus(false);
 	}
 
 	private List<String> getResourceTypes() {

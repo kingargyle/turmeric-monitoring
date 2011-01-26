@@ -78,6 +78,9 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 
 	protected TextBox policyName;
 	protected TextBox policyDesc;
+	protected Label policyType;
+	protected Label policyStatus;
+
 
 //	protected List<ExtraField> extraFieldList;
 
@@ -250,6 +253,8 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 			}
 		}
 		
+		
+		
 		public void initializeRsListBox(){
 			rsListBox.setSelectedIndex(-1);
 		}
@@ -284,6 +289,8 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 
 		policyName = new TextBox();
 		policyDesc = new TextBox();
+		policyType = new Label();
+		policyStatus = new Label();
 
 		initializeExtraFields();
 
@@ -354,8 +361,10 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 
 			policyName.setWidth("300px");
 			policyDesc.setWidth("250px");
-
-			policyInfoGrid = new Grid(2, 2);
+			policyStatus.setWidth("300px");
+			policyType.setWidth("300px");
+			
+			policyInfoGrid = new Grid(4, 2);
 
 			policyInfoGrid.setWidget(0, 0, new Label(
 					ConsoleUtil.policyAdminConstants.policyName() + ":"));
@@ -368,6 +377,13 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 									.policyDescription() + ":"));
 			policyInfoGrid.setWidget(1, 1, policyDesc);
 
+			policyInfoGrid.setWidget(2, 0, new Label(
+					ConsoleUtil.policyAdminConstants.policyType() + ":"));
+			policyInfoGrid.setWidget(2, 1, policyType);
+			
+			policyInfoGrid.setWidget(3, 0, new Label(
+					ConsoleUtil.policyAdminConstants.status() + ":"));
+			policyInfoGrid.setWidget(3, 1, policyStatus);
 			
 			mainPanel.add(policyInfoGrid);
 			mainPanel.add(extraFieldsGrid);
@@ -640,6 +656,7 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 			return delButton;
 		}
 
+		
 		@Override
 		public ListBox getResourceTypeBox() {
 			return resourceAssignmentWidget.getResourceTypeBox();
@@ -1106,6 +1123,8 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 	public void clear() {
 		policyName.setText("");
 		policyDesc.setText("");
+		policyType.setText("");
+		policyStatus.setText("");
 		this.resourceContentView.clearAssignmentWidget();
 		this.subjectContentView.clearAssignmentWidget();
 		this.resourceContentView.setAssignments(Collections.EMPTY_LIST);
@@ -1231,6 +1250,16 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 	}
 	
 	@Override
+	public void setPolicyStatus(final boolean enabled) {
+		this.policyStatus.setText(ConsoleUtil.policyAdminConstants.disable());
+	}
+	
+	@Override
+	public void setPolicyType(final String policyType) {
+		this.policyType.setText(policyType);
+	}
+	
+	@Override
 	public void clearConditionBuilder() {
 		((ContentView) contentView).conditionWidget.clearConditionBuilder();		
 	}
@@ -1245,4 +1274,6 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 	public boolean validAllConditionFields(){
 		return ((ContentView) contentView).conditionWidget.validAllFields();
 	}
+	
+	
 }

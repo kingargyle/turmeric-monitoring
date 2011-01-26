@@ -91,7 +91,9 @@ public class PolicyViewPresenter extends AbstractGenericPresenter {
 
 		void setPolicyName(String policyName);
 
-		void setEnabled(boolean enabled);
+		void setPolicyType(String policyType);
+		
+		void setPolicyStatus(boolean enabled);
 
 		void clear();
 
@@ -188,7 +190,8 @@ public class PolicyViewPresenter extends AbstractGenericPresenter {
 									fetchSubjectAndSGAssignment(policy));
 							view.setPolicyName(policy.getName());
 							view.setPolicyDesc(policy.getDescription());
-							view.setEnabled(policy.getEnabled());
+							view.setPolicyType(policy.getType());
+							view.setPolicyStatus(policy.getEnabled());
 							if ("RL".equals(policy.getType())) {
 								view.setExtraFieldAvailable(true);
 								view.setExtraFieldList(getExtraFieldView(result
