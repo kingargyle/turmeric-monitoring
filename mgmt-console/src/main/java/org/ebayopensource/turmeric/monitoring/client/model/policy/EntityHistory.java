@@ -12,7 +12,6 @@ import java.util.Date;
 
 /**
  * EntityHistory
- *
  */
 public interface EntityHistory {
     public String getComments();
