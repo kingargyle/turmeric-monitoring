@@ -32,7 +32,7 @@ public class GenericPolicyConverter {
             url += "&ns1:policy.@PolicyName="+tmp;
 
         //description & status are optional       
-        url += "&ns1:policy.@Active="+policy.getEnabled();
+        //url += "&ns1:policy.@Active="+policy.getEnabled();
         url += (policy.getDescription()==null || "".equals(policy.getDescription().trim())?"":"&ns1:policy.ns2:Description="+policy.getDescription());
         
         //rule is optional for RateLimiting policies
