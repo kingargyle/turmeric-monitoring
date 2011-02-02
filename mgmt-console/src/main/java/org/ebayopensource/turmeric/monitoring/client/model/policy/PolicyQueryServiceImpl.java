@@ -599,7 +599,6 @@ public class PolicyQueryServiceImpl extends AbstractConsoleService implements
 
 		url += SubjectsConverter.toNV(subjects);
 
-System.out.println(url);
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,
 				URL.encode(url));
 		setSecurityHeaders(builder);
