@@ -89,7 +89,7 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 				condition,
 				new AsyncCallback<PolicyQueryService.GetPoliciesResponse>() {
 
-					@Override
+					
 					public void onFailure(Throwable caught) {
 						PolicyEditPresenter.this.view
 								.error(ConsoleUtil.messages.serverError(caught
@@ -97,7 +97,7 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 						GWT.log("findPolicies:Fail");
 					}
 
-					@Override
+					
 					public void onSuccess(GetPoliciesResponse result) {
 						GWT.log("findPolicies:Success");
 
@@ -286,10 +286,29 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 			List<SubjectGroup> groups = new ArrayList<SubjectGroup>();
 
 			for (PolicySubjectAssignment a : subjectAssignments) {
-				if (a.getSubjects() != null)
-					subjects.addAll(a.getSubjects());
-				if (a.getSubjectGroups() != null)
+				
+				if (a.getSubjects() != null) {
+					//Checking each subject if already exist or not is less performance than
+					// sending all subject to create, is any exists, it is just avoided to create.
+					createInternalSubject(a.getSubjects());
+					
+					//adding the created subjects (now as internal ones) 
+					List<PolicySubjectAssignment> internalAssignments = view.getSubjectContentView().getAssignments();
+	
+					for (PolicySubjectAssignment policySubjectAssignment : internalAssignments) {
+						if (policySubjectAssignment.getSubjects()!=null){
+							subjects.addAll(policySubjectAssignment.getSubjects());
+							break;
+						}
+					}
+					
+				}
+				
+				
+				
+				if (a.getSubjectGroups() != null) {
 					groups.addAll(a.getSubjectGroups());
+				}
 			}
 			p.setSubjects(subjects);
 			p.setSubjectGroups(groups);

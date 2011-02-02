@@ -1201,7 +1201,7 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 
 	
 
-	private void createInternalSubject(final List<Subject> subjects) {
+	protected void createInternalSubject(final List<Subject> subjects) {
 
 		service.createSubjects(subjects,
 				new AsyncCallback<PolicyQueryService.CreateSubjectsResponse>() {
