@@ -27,6 +27,7 @@ import org.ebayopensource.turmeric.monitoring.client.model.policy.GenericPolicyI
 import org.ebayopensource.turmeric.monitoring.client.model.policy.Operation;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.OperationImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.FindExternalSubjectsResponse;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.FindSubjectGroupsResponse;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.FindSubjectsResponse;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.GetResourcesResponse;
@@ -162,28 +163,60 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 
 						SubjectQuery query = new SubjectQuery();
 						query.setSubjectKeys(Collections.singletonList(key));
-						service.findSubjects(query,
-								new AsyncCallback<FindSubjectsResponse>() {
 
-									public void onFailure(Throwable arg0) {
-										view.error(arg0.getLocalizedMessage());
-									}
+						if ("USER".equals(key.getType())) {
+							service.findExternalSubjects(
+									query,
+									new AsyncCallback<FindExternalSubjectsResponse>() {
 
-									public void onSuccess(
-											FindSubjectsResponse response) {
-										List<Subject> subjects = response
-												.getSubjects();
-										List<String> names = new ArrayList<String>();
-										if (subjects != null) {
-											for (Subject s : subjects)
-												names.add(s.getName());
+										public void onFailure(Throwable arg0) {
+											view.error(arg0
+													.getLocalizedMessage());
 										}
-										view.getSubjectContentView()
-												.setAvailableSubjects(
-														getSubjectNames(subjects));
-									}
 
-								});
+										public void onSuccess(
+												FindExternalSubjectsResponse response) {
+											List<Subject> subjects = response
+													.getSubjects();
+											List<String> names = new ArrayList<String>();
+											if (subjects != null) {
+												for (Subject s : subjects)
+													names.add(s.getName());
+											}
+											view.getSubjectContentView()
+													.setAvailableSubjects(
+															getSubjectNames(subjects));
+										}
+
+									});
+
+						} else {
+							service.findSubjects(query,
+									new AsyncCallback<FindSubjectsResponse>() {
+
+										public void onFailure(Throwable arg0) {
+											view.error(arg0
+													.getLocalizedMessage());
+										}
+
+										public void onSuccess(
+												FindSubjectsResponse response) {
+											List<Subject> subjects = response
+													.getSubjects();
+											List<String> names = new ArrayList<String>();
+											if (subjects != null) {
+												for (Subject s : subjects)
+													names.add(s.getName());
+											}
+											view.getSubjectContentView()
+													.setAvailableSubjects(
+															getSubjectNames(subjects));
+										}
+
+									});
+
+						}
+
 					}
 				});
 
@@ -540,8 +573,10 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 											GetResourcesResponse response) {
 										List<Resource> resources = new ArrayList<Resource>(
 												response.getResources());
-										view.getResourceContentView().setResourceNames(getResourceNames(resources));
-										
+										view.getResourceContentView()
+												.setResourceNames(
+														getResourceNames(resources));
+
 										int index = getResourceIndex(resources,
 												editResourceAssignment
 														.getResourceName());
@@ -569,7 +604,6 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 
 					}
 
-
 				});
 
 		view.getResourceContentView().getCancelResourceButton()
@@ -591,7 +625,6 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 						view.getResourceContentView().hide();
 					}
 				});
-		
 
 		// retrieve resource names based on selected type
 		this.view.getResourceContentView().getResourceTypeBox()
@@ -620,7 +653,6 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 		this.view.getResourceContentView().getAddResourceButton()
 				.addClickHandler(new ClickHandler() {
 					public void onClick(ClickEvent event) {
-
 
 						/*
 						 * Resources could be assigned at 3 levels GLOBAL: means
@@ -669,30 +701,28 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 							resourceAssignments.clear();
 							resourceAssignments.addAll(allResources);
 
-						}else{
-									
-								assignment
-										.setResourceName(view
-												.getResourceContentView()
-												.getResourceName());
-								assignment
-										.setResourceType(view
-												.getResourceContentView()
-												.getResourceType());
+						} else {
 
-								List<Operation> operations = new ArrayList<Operation>();
-								for (String s : view.getResourceContentView()
-										.getSelectedOperations()) {
-									OperationImpl op = new OperationImpl();
-									op.setOperationName(s);
-									operations.add(op);
-								}
-								assignment.setOpList(operations);
-								resourceAssignments.add(assignment);
+							assignment
+									.setResourceName(view
+											.getResourceContentView()
+											.getResourceName());
+							assignment
+									.setResourceType(view
+											.getResourceContentView()
+											.getResourceType());
 
-								
+							List<Operation> operations = new ArrayList<Operation>();
+							for (String s : view.getResourceContentView()
+									.getSelectedOperations()) {
+								OperationImpl op = new OperationImpl();
+								op.setOperationName(s);
+								operations.add(op);
+							}
+							assignment.setOpList(operations);
+							resourceAssignments.add(assignment);
+
 						}
-					
 
 						view.getResourceContentView().setAssignments(
 								resourceAssignments);
@@ -710,7 +740,6 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 						view.getResourceContentView().clearAssignmentWidget();
 					}
 
-				
 				});
 
 		// delete an assignment
@@ -777,7 +806,7 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 		void setPolicyName(String policyName);
 
 		void setPolicyStatus(boolean enabled);
-		
+
 		void setPolicyType(String policyType);
 
 		void setExtraFieldList(List<ExtraField> extraFieldList);
@@ -941,20 +970,20 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 		this.view.getCancelButton().addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				PolicyCreatePresenter.this.view.clear();
-				
-				try{
-				PolicyCreatePresenter.this.subjectAssignments.clear();
-				PolicyCreatePresenter.this.resourceAssignments.clear();
-				PolicyCreatePresenter.this.rules.clear();
-				PolicyCreatePresenter.this.allResources.clear();
-				PolicyCreatePresenter.this.assignedUniqueResources.clear();
-				PolicyCreatePresenter.this.availableResourcesByType.clear();
-				PolicyCreatePresenter.this.editResourceAssignment = null;
-				
-				}catch(NullPointerException ex){
-					//do nothing
+
+				try {
+					PolicyCreatePresenter.this.subjectAssignments.clear();
+					PolicyCreatePresenter.this.resourceAssignments.clear();
+					PolicyCreatePresenter.this.rules.clear();
+					PolicyCreatePresenter.this.allResources.clear();
+					PolicyCreatePresenter.this.assignedUniqueResources.clear();
+					PolicyCreatePresenter.this.availableResourcesByType.clear();
+					PolicyCreatePresenter.this.editResourceAssignment = null;
+
+				} catch (NullPointerException ex) {
+					// do nothing
 				}
-				
+
 				HistoryToken token = makeToken(PolicyController.PRESENTER_ID,
 						PolicySummaryPresenter.PRESENTER_ID, null);
 				History.newItem(token.toString(), true);
@@ -1078,7 +1107,7 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 	}
 
 	private List<String> getResourceNames(List<Resource> resources) {
-	
+
 		List<String> resourceNames = new ArrayList<String>();
 
 		for (Resource rs : resources) {

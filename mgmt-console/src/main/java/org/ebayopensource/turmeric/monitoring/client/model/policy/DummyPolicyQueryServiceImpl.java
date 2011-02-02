@@ -603,4 +603,10 @@ public class DummyPolicyQueryServiceImpl implements PolicyQueryService {
 		// TODO Auto-generated method stub
 		
 	}
+
+	public void findExternalSubjects(SubjectQuery query,
+			AsyncCallback<FindExternalSubjectsResponse> callback) {
+		// TODO Auto-generated method stub
+		
+	}
 }

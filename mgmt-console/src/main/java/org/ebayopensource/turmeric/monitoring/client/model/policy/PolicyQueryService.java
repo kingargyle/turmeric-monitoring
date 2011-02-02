@@ -72,6 +72,8 @@ public interface PolicyQueryService extends ConsoleService {
 	void findSubjectGroups (SubjectGroupQuery query, AsyncCallback<FindSubjectGroupsResponse> callback);
 	
 	void findSubjects (SubjectQuery query, AsyncCallback<FindSubjectsResponse> callback);
+	
+	void findExternalSubjects(SubjectQuery query, AsyncCallback<FindExternalSubjectsResponse> callback);
 
 	void getMetaData (QueryCondition condition, AsyncCallback<GetMetaDataResponse> callback);
 	
@@ -142,6 +144,12 @@ public interface PolicyQueryService extends ConsoleService {
 	}
 
 	public interface FindSubjectsResponse {
+	    public List<Subject> getSubjects();
+	    public boolean isErrored();
+	    public String getErrorMessage();
+	}
+	
+	public interface FindExternalSubjectsResponse {
 	    public List<Subject> getSubjects();
 	    public boolean isErrored();
 	    public String getErrorMessage();
