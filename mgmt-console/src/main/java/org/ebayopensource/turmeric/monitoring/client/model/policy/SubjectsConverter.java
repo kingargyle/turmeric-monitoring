@@ -31,9 +31,10 @@ public class SubjectsConverter {
 					+ ").@SubjectType=" + sub.getType().toString());
 			url += (sub.getExternalSubjectId() == 0 ? "" : "&ns1:subjects("
 					+ i + ").@ExternalSubjectId=" + sub.getExternalSubjectId());
+			i++;
         }
 		
-		i++;
+		
 		
 		return url;
 	 }

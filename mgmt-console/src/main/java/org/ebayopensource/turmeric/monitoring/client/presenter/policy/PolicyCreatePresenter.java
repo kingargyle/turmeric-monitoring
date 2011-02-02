@@ -80,6 +80,8 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 	protected List<UserAction> permittedActions = new ArrayList<UserAction>();
 	protected List<Resource> availableResourcesByType;
 	protected List<Resource> allResources;
+	protected List<Subject> internalSubjects;
+
 	protected HashSet<String> assignedUniqueResources = new HashSet<String>();
 	protected List<String> subjectTypes;
 	protected List<PolicySubjectAssignment> subjectAssignments;
@@ -449,7 +451,7 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 		this.view.getResourceContentView().getResourceLevelBox()
 				.addChangeHandler(new ChangeHandler() {
 
-					@Override
+					
 					public void onChange(ChangeEvent event) {
 
 						if (ResourceLevel.GLOBAL.name().equals(
@@ -634,7 +636,7 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 		this.view.getResourceContentView().getResourceTypeBox()
 				.addChangeHandler(new ChangeHandler() {
 
-					@Override
+					
 					public void onChange(ChangeEvent event) {
 
 						getRemainingResourceNames();
@@ -646,7 +648,7 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 		this.view.getResourceContentView().getResourceNameBox()
 				.addClickHandler(new ClickHandler() {
 
-					@Override
+					
 					public void onClick(ClickEvent event) {
 						getAvailableOperations();
 					}
@@ -972,6 +974,9 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 		if (createdSubjectIds != null) {
 			createdSubjectIds.clear();
 		}
+		if (internalSubjects != null) {
+			internalSubjects.clear();
+		}
 	}
 
 	@Override
@@ -1164,36 +1169,17 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 			List<SubjectGroup> groups = new ArrayList<SubjectGroup>();
 
 			for (PolicySubjectAssignment a : subjectAssignments) {
-				if (a.getSubjectGroups() != null) {
-					groups.addAll(a.getSubjectGroups());
-				}
 				
 				if (a.getSubjects() != null) {
-					// check if assigned subjects are external, in that case they
-					// must be created first.
-					List<Subject> internalSubjectList = new ArrayList<Subject>();
-					List<Subject> externalSubjectList = new ArrayList<Subject>();
-
-					for (Subject subject : a.getSubjects()) {
-						// ExternalSubjectId info means this subject is external and not in db
-						if (subject.getExternalSubjectId() != 0) {
-							internalSubjectList.add(subject);
-						} else {// external ones
-							externalSubjectList.add(subject);
-						}
+					//Checking each subject if already exist or not is less performance than
+					// sending all subject to create, is any exists, it is just avoided to create.
+					createInternalSubject(a.getSubjects());
 					
-					}
-					//create those external subjects
-					createInternalSubject(externalSubjectList);
-					
-					
-					subjects.addAll(internalSubjectList);
-					//adding the just created external subjects (now as internal ones) 
+					//adding the created subjects (now as internal ones) 
 					List<PolicySubjectAssignment> internalAssignments = view.getSubjectContentView().getAssignments();
 	
 					for (PolicySubjectAssignment policySubjectAssignment : internalAssignments) {
 						if (policySubjectAssignment.getSubjects()!=null){
-	
 							subjects.addAll(policySubjectAssignment.getSubjects());
 							break;
 						}
@@ -1201,6 +1187,11 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 					
 				}
 				
+				
+				
+				if (a.getSubjectGroups() != null) {
+					groups.addAll(a.getSubjectGroups());
+				}
 			}
 			p.setSubjects(subjects);
 			p.setSubjectGroups(groups);
@@ -1215,7 +1206,7 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 		service.createSubjects(subjects,
 				new AsyncCallback<PolicyQueryService.CreateSubjectsResponse>() {
 
-					@Override
+					
 					public void onSuccess(final CreateSubjectsResponse result) {
 						createdSubjectIds = new ArrayList<Long>(result.getSubjectIds());
 						
@@ -1230,9 +1221,9 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 						fetchSubjects(keys);
 					}
 
-					@Override
+					
 					public void onFailure(final Throwable caught) {
-						view.error(caught.getMessage());
+						//do nothing, it fails due to subjects are already in db. 
 						
 					}
 				
@@ -1259,8 +1250,7 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 								subjectAssignments.add(pa);
 								view.getSubjectContentView().setAssignments(
 										subjectAssignments);
-								
-								
+																
 							}
 						});
 
@@ -1270,6 +1260,9 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 
 	}
 
+	
+
+	
 	protected void fetchResources() {
 		service.getResources(null, new AsyncCallback<GetResourcesResponse>() {
 			public void onSuccess(GetResourcesResponse response) {
