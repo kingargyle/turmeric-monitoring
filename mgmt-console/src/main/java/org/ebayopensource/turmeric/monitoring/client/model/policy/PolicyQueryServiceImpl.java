@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 import org.ebayopensource.turmeric.monitoring.client.model.AbstractConsoleService;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.CreateSubjectGroupsResponse;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectQuery.SubjectTypeKey;
 
 import com.google.gwt.core.client.GWT;
@@ -578,14 +579,72 @@ public class PolicyQueryServiceImpl extends AbstractConsoleService implements
 	}
 
 	/**
+	 * Creates internal subjects based on external ones
+	 * 
+	 * @see org.ebayopensource.turmeric.monitoring.client.model.policy.
+	 *      PolicyQueryService
+	 *      #createSubjects(List<org.ebayopensource.turmeric.monitoring
+	 *      .client.model.policy.Subjects>,
+	 *      com.google.gwt.user.client.rpc.AsyncCallback)
+	 */
+	@Override
+	public void createSubjects(final List<Subject> subjects,
+			final AsyncCallback<CreateSubjectsResponse> callback) {
+		if (subjects == null) {
+			return;
+		}
+
+		String url = BASE_POLICY_URL + "?"
+				+ getPartialUrl("createSubjects", namespaces, RequestFormat.NV);
+
+		url += SubjectsConverter.toNV(subjects);
+
+System.out.println(url);
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,
+				URL.encode(url));
+		setSecurityHeaders(builder);
+		try {
+			builder.sendRequest(null, new RequestCallback() {
+
+				public void onError(Request request, Throwable err) {
+					callback.onFailure(err);
+				}
+
+				public void onResponseReceived(Request request,
+						Response response) {
+					if (response.getStatusCode() != Response.SC_OK) {
+						callback.onFailure(new Throwable(ConsoleUtil.constants
+								.error() + " " + response.getStatusCode()));
+					} else if (response.getHeader(ERROR_HEADER) != null) {
+						callback.onFailure(getErrorAsThrowable(
+								CreateSubjectsResponseJS.NAME, response));
+					} else {
+						// convert response.getText() to JSON
+						CreateSubjectsResponse createResponse = CreateSubjectsResponseJS
+								.fromJSON(response.getText());
+						if (createResponse.isErrored())
+							callback.onFailure(getErrorAsThrowable(
+									CreateSubjectsResponseJS.NAME, response));
+						else
+							callback.onSuccess(createResponse);
+					}
+				}
+			});
+		} catch (RequestException x) {
+			callback.onFailure(x);
+		}
+	}
+
+	/**
 	 * @see org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService#createPolicy(org.org.ebayopensource.turmeric.monitoring.client.model.policy.GenericPolicy,
 	 *      com.google.gwt.user.client.rpc.AsyncCallback)
 	 */
 	@Override
 	public void createPolicy(final GenericPolicy policy,
 			final AsyncCallback<CreatePolicyResponse> callback) {
-		if (policy == null)
+		if (policy == null) {
 			return;
+		}
 
 		String url = BASE_POLICY_URL + "?"
 				+ getPartialUrl("createPolicy", namespaces, RequestFormat.NV);
@@ -788,7 +847,6 @@ public class PolicyQueryServiceImpl extends AbstractConsoleService implements
 
 	}
 
-	
 	/**
 	 * @see org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService#findExternalSubjects(org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectQuery,
 	 *      com.google.gwt.user.client.rpc.AsyncCallback)
@@ -804,54 +862,73 @@ public class PolicyQueryServiceImpl extends AbstractConsoleService implements
 						RequestFormat.NV);
 
 		if (query.getTypeKeys() != null) {
-            int i=0;
-            for (SubjectTypeKey key:query.getTypeKeys()) {
-                url += (key.getTypeId()==null?"":"&ns1:subjectQuery.ns1:subjectTypeKey("+i+").ns1:subjectTypeId="+key.getTypeId().toString());
-                url += (key.getTypeName()==null?"":"&ns1:subjectQuery.ns1:subjectTypeKey("+i+").ns1:subjectType="+key.getTypeName());
-                i++;
-            }
-        }
+			int i = 0;
+			for (SubjectTypeKey key : query.getTypeKeys()) {
+				url += (key.getTypeId() == null ? ""
+						: "&ns1:subjectQuery.ns1:subjectTypeKey(" + i
+								+ ").ns1:subjectTypeId="
+								+ key.getTypeId().toString());
+				url += (key.getTypeName() == null ? ""
+						: "&ns1:subjectQuery.ns1:subjectTypeKey(" + i
+								+ ").ns1:subjectType=" + key.getTypeName());
+				i++;
+			}
+		}
 
-        if (query.getSubjectKeys() != null) {
-            int i=0;
-            for (SubjectKey key:query.getSubjectKeys()) {
-                url += (key.getType()==null?"":"&ns1:subjectQuery.ns1:subjectKey("+i+").ns1:subjectType="+key.getType());
-                url += (key.getName()==null || key.getName().trim().isEmpty()?"":"&ns1:subjectQuery.ns1:subjectKey("+i+").ns1:subjectName=" + key.getName().trim());
-                url += (key.getId()==null?"":"&ns1:subjectQuery.ns1:subjectKey("+i+").ns1:subjectId="+key.getId().toString());
-                i++;
-            }
-        }
+		if (query.getSubjectKeys() != null) {
+			int i = 0;
+			for (SubjectKey key : query.getSubjectKeys()) {
+				url += (key.getType() == null ? ""
+						: "&ns1:subjectQuery.ns1:subjectKey(" + i
+								+ ").ns1:subjectType=" + key.getType());
+				url += (key.getName() == null || key.getName().trim().isEmpty() ? ""
+						: "&ns1:subjectQuery.ns1:subjectKey(" + i
+								+ ").ns1:subjectName=" + key.getName().trim());
+				url += (key.getId() == null ? ""
+						: "&ns1:subjectQuery.ns1:subjectKey(" + i
+								+ ").ns1:subjectId=" + key.getId().toString());
+				i++;
+			}
+		}
 
-        url += (query.getQuery() == null?"":"&ns1:subjectQuery.ns1:queryString="+query.getQuery());
+		url += (query.getQuery() == null ? ""
+				: "&ns1:subjectQuery.ns1:queryString=" + query.getQuery());
 
-        RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
-        setSecurityHeaders(builder);
-        try {
-            builder.sendRequest(null, new RequestCallback() {
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,
+				URL.encode(url));
+		setSecurityHeaders(builder);
+		try {
+			builder.sendRequest(null, new RequestCallback() {
 
-                public void onError(Request request, Throwable err) {
-                    callback.onFailure(err);
-                }
+				public void onError(Request request, Throwable err) {
+					callback.onFailure(err);
+				}
 
-                public void onResponseReceived(Request request, Response response) {
-                    if (response.getStatusCode() != Response.SC_OK) {
-                        callback.onFailure(new Throwable(ConsoleUtil.constants.error()+" "+response.getStatusCode()));
-                    } else if (response.getHeader(ERROR_HEADER) != null) {
-                        callback.onFailure(getErrorAsThrowable(FindExternalSubjectsResponseJS.NAME, response));
-                    } else {
-                        //convert response.getText() to JSON
-                        FindExternalSubjectsResponse findResponse = FindExternalSubjectsResponseJS.fromJSON(response.getText());
-                        if (findResponse.isErrored()) {
-                            callback.onFailure(getErrorAsThrowable(FindExternalSubjectsResponseJS.NAME, response));
-                        } else
-                            callback.onSuccess(findResponse);
-                    } 
-                }
-            });
+				public void onResponseReceived(Request request,
+						Response response) {
+					if (response.getStatusCode() != Response.SC_OK) {
+						callback.onFailure(new Throwable(ConsoleUtil.constants
+								.error() + " " + response.getStatusCode()));
+					} else if (response.getHeader(ERROR_HEADER) != null) {
+						callback.onFailure(getErrorAsThrowable(
+								FindExternalSubjectsResponseJS.NAME, response));
+					} else {
+						// convert response.getText() to JSON
+						FindExternalSubjectsResponse findResponse = FindExternalSubjectsResponseJS
+								.fromJSON(response.getText());
+						if (findResponse.isErrored()) {
+							callback.onFailure(getErrorAsThrowable(
+									FindExternalSubjectsResponseJS.NAME,
+									response));
+						} else
+							callback.onSuccess(findResponse);
+					}
+				}
+			});
 
-        }  catch (RequestException x){
-            callback.onFailure(x);  
-        }
+		} catch (RequestException x) {
+			callback.onFailure(x);
+		}
 	}
 
 	/**

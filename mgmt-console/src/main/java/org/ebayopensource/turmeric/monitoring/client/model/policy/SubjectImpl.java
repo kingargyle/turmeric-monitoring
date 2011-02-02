@@ -16,6 +16,7 @@ public class SubjectImpl implements Subject {
     private String type;
     private String name;
     private String createdBy;
+    private long externalSubjectId;
     private long lastModifiedTime;
     private String lastModifiedBy;
     
@@ -59,4 +60,13 @@ public class SubjectImpl implements Subject {
     public String getLastModifiedBy() {
         return lastModifiedBy;
     }
+    
+	@Override
+	public long getExternalSubjectId() {
+		return externalSubjectId;
+	}
+	
+	public void setExternalSubjectId(long externalSubjectId) {
+		this.externalSubjectId = externalSubjectId;
+	}
 }

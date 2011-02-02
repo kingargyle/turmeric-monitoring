@@ -36,6 +36,8 @@ public interface PolicyQueryService extends ConsoleService {
 	
 	void createPolicy(GenericPolicy policy, AsyncCallback<CreatePolicyResponse> callback);
 	
+	void createSubjects(List<Subject> subject, AsyncCallback<CreateSubjectsResponse> callback);
+	
 	void createSubjectGroups (List<SubjectGroup> groups, AsyncCallback<CreateSubjectGroupsResponse> callback);
 
 	void enablePolicy(PolicyKey key, AsyncCallback<EnablePolicyResponse> callback);
@@ -133,6 +135,12 @@ public interface PolicyQueryService extends ConsoleService {
 
 	public interface CreatePolicyResponse {
 	    public Long getPolicyId();
+	    public boolean isErrored();
+	    public String getErrorMessage();
+	}
+
+	public interface CreateSubjectsResponse {
+	    public List<Long> getSubjectIds();
 	    public boolean isErrored();
 	    public String getErrorMessage();
 	}

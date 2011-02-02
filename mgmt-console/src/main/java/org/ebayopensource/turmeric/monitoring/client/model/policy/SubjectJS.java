@@ -56,4 +56,18 @@ public class SubjectJS extends JavaScriptObject implements Subject {
         return this["@SubjectType"];
     }-*/;
 
+    /**
+     * @see org.ebayopensource.turmeric.monitoring.client.model.policy.Subject#getExternalSubjectId()
+     */
+	private native final String getExternalSubjectIdAsString() /*-{
+		return this["@ExternalSubjectId"];
+	 }-*/;
+
+	/**
+     * @see org.ebayopensource.turmeric.monitoring.client.model.policy.Subject#getExternalSubjectId()
+     */
+	public final long getExternalSubjectId() {
+		return Long.parseLong(getExternalSubjectIdAsString());
+	}
+
 }

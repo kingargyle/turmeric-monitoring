@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectGroup;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.CreateSubjectsResponse;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -606,6 +607,17 @@ public class DummyPolicyQueryServiceImpl implements PolicyQueryService {
 
 	public void findExternalSubjects(SubjectQuery query,
 			AsyncCallback<FindExternalSubjectsResponse> callback) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * Creates internal subjects based on external ones
+	 * @see org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService#createSubjects(List<org.ebayopensource.turmeric.monitoring.client.model.policy.Subjects>, com.google.gwt.user.client.rpc.AsyncCallback)
+	 */
+	@Override
+	public void createSubjects(List<Subject> subject,
+			AsyncCallback<CreateSubjectsResponse> callback) {
 		// TODO Auto-generated method stub
 		
 	}

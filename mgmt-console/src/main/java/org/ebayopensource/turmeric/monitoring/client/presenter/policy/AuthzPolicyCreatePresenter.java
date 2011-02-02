@@ -58,7 +58,7 @@ public class AuthzPolicyCreatePresenter extends PolicyCreatePresenter {
 				// fired on saved policy
 				this.view.getSaveButton().addClickHandler(new ClickHandler() {
 					public void onClick(ClickEvent event) {
-
+						
 		                GenericPolicy p = getPolicy(view.getPolicyName().getValue(),"AUTHZ",
 		                                            view.getPolicyDesc().getValue(), resourceAssignments,
 		                                            view.getSubjectContentView().getAssignments(), null);

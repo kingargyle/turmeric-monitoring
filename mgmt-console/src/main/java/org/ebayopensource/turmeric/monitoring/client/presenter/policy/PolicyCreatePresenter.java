@@ -10,6 +10,7 @@ package org.ebayopensource.turmeric.monitoring.client.presenter.policy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.ebayopensource.turmeric.monitoring.client.model.policy.GenericPolicyI
 import org.ebayopensource.turmeric.monitoring.client.model.policy.Operation;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.OperationImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.CreateSubjectsResponse;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.FindExternalSubjectsResponse;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.FindSubjectGroupsResponse;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.FindSubjectsResponse;
@@ -83,6 +85,8 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 	protected List<PolicySubjectAssignment> subjectAssignments;
 	protected List<Resource> resourceAssignments;
 	protected List<Rule> rules = new ArrayList<Rule>();;
+	protected List<Subject> createdSubjects;
+	protected List<Long> createdSubjectIds;
 
 	protected Resource editResourceAssignment;
 
@@ -950,14 +954,24 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 	}
 
 	protected void clearLists() {
-		if (assignedUniqueResources != null)
+		if (assignedUniqueResources != null) {
 			assignedUniqueResources.clear();
-		if (availableResourcesByType != null)
+		}
+		if (availableResourcesByType != null) {
 			availableResourcesByType.clear();
-		if (subjectAssignments != null)
+		}
+		if (subjectAssignments != null) {
 			subjectAssignments.clear();
-		if (rules != null)
+		}
+		if (rules != null) {
 			rules.clear();
+		}
+		if (createdSubjects != null) {
+			createdSubjects.clear();
+		}
+		if (createdSubjectIds != null) {
+			createdSubjectIds.clear();
+		}
 	}
 
 	@Override
@@ -1150,15 +1164,110 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 			List<SubjectGroup> groups = new ArrayList<SubjectGroup>();
 
 			for (PolicySubjectAssignment a : subjectAssignments) {
-				if (a.getSubjects() != null)
-					subjects.addAll(a.getSubjects());
-				if (a.getSubjectGroups() != null)
+				if (a.getSubjectGroups() != null) {
 					groups.addAll(a.getSubjectGroups());
+				}
+				
+				if (a.getSubjects() != null) {
+					// check if assigned subjects are external, in that case they
+					// must be created first.
+					List<Subject> internalSubjectList = new ArrayList<Subject>();
+					List<Subject> externalSubjectList = new ArrayList<Subject>();
+
+					for (Subject subject : a.getSubjects()) {
+						// ExternalSubjectId info means this subject is external and not in db
+						if (subject.getExternalSubjectId() != 0) {
+							internalSubjectList.add(subject);
+						} else {// external ones
+							externalSubjectList.add(subject);
+						}
+					
+					}
+					//create those external subjects
+					createInternalSubject(externalSubjectList);
+					
+					
+					subjects.addAll(internalSubjectList);
+					//adding the just created external subjects (now as internal ones) 
+					List<PolicySubjectAssignment> internalAssignments = view.getSubjectContentView().getAssignments();
+	
+					for (PolicySubjectAssignment policySubjectAssignment : internalAssignments) {
+						if (policySubjectAssignment.getSubjects()!=null){
+	
+							subjects.addAll(policySubjectAssignment.getSubjects());
+							break;
+						}
+					}
+					
+				}
+				
 			}
 			p.setSubjects(subjects);
 			p.setSubjectGroups(groups);
 		}
 		return p;
+	}
+
+	
+
+	private void createInternalSubject(final List<Subject> subjects) {
+
+		service.createSubjects(subjects,
+				new AsyncCallback<PolicyQueryService.CreateSubjectsResponse>() {
+
+					@Override
+					public void onSuccess(final CreateSubjectsResponse result) {
+						createdSubjectIds = new ArrayList<Long>(result.getSubjectIds());
+						
+						List<SubjectKey> keys = new ArrayList<SubjectKey>();
+						for (Long id : createdSubjectIds) {
+							SubjectKey key = new SubjectKey();
+							key.setId(id);
+							//today external subject supported are USER types 
+							key.setType("USER");
+							keys.add(key);
+						}
+						fetchSubjects(keys);
+					}
+
+					@Override
+					public void onFailure(final Throwable caught) {
+						view.error(caught.getMessage());
+						
+					}
+				
+		
+		
+					private void fetchSubjects(final List<SubjectKey> keys) {
+						final SubjectQuery query = new SubjectQuery();
+						query.setSubjectKeys(keys);
+
+						service.findSubjects(query, new AsyncCallback<FindSubjectsResponse>() {
+
+							public void onFailure(final Throwable arg0) {
+								view.error(arg0.getMessage());
+							}
+
+							public void onSuccess(final FindSubjectsResponse response) {
+								createdSubjects = new ArrayList<Subject>(response.getSubjects());
+
+								subjectAssignments = new ArrayList<PolicySubjectAssignment>();
+								
+								PolicySubjectAssignment pa = new PolicySubjectAssignment();
+								pa.setSubjects(createdSubjects);
+								subjectAssignments.clear();
+								subjectAssignments.add(pa);
+								view.getSubjectContentView().setAssignments(
+										subjectAssignments);
+								
+								
+							}
+						});
+
+					}
+		
+		});
+
 	}
 
 	protected void fetchResources() {
