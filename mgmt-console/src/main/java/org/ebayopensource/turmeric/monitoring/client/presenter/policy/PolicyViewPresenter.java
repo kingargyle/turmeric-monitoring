@@ -364,7 +364,7 @@ public class PolicyViewPresenter extends AbstractGenericPresenter {
 		List<PolicySubjectAssignment> polSubAssignmentList = new ArrayList<PolicySubjectAssignment>();
 		PolicySubjectAssignment polSubAssignment = null;
 
-		Iterator it = sAssignMap.keySet().iterator();
+		Iterator<String> it = sAssignMap.keySet().iterator();
 		while (it.hasNext()) {
 			polSubAssignment = new PolicySubjectAssignment();
 
@@ -388,11 +388,11 @@ public class PolicyViewPresenter extends AbstractGenericPresenter {
 		// load remaining SG
 
 		if (sgAssignMap.size() > 0) {
-			Iterator itSg = sgAssignMap.keySet().iterator();
+			Iterator<String> itSg = sgAssignMap.keySet().iterator();
 			while (itSg.hasNext()) {
 				polSubAssignment = new PolicySubjectAssignment();
 
-				String subjectGroupType = (String) it.next();
+				String subjectGroupType = itSg.next();
 				List<SubjectGroup> sgList = (List<SubjectGroup>) sgAssignMap
 						.get(subjectGroupType);
 
