@@ -587,7 +587,7 @@ public class PolicySummaryView extends AbstractGenericView implements
             };
             viewColumn.setFieldUpdater(new FieldUpdater<GenericPolicy, GenericPolicy>() {
 
-                @Override
+                
                 public void update(int arg0, GenericPolicy arg1,GenericPolicy arg2) {
                     //if it was in there, remove it
                     if (pendingActions.keySet().contains(arg1)) {
@@ -647,18 +647,12 @@ public class PolicySummaryView extends AbstractGenericView implements
                             updateButton(null);
 
                     } else {
-                        // Called when the user clicks on a checkbox.
-                        // Many groups can be selected for delete at the same time,
-                        // but any other pending ops must be cancelled
-                        Iterator<Map.Entry<GenericPolicy,UserAction>> itor = pendingActions.entrySet().iterator();
-                        while (itor.hasNext()) {
-                            Map.Entry<GenericPolicy, UserAction> entry = itor.next();
-                            if (!entry.getValue().equals(UserAction.POLICY_DELETE))
-                                itor.remove();
-                        }
-
-                        updateButton(ConsoleUtil.policyAdminConstants.delete());
+                    	// Called when the user clicks on a checkbox.
+                    	// Only 1 edit can be active at a time
+                        pendingActions.clear();
                         pendingActions.put(group, UserAction.POLICY_DELETE);
+                        updateButton(ConsoleUtil.policyAdminConstants.delete());
+
                     }
                     cellTable.redraw();
                 }
@@ -888,62 +882,62 @@ public class PolicySummaryView extends AbstractGenericView implements
     public void setPermittedActions (GenericPolicy policy, List<UserAction> permittedActions) {
         ((ContentView)contentView).setUserActions(policy, permittedActions);
     }
-	@Override
+	
 	public void setPolicies(List<GenericPolicy> policies) {
 		((ContentView) contentView).setPolicies(policies);
 	}
 
-	@Override
+	
 	public HasClickHandlers getSearchButton() {
 		return ((ContentView) contentView).searchWidget.getSearchButton();
 	}
 
-	@Override
+	
 	public String getSearchTerm() {
 		return ((ContentView) contentView).searchWidget.getSearchTerm();
 	}
 
-	@Override
+	
 	public String getSelectedType() {
 		return ((ContentView) contentView).searchWidget.getSelectedType();
 	}
 	
-	@Override
+	
 	public String getSelectedEffect() {
 		return ((ContentView) contentView).searchWidget.getSelectedEffect();
 	}
 
-	@Override
+	
 	public boolean isPolicyCriteriaEnabled() {
 		return ((ContentView) contentView).searchWidget
 				.isPolicyCriteriaEnabled();
 	}
 
-	@Override
+	
 	public boolean isResourceCriteriaEnabled() {
 		return ((ContentView) contentView).searchWidget
 				.isResourceCriteriaEnabled();
 	}
 
-	@Override
+	
 	public boolean isSubjectCriteriaEnabled() {
 		return ((ContentView) contentView).searchWidget
 				.isSubjectCriteriaEnabled();
 	}
 
-	@Override
+	
 	public boolean isSubjectGroupCriteriaEnabled() {
 		return ((ContentView) contentView).searchWidget
 				.isSubjectGroupCriteriaEnabled();
 	}
 
-	@Override
+	
 	public boolean isSearchCriteriaEnabled() {
 		return ((ContentView) contentView).searchWidget
 				.isSubjectCriteriaEnabled();
 	}
 
-	@Override
+	
 	public void setAvailableTypes(List<String> types) {
 		((ContentView) contentView).searchWidget.setAvailableTypes(types);
 		((ContentView) contentView).searchWidget.getAvailableTypeBox().setSelectedIndex(-1);
@@ -953,7 +947,7 @@ public class PolicySummaryView extends AbstractGenericView implements
 		}
 	}
 
-	@Override
+	
 	public void setResourceNames() {
 		((ContentView) contentView).searchWidget.setAvailableRsNames();
 		((ContentView) contentView).searchWidget.getRsNameBox().setSelectedIndex(-1);
@@ -962,7 +956,7 @@ public class PolicySummaryView extends AbstractGenericView implements
 		((ContentView) contentView).searchWidget.getOperationNameBox().setEnabled(true);
 	}
 	
-	@Override
+	
 	public void setOperationNames() {
 		((ContentView) contentView).searchWidget.setAvailableOps();
 		((ContentView) contentView).searchWidget.getOperationNameBox().setSelectedIndex(-1);
@@ -988,19 +982,19 @@ public class PolicySummaryView extends AbstractGenericView implements
 				.getSubjectGroupCriteriaButton();
 	}
 
-	@Override
+	
 	public void setSelectedSearchTerm(String name) {
 		((ContentView) contentView).searchPanel.setOpen(true);
 		((ContentView) contentView).searchWidget.setSelectedSearchTerm(name);
 	}
 
-	@Override
+	
 	public void setSelectedType(String type) {
 		((ContentView) contentView).searchPanel.setOpen(true);
 		((ContentView) contentView).searchWidget.setSelectedType(type);
 	}
 
-	@Override
+	
 	public void setPolicyCriteriaEnabled(boolean enabled) {
 		((ContentView) contentView).searchPanel.setOpen(true);
 		((ContentView) contentView).searchWidget
@@ -1008,7 +1002,7 @@ public class PolicySummaryView extends AbstractGenericView implements
 
 	}
 
-	@Override
+	
 	public void setResourceCriteriaEnabled(boolean enabled) {
 		((ContentView) contentView).searchPanel.setOpen(true);
 		((ContentView) contentView).searchWidget
@@ -1016,7 +1010,7 @@ public class PolicySummaryView extends AbstractGenericView implements
 
 	}
 
-	@Override
+	
 	public void setSubjectCriteriaEnabled(boolean enabled) {
 		((ContentView) contentView).searchPanel.setOpen(true);
 		((ContentView) contentView).searchWidget
@@ -1024,7 +1018,7 @@ public class PolicySummaryView extends AbstractGenericView implements
 
 	}
 
-	@Override
+	
 	public void setSubjectGroupCriteriaEnabled(boolean enabled) {
 		((ContentView) contentView).searchPanel.setOpen(true);
 		((ContentView) contentView).searchWidget
@@ -1032,82 +1026,82 @@ public class PolicySummaryView extends AbstractGenericView implements
 
 	}
 
-	@Override
+	
 	public void setSearchCriteriaEnabled(boolean enabled) {
 		((ContentView) contentView).searchPanel.setOpen(true);
 		((ContentView) contentView).searchWidget
 				.setSubjectCriteriaEnabled(enabled);
 	}
 	
-	@Override
+	
 	public List<String> getPolicyTypes(){
 		return ((ContentView) contentView).searchWidget.getPolicyTypes();
 	}
 	
-	@Override
+	
 	public void  setPolicyTypes(List<String> types){
 		((ContentView) contentView).searchWidget.setPolicyTypes(types);
 	}
 
-	@Override
+	
 	public String getSelectedResource() {
 		return ((ContentView) contentView).searchWidget.getSelectedRsName();
 	}
 
-	@Override
+	
 	public String getSelectedOperation() {
 		return ((ContentView) contentView).searchWidget.getSelectedOp();
 	}
 	
-	@Override
+	
 	public HasChangeHandlers getResourceNameBox() {
 		return ((ContentView) contentView).searchWidget
 				.getRsNameBox();
 	}
 	
-	@Override
+	
 	public HasChangeHandlers getAvailableTypesBox() {
 		return ((ContentView) contentView).searchWidget
 				.getAvailableTypeBox();
 	}
 	
 	
-	@Override
+	
 	public void setRLEffectBoxVisible(boolean b) {
 		((ContentView) contentView).searchWidget
 				.setRLEffectBoxVisible(b);
 	}
 
-	@Override
+	
 	public void setRLEffectLabelVisible(boolean b) {
 		((ContentView) contentView).searchWidget
 			.setRLEffectLabelVisible(b);
 	}
 
-	@Override
+	
 	public void setRsNames(List<String> names) {
 		((ContentView) contentView).searchWidget.setRsNames(names);		
 	}
 	
 	
-	@Override
+	
 	public void setOpNames(List<String> names) {
 		((ContentView) contentView).searchWidget.setOpNames(names);
 	}
 
-	@Override
+	
 	public void setEffect(List<String> effects) {
 		((ContentView) contentView).searchWidget.setRLEffect(effects);
 				
 	}
 
 
-    @Override
+    
     public HasClickHandlers getActionButton() {
         return ((ContentView) contentView).getActionButton();
     }
 
-    @Override
+    
     public Map<GenericPolicy, UserAction> getPendingActions() {
        return ((ContentView) contentView).getPendingActions();
     }
