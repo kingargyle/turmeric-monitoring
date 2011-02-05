@@ -38,7 +38,9 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HasWidgets;
 
 public class SubjectGroupCreatePresenter extends AbstractGenericPresenter {
@@ -52,11 +54,11 @@ public class SubjectGroupCreatePresenter extends AbstractGenericPresenter {
 	private List<Long> createdSubjectIds;
 
 	protected PolicyQueryService service;
- 
+
 	public interface SubjectGroupCreateDisplay extends
 			PolicyPageTemplateDisplay {
 
-		public HasClickHandlers getCreateButton();
+		public Button getCreateButton();
 
 		public HasClickHandlers getCancelButton();
 
@@ -194,19 +196,19 @@ public class SubjectGroupCreatePresenter extends AbstractGenericPresenter {
 							.error(ConsoleUtil.policyAdminMessages
 									.minimumSubjectsMessage());
 					return;
-				} 
-
-				
-				List<Subject> subjects = new ArrayList<Subject>();
-
-				for (String sbName : subjectNames) {
-					SubjectImpl subject = new SubjectImpl();
-					subject.setType("USER");
-					subject.setName(sbName);
-					subjects.add(subject);
 				}
-				createInternalSubject(subjects);
-				
+
+				if("USER".equals(view.getSubjectType())){				
+					 //external subjects todays are only USER types
+	    		     List<Subject> subjects = new ArrayList<Subject>();
+					for (String sbName : subjectNames) {
+						SubjectImpl subject = new SubjectImpl();
+						subject.setType("USER");
+						subject.setName(sbName);
+						subjects.add(subject);
+					}
+					createInternalSubject(subjects);
+				}
 
 				// user wants to create the Subject Group
 				// 1. send the new Subject Group to the server
@@ -214,45 +216,67 @@ public class SubjectGroupCreatePresenter extends AbstractGenericPresenter {
 				// mechanism to move back to the Subject Group Summary
 				service = (PolicyQueryService) serviceMap
 						.get(SupportedService.POLICY_QUERY_SERVICE);
-				SubjectGroupImpl group = new SubjectGroupImpl();
+				final SubjectGroupImpl group = new SubjectGroupImpl();
 				group.setName(name);
 				group.setDescription(description);
 
 				group.setType(SubjectGroupCreatePresenter.this.view
 						.getSubjectType());
 				group.setSubjects(subjectNames);
-				service.createSubjectGroups(
-						Collections.singletonList((SubjectGroup) group),
-						new AsyncCallback<CreateSubjectGroupsResponse>() {
 
-							@Override
-							public void onFailure(Throwable arg0) {
-								SubjectGroupCreatePresenter.this.view
-										.error(arg0.getMessage());
-							}
+				/**
+				 * This timer is needed due to GWT has only one thread, so
+				 * Thread.sleep is not a valid option The purpose of sleeping
+				 * time is wait until new external subject been created into
+				 * turmeric db, in order to assign them as internal subjects
+				 */
+				Timer timer = new Timer() {
+					public void run() {
+						
 
-							@Override
-							public void onSuccess(
-									CreateSubjectGroupsResponse arg0) {
-								Map<String, String> prefill = new HashMap<String, String>();
-								prefill.put(
-										HistoryToken.SRCH_SUBJECT_GROUP_TYPE,
+						service.createSubjectGroups(
+								Collections.singletonList((SubjectGroup) group),
+								new AsyncCallback<CreateSubjectGroupsResponse>() {
+
+									@Override
+									public void onFailure(Throwable arg0) {
 										SubjectGroupCreatePresenter.this.view
-												.getSubjectType());
-								prefill.put(
-										HistoryToken.SRCH_SUBJECT_GROUP_NAME,
-										SubjectGroupCreatePresenter.this.view
-												.getName());
-								HistoryToken token = makeToken(
-										PolicyController.PRESENTER_ID,
-										SubjectGroupSummaryPresenter.PRESENTER_ID,
-										prefill);
+												.error(arg0.getMessage());
+									}
 
-								History.newItem(token.toString(), true);
-							}
+									@Override
+									public void onSuccess(
+											CreateSubjectGroupsResponse arg0) {
+										Map<String, String> prefill = new HashMap<String, String>();
+										prefill.put(
+												HistoryToken.SRCH_SUBJECT_GROUP_TYPE,
+												SubjectGroupCreatePresenter.this.view
+														.getSubjectType());
+										prefill.put(
+												HistoryToken.SRCH_SUBJECT_GROUP_NAME,
+												SubjectGroupCreatePresenter.this.view
+														.getName());
+										HistoryToken token = makeToken(
+												PolicyController.PRESENTER_ID,
+												SubjectGroupSummaryPresenter.PRESENTER_ID,
+												prefill);
 
-						});
+										History.newItem(token.toString(), true);
+									}
 
+								});
+						
+						view.getCreateButton().setEnabled(true);
+
+					}
+
+				};
+				if("USER".equals(view.getSubjectType())){
+					view.getCreateButton().setEnabled(false);
+					timer.schedule(3000);
+				}else{
+		        	timer.schedule(1);
+		        }
 			}
 		});
 
@@ -267,18 +291,43 @@ public class SubjectGroupCreatePresenter extends AbstractGenericPresenter {
 	}
 
 	private void createInternalSubject(final List<Subject> subjects) {
-	
-		service.createSubjects(subjects,
-				new AsyncCallback<PolicyQueryService.CreateSubjectsResponse>() {
 
-					public void onSuccess(final CreateSubjectsResponse result) {
-						//do nothing, subjects has been stored, we can continue...
+		List<SubjectKey> keys = new ArrayList<SubjectKey>();
+		for (Subject subj : subjects) {
+			SubjectKey key = new SubjectKey();
+			key.setName(subj.getName());
+			// today external subject supported are USER types
+			key.setType("USER");
+			keys.add(key);
+		}
+
+		final SubjectQuery query = new SubjectQuery();
+		query.setSubjectKeys(keys);
+		service.findSubjects(query,
+				new AsyncCallback<PolicyQueryService.FindSubjectsResponse>() {
+
+					public void onSuccess(FindSubjectsResponse result) {
+						subjects.removeAll(result.getSubjects());
+						if(subjects.size()>0){
+							service.createSubjects(
+									subjects,
+									new AsyncCallback<PolicyQueryService.CreateSubjectsResponse>() {
+	
+										public void onSuccess(
+												final CreateSubjectsResponse result) {
+											// do nothing, subjects has been stored,
+											// we can continue...
+										}
+	
+										public void onFailure(final Throwable caught) {
+											view.error(caught.getLocalizedMessage());
+										}
+									});
+						}
 					}
-		
-					public void onFailure(final Throwable caught) {
-						// do nothing, it fails due to subjects are already in
-						// db.
-		
+
+					public void onFailure(Throwable caught) {
+						view.error(caught.getLocalizedMessage());
 					}
 
 				});

@@ -111,7 +111,7 @@ public class SubjectGroupEditView extends AbstractGenericView implements Subject
             return nameBox.getText();
         }
         
-        public HasClickHandlers getSaveButton() {
+        public Button getSaveButton() {
             return saveButton;
         }
         
@@ -277,7 +277,7 @@ public class SubjectGroupEditView extends AbstractGenericView implements Subject
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.policy.SubjectGroupEditPresenter.SubjectGroupEditDisplay#getApplyButton()
      */
     @Override
-    public HasClickHandlers getApplyButton() {
+    public Button getApplyButton() {
         return ((ContentView)contentView).getSaveButton();
     }
 

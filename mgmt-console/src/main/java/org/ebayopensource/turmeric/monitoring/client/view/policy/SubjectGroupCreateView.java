@@ -93,7 +93,7 @@ public class SubjectGroupCreateView extends AbstractGenericView implements Subje
 	        mainPanel.add(cancelButton);
 	    }
 	    
-	    public HasClickHandlers getCreateButton() {
+	    public Button getCreateButton() {
 	        return createButton;
 	    }
 	    
@@ -197,7 +197,7 @@ public class SubjectGroupCreateView extends AbstractGenericView implements Subje
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.policy.SubjectGroupCreatePresenter.SubjectGroupCreateDisplay#getCreateButton()
      */
     @Override
-    public HasClickHandlers getCreateButton() {
+    public Button getCreateButton() {
         return ((ContentView)contentView).getCreateButton();
     }
 

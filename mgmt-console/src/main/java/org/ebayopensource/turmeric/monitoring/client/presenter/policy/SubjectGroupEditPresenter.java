@@ -42,7 +42,9 @@ import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HasWidgets;
 
 /**
@@ -65,7 +67,7 @@ public class SubjectGroupEditPresenter extends AbstractGenericPresenter {
         public String getDescription();
         public HasClickHandlers getSearchButton();
         public HasClickHandlers getCancelButton();
-        public HasClickHandlers getApplyButton();
+        public Button getApplyButton();
         public List<String> getSelectedSubjects();
         public void setSelectedSubjects(List<String> subjects);
         public void setAvailableSubjects(List<String> subjects);
@@ -164,50 +166,65 @@ public class SubjectGroupEditPresenter extends AbstractGenericPresenter {
     		            SubjectGroupEditPresenter.this.view.error(ConsoleUtil.policyAdminMessages.minimumSubjectsMessage());
     		            return;
     		        }
-    		        
-                    //TODO Send the changes to the server side. When acknowledged go back to Summary
+			        
+			        
+			        //TODO Send the changes to the server side. When acknowledged go back to Summary
                     final SubjectGroupImpl editedGroup = new SubjectGroupImpl(originalGroup);
                     editedGroup.setName(view.getName());
                     editedGroup.setDescription(view.getDescription());
                     editedGroup.setSubjects(view.getSelectedSubjects());
                     
-                    
-                	List<Subject> externalSubjects= new ArrayList<Subject>();
-
-            		for (String sb :  editedGroup.getSubjects()) {
-            			SubjectImpl subject = new SubjectImpl();
-            			subject.setType("USER");
-            			subject.setName(sb);
-            			externalSubjects.add(subject);
-            		}
-            		
-            			
-			        createInternalSubject(externalSubjects);
-			        
-                    service.updateSubjectGroups(Collections.singletonList((SubjectGroup)editedGroup),UpdateMode.REPLACE, new AsyncCallback<UpdateSubjectGroupsResponse>() {
-
-                        public void onFailure(Throwable arg0) {
-                            
-                            view.error(arg0.getLocalizedMessage());
-                            
-
-                        }
-
-                        public void onSuccess(UpdateSubjectGroupsResponse response) {
-                            //copy changes from the editedGroup back to the group
-                            ((SubjectGroupImpl)originalGroup).setName(view.getName());
-                            ((SubjectGroupImpl)originalGroup).setDescription(view.getDescription());
-                            ((SubjectGroupImpl)originalGroup).setSubjects(view.getSelectedSubjects());
-                            view.clear();
-                            HistoryToken token = makeToken(PolicyController.PRESENTER_ID,
-                                                           SubjectGroupSummaryPresenter.PRESENTER_ID, 
-                                                           null);
-                            token.addValue(HistoryToken.SRCH_SUBJECT_GROUP_TYPE, originalGroup.getType());
-                            token.addValue(HistoryToken.SRCH_SUBJECT_GROUP_NAME, originalGroup.getName());
-                            History.newItem(token.toString(), true);
-                        }
-                    });
-            		
+    				if("USER".equals(originalGroup.getType())){				
+    					//external subjects todays are only USER types
+	    		        List<Subject> externalSubjects= new ArrayList<Subject>();
+	            		for (String sb :  view.getSelectedSubjects()) {
+	            			SubjectImpl subject = new SubjectImpl();
+	            			subject.setType("USER");
+	            			subject.setName(sb);
+	            			externalSubjects.add(subject);
+	            		}
+	            		
+	            	    createInternalSubject(externalSubjects);
+    				}                    
+            	    /**
+            	     * This timer is needed due to GWT has only one thread, so
+            	     * Thread.sleep is not a valid option
+            	     * The purpose of sleeping time is wait until new external subject 
+            	     * been created into turmeric db, in order to assign them as 
+            	     * internal subjects 
+            	     */
+			        Timer timer = new Timer() {
+			            public void run() {
+			            	   			        
+		                    service.updateSubjectGroups(Collections.singletonList((SubjectGroup)editedGroup),UpdateMode.REPLACE, new AsyncCallback<UpdateSubjectGroupsResponse>() {
+		
+		                        public void onFailure(Throwable arg0) {
+		                            view.error(arg0.getLocalizedMessage());
+		                        }
+		
+		                        public void onSuccess(UpdateSubjectGroupsResponse response) {
+		                            //copy changes from the editedGroup back to the group
+		                            ((SubjectGroupImpl)originalGroup).setName(view.getName());
+		                            ((SubjectGroupImpl)originalGroup).setDescription(view.getDescription());
+		                            ((SubjectGroupImpl)originalGroup).setSubjects(view.getSelectedSubjects());
+		                            view.clear();
+		                            HistoryToken token = makeToken(PolicyController.PRESENTER_ID,
+		                                                           SubjectGroupSummaryPresenter.PRESENTER_ID, 
+		                                                           null);
+		                            token.addValue(HistoryToken.SRCH_SUBJECT_GROUP_TYPE, originalGroup.getType());
+		                            token.addValue(HistoryToken.SRCH_SUBJECT_GROUP_NAME, originalGroup.getName());
+		                            History.newItem(token.toString(), true);
+		                        }
+		                    });
+		            		
+			            }
+			        };
+			        if("USER".equals(originalGroup.getType())){
+						view.getApplyButton().setEnabled(false);
+			        	timer.schedule(3000);
+			        }else{
+			        	timer.schedule(1);
+			        }
                 }
             });
 
@@ -222,7 +239,7 @@ public class SubjectGroupEditPresenter extends AbstractGenericPresenter {
     }
     
   	private void createInternalSubject(final List<Subject> subjects) {
-		  		
+		  
   		List<SubjectKey> keys = new ArrayList<SubjectKey>();
 			for (Subject subj : subjects) {
 				SubjectKey key = new SubjectKey();
@@ -238,25 +255,30 @@ public class SubjectGroupEditPresenter extends AbstractGenericPresenter {
 				
 				public void onSuccess(FindSubjectsResponse result) {
 					subjects.removeAll(result.getSubjects());
+					if(subjects.size()>0){
 
-					service.createSubjects(subjects,
-							new AsyncCallback<PolicyQueryService.CreateSubjectsResponse>() {
+						service.createSubjects(subjects,
+								new AsyncCallback<PolicyQueryService.CreateSubjectsResponse>() {
+	
+									public void onSuccess(final CreateSubjectsResponse result) {
+										//do nothing, subjects has been stored, we can continue...
+									}
+	
+									public void onFailure(final Throwable caught) {
+			                            view.error(caught.getLocalizedMessage());
+									}
+								});
 
-								public void onSuccess(final CreateSubjectsResponse result) {
-									//do nothing, subjects has been stored, we can continue...
-								}
-
-								public void onFailure(final Throwable caught) {
-		                            view.error(caught.getLocalizedMessage());
-								}
-							});
-				}
+					}
 				
+				}
 				public void onFailure(Throwable caught) {
                     view.error(caught.getLocalizedMessage());
 				}
 				
 			});
+  			
+  			
 	}
     
     public void go(final HasWidgets container, final HistoryToken token) {
