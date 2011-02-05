@@ -19,11 +19,14 @@ import org.ebayopensource.turmeric.monitoring.client.SupportedService;
 import org.ebayopensource.turmeric.monitoring.client.model.ConsoleService;
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.CreateSubjectsResponse;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.FindExternalSubjectsResponse;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.Subject;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectGroup;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectGroupImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectGroupKey;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectGroupQuery;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectKey;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectQuery;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.FindSubjectGroupsResponse;
@@ -37,6 +40,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -52,6 +56,7 @@ public class SubjectGroupEditPresenter extends AbstractGenericPresenter {
     protected SubjectGroupEditDisplay view;
     protected SubjectGroup originalGroup;
     protected Map<SupportedService, ConsoleService> serviceMap;
+    private PolicyQueryService service ;
     
     public interface SubjectGroupEditDisplay extends PolicyPageTemplateDisplay {
         public void setName (String name);
@@ -100,30 +105,60 @@ public class SubjectGroupEditPresenter extends AbstractGenericPresenter {
                         key.setName(subName);
                     key.setType(originalGroup.getType());
                     subjectQuery.setSubjectKeys(Collections.singletonList(key));
-                    final PolicyQueryService service = (PolicyQueryService)serviceMap.get(SupportedService.POLICY_QUERY_SERVICE);
-                    service.findSubjects(subjectQuery, new AsyncCallback<FindSubjectsResponse> () {
+   				 
+                    if ("USER".equals(key.getType())) {
+    					service.findExternalSubjects(subjectQuery,
+    							new AsyncCallback<FindExternalSubjectsResponse>() {
 
-                        public void onFailure(Throwable arg0) {
-                            view.error(arg0.getMessage());
-                        }
+    								public void onFailure(Throwable arg0) {
+    									view.error(arg0.getLocalizedMessage());
+    								}
 
-                        public void onSuccess(FindSubjectsResponse response) {
-                            List<Subject> subjects = response.getSubjects();
-                            List<String> names = new ArrayList<String>();
-                            if (subjects != null) {
-                                for (Subject s:subjects)
-                                    names.add(s.getName());
-                            }
-                            if (originalGroup.getSubjects() != null)
-                                names.removeAll(originalGroup.getSubjects());
-                            view.setAvailableSubjects(names);
-                        }
-                    });
+    								public void onSuccess(
+    										FindExternalSubjectsResponse response) {
+    									List<Subject> subjects = response
+    											.getSubjects();
+    									List<String> names = new ArrayList<String>();
+    									if (subjects != null) {
+    										for (Subject s : subjects)
+    											names.add(s.getName());
+    									}
+    									
+    									if (originalGroup.getSubjects() != null){
+    			                                names.removeAll(originalGroup.getSubjects());
+    									 }
+    			                        view.setAvailableSubjects(names);
+
+    								}
+
+    							});
+
+    				} else {
+	                    service.findSubjects(subjectQuery, new AsyncCallback<FindSubjectsResponse> () {
+	
+	                        public void onFailure(Throwable arg0) {
+	                            view.error(arg0.getMessage());
+	                        }
+	
+	                        public void onSuccess(FindSubjectsResponse response) {
+	                            List<Subject> subjects = response.getSubjects();
+	                            List<String> names = new ArrayList<String>();
+	                            if (subjects != null) {
+	                                for (Subject s:subjects)
+	                                    names.add(s.getName());
+	                            }
+	                            if (originalGroup.getSubjects() != null){
+	                                names.removeAll(originalGroup.getSubjects());
+	                            }
+	                            view.setAvailableSubjects(names);
+	                        }
+	                    });
+	    				}
                 }
             });
             
             this.view.getApplyButton().addClickHandler(new ClickHandler() {
-                public void onClick(ClickEvent event) {
+                public  void onClick(ClickEvent event) {
                 	List<String> subjects = SubjectGroupEditPresenter.this.view.getSelectedSubjects();
     		        if (subjects == null || subjects.isEmpty()) {
     		            SubjectGroupEditPresenter.this.view.error(ConsoleUtil.policyAdminMessages.minimumSubjectsMessage());
@@ -135,13 +170,27 @@ public class SubjectGroupEditPresenter extends AbstractGenericPresenter {
                     editedGroup.setName(view.getName());
                     editedGroup.setDescription(view.getDescription());
                     editedGroup.setSubjects(view.getSelectedSubjects());
-
-                    final PolicyQueryService service = (PolicyQueryService)serviceMap.get(SupportedService.POLICY_QUERY_SERVICE);
                     
+                    
+                	List<Subject> externalSubjects= new ArrayList<Subject>();
+
+            		for (String sb :  editedGroup.getSubjects()) {
+            			SubjectImpl subject = new SubjectImpl();
+            			subject.setType("USER");
+            			subject.setName(sb);
+            			externalSubjects.add(subject);
+            		}
+            		
+            			
+			        createInternalSubject(externalSubjects);
+			        
                     service.updateSubjectGroups(Collections.singletonList((SubjectGroup)editedGroup),UpdateMode.REPLACE, new AsyncCallback<UpdateSubjectGroupsResponse>() {
 
                         public void onFailure(Throwable arg0) {
+                            
                             view.error(arg0.getLocalizedMessage());
+                            
+
                         }
 
                         public void onSuccess(UpdateSubjectGroupsResponse response) {
@@ -158,6 +207,7 @@ public class SubjectGroupEditPresenter extends AbstractGenericPresenter {
                             History.newItem(token.toString(), true);
                         }
                     });
+            		
                 }
             });
 
@@ -171,11 +221,52 @@ public class SubjectGroupEditPresenter extends AbstractGenericPresenter {
             });
     }
     
+  	private void createInternalSubject(final List<Subject> subjects) {
+		  		
+  		List<SubjectKey> keys = new ArrayList<SubjectKey>();
+			for (Subject subj : subjects) {
+				SubjectKey key = new SubjectKey();
+				key.setName(subj.getName());
+				//today external subject supported are USER types 
+				key.setType("USER");
+				keys.add(key);
+			}
+  			
+  			final SubjectQuery query = new SubjectQuery();
+			query.setSubjectKeys(keys);
+  			service.findSubjects(query, new AsyncCallback<PolicyQueryService.FindSubjectsResponse>() {
+				
+				public void onSuccess(FindSubjectsResponse result) {
+					subjects.removeAll(result.getSubjects());
+
+					service.createSubjects(subjects,
+							new AsyncCallback<PolicyQueryService.CreateSubjectsResponse>() {
+
+								public void onSuccess(final CreateSubjectsResponse result) {
+									//do nothing, subjects has been stored, we can continue...
+								}
+
+								public void onFailure(final Throwable caught) {
+		                            view.error(caught.getLocalizedMessage());
+								}
+							});
+				}
+				
+				public void onFailure(Throwable caught) {
+                    view.error(caught.getLocalizedMessage());
+				}
+				
+			});
+	}
+    
     public void go(final HasWidgets container, final HistoryToken token) {
         //Get the id from the token
         final String name = token.getValue(HistoryToken.SELECTED_SUBJECT_GROUP_TOKEN);
         final String type = token.getValue(HistoryToken.SELECTED_SUBJECT_GROUP_TYPE_TOKEN);
         
+        // do a lookup of all the matching Subjects
+		 service = (PolicyQueryService)serviceMap.get(SupportedService.POLICY_QUERY_SERVICE);
+
         
         if (name != null) {
             container.clear();
@@ -204,33 +295,66 @@ public class SubjectGroupEditPresenter extends AbstractGenericPresenter {
                         view.setDescription(originalGroup.getDescription());
                         view.setSelectedSubjects(originalGroup.getSubjects());                       
                         //Get the available subjects of that type
-                        SubjectQuery subjectQuery = new SubjectQuery();
+
                         SubjectKey key = new SubjectKey();
                         String subName = view.getSearchTerm();
-                        if (subName != null && !subName.trim().equals(""))
+                        if (subName != null && !subName.trim().equals("")){
                             key.setName(subName);
+                        }
                         key.setType(type);
                         SubjectQuery query = new SubjectQuery();
                         query.setSubjectKeys(Collections.singletonList(key));
-                        service.findSubjects(query, new AsyncCallback<FindSubjectsResponse> () {
+                        
+                        if ("USER".equals(key.getType())) {
+        					service.findExternalSubjects(query,
+        							new AsyncCallback<FindExternalSubjectsResponse>() {
 
-                            public void onFailure(Throwable arg0) {
-                                view.error(arg0.getMessage());
-                            }
+        								public void onFailure(Throwable arg0) {
+        									view.error(arg0.getLocalizedMessage());
+        								}
 
-                            public void onSuccess(FindSubjectsResponse response) {
-                                List<Subject> subjects = response.getSubjects();
-                                List<String> names = new ArrayList<String>();
-                                if (subjects != null) {
-                                    for (Subject s:subjects)
-                                        names.add(s.getName());
-                                }
-                                //remove all the subjects that are already selected
-                                if (originalGroup.getSubjects() != null)
-                                    names.removeAll(originalGroup.getSubjects());
-                                view.setAvailableSubjects(names);
-                            }
-                        });
+        								public void onSuccess(
+        										FindExternalSubjectsResponse response) {
+        									List<Subject> subjects = response
+        											.getSubjects();
+        									List<String> names = new ArrayList<String>();
+        									if (subjects != null) {
+        										for (Subject s : subjects)
+        											names.add(s.getName());
+        									}
+        								    //remove all the subjects that are already selected
+        	                                if (originalGroup.getSubjects() != null){
+        	                                    names.removeAll(originalGroup.getSubjects());
+        	                                }
+        			                        view.setAvailableSubjects(names);
+
+        								}
+
+        							});
+
+        				} else {
+                        
+	                        service.findSubjects(query, new AsyncCallback<FindSubjectsResponse> () {
+	
+	                            public void onFailure(Throwable arg0) {
+	                                view.error(arg0.getMessage());
+	                            }
+	
+	                            public void onSuccess(FindSubjectsResponse response) {
+	                                List<Subject> subjects = response.getSubjects();
+	                                List<String> names = new ArrayList<String>();
+	                                if (subjects != null) {
+	                                    for (Subject s:subjects)
+	                                        names.add(s.getName());
+	                                }
+	                                //remove all the subjects that are already selected
+	                                if (originalGroup.getSubjects() != null){
+	                                    names.removeAll(originalGroup.getSubjects());
+	                                }
+	                                view.setAvailableSubjects(names);
+	                            }
+	                        });
+        				}
                     }
                 }
             });  

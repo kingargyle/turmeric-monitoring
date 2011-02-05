@@ -260,29 +260,59 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 
 						SubjectQuery query = new SubjectQuery();
 						query.setSubjectKeys(Collections.singletonList(skey));
-						service.findSubjects(query,
-								new AsyncCallback<FindSubjectsResponse>() {
+						
+						if ("USER".equals(skey.getType())) {
+							service.findExternalSubjects(
+									query,
+									new AsyncCallback<FindExternalSubjectsResponse>() {
 
-									public void onFailure(Throwable arg0) {
-										view.error(arg0.getLocalizedMessage());
-									}
+										public void onFailure(Throwable arg0) {
+											view.error(arg0
+													.getLocalizedMessage());
+										}
 
-									public void onSuccess(
-											FindSubjectsResponse response) {
-										List<Subject> subjects = response
-												.getSubjects();
-										view.getSubjectContentView()
-												.setSelectedSubjects(
-														getSubjectNames(editSubjectAssignment
-																.getSubjects()));
-										subjects.removeAll(editSubjectAssignment
-												.getSubjects());
-										view.getSubjectContentView()
-												.setAvailableSubjects(
-														getSubjectNames(subjects));
-									}
-								});
+										public void onSuccess(
+												FindExternalSubjectsResponse response) {
+											List<Subject> subjects = response
+													.getSubjects();
+											view.getSubjectContentView()
+													.setSelectedSubjects(
+															getSubjectNames(editSubjectAssignment
+																	.getSubjects()));
+											subjects.removeAll(editSubjectAssignment
+													.getSubjects());
+											view.getSubjectContentView()
+													.setAvailableSubjects(
+															getSubjectNames(subjects));
+										}
 
+									});
+
+						} else {
+						
+							service.findSubjects(query,
+									new AsyncCallback<FindSubjectsResponse>() {
+	
+										public void onFailure(Throwable arg0) {
+											view.error(arg0.getLocalizedMessage());
+										}
+	
+										public void onSuccess(
+												FindSubjectsResponse response) {
+											List<Subject> subjects = response
+													.getSubjects();
+											view.getSubjectContentView()
+													.setSelectedSubjects(
+															getSubjectNames(editSubjectAssignment
+																	.getSubjects()));
+											subjects.removeAll(editSubjectAssignment
+													.getSubjects());
+											view.getSubjectContentView()
+													.setAvailableSubjects(
+															getSubjectNames(subjects));
+										}
+									});
+							}
 						// get the available SubjectGroups of the same type as
 						// we've elected to edit
 						SubjectGroupKey gkey = new SubjectGroupKey();

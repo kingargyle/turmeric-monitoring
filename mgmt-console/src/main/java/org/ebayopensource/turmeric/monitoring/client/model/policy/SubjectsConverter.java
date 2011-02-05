@@ -35,8 +35,8 @@ public class SubjectsConverter {
         }
 		
 		
-		
-		return url;
+
+        return url;
 	 }
         
 	
