@@ -87,8 +87,6 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 	protected List<PolicySubjectAssignment> subjectAssignments;
 	protected List<Resource> resourceAssignments;
 	protected List<Rule> rules = new ArrayList<Rule>();;
-	protected List<Subject> createdSubjects;
-	protected List<Long> createdSubjectIds;
 
 	protected Resource editResourceAssignment;
 
@@ -233,11 +231,13 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 						if (view.getSubjectContentView()
 								.getSelectedSubjectAssignments().size() != 1)
 							return;
-						// edit the existing assignment - set the available
-						// SubjectTypes as only the one
-						// in the assignment, and set the availables vs selected
-						// Subjects and SubjectGroups
-						// based on the assignment
+						/**
+						 *  edit the existing assignment - set the available
+						 *  SubjectTypes as only the one
+						 *  in the assignment, and set the availables vs selected
+						 *  Subjects and SubjectGroups
+						 *  based on the assignment
+						 */
 						editSubjectAssignment = view.getSubjectContentView()
 								.getSelectedSubjectAssignments().get(0);
 
@@ -998,12 +998,6 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 		if (rules != null) {
 			rules.clear();
 		}
-		if (createdSubjects != null) {
-			createdSubjects.clear();
-		}
-		if (createdSubjectIds != null) {
-			createdSubjectIds.clear();
-		}
 		if (internalSubjects != null) {
 			internalSubjects.clear();
 		}
@@ -1201,9 +1195,10 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 			for (PolicySubjectAssignment a : subjectAssignments) {
 				
 				if (a.getSubjects() != null) {
-					//Checking each subject if already exist or not is less performance than
-					// sending all subject to create, is any exists, it is just avoided to create.
-					createInternalSubject(a.getSubjects());
+					//external subjects todays are only USER types
+					if("USER".equals(a.getSubjectType())){				
+						createInternalSubject(a.getSubjects());
+					}
 					
 					//adding the created subjects (now as internal ones) 
 					List<PolicySubjectAssignment> internalAssignments = view.getSubjectContentView().getAssignments();
@@ -1216,8 +1211,7 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 					}
 					
 				}
-				
-				
+								
 				
 				if (a.getSubjectGroups() != null) {
 					groups.addAll(a.getSubjectGroups());
@@ -1230,66 +1224,49 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 	}
 
 	
-
 	protected void createInternalSubject(final List<Subject> subjects) {
 
-		service.createSubjects(subjects,
-				new AsyncCallback<PolicyQueryService.CreateSubjectsResponse>() {
+		List<SubjectKey> keys = new ArrayList<SubjectKey>();
+		for (Subject subj : subjects) {
+			SubjectKey key = new SubjectKey();
+			key.setName(subj.getName());
+			// today external subject supported are USER types
+			key.setType("USER");
+			keys.add(key);
+		}
 
-					
-					public void onSuccess(final CreateSubjectsResponse result) {
-						createdSubjectIds = new ArrayList<Long>(result.getSubjectIds());
-						
-						List<SubjectKey> keys = new ArrayList<SubjectKey>();
-						for (Long id : createdSubjectIds) {
-							SubjectKey key = new SubjectKey();
-							key.setId(id);
-							//today external subject supported are USER types 
-							key.setType("USER");
-							keys.add(key);
+		final SubjectQuery query = new SubjectQuery();
+		query.setSubjectKeys(keys);
+		service.findSubjects(query,
+				new AsyncCallback<PolicyQueryService.FindSubjectsResponse>() {
+
+					public void onSuccess(FindSubjectsResponse result) {
+						subjects.removeAll(result.getSubjects());
+						if(subjects.size()>0){
+							service.createSubjects(
+									subjects,
+									new AsyncCallback<PolicyQueryService.CreateSubjectsResponse>() {
+	
+										public void onSuccess(
+												final CreateSubjectsResponse result) {
+											// do nothing, subjects has been stored,
+											// we can continue...
+										}
+	
+										public void onFailure(final Throwable caught) {
+											view.error(caught.getLocalizedMessage());
+										}
+									});
 						}
-						fetchSubjects(keys);
 					}
 
-					
-					public void onFailure(final Throwable caught) {
-						//do nothing, it fails due to subjects are already in db. 
-						
+					public void onFailure(Throwable caught) {
+						view.error(caught.getLocalizedMessage());
 					}
-				
-		
-		
-					private void fetchSubjects(final List<SubjectKey> keys) {
-						final SubjectQuery query = new SubjectQuery();
-						query.setSubjectKeys(keys);
 
-						service.findSubjects(query, new AsyncCallback<FindSubjectsResponse>() {
-
-							public void onFailure(final Throwable arg0) {
-								view.error(arg0.getMessage());
-							}
-
-							public void onSuccess(final FindSubjectsResponse response) {
-								createdSubjects = new ArrayList<Subject>(response.getSubjects());
-
-								subjectAssignments = new ArrayList<PolicySubjectAssignment>();
-								
-								PolicySubjectAssignment pa = new PolicySubjectAssignment();
-								pa.setSubjects(createdSubjects);
-								subjectAssignments.clear();
-								subjectAssignments.add(pa);
-								view.getSubjectContentView().setAssignments(
-										subjectAssignments);
-																
-							}
-						});
-
-					}
-		
-		});
+				});
 
 	}
-
 	
 
 	

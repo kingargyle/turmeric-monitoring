@@ -42,6 +42,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 
@@ -85,8 +86,6 @@ public class RLPolicyEditPresenter extends PolicyEditPresenter {
 
 	}
 
-
-
 	@Override
 	protected void bindSaveButton() {
 		{
@@ -96,19 +95,23 @@ public class RLPolicyEditPresenter extends PolicyEditPresenter {
 					GWT.log("EDITION MODE:");
 					String ruleName = view.getPolicyName().getValue();
 
-					RuleEffectType ruleEffectType = RuleEffectType.valueOf(view.getExtraFieldValue(6));
-					Integer priority = view.getExtraFieldValue(5)!=null ? Integer.valueOf(view.getExtraFieldValue(5)):null;
-					Long rolloverPeriod = Long.valueOf(view.getExtraFieldValue(4));
-					Long effectDuration = (view.getExtraFieldValue(3)==null? 0L :Long.valueOf(view.getExtraFieldValue(3)));
+					RuleEffectType ruleEffectType = RuleEffectType.valueOf(view
+							.getExtraFieldValue(6));
+					Integer priority = view.getExtraFieldValue(5) != null ? Integer
+							.valueOf(view.getExtraFieldValue(5)) : null;
+					Long rolloverPeriod = Long.valueOf(view
+							.getExtraFieldValue(4));
+					Long effectDuration = (view.getExtraFieldValue(3) == null ? 0L
+							: Long.valueOf(view.getExtraFieldValue(3)));
 					Long conditionDuration = 0L;
 					String value = view.getExtraFieldValue(7);
-					
+
 					RuleImpl rule = null;
-					
-					if(value!= null && !value.isEmpty()){
+
+					if (value != null && !value.isEmpty()) {
 						PrimitiveValueImpl primitiveValueImpl = null;
 						ExpressionImpl exp = null;
-					
+
 						primitiveValueImpl = new PrimitiveValueImpl();
 						primitiveValueImpl.setValue(value);
 						primitiveValueImpl.setType(SupportedPrimitive.STRING);
@@ -116,54 +119,85 @@ public class RLPolicyEditPresenter extends PolicyEditPresenter {
 						exp.setPrimitiveValue(primitiveValueImpl);
 						Condition condition = new ConditionImpl(exp);
 						List<RuleAttribute> attributeList = new ArrayList<RuleAttribute>();
-						
-						RuleAttributeImpl raMails = new RuleAttributeImpl(view.getExtraFieldValue(1));
+
+						RuleAttributeImpl raMails = new RuleAttributeImpl(view
+								.getExtraFieldValue(1));
 						attributeList.add(raMails);
-						RuleAttributeImpl raActive = new RuleAttributeImpl(RuleAttribute.NotifyActiveValue.valueOf(view.getExtraFieldValue(2).toUpperCase()));
+						RuleAttributeImpl raActive = new RuleAttributeImpl(
+								RuleAttribute.NotifyActiveValue.valueOf(view
+										.getExtraFieldValue(2).toUpperCase()));
 						attributeList.add(raActive);
-				
-						rule = new RuleImpl(ruleName, null,ruleEffectType,  priority, rolloverPeriod, effectDuration, conditionDuration, condition, attributeList);
+
+						rule = new RuleImpl(ruleName, null, ruleEffectType,
+								priority, rolloverPeriod, effectDuration,
+								conditionDuration, condition, attributeList);
 						rules.add(rule);
 					}
-					
-				final GenericPolicy p = getPolicy(
-							view.getPolicyName().getValue(),
-							originalPolicyType,
-							view.getPolicyDesc().getValue(),
-							resourceAssignments, subjectAssignments,
-							view.getPolicyEnabled(),
-							Long.valueOf(originalPolicyId), rules);
+
+					final GenericPolicy p = getPolicy(view.getPolicyName()
+							.getValue(), originalPolicyType, view
+							.getPolicyDesc().getValue(), resourceAssignments,
+							subjectAssignments, view.getPolicyEnabled(), Long
+									.valueOf(originalPolicyId), rules);
 
 					GWT.log("Updating policy: " + p.getId() + "-" + p.getName());
+					/**
+					 * This timer is needed due to GWT has only one thread, so
+					 * Thread.sleep is not a valid option The purpose of
+					 * sleeping time is wait until new external subject been
+					 * created into turmeric db, in order to assign them as
+					 * internal subjects
+					 */
+					Timer timer = new Timer() {
+						public void run() {
+							service.updatePolicy(UpdateMode.REPLACE, p,
+									new AsyncCallback<UpdatePolicyResponse>() {
 
-					service.updatePolicy(UpdateMode.REPLACE, p,
-							new AsyncCallback<UpdatePolicyResponse>() {
+										public void onFailure(Throwable err) {
+											view.getResourceContentView()
+													.error(ConsoleUtil.messages.serverError(err
+															.getLocalizedMessage()));
+										}
 
-								public void onFailure(Throwable err) {
-									view.getResourceContentView()
-											.error(ConsoleUtil.messages.serverError(err
-													.getLocalizedMessage()));
-								}
+										public void onSuccess(
+												UpdatePolicyResponse response) {
+											GWT.log("Updated policy");
+											RLPolicyEditPresenter.this.view
+													.clear();
+											clearLists();
+											HistoryToken token = makeToken(
+													PolicyController.PRESENTER_ID,
+													PolicySummaryPresenter.PRESENTER_ID,
+													null);
 
-								public void onSuccess(
-										UpdatePolicyResponse response) {
-								    GWT.log("Updated policy");
-								    RLPolicyEditPresenter.this.view.clear();
-								    clearLists();
-								    HistoryToken token = makeToken(
-								                                   PolicyController.PRESENTER_ID,
-								                                   PolicySummaryPresenter.PRESENTER_ID,
-								                                   null);
-								  
-								    //Prefill the summary search with the policy we just modified
-								    token.addValue(HistoryToken.SRCH_POLICY_TYPE, originalPolicyType);
-								    token.addValue(HistoryToken.SRCH_POLICY_NAME, p.getName());
-								    History.newItem(token.toString(), true);
-								}
-							});
+											// Prefill the summary search with
+											// the policy we just modified
+											token.addValue(
+													HistoryToken.SRCH_POLICY_TYPE,
+													originalPolicyType);
+											token.addValue(
+													HistoryToken.SRCH_POLICY_NAME,
+													p.getName());
+											History.newItem(token.toString(),
+													true);
+										}
+									});
 
+							view.getSaveButton().setEnabled(true);
+						}
+
+					};
+					if (view.getSubjectContentView().getAssignments().size() > 0
+							&& "USER".equals(view.getSubjectContentView()
+									.getAssignments().get(0).getSubjectType())) {
+						view.getSaveButton().setEnabled(false);
+						timer.schedule(3000);
+					} else {
+						timer.schedule(1);
+					}
 				}
 			});
+
 		}
 	}
 
@@ -198,7 +232,7 @@ public class RLPolicyEditPresenter extends PolicyEditPresenter {
 	@Override
 	public void bind() {
 		super.bind();
-		
+
 		this.view.getAddConditionButton().addClickHandler(new ClickHandler() {
 
 			@Override
@@ -265,7 +299,5 @@ public class RLPolicyEditPresenter extends PolicyEditPresenter {
 
 		view.setConditionNames(conditions);
 	}
-
-	
 
 }

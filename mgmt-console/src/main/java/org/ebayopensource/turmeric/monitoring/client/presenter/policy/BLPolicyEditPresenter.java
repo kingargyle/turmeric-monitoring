@@ -31,6 +31,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 
@@ -40,7 +41,7 @@ public class BLPolicyEditPresenter extends PolicyEditPresenter {
 			PolicyEditDisplay view,
 			Map<SupportedService, ConsoleService> serviceMap) {
 		super(eventBus, view, serviceMap);
-		view.setConditionBuilderVisible(false);	
+		view.setConditionBuilderVisible(false);
 	}
 
 	public final static String PRESENTER_ID = "BLPolicyEdit";
@@ -69,49 +70,70 @@ public class BLPolicyEditPresenter extends PolicyEditPresenter {
 				public void onClick(ClickEvent event) {
 					GWT.log("EDITION MODE:");
 
-					final GenericPolicy p = getPolicy(
-							view.getPolicyName().getValue(),
-							originalPolicyType,
-							view.getPolicyDesc().getValue(),
-							resourceAssignments, 
-							subjectAssignments, 
-							view.getPolicyEnabled(),
-							Long.valueOf(originalPolicyId), null);
+					final GenericPolicy p = getPolicy(view.getPolicyName()
+							.getValue(), originalPolicyType, view
+							.getPolicyDesc().getValue(), resourceAssignments,
+							subjectAssignments, view.getPolicyEnabled(), Long
+									.valueOf(originalPolicyId), null);
 
-					GWT.log("Updating policy: " + p.getId() + "-" + p.getName() );
+					GWT.log("Updating policy: " + p.getId() + "-" + p.getName());
+					/**
+					 * This timer is needed due to GWT has only one thread, so
+					 * Thread.sleep is not a valid option The purpose of
+					 * sleeping time is wait until new external subject been
+					 * created into turmeric db, in order to assign them as
+					 * internal subjects
+					 */
+					Timer timer = new Timer() {
+						public void run() {
+							service.updatePolicy(UpdateMode.REPLACE, p,
+									new AsyncCallback<UpdatePolicyResponse>() {
 
-					service.updatePolicy(UpdateMode.REPLACE, p,
-							new AsyncCallback<UpdatePolicyResponse>() {
+										public void onFailure(Throwable err) {
+											view.getResourceContentView()
+													.error(ConsoleUtil.messages.serverError(err
+															.getLocalizedMessage()));
+										}
 
-								public void onFailure(Throwable err) {
-									view.getResourceContentView()
-											.error(ConsoleUtil.messages.serverError(err
-													.getLocalizedMessage()));
-								}
+										public void onSuccess(
+												UpdatePolicyResponse response) {
+											GWT.log("Updated policy");
+											BLPolicyEditPresenter.this.view
+													.clear();
+											clearLists();
 
-								public void onSuccess(
-										UpdatePolicyResponse response) {
-									GWT.log("Updated policy");
-									BLPolicyEditPresenter.this.view.clear();
-			                        clearLists();
+											HistoryToken token = makeToken(
+													PolicyController.PRESENTER_ID,
+													PolicySummaryPresenter.PRESENTER_ID,
+													null);
 
-									HistoryToken token = makeToken(PolicyController.PRESENTER_ID,
-									                               PolicySummaryPresenter.PRESENTER_ID,
-									                               null);
+											// Prefill the summary search with
+											// the policy we just modified
+											token.addValue(
+													HistoryToken.SRCH_POLICY_TYPE,
+													originalPolicyType);
+											token.addValue(
+													HistoryToken.SRCH_POLICY_NAME,
+													p.getName());
+											History.newItem(token.toString(),
+													true);
+										}
+									});
+							view.getSaveButton().setEnabled(true);
+						}
 
-									//Prefill the summary search with the policy we just modified
-									token.addValue(HistoryToken.SRCH_POLICY_TYPE, originalPolicyType);
-									token.addValue(HistoryToken.SRCH_POLICY_NAME, p.getName());
-									History.newItem(token.toString(), true);
-								}
-							});
-
+					};
+					if (view.getSubjectContentView().getAssignments().size() > 0
+							&& "USER".equals(view.getSubjectContentView()
+									.getAssignments().get(0).getSubjectType())) {
+						view.getSaveButton().setEnabled(false);
+						timer.schedule(3000);
+					} else {
+						timer.schedule(1);
+					}
 				}
 			});
 		}
 	}
-
-	
-
 
 }

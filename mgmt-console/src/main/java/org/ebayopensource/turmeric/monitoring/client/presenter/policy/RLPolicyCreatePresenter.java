@@ -38,6 +38,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 
@@ -45,7 +46,7 @@ public class RLPolicyCreatePresenter extends PolicyCreatePresenter {
 
 	private List<Resource> resources = null;
 	boolean clickFiredWithBug = false;
-	
+
 	public RLPolicyCreatePresenter(HandlerManager eventBus,
 			RLPolicyCreateDisplay view,
 			Map<SupportedService, ConsoleService> serviceMap) {
@@ -55,11 +56,10 @@ public class RLPolicyCreatePresenter extends PolicyCreatePresenter {
 
 	}
 
-	public final synchronized void onClickFired(boolean value){
-		this.clickFiredWithBug =value; 
+	public final synchronized void onClickFired(boolean value) {
+		this.clickFiredWithBug = value;
 	}
-	
-	
+
 	public final static String PRESENTER_ID = "RLPolicyCreate";
 
 	@Override
@@ -82,66 +82,66 @@ public class RLPolicyCreatePresenter extends PolicyCreatePresenter {
 	}
 
 	@Override
-	public void bind(){
+	public void bind() {
 		super.bind();
-		
+
 		this.view.getAddConditionButton().addClickHandler(new ClickHandler() {
-			
+
 			@Override
 			public void onClick(ClickEvent event) {
 
-				if(!clickFiredWithBug){
-					setConditionExtraField();	
-				}else{
-					onClickFired(false);	
+				if (!clickFiredWithBug) {
+					setConditionExtraField();
+				} else {
+					onClickFired(false);
 				}
-				
+
 			}
 		});
-		
+
 		// retrieve resource names based on selected type
 		this.view.getRsListBox().addChangeHandler(new ChangeHandler() {
 
-					@Override
-					public void onChange(ChangeEvent event) {
-						String rsName = view.getRsNameSelected();
-						List<String> opNames = new ArrayList<String>();
-					
-						for (Resource resource : resources) {
-							if(rsName.equals(resource.getResourceName())){
-								List<Operation> opList = resource.getOpList();
-								if(opList!=null && !opList.isEmpty()){
-									for (Operation operation : opList) {
-										opNames.add(operation.getOperationName());	
-									}
-								}
-								break;
+			@Override
+			public void onChange(ChangeEvent event) {
+				String rsName = view.getRsNameSelected();
+				List<String> opNames = new ArrayList<String>();
+
+				for (Resource resource : resources) {
+					if (rsName.equals(resource.getResourceName())) {
+						List<Operation> opList = resource.getOpList();
+						if (opList != null && !opList.isEmpty()) {
+							for (Operation operation : opList) {
+								opNames.add(operation.getOperationName());
 							}
 						}
-						
-						view.setOpNames(opNames);
+						break;
 					}
+				}
 
-				});
+				view.setOpNames(opNames);
+			}
 
-		
+		});
+
 	}
-	
 
 	protected synchronized void setConditionExtraField() {
-		StringBuilder conditionString = new StringBuilder(view.getRsNameSelected());
+		StringBuilder conditionString = new StringBuilder(
+				view.getRsNameSelected());
 		conditionString.append(":");
 		conditionString.append(view.getOpNameSelected());
 		conditionString.append(".");
-		conditionString.append(view.getConditionSelected());	
+		conditionString.append(view.getConditionSelected());
 		conditionString.append(view.getAritmSignSelected());
 		conditionString.append(view.getQuantityBox() + " ");
-		conditionString.append(view.getLogicOpSelected()==null?"":view.getLogicOpSelected() + " ");	
+		conditionString.append(view.getLogicOpSelected() == null ? "" : view
+				.getLogicOpSelected() + " ");
 
-		if(view.validAllConditionFields()){
-			//TODO Need to be improved at dynamic extra fields implementation
+		if (view.validAllConditionFields()) {
+			// TODO Need to be improved at dynamic extra fields implementation
 			view.setExtraFieldValue(7, conditionString.toString(), true);
-	
+
 		}
 
 		onClickFired(true);
@@ -152,38 +152,37 @@ public class RLPolicyCreatePresenter extends PolicyCreatePresenter {
 		ResourceKey rsKey = new ResourceKey();
 		rsKey.setType("SERVICE");
 		rsKeys.add(rsKey);
-		
+
 		service.getResources(rsKeys, new AsyncCallback<GetResourcesResponse>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
 				view.error(ConsoleUtil.messages.serverError(caught
-					.getLocalizedMessage()));
+						.getLocalizedMessage()));
 			}
 
-	
 			@Override
 			public void onSuccess(GetResourcesResponse result) {
 				resources = new ArrayList<Resource>(result.getResources());
 				List<String> rsNames = new ArrayList<String>();
-				
+
 				for (Resource resource : resources) {
 					rsNames.add(resource.getResourceName());
 				}
 				view.setRsNames(rsNames);
 
 			}
-		});		
+		});
 	}
-	
+
 	private void fetchConditions() {
 		List<String> conditions = new ArrayList<String>();
-		
-		//TODO fetch this conditions from server or any dynamically way
+
+		// TODO fetch this conditions from server or any dynamically way
 		conditions.add("count");
 		conditions.add("ext");
 		conditions.add("hits");
-		
+
 		view.setConditionNames(conditions);
 	}
 
@@ -195,19 +194,21 @@ public class RLPolicyCreatePresenter extends PolicyCreatePresenter {
 
 				String ruleName = view.getPolicyName().getValue();
 
-				RuleEffectType ruleEffectType = RuleEffectType.valueOf(view.getExtraFieldValue(6));
-				Integer priority = view.getExtraFieldValue(5)!=null ? Integer.valueOf(view.getExtraFieldValue(5)):null;
+				RuleEffectType ruleEffectType = RuleEffectType.valueOf(view
+						.getExtraFieldValue(6));
+				Integer priority = view.getExtraFieldValue(5) != null ? Integer
+						.valueOf(view.getExtraFieldValue(5)) : null;
 				Long rolloverPeriod = Long.valueOf(view.getExtraFieldValue(4));
 				Long effectDuration = Long.valueOf(view.getExtraFieldValue(3));
 				Long conditionDuration = 0L;
 				String value = view.getExtraFieldValue(7);
-				
+
 				RuleImpl rule = null;
-				
-				if(value!= null && !value.isEmpty()){
+
+				if (value != null && !value.isEmpty()) {
 					PrimitiveValueImpl primitiveValueImpl = null;
 					ExpressionImpl exp = null;
-				
+
 					primitiveValueImpl = new PrimitiveValueImpl();
 					primitiveValueImpl.setValue(value);
 					primitiveValueImpl.setType(SupportedPrimitive.STRING);
@@ -215,42 +216,71 @@ public class RLPolicyCreatePresenter extends PolicyCreatePresenter {
 					exp.setPrimitiveValue(primitiveValueImpl);
 					Condition condition = new ConditionImpl(exp);
 					List<RuleAttribute> attributeList = new ArrayList<RuleAttribute>();
-					
-					RuleAttributeImpl raMails = new RuleAttributeImpl(view.getExtraFieldValue(1));
+
+					RuleAttributeImpl raMails = new RuleAttributeImpl(view
+							.getExtraFieldValue(1));
 					attributeList.add(raMails);
-					RuleAttributeImpl raActive = new RuleAttributeImpl(RuleAttribute.NotifyActiveValue.valueOf(view.getExtraFieldValue(2).toUpperCase()));
+					RuleAttributeImpl raActive = new RuleAttributeImpl(
+							RuleAttribute.NotifyActiveValue.valueOf(view
+									.getExtraFieldValue(2).toUpperCase()));
 					attributeList.add(raActive);
-					
-					rule = new RuleImpl(ruleName, null,ruleEffectType,  priority, rolloverPeriod, effectDuration, conditionDuration, condition, attributeList);
+
+					rule = new RuleImpl(ruleName, null, ruleEffectType,
+							priority, rolloverPeriod, effectDuration,
+							conditionDuration, condition, attributeList);
 					rules.add(rule);
 
-				
 				}
-				
-				GenericPolicy p = getPolicy(view.getPolicyName().getValue(), "RL",
-				                            view.getPolicyDesc().getValue(), resourceAssignments,
-				                            view.getSubjectContentView().getAssignments(), rules);
-		
-				service.createPolicy(
-						p,
-						new AsyncCallback<org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.CreatePolicyResponse>() {
 
-							public void onFailure(Throwable err) {
-								view.error(
-										ConsoleUtil.messages.serverError(err
-												.getLocalizedMessage()));
-							}
+				final GenericPolicy p = getPolicy(view.getPolicyName()
+						.getValue(), "RL", view.getPolicyDesc().getValue(),
+						resourceAssignments, view.getSubjectContentView()
+								.getAssignments(), rules);
 
-							public void onSuccess(
-									org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.CreatePolicyResponse response) {
+				/**
+				 * This timer is needed due to GWT has only one thread, so
+				 * Thread.sleep is not a valid option The purpose of sleeping
+				 * time is wait until new external subject been created into
+				 * turmeric db, in order to assign them as internal subjects
+				 */
+				Timer timer = new Timer() {
+					public void run() {
+						service.createPolicy(
+								p,
+								new AsyncCallback<org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.CreatePolicyResponse>() {
 
-				                RLPolicyCreatePresenter.this.view.clear();
-				                clearLists();
-				                HistoryToken token = makeToken(PolicyController.PRESENTER_ID,PolicySummaryPresenter.PRESENTER_ID, null);
-				                History.newItem(token.toString(), true);
-							}
-						});
+									public void onFailure(Throwable err) {
+										view.error(ConsoleUtil.messages
+												.serverError(err
+														.getLocalizedMessage()));
+									}
 
+									public void onSuccess(
+											org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.CreatePolicyResponse response) {
+
+										RLPolicyCreatePresenter.this.view
+												.clear();
+										clearLists();
+										HistoryToken token = makeToken(
+												PolicyController.PRESENTER_ID,
+												PolicySummaryPresenter.PRESENTER_ID,
+												null);
+										History.newItem(token.toString(), true);
+									}
+								});
+
+						view.getSaveButton().setEnabled(true);
+					}
+
+				};
+				if (view.getSubjectContentView().getAssignments().size() > 0
+						&& "USER".equals(view.getSubjectContentView()
+								.getAssignments().get(0).getSubjectType())) {
+					view.getSaveButton().setEnabled(false);
+					timer.schedule(3000);
+				} else {
+					timer.schedule(1);
+				}
 
 			}
 		});

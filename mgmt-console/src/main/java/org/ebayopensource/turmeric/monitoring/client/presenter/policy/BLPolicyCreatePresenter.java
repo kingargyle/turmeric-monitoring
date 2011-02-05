@@ -8,7 +8,6 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.client.presenter.policy;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +29,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class BLPolicyCreatePresenter extends PolicyCreatePresenter {
@@ -43,12 +43,12 @@ public class BLPolicyCreatePresenter extends PolicyCreatePresenter {
 	}
 
 	public final static String PRESENTER_ID = "BLPolicyCreate";
-	
+
 	@Override
 	public String getId() {
 		return PRESENTER_ID;
 	}
-	
+
 	@Override
 	public List<String> getResourceLevels() {
 		List<String> rsLevels = new ArrayList<String>();
@@ -62,35 +62,73 @@ public class BLPolicyCreatePresenter extends PolicyCreatePresenter {
 
 	@Override
 	protected void bindSaveButton() {
-		 {
-				// fired on saved policy
-				this.view.getSaveButton().addClickHandler(new ClickHandler() {
-					public void onClick(ClickEvent event) {
+		{
+			// fired on saved policy
+			this.view.getSaveButton().addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
 
-					    GenericPolicy p = getPolicy(view.getPolicyName().getValue(), "BLACKLIST", 
-					                                view.getPolicyDesc().getValue(), resourceAssignments,
-					                                subjectAssignments, null);
-					    GWT.log("Saving policy: "+p.getName()+" with "+view.getSubjectContentView().getSelectedSubjectAssignments().size());
-					    service.createPolicy(p, new AsyncCallback<org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.CreatePolicyResponse>() {
+					final GenericPolicy p = getPolicy(view.getPolicyName()
+							.getValue(), "BLACKLIST", view.getPolicyDesc()
+							.getValue(), resourceAssignments,
+							subjectAssignments, null);
+					GWT.log("Saving policy: "
+							+ p.getName()
+							+ " with "
+							+ view.getSubjectContentView()
+									.getSelectedSubjectAssignments().size());
+					/**
+					 * This timer is needed due to GWT has only one thread, so
+					 * Thread.sleep is not a valid option The purpose of
+					 * sleeping time is wait until new external subject been
+					 * created into turmeric db, in order to assign them as
+					 * internal subjects
+					 */
+					Timer timer = new Timer() {
+						public void run() {
 
-		                    public void onFailure(Throwable err) {
-		                         view.getResourceContentView().error(ConsoleUtil.messages.serverError(err
-		                                                                .getLocalizedMessage()));
-		                    }
-		                    public void onSuccess(org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.CreatePolicyResponse response) {
-		                        GWT.log("Created policy "+response.getPolicyId());
-		                        BLPolicyCreatePresenter.this.view.clear();
-		                        clearLists();
+							service.createPolicy(
+									p,
+									new AsyncCallback<org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.CreatePolicyResponse>() {
 
-		                        HistoryToken token = makeToken(PolicyController.PRESENTER_ID,
-		                                PolicySummaryPresenter.PRESENTER_ID, null);
-		                        History.newItem(token.toString(), true);
-		                    }
-		                });
+										public void onFailure(Throwable err) {
+											view.getResourceContentView()
+													.error(ConsoleUtil.messages.serverError(err
+															.getLocalizedMessage()));
+										}
+
+										public void onSuccess(
+												org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.CreatePolicyResponse response) {
+											GWT.log("Created policy "
+													+ response.getPolicyId());
+											BLPolicyCreatePresenter.this.view
+													.clear();
+											clearLists();
+
+											HistoryToken token = makeToken(
+													PolicyController.PRESENTER_ID,
+													PolicySummaryPresenter.PRESENTER_ID,
+													null);
+											History.newItem(token.toString(),
+													true);
+										}
+									});
+
+							view.getSaveButton().setEnabled(true);
+						}
+
+					};
+					if (view.getSubjectContentView().getAssignments().size() > 0
+							&& "USER".equals(view.getSubjectContentView()
+									.getAssignments().get(0).getSubjectType())) {
+						view.getSaveButton().setEnabled(false);
+						timer.schedule(3000);
+					} else {
+						timer.schedule(1);
 					}
-				});
-			}
-	}
 
+				}
+			});
+		}
+	}
 
 }
