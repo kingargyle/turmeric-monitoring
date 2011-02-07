@@ -25,11 +25,14 @@ public class GenericPolicyImpl implements GenericPolicy {
 	
 	private boolean enabled;
 	private List<SubjectGroup> subjectGroups;
+	private List<SubjectGroup> exclusionSG;
+
+	
 	private List<Subject> subjects;
+	private List<Subject> exclusionSubjects;
 	private List<Resource> resources;
 	private List<Rule> rules;
 
-	
 	@SuppressWarnings("unchecked")
 	@Override
 	public Long getId() {
@@ -114,7 +117,18 @@ public class GenericPolicyImpl implements GenericPolicy {
     public void setRules(List<Rule> rules) {
         this.rules = rules;
     }
-    
+    public List<Subject> getExclusionSubjects() {
+		return exclusionSubjects;
+	}
+	public void setExclusionSubjects(List<Subject> exclusionSubjects) {
+		this.exclusionSubjects = exclusionSubjects;
+	}
+	public List<SubjectGroup> getExclusionSG() {
+		return exclusionSG;
+	}
+	public void setExclusionSG(List<SubjectGroup> exclusionSG) {
+		this.exclusionSG = exclusionSG;
+	}
     public boolean equals (Object o) {
         if (!(o instanceof GenericPolicy))
             return false;

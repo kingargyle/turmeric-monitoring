@@ -60,7 +60,7 @@ public class SubjectGroupAssignmentWidget extends Composite {
      * Constructor.
      * A SubjectType has not been selected at the time of the creation of the Widget.
      * The Widget will allow one to be selected, along with the Subjects of that SubjectType.
-     * @param subjectTypes options for the SubjectType
+     * 
      */
     public SubjectGroupAssignmentWidget ()
     {

@@ -30,6 +30,7 @@ import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyEnforcem
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyKey;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.Resource;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.Subject;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectGroup;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyEnforcementService.VerifyAccessResponse;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.DeletePolicyResponse;
@@ -463,7 +464,9 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
             writeable.setLastModifiedBy(p.getLastModifiedBy());
             writeable.setResources(p.getResources());
             writeable.setSubjectGroups(p.getSubjectGroups());
+            writeable.setExclusionSG(p.getExclusionSG());
             writeable.setSubjects(p.getSubjects());
+            writeable.setExclusionSubjects(p.getExclusionSubjects());
             writeable.setEnabled(p.getEnabled());
             list.add(writeable);
 	    }

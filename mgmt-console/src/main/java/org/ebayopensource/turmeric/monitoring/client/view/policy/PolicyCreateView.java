@@ -80,12 +80,9 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 	protected TextBox policyDesc;
 	protected Label policyType;
 	protected Label policyStatus;
-
-
-//	protected List<ExtraField> extraFieldList;
-
 	protected boolean policyEnabled;
-
+	protected boolean exclusionSubjectsVisible;
+	protected boolean exclusionSGVisible;
 	private Button saveButton;
 	private Button cancelButton;
 
@@ -284,7 +281,7 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 	}
 
 	public abstract UserAction getSelectedAction();
-
+	
 	public void initialize() {
 
 		policyName = new TextBox();
@@ -881,6 +878,22 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 			};
 			cellTable.addColumn(subjectNamesCol,
 					ConsoleUtil.policyAdminConstants.subjects());
+			
+			// text column for Exclusion Subject names
+			TextColumn<PolicySubjectAssignment> exclusionSubjectNamesCol = new TextColumn<PolicySubjectAssignment>() {
+				public String getValue(PolicySubjectAssignment assignment) {
+					if (assignment == null || assignment.getExclusionSubjects() == null)
+						return null;
+
+					StringBuilder strbuilder = new StringBuilder();
+					for (Subject s : assignment.getExclusionSubjects()) {
+						strbuilder.append(s.getName() + " ");
+					}
+					return strbuilder.toString();
+				}
+			};
+			cellTable.addColumn(exclusionSubjectNamesCol,
+					ConsoleUtil.policyAdminConstants.exclusionSubjects());
 
 			// text column for SubjectGroup names
 			TextColumn<PolicySubjectAssignment> subjectGroupNamesCol = new TextColumn<PolicySubjectAssignment>() {
@@ -898,11 +911,31 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 			};
 			cellTable.addColumn(subjectGroupNamesCol,
 					ConsoleUtil.policyAdminConstants.subjectGroups());
+
+		
+			// text column for Exclusion Subject Group names
+			TextColumn<PolicySubjectAssignment> exclusionSGNamesCol = new TextColumn<PolicySubjectAssignment>() {
+				public String getValue(PolicySubjectAssignment assignment) {
+					if (assignment == null || assignment.getExclusionSubjects() == null)
+						return null;
+
+					StringBuilder strbuilder = new StringBuilder();
+					for (SubjectGroup s : assignment.getExclusionSubjectGroups()) {
+						strbuilder.append(s.getName() + " ");
+					}
+					return strbuilder.toString();
+				}
+			};
+			cellTable.addColumn(exclusionSGNamesCol,
+					ConsoleUtil.policyAdminConstants.exclusionSubjectGroups());
+
+
 		}
 
 		protected void createSubjectAssignmentFields() {
 
 			subjectAssignmentWidget = new PolicySubjectAssignmentWidget();
+
 			subjectAssignmentPanel = new DisclosurePanel(
 					ConsoleUtil.policyAdminConstants
 							.assignSubjectsAndSubjectGroups());
@@ -1073,6 +1106,40 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 		public void setSelectedSubjects(List<String> list) {
 			subjectAssignmentWidget.setSelectedSubjects(list);
 		}
+
+		@Override
+		public List<String> getSelectedExclusionSubjects() {
+			return subjectAssignmentWidget.getSelectedExclusionSubjects();
+		}
+
+		@Override
+		public List<String> getSelectedExclusionSG() {
+			return subjectAssignmentWidget.getSelectedExclusionSG();
+		}
+		
+		@Override
+		public void setAvailableExclusionSubjects(List<String> list) {
+			subjectAssignmentWidget.setAvailableExclusionSubjects(list);
+		}
+
+		/**
+		 * @see org.ebayopensource.turmeric.monitoring.client.presenter.policy.PolicyCreatePresenter.SubjectContentDisplay#setSelectedExclusionSubjects(java.util.List)
+		 */
+		@Override
+		public void setSelectedExclusionSubjects(final List<String> list) {
+			subjectAssignmentWidget.setSelectedExclusionSubjects(list);
+		}
+
+		@Override
+		public void setAvailableExclusionSG(List<String> list) {
+			subjectAssignmentWidget.setAvailableExclusionSG(list);
+		}
+
+		@Override
+		public void setSelectedExclusionSG(final List<String> list) {
+			subjectAssignmentWidget.setSelectedExclusionSG(list);
+		}
+
 
 	}
 
@@ -1257,6 +1324,13 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 	@Override
 	public void setPolicyType(final String policyType) {
 		this.policyType.setText(policyType);
+	}
+	
+	@Override
+	public void setExclusionSubjectsVisible(final boolean visible) {
+		this.exclusionSubjectsVisible= visible;
+		this.exclusionSGVisible= visible;
+
 	}
 	
 	@Override

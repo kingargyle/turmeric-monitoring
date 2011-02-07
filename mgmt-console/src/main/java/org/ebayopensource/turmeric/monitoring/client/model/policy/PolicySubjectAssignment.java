@@ -18,9 +18,19 @@ public class PolicySubjectAssignment {
     
     private String subjectType;
     private List<Subject> subjects;
+    private List<Subject> exclusionSubjects;
     private List<SubjectGroup> subjectGroups;
+    private List<SubjectGroup> exclusionSubjectGroups;
+
     
-    public String getSubjectType() {
+
+	public List<Subject> getExclusionSubjects() {
+		return exclusionSubjects;
+	}
+	public void setExclusionSubjects(List<Subject> exclusionSubjects) {
+		this.exclusionSubjects = exclusionSubjects;
+	}
+	public String getSubjectType() {
         return subjectType;
     }
     public void setSubjectType(String subjectType) {
@@ -38,4 +48,10 @@ public class PolicySubjectAssignment {
     public void setSubjectGroups(List<SubjectGroup> subjectGroups) {
         this.subjectGroups = subjectGroups;
     }
+    public List<SubjectGroup> getExclusionSubjectGroups() {
+		return exclusionSubjectGroups;
+	}
+	public void setExclusionSubjectGroups(List<SubjectGroup> exclusionSubjectGroups) {
+		this.exclusionSubjectGroups = exclusionSubjectGroups;
+	}
 }

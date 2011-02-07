@@ -67,7 +67,6 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 
 		loadAssignments(token);
 	}
-	
 
 	private void loadAssignments(final HistoryToken token) {
 
@@ -89,7 +88,6 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 				condition,
 				new AsyncCallback<PolicyQueryService.GetPoliciesResponse>() {
 
-					
 					public void onFailure(Throwable caught) {
 						PolicyEditPresenter.this.view
 								.error(ConsoleUtil.messages.serverError(caught
@@ -97,7 +95,6 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 						GWT.log("findPolicies:Fail");
 					}
 
-					
 					public void onSuccess(GetPoliciesResponse result) {
 						GWT.log("findPolicies:Success");
 
@@ -107,8 +104,9 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 						for (GenericPolicy policy : policies) {
 							resourceAssignments = new ArrayList<Resource>();
 							resourceAssignments.addAll(policy.getResources());
-							
-							view.getResourceContentView().setAssignments(resourceAssignments);
+
+							view.getResourceContentView().setAssignments(
+									resourceAssignments);
 
 							subjectAssignments = new ArrayList<PolicySubjectAssignment>();
 							subjectAssignments
@@ -119,11 +117,11 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 							view.setPolicyDesc(policy.getDescription());
 							view.setPolicyType(policy.getType());
 							view.setPolicyStatus(policy.getEnabled());
-							//TODO improve this
-							if("RL".equalsIgnoreCase(policy.getType())){
-								setExtraFieldView(policy);	
+							// TODO improve this
+							if ("RL".equalsIgnoreCase(policy.getType())) {
+								setExtraFieldView(policy);
 							}
-							
+
 							break;
 						}
 
@@ -140,20 +138,22 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 		if (policy.getRules() != null && policy.getRules().size() > 0) {
 			Rule rule = policy.getRules().get(0);
 
-			
-			if(rule.getAttributeList()!= null && rule.getAttributeList().size()>0){
+			if (rule.getAttributeList() != null
+					&& rule.getAttributeList().size() > 0) {
 				for (RuleAttribute attribute : rule.getAttributeList()) {
-					if(RuleAttribute.NotifyKeys.NotifyEmails.name().equals(attribute.getKey())){
+					if (RuleAttribute.NotifyKeys.NotifyEmails.name().equals(
+							attribute.getKey())) {
 						// Policy Based Email Address
-						view.setExtraFieldValue(1, attribute.getValue(),false);
+						view.setExtraFieldValue(1, attribute.getValue(), false);
 					}
-					if(RuleAttribute.NotifyKeys.NotifyActive.name().equals(attribute.getKey())){
+					if (RuleAttribute.NotifyKeys.NotifyActive.name().equals(
+							attribute.getKey())) {
 						// Subject Based Email Address
-						view.setExtraFieldValue(2, attribute.getValue(),false);
+						view.setExtraFieldValue(2, attribute.getValue(), false);
 					}
 				}
 			}
-		
+
 			// Effect Duration
 			view.setExtraFieldValue(3, rule.getEffectDuration().toString(),
 					false);
@@ -183,10 +183,9 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 	private List<PolicySubjectAssignment> fetchSubjectAndSGAssignment(
 			GenericPolicy policy) {
 		HashMap<String, List<Subject>> sAssignMap = new HashMap<String, List<Subject>>();
-
 		for (Subject subject : policy.getSubjects()) {
 			String type = subject.getType();
-
+			// if(!subject.getName().startsWith("?!")){
 			if (!sAssignMap.containsKey(type)) {
 				List list = new ArrayList();
 				list.add(subject);
@@ -194,14 +193,32 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 			} else {
 				List list = (List) sAssignMap.get(type);
 				list.add(subject);
+				sAssignMap.put(type, list);
+
+			}
+			// }
+		}
+
+		HashMap<String, List<Subject>> exclSAssignMap = new HashMap<String, List<Subject>>();
+		for (Subject subject : policy.getExclusionSubjects()) {
+			String type = subject.getType();
+			if (subject.getName().startsWith("?!")) {
+				if (!exclSAssignMap.containsKey(type)) {
+					List list = new ArrayList();
+					list.add(subject);
+					exclSAssignMap.put(type, list);
+				} else {
+					List list = (List) exclSAssignMap.get(type);
+					list.add(subject);
+					exclSAssignMap.put(type, list);
+
+				}
 			}
 		}
 
 		HashMap<String, List<SubjectGroup>> sgAssignMap = new HashMap<String, List<SubjectGroup>>();
-
 		for (SubjectGroup subjectGroup : policy.getSubjectGroups()) {
 			String type = subjectGroup.getType();
-
 			if (!sgAssignMap.containsKey(type)) {
 				List list = new ArrayList();
 				list.add(subjectGroup);
@@ -209,6 +226,21 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 			} else {
 				List list = (List) sgAssignMap.get(type);
 				list.add(subjectGroup);
+				sgAssignMap.put(type, list);
+			}
+		}
+
+		HashMap<String, List<SubjectGroup>> exclSGAssignMap = new HashMap<String, List<SubjectGroup>>();
+		for (SubjectGroup subjectGroup : policy.getExclusionSG()) {
+			String type = subjectGroup.getType();
+			if (!exclSGAssignMap.containsKey(type)) {
+				List list = new ArrayList();
+				list.add(subjectGroup);
+				exclSGAssignMap.put(type, list);
+			} else {
+				List list = (List) exclSGAssignMap.get(type);
+				list.add(subjectGroup);
+				exclSGAssignMap.put(type, list);
 			}
 		}
 
@@ -221,16 +253,27 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 			polSubAssignment = new PolicySubjectAssignment();
 
 			String subjectType = (String) it.next();
-			List<Subject> sList = (List<Subject>) sAssignMap.get(subjectType);
-
 			polSubAssignment.setSubjectType(subjectType);
+			List<Subject> sList = (List<Subject>) sAssignMap.get(subjectType);
 			polSubAssignment.setSubjects(sList);
+
+			List<Subject> exclSList = (List<Subject>) exclSAssignMap
+					.get(subjectType);
+			if (null != exclSList) {
+				polSubAssignment.setExclusionSubjects(exclSList);
+			}
 
 			List<SubjectGroup> sgList = (List<SubjectGroup>) sgAssignMap
 					.get(subjectType);
-
 			if (null != sgList) {
 				polSubAssignment.setSubjectGroups(sgList);
+	// commented on "exlusion" updates			sgAssignMap.remove(subjectType);
+			}
+
+			List<SubjectGroup> exclSGList = (List<SubjectGroup>) sgAssignMap
+					.get(subjectType);
+			if (null != exclSGList) {
+				polSubAssignment.setExclusionSubjectGroups(exclSGList);
 				sgAssignMap.remove(subjectType);
 			}
 
@@ -244,13 +287,15 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 			while (itSg.hasNext()) {
 				polSubAssignment = new PolicySubjectAssignment();
 
-				String subjectGroupType = (String) it.next();
+				String subjectGroupType = (String) itSg.next();
 				List<SubjectGroup> sgList = (List<SubjectGroup>) sgAssignMap
 						.get(subjectGroupType);
 
 				polSubAssignment.setSubjectType(subjectGroupType);
 				polSubAssignment.setSubjects(null);
+				polSubAssignment.setExclusionSubjects(null);
 				polSubAssignment.setSubjectGroups(sgList);
+				polSubAssignment.setExclusionSubjectGroups(null);
 
 				polSubAssignmentList.add(polSubAssignment);
 
@@ -264,7 +309,7 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 	public GenericPolicy getPolicy(String name, String type,
 			String description, List<Resource> resources,
 			List<PolicySubjectAssignment> subjectAssignments, boolean enabled,
-			long id,  List<Rule> rules) {
+			long id, List<Rule> rules) {
 		GenericPolicyImpl p = new GenericPolicyImpl();
 		p.setName(name);
 		p.setType(type);
@@ -273,8 +318,8 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 		// update existing one
 		p.setId(id);
 		p.setEnabled(enabled);
-		
-		if(rules != null){
+
+		if (rules != null) {
 			p.setRules(rules);
 		}
 
@@ -283,35 +328,64 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 
 		if (subjectAssignments != null) {
 			List<Subject> subjects = new ArrayList<Subject>();
+			List<Subject> exclusionSubjects = new ArrayList<Subject>();
+
 			List<SubjectGroup> groups = new ArrayList<SubjectGroup>();
+			List<SubjectGroup> exclusionGroups = new ArrayList<SubjectGroup>();
 
 			for (PolicySubjectAssignment a : subjectAssignments) {
-				
+
 				if (a.getSubjects() != null) {
-					//Checking each subject if already exist or not is less performance than
-					// sending all subject to create, is any exists, it is just avoided to create.
-					createInternalSubject(a.getSubjects());
-					
-					//adding the created subjects (now as internal ones) 
-					List<PolicySubjectAssignment> internalAssignments = view.getSubjectContentView().getAssignments();
-	
+					// external subjects todays are only USER types
+					if ("USER".equals(a.getSubjectType())) {
+						createInternalSubject(a.getSubjects());
+					}
+					// adding the created subjects (now as internal ones)
+					List<PolicySubjectAssignment> internalAssignments = view
+							.getSubjectContentView().getAssignments();
+
 					for (PolicySubjectAssignment policySubjectAssignment : internalAssignments) {
-						if (policySubjectAssignment.getSubjects()!=null){
-							subjects.addAll(policySubjectAssignment.getSubjects());
+						if (policySubjectAssignment.getSubjects() != null) {
+							subjects.addAll(policySubjectAssignment
+									.getSubjects());
 							break;
 						}
 					}
-					
+
 				}
-				
-				
-				
+
+				if (a.getExclusionSubjects() != null) {
+					// external subjects todays are only USER types
+					if ("USER".equals(a.getSubjectType())) {
+						createInternalSubject(a.getExclusionSubjects());
+					}
+
+					// adding the created subjects (now as internal ones)
+					List<PolicySubjectAssignment> internalAssignments = view
+							.getSubjectContentView().getAssignments();
+
+					for (PolicySubjectAssignment policySubjectAssignment : internalAssignments) {
+						if (policySubjectAssignment.getExclusionSubjects() != null) {
+							exclusionSubjects.addAll(policySubjectAssignment
+									.getExclusionSubjects());
+							break;
+						}
+					}
+
+				}
+
 				if (a.getSubjectGroups() != null) {
 					groups.addAll(a.getSubjectGroups());
 				}
+				
+				if (a.getExclusionSubjectGroups() != null) {
+					exclusionGroups.addAll(a.getExclusionSubjectGroups());
+				}
 			}
 			p.setSubjects(subjects);
+			p.setExclusionSubjects(exclusionSubjects);
 			p.setSubjectGroups(groups);
+			p.setExclusionSG(exclusionGroups);
 		}
 		return p;
 	}

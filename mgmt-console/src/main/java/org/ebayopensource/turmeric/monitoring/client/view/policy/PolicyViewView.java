@@ -411,6 +411,23 @@ public class PolicyViewView extends ResizeComposite implements
 			cellTable.addColumn(subjectNamesCol,
 					ConsoleUtil.policyAdminConstants.subjects());
 
+			// text column for Exclusion Subject names
+			TextColumn<PolicySubjectAssignment> excluionSubjectNamesCol = new TextColumn<PolicySubjectAssignment>() {
+				public String getValue(PolicySubjectAssignment assignment) {
+					if (assignment == null || assignment.getExclusionSubjects() == null)
+						return null;
+
+					StringBuilder strbuilder = new StringBuilder();
+					for (Subject s : assignment.getExclusionSubjects()) {
+						strbuilder.append(s.getName() + " ");
+					}
+					return strbuilder.toString();
+				}
+			};
+			cellTable.addColumn(excluionSubjectNamesCol,
+					ConsoleUtil.policyAdminConstants.exclusionSubjects());
+
+			
 			// text column for SubjectGroup names
 			final TextColumn<PolicySubjectAssignment> sgNamesCol = new TextColumn<PolicySubjectAssignment>() {
 				public String getValue(final PolicySubjectAssignment assignment) {
@@ -428,6 +445,25 @@ public class PolicyViewView extends ResizeComposite implements
 			};
 			cellTable.addColumn(sgNamesCol,
 					ConsoleUtil.policyAdminConstants.subjectGroups());
+			
+			// text column for Exclusion Subject Group names
+			TextColumn<PolicySubjectAssignment> exclusionSGNamesCol = new TextColumn<PolicySubjectAssignment>() {
+				public String getValue(PolicySubjectAssignment assignment) {
+					if (assignment == null || assignment.getExclusionSubjects() == null)
+						return null;
+
+					StringBuilder strbuilder = new StringBuilder();
+					for (SubjectGroup s : assignment.getExclusionSubjectGroups()) {
+						strbuilder.append(s.getName() + " ");
+					}
+					return strbuilder.toString();
+				}
+			};
+			cellTable.addColumn(exclusionSGNamesCol,
+					ConsoleUtil.policyAdminConstants.exclusionSubjectGroups());
+
+			
+			
 		}
 
 		public void setAssignments(final List<PolicySubjectAssignment> assignments) {

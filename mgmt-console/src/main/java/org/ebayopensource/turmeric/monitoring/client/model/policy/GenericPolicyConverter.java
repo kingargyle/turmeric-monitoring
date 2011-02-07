@@ -123,6 +123,35 @@ public class GenericPolicyConverter {
                 i++;
             }
         }
+        
+
+        /**
+         * both Inclusion List & exclusion list are store at same list. the way to distinguish include subject as following example:
+		 * assume a subject Id is 705033744 then at request schema:
+		 * include subject looks like:
+		 * <ns1:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">(705033744)</ns1:AttributeValue>
+		 * exclusion subject looks like:
+		 * <ns1:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">(?!705033744)</ns1:AttributeValue>
+         */
+        if (policy.getExclusionSubjects() != null) {
+            int i=0;
+            for (Subject s:policy.getExclusionSubjects()) {
+                url += (s.getName()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:Subject("+i+").@SubjectGroupName=?!"+s.getName());
+                url += (s.getType()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:Subject("+i+").@SubjectType="+s.getType().toString());
+                i++;
+            }
+        }
+        
+        if (policy.getExclusionSG() != null) {
+            int i=0;
+            for (SubjectGroup sg:policy.getExclusionSG()) {
+                url += (sg.getName()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:SubjectGroup("+i+").@SubjectName=?!"+sg.getName());
+                url += (sg.getType()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:SubjectGroup("+i+").@SubjectType="+sg.getType().toString());
+                i++;
+            }
+        }
+        
+         
         return url;
         
     }

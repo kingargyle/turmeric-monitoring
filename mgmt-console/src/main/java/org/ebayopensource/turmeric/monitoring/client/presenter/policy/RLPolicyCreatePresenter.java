@@ -52,6 +52,8 @@ public class RLPolicyCreatePresenter extends PolicyCreatePresenter {
 			Map<SupportedService, ConsoleService> serviceMap) {
 		super(eventBus, view, serviceMap);
 		view.setConditionBuilderVisible(true);
+		view.setPolicyType("RL");
+		view.setExclusionSubjectsVisible(true);
 		bind();
 
 	}
@@ -77,7 +79,6 @@ public class RLPolicyCreatePresenter extends PolicyCreatePresenter {
 		fetchServices();
 		fetchConditions();
 		view.clearConditionBuilder();
-		this.view.setPolicyType("RL");
 
 	}
 

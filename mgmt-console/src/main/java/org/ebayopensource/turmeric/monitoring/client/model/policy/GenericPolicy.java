@@ -21,8 +21,10 @@ public interface GenericPolicy {
     public String getDescription();
     public List<SubjectGroup> getSubjectGroups();
     public List<Subject> getSubjects();
-	public List<Resource> getResources();
-	public Date getLastModified();
+    public List<Subject> getExclusionSubjects();
+    public List<Resource> getResources();
+    public List<SubjectGroup> getExclusionSG();
+    public Date getLastModified();
 	public String getCreatedBy();
 	public String getLastModifiedBy() ;
 	public Date getCreationDate();

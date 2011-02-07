@@ -121,24 +121,44 @@ public class GetPoliciesResponseJS extends JavaScriptObject implements
 			return null;
 		}-*/;
 
+		/**
+         * both Inclusion List & exclusion list are store at same list. the way to distinguish include subject as following example:
+		 * assume a subject Id is 705033744 then at request schema:
+		 * include subject looks like:
+		 * <ns1:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">(705033744)</ns1:AttributeValue>
+		 * exclusion subject looks like:
+		 * <ns1:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">(?!705033744)</ns1:AttributeValue>
+         */
 		@Override
 		public final List<SubjectGroup> getSubjectGroups() {
 			List<SubjectGroup> subjects = new ArrayList<SubjectGroup>();
 			JsArray<SubjectGroupJS> array = getSubjectGroupsArray();
 			if (array != null) {
 				for (int i = 0; i < array.length(); i++)
-					subjects.add(array.get(i));
+					if(! array.get(i).getName().startsWith("?!")){
+						subjects.add(array.get(i));
+					}
 			}
 			return subjects;
 		}
 
+		/**
+         * both Inclusion List & exclusion list are store at same list. the way to distinguish include subject as following example:
+		 * assume a subject Id is 705033744 then at request schema:
+		 * include subject looks like:
+		 * <ns1:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">(705033744)</ns1:AttributeValue>
+		 * exclusion subject looks like:
+		 * <ns1:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">(?!705033744)</ns1:AttributeValue>
+         */
 		@Override
 		public final List<Subject> getSubjects() {
 			List<Subject> subjects = new ArrayList<Subject>();
 			JsArray<SubjectJS> array = getSubjectsArray();
 			if (array != null) {
 				for (int i = 0; i < array.length(); i++)
-					subjects.add(array.get(i));
+					if(! array.get(i).getName().startsWith("?!")){
+						subjects.add(array.get(i));
+					}
 			}
 			return subjects;
 		}
@@ -200,6 +220,49 @@ public class GetPoliciesResponseJS extends JavaScriptObject implements
 		public native final String getEnabledAsString() /*-{
 			return this["@Active"];
 		}-*/;
+
+		
+		/**
+         * both Inclusion List & exclusion list are store at same list. the way to distinguish include subject as following example:
+		 * assume a subject Id is 705033744 then at request schema:
+		 * include subject looks like:
+		 * <ns1:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">(705033744)</ns1:AttributeValue>
+		 * exclusion subject looks like:
+		 * <ns1:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">(?!705033744)</ns1:AttributeValue>
+         */
+        @Override
+		public final List<Subject> getExclusionSubjects() {
+	        List<Subject> exclusionSubjects = new ArrayList<Subject>();
+			JsArray<SubjectJS> array = getSubjectsArray();
+			if (array != null) {
+				for (int i = 0; i < array.length(); i++)
+					if(array.get(i).getName().startsWith("?!")){
+						exclusionSubjects.add(array.get(i));
+					}
+			}
+			return exclusionSubjects;
+		}
+        
+        /**
+         * both Inclusion List & exclusion list are store at same list. the way to distinguish include subject as following example:
+		 * assume a subject group Id is 705033744 then at request schema:
+		 * include subject looks like:
+		 * <ns1:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">(705033744)</ns1:AttributeValue>
+		 * exclusion subject looks like:
+		 * <ns1:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">(?!705033744)</ns1:AttributeValue>
+         */
+        	
+		public final List<SubjectGroup> getExclusionSG() { 
+	        List<SubjectGroup> exclusionSG = new ArrayList<SubjectGroup>();
+			JsArray<SubjectGroupJS> array = getSubjectGroupsArray();
+			if (array != null) {
+				for (int i = 0; i < array.length(); i++)
+					if(array.get(i).getName().startsWith("?!")){
+						exclusionSG.add(array.get(i));
+					}
+			}
+			return exclusionSG;
+		}
 
 	}
 

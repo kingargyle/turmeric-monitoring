@@ -649,7 +649,6 @@ public class PolicyQueryServiceImpl extends AbstractConsoleService implements
 				+ getPartialUrl("createPolicy", namespaces, RequestFormat.NV);
 
 		url += GenericPolicyConverter.toNV(policy);
-
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,
 				URL.encode(url));
 		setSecurityHeaders(builder);
@@ -775,7 +774,6 @@ public class PolicyQueryServiceImpl extends AbstractConsoleService implements
 
 		String url = BASE_POLICY_URL + "?"
 				+ getPartialUrl("findSubjects", namespaces, RequestFormat.NV);
-
 		if (query.getTypeKeys() != null) {
 			int i = 0;
 			for (SubjectTypeKey key : query.getTypeKeys()) {

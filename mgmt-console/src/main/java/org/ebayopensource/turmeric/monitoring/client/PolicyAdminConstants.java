@@ -68,6 +68,12 @@ public interface PolicyAdminConstants extends Constants {
 	@DefaultStringValue("Selected Subject Groups")
 	public String selectedSubjectGroups();
 	
+	@DefaultStringValue("Selected Exclusion Subject")
+	public String selectedExclusionSubject();
+
+	@DefaultStringValue("Selected Exclusion Subject Groups")
+	public String selectedExclusionSG();
+	
 	@DefaultStringValue("Subject Type")
 	public String subjectType();
 
@@ -85,6 +91,12 @@ public interface PolicyAdminConstants extends Constants {
 	
 	@DefaultStringValue ("Subjects")
 	public String subjects();
+	
+	@DefaultStringValue ("Exclusion Subjects")
+	public String exclusionSubjects();
+	
+	@DefaultStringValue ("Exclusion Subject Groups")
+	public String exclusionSubjectGroups();
 	
 	@DefaultStringValue ("Subjects Assigned")
 	public String subjectsAssigned();

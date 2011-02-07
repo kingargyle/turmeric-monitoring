@@ -303,6 +303,7 @@ public class SubjectGroupCreatePresenter extends AbstractGenericPresenter {
 
 		final SubjectQuery query = new SubjectQuery();
 		query.setSubjectKeys(keys);
+		//looking for already created subjects 
 		service.findSubjects(query,
 				new AsyncCallback<PolicyQueryService.FindSubjectsResponse>() {
 

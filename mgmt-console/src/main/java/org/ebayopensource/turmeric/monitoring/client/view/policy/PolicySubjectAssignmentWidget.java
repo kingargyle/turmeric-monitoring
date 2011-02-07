@@ -14,7 +14,6 @@ import java.util.List;
 import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 import org.ebayopensource.turmeric.monitoring.client.view.common.SelectBoxesWidget;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -30,7 +29,8 @@ public class PolicySubjectAssignmentWidget extends SubjectGroupAssignmentWidget 
     protected SelectBoxesWidget selectGroups;
     protected TextBox searchGroupBox;
     protected Button searchGroupButton;
-
+    protected SelectBoxesWidget selectExclusionSubjects;
+    protected SelectBoxesWidget selectExclusionSG;
     
     public PolicySubjectAssignmentWidget() {
         super();
@@ -68,19 +68,29 @@ public class PolicySubjectAssignmentWidget extends SubjectGroupAssignmentWidget 
         List<String> emptyList = Collections.emptyList();
         setAvailableGroups(emptyList);
         setSelectedGroups(emptyList);
+        
+        setAvailableExclusionSubjects(emptyList);
+        setSelectedExclusionSubjects(emptyList);
         searchGroupBox.setText("");
     }
     
     protected void createFields() {
         super.createFields();
+        createExclusionSubjectFields();
+        
         createGroupSearchFields();
         createGroupsFields();
+        createExclusionSGFields();
+
     }
     
     protected void positionFields () {
         super.positionFields();
+        positionExclusionSubjectFields();
+        
         positionGroupSearchFields();
         positionGroupsFields();
+        positionExclusionSGFields();
     }
     
     protected void positionGroupSearchFields() {
@@ -100,8 +110,20 @@ public class PolicySubjectAssignmentWidget extends SubjectGroupAssignmentWidget 
     protected void positionGroupsFields() {
         int newRow = table.getRowCount();
         table.setWidget(newRow, 0, selectGroups);
-        table.getFlexCellFormatter().setColSpan(newRow, 0, 2);
+        table.getFlexCellFormatter().setColSpan(newRow, 0, 2);                
     }
+    
+    protected void positionExclusionSubjectFields() {
+    	 int newRow = table.getRowCount();
+    	 table.setWidget(newRow, 0, selectExclusionSubjects);
+         table.getFlexCellFormatter().setColSpan(newRow, 0, 2);         
+    }
+   
+    protected void positionExclusionSGFields() {
+   	 int newRow = table.getRowCount();
+   	 table.setWidget(newRow, 0, selectExclusionSG);
+        table.getFlexCellFormatter().setColSpan(newRow, 0, 2);         
+   }
     
     /**
      * 
@@ -110,4 +132,37 @@ public class PolicySubjectAssignmentWidget extends SubjectGroupAssignmentWidget 
         selectGroups = new SelectBoxesWidget(ConsoleUtil.policyAdminConstants.availableSubjectGroups(), true, ConsoleUtil.policyAdminConstants.selectedSubjectGroups(), true);
     }
 
+    protected void createExclusionSubjectFields() {
+        selectExclusionSubjects = new SelectBoxesWidget(ConsoleUtil.policyAdminConstants.availableSubjects(), true, ConsoleUtil.policyAdminConstants.selectedExclusionSubject(), true);
+    }
+
+    protected void createExclusionSGFields() {
+        selectExclusionSG = new SelectBoxesWidget(ConsoleUtil.policyAdminConstants.availableSubjectGroups(), true, ConsoleUtil.policyAdminConstants.selectedExclusionSG(), true);
+    }
+
+    
+    public List<String> getSelectedExclusionSubjects () {
+        return selectExclusionSubjects.getSelections();
+    }
+    
+   
+    public List<String> getSelectedExclusionSG() {
+        return selectExclusionSG.getSelections();
+    }
+    
+    public void setAvailableExclusionSubjects(final List<String> availableExclusionSubjects) {
+    	selectExclusionSubjects.setAvailables(availableExclusionSubjects);
+    }
+ 
+    public void setAvailableExclusionSG(final List<String> availableExclusionSG) {
+    	selectExclusionSG.setAvailables(availableExclusionSG);
+    }
+    
+    public void setSelectedExclusionSubjects(final List<String> availableExclusionSubjects) {
+    	selectExclusionSubjects.setSelections(availableExclusionSubjects);
+    }
+    
+    public void setSelectedExclusionSG(final List<String> availableExclusionSG) {
+    	selectExclusionSG.setSelections(availableExclusionSG);
+    }
 }

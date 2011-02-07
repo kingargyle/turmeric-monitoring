@@ -327,56 +327,28 @@ public class SubjectGroupEditPresenter extends AbstractGenericPresenter {
                         SubjectQuery query = new SubjectQuery();
                         query.setSubjectKeys(Collections.singletonList(key));
                         
-                        if ("USER".equals(key.getType())) {
-        					service.findExternalSubjects(query,
-        							new AsyncCallback<FindExternalSubjectsResponse>() {
-
-        								public void onFailure(Throwable arg0) {
-        									view.error(arg0.getLocalizedMessage());
-        								}
-
-        								public void onSuccess(
-        										FindExternalSubjectsResponse response) {
-        									List<Subject> subjects = response
-        											.getSubjects();
-        									List<String> names = new ArrayList<String>();
-        									if (subjects != null) {
-        										for (Subject s : subjects)
-        											names.add(s.getName());
-        									}
-        								    //remove all the subjects that are already selected
-        	                                if (originalGroup.getSubjects() != null){
-        	                                    names.removeAll(originalGroup.getSubjects());
-        	                                }
-        			                        view.setAvailableSubjects(names);
-
-        								}
-
-        							});
-
-        				} else {
                         
-	                        service.findSubjects(query, new AsyncCallback<FindSubjectsResponse> () {
-	
-	                            public void onFailure(Throwable arg0) {
-	                                view.error(arg0.getMessage());
-	                            }
-	
-	                            public void onSuccess(FindSubjectsResponse response) {
-	                                List<Subject> subjects = response.getSubjects();
-	                                List<String> names = new ArrayList<String>();
-	                                if (subjects != null) {
-	                                    for (Subject s:subjects)
-	                                        names.add(s.getName());
-	                                }
-	                                //remove all the subjects that are already selected
-	                                if (originalGroup.getSubjects() != null){
-	                                    names.removeAll(originalGroup.getSubjects());
-	                                }
-	                                view.setAvailableSubjects(names);
-	                            }
-	                        });
-        				}
+                        service.findSubjects(query, new AsyncCallback<FindSubjectsResponse> () {
+
+                            public void onFailure(Throwable arg0) {
+                                view.error(arg0.getMessage());
+                            }
+
+                            public void onSuccess(FindSubjectsResponse response) {
+                                List<Subject> subjects = response.getSubjects();
+                                List<String> names = new ArrayList<String>();
+                                if (subjects != null) {
+                                    for (Subject s:subjects)
+                                        names.add(s.getName());
+                                }
+                                //remove all the subjects that are already selected
+                                if (originalGroup.getSubjects() != null){
+                                    names.removeAll(originalGroup.getSubjects());
+                                }
+                                view.setAvailableSubjects(names);
+                            }
+                        });
+        				
                     }
                 }
             });  
