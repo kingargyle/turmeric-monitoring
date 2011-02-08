@@ -190,10 +190,15 @@ public class SubjectGroupSummaryPresenter extends AbstractGenericPresenter {
                                 }
 
                                 @Override
-                                public void onFailure(Throwable caught) {
-                                    view
-                                    .error(ConsoleUtil.messages.serverError(caught
-                                                                            .getLocalizedMessage()));
+                                public void onFailure(Throwable arg) {
+                                	if (arg.getLocalizedMessage().contains("500")) {
+            							view.error(ConsoleUtil.messages
+            									.serverError(ConsoleUtil.policyAdminConstants
+            											.genericErrorMessage()));
+            						} else {
+            							view.error(ConsoleUtil.messages.serverError(arg
+            									.getLocalizedMessage()));
+            						}
                                 }
                             });
                         }
@@ -248,7 +253,14 @@ public class SubjectGroupSummaryPresenter extends AbstractGenericPresenter {
 
 	        service.findPolicies(null, Collections.singletonList(pkey), null, null, null, null, null, condition, new AsyncCallback<GetPoliciesResponse>() {
 	            public void onFailure(Throwable arg) {
-	                view.error(arg.getLocalizedMessage());
+	            	if (arg.getLocalizedMessage().contains("500")) {
+						view.error(ConsoleUtil.messages
+								.serverError(ConsoleUtil.policyAdminConstants
+										.genericErrorMessage()));
+					} else {
+						view.error(ConsoleUtil.messages.serverError(arg
+								.getLocalizedMessage()));
+					}
 	            }
 
 	            public void onSuccess(GetPoliciesResponse result) {
@@ -302,8 +314,14 @@ public class SubjectGroupSummaryPresenter extends AbstractGenericPresenter {
             }
 
             public void onFailure(Throwable arg) {
-                view.error(ConsoleUtil.messages.serverError(arg.getLocalizedMessage()));
-            }
+            	if (arg.getLocalizedMessage().contains("500")) {
+					view.error(ConsoleUtil.messages
+							.serverError(ConsoleUtil.policyAdminConstants
+									.genericErrorMessage()));
+				} else {
+					view.error(ConsoleUtil.messages.serverError(arg
+							.getLocalizedMessage()));
+				}            }
         });
 	}
 	
@@ -326,7 +344,14 @@ public class SubjectGroupSummaryPresenter extends AbstractGenericPresenter {
 	    condition.addQuery(new QueryCondition.Query(QueryCondition.ActivePoliciesOnlyValue.FALSE));
 	    service.findPolicies(null, PolicyKeysUtil.getAllPolicyKeyList(), null, null, null, groupKeys, null, condition, new AsyncCallback<GetPoliciesResponse>() {
 	        public void onFailure(Throwable arg) {
-	            view.error(arg.getLocalizedMessage());
+	        	if (arg.getLocalizedMessage().contains("500")) {
+					view.error(ConsoleUtil.messages
+							.serverError(ConsoleUtil.policyAdminConstants
+									.genericErrorMessage()));
+				} else {
+					view.error(ConsoleUtil.messages.serverError(arg
+							.getLocalizedMessage()));
+				}
 	        }
 
 	        public void onSuccess(GetPoliciesResponse result) {
@@ -415,9 +440,16 @@ public class SubjectGroupSummaryPresenter extends AbstractGenericPresenter {
 	    final List<UserAction> actions = newPermissions();
         permissions.put(group, actions);
 	    fetchAccess(UserAction.SUBJECT_GROUP_DELETE, group, new AsyncCallback<Boolean>() {
-	        public void onFailure(Throwable arg0) {
-                view.error(arg0.getLocalizedMessage());
-            }
+	        public void onFailure(Throwable arg) {
+	        	if (arg.getLocalizedMessage().contains("500")) {
+					view.error(ConsoleUtil.messages
+							.serverError(ConsoleUtil.policyAdminConstants
+									.genericErrorMessage()));
+				} else {
+					view.error(ConsoleUtil.messages.serverError(arg
+							.getLocalizedMessage()));
+				}
+	        }
 	        public void onSuccess(Boolean allowed) {
 	            if (allowed.booleanValue())
 	                actions.add(UserAction.SUBJECT_GROUP_DELETE);
@@ -428,9 +460,16 @@ public class SubjectGroupSummaryPresenter extends AbstractGenericPresenter {
 	        }
 	    });
 	    fetchAccess(UserAction.SUBJECT_GROUP_EDIT, group, new AsyncCallback<Boolean>() {
-	        public void onFailure(Throwable arg0) {
-                view.error(arg0.getLocalizedMessage());
-            }
+	        public void onFailure(Throwable arg) {
+	        	if (arg.getLocalizedMessage().contains("500")) {
+					view.error(ConsoleUtil.messages
+							.serverError(ConsoleUtil.policyAdminConstants
+									.genericErrorMessage()));
+				} else {
+					view.error(ConsoleUtil.messages.serverError(arg
+							.getLocalizedMessage()));
+				}
+	        }
 	        public void onSuccess(Boolean allowed) {
 	            if (allowed.booleanValue())
 	                actions.add(UserAction.SUBJECT_GROUP_EDIT);
@@ -494,8 +533,15 @@ public class SubjectGroupSummaryPresenter extends AbstractGenericPresenter {
                                   null, null, null, 
                                   new AsyncCallback<VerifyAccessResponse>() {
 
-                                    public void onFailure(Throwable arg0) {
-                                      callback.onFailure(arg0);
+                                    public void onFailure(Throwable arg) {
+                                    	if (arg.getLocalizedMessage().contains("500")) {
+                							view.error(ConsoleUtil.messages
+                									.serverError(ConsoleUtil.policyAdminConstants
+                											.genericErrorMessage()));
+                						} else {
+                							view.error(ConsoleUtil.messages.serverError(arg
+                									.getLocalizedMessage()));
+                						}      
                                     }
 
                                     public void onSuccess(VerifyAccessResponse response) {

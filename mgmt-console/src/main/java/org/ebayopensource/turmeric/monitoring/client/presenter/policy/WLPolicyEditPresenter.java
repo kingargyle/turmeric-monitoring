@@ -83,10 +83,15 @@ public class WLPolicyEditPresenter extends PolicyEditPresenter {
 							service.updatePolicy(UpdateMode.REPLACE, p,
 									new AsyncCallback<UpdatePolicyResponse>() {
 
-										public void onFailure(Throwable err) {
-											view.getResourceContentView()
-													.error(ConsoleUtil.messages.serverError(err
-															.getLocalizedMessage()));
+										public void onFailure(Throwable arg) {
+											if (arg.getLocalizedMessage().contains("500")) {
+												view.getResourceContentView().error(ConsoleUtil.messages
+														.serverError(ConsoleUtil.policyAdminConstants
+																.genericErrorMessage()));
+											} else {
+												view.getResourceContentView().error(ConsoleUtil.messages.serverError(arg
+														.getLocalizedMessage()));
+											}
 										}
 
 										public void onSuccess(

@@ -130,8 +130,16 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 						service.findSubjectGroups(query,
 								new AsyncCallback<FindSubjectGroupsResponse>() {
 
-									public void onFailure(Throwable arg0) {
-										view.error(arg0.getLocalizedMessage());
+									public void onFailure(Throwable arg) {
+										if (arg.getLocalizedMessage().contains(
+												"500")) {
+											view.error(ConsoleUtil.messages
+													.serverError(ConsoleUtil.policyAdminConstants
+															.genericErrorMessage()));
+										} else {
+											view.error(ConsoleUtil.messages.serverError(arg
+													.getLocalizedMessage()));
+										}
 									}
 
 									public void onSuccess(
@@ -147,8 +155,7 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 												.setAvailableSubjectGroups(
 														names);
 										view.getSubjectContentView()
-										.setAvailableExclusionSG(
-												names);
+												.setAvailableExclusionSG(names);
 									}
 
 								});
@@ -176,9 +183,16 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 									query,
 									new AsyncCallback<FindExternalSubjectsResponse>() {
 
-										public void onFailure(Throwable arg0) {
-											view.error(arg0
-													.getLocalizedMessage());
+										public void onFailure(Throwable arg) {
+											if (arg.getLocalizedMessage()
+													.contains("500")) {
+												view.error(ConsoleUtil.messages
+														.serverError(ConsoleUtil.policyAdminConstants
+																.genericErrorMessage()));
+											} else {
+												view.error(ConsoleUtil.messages.serverError(arg
+														.getLocalizedMessage()));
+											}
 										}
 
 										public void onSuccess(
@@ -205,9 +219,16 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 							service.findSubjects(query,
 									new AsyncCallback<FindSubjectsResponse>() {
 
-										public void onFailure(Throwable arg0) {
-											view.error(arg0
-													.getLocalizedMessage());
+										public void onFailure(Throwable arg) {
+											if (arg.getLocalizedMessage()
+													.contains("500")) {
+												view.error(ConsoleUtil.messages
+														.serverError(ConsoleUtil.policyAdminConstants
+																.genericErrorMessage()));
+											} else {
+												view.error(ConsoleUtil.messages.serverError(arg
+														.getLocalizedMessage()));
+											}
 										}
 
 										public void onSuccess(
@@ -275,8 +296,16 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 						service.findSubjects(query,
 								new AsyncCallback<FindSubjectsResponse>() {
 
-									public void onFailure(Throwable arg0) {
-										view.error(arg0.getLocalizedMessage());
+									public void onFailure(Throwable arg) {
+										if (arg.getLocalizedMessage().contains(
+												"500")) {
+											view.error(ConsoleUtil.messages
+													.serverError(ConsoleUtil.policyAdminConstants
+															.genericErrorMessage()));
+										} else {
+											view.error(ConsoleUtil.messages.serverError(arg
+													.getLocalizedMessage()));
+										}
 									}
 
 									public void onSuccess(
@@ -319,8 +348,16 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 						service.findSubjectGroups(gquery,
 								new AsyncCallback<FindSubjectGroupsResponse>() {
 
-									public void onFailure(Throwable arg0) {
-										view.error(arg0.getLocalizedMessage());
+									public void onFailure(Throwable arg) {
+										if (arg.getLocalizedMessage().contains(
+												"500")) {
+											view.error(ConsoleUtil.messages
+													.serverError(ConsoleUtil.policyAdminConstants
+															.genericErrorMessage()));
+										} else {
+											view.error(ConsoleUtil.messages.serverError(arg
+													.getLocalizedMessage()));
+										}
 									}
 
 									public void onSuccess(
@@ -364,21 +401,22 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 										view.getSubjectContentView()
 												.setAvailableSubjectGroups(
 														getGroupNames(subjectGroups));
-										
-									   //ExclusionSG
+
+										// ExclusionSG
 										List<SubjectGroup> exclSG = response
-										.getGroups();
+												.getGroups();
 
 										view.getSubjectContentView()
 												.setSelectedExclusionSG(
 														getGroupNames(editSubjectAssignment
 																.getExclusionSubjectGroups()));
-										// if there are exclusion subject groups already
+										// if there are exclusion subject groups
+										// already
 										// assigned, take them out of the list
 										// of available ones
 										if (editSubjectAssignment
 												.getExclusionSubjectGroups() != null) {
-		
+
 											for (SubjectGroup existing : editSubjectAssignment
 													.getExclusionSubjectGroups()) {
 												ListIterator<SubjectGroup> itor = exclSG
@@ -400,15 +438,12 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 														itor.remove();
 												}
 											}
-		
+
 										}
 										view.getSubjectContentView()
 												.setAvailableExclusionSG(
 														getGroupNames(exclSG));
-										
-								
-								
-								
+
 										view.getSubjectContentView().show();
 									}
 
@@ -463,39 +498,38 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 
 						assignment.setSubjectType(view.getSubjectContentView()
 								.getSubjectType());
-						//subjects
+						// subjects
 						List<Subject> subjects = new ArrayList<Subject>();
 						for (String s : view.getSubjectContentView()
 								.getSelectedSubjects()) {
 							subjects.add(getSubject(s,
 									assignment.getSubjectType()));
 						}
-						//exclusionSubjects
+						// exclusionSubjects
 						List<Subject> exclusionSubjects = new ArrayList<Subject>();
 						for (String s : view.getSubjectContentView()
 								.getSelectedExclusionSubjects()) {
 							exclusionSubjects.add(getSubject(s,
 									assignment.getSubjectType()));
 						}
-						//groups
+						// groups
 						List<SubjectGroup> groups = new ArrayList<SubjectGroup>();
 						for (String s : view.getSubjectContentView()
 								.getSelectedSubjectGroups()) {
 							groups.add(getGroup(s, assignment.getSubjectType()));
 						}
-						//exclusion Subjectgroups
+						// exclusion Subjectgroups
 						List<SubjectGroup> exclSg = new ArrayList<SubjectGroup>();
 						for (String s : view.getSubjectContentView()
 								.getSelectedExclusionSG()) {
 							exclSg.add(getGroup(s, assignment.getSubjectType()));
 						}
 
-						
 						assignment.setSubjects(subjects);
 						assignment.setExclusionSubjects(exclusionSubjects);
 						assignment.setSubjectGroups(groups);
 						assignment.setExclusionSubjectGroups(exclSg);
-						
+
 						subjectAssignments.add(assignment);
 						view.getSubjectContentView().setAssignments(
 								subjectAssignments);
@@ -654,8 +688,16 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 						service.getResources(rsKeys,
 								new AsyncCallback<GetResourcesResponse>() {
 
-									public void onFailure(Throwable arg0) {
-										view.error(arg0.getLocalizedMessage());
+									public void onFailure(Throwable arg) {
+										if (arg.getLocalizedMessage().contains(
+												"500")) {
+											view.error(ConsoleUtil.messages
+													.serverError(ConsoleUtil.policyAdminConstants
+															.genericErrorMessage()));
+										} else {
+											view.error(ConsoleUtil.messages.serverError(arg
+													.getLocalizedMessage()));
+										}
 									}
 
 									public void onSuccess(
@@ -1169,10 +1211,16 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 					}
 
 					public void onFailure(Throwable arg) {
-						PolicyCreatePresenter.this.view
-								.getResourceContentView().error(
-										ConsoleUtil.messages.serverError(arg
-												.getLocalizedMessage()));
+						if (arg.getLocalizedMessage().contains("500")) {
+							view.getResourceContentView()
+									.error(ConsoleUtil.messages
+											.serverError(ConsoleUtil.policyAdminConstants
+													.genericErrorMessage()));
+						} else {
+							view.getResourceContentView().error(
+									ConsoleUtil.messages.serverError(arg
+											.getLocalizedMessage()));
+						}
 					}
 				});
 
@@ -1206,10 +1254,16 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 					}
 
 					public void onFailure(Throwable arg) {
-						PolicyCreatePresenter.this.view
-								.getResourceContentView().error(
-										ConsoleUtil.messages.serverError(arg
-												.getLocalizedMessage()));
+						if (arg.getLocalizedMessage().contains("500")) {
+							view.getResourceContentView()
+									.error(ConsoleUtil.messages
+											.serverError(ConsoleUtil.policyAdminConstants
+													.genericErrorMessage()));
+						} else {
+							view.getResourceContentView().error(
+									ConsoleUtil.messages.serverError(arg
+											.getLocalizedMessage()));
+						}
 					}
 				});
 	}
@@ -1343,16 +1397,30 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 										}
 
 										public void onFailure(
-												final Throwable caught) {
-											view.error(caught
-													.getLocalizedMessage());
+												final Throwable arg) {
+											if (arg.getLocalizedMessage()
+													.contains("500")) {
+												view.error(ConsoleUtil.messages
+														.serverError(ConsoleUtil.policyAdminConstants
+																.genericErrorMessage()));
+											} else {
+												view.error(ConsoleUtil.messages.serverError(arg
+														.getLocalizedMessage()));
+											}
 										}
 									});
 						}
 					}
 
-					public void onFailure(Throwable caught) {
-						view.error(caught.getLocalizedMessage());
+					public void onFailure(Throwable arg) {
+						if (arg.getLocalizedMessage().contains("500")) {
+							view.error(ConsoleUtil.messages
+									.serverError(ConsoleUtil.policyAdminConstants
+											.genericErrorMessage()));
+						} else {
+							view.error(ConsoleUtil.messages.serverError(arg
+									.getLocalizedMessage()));
+						}
 					}
 
 				});
@@ -1367,9 +1435,16 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 			}
 
 			public void onFailure(Throwable arg) {
-				PolicyCreatePresenter.this.view.getResourceContentView().error(
-						ConsoleUtil.messages.serverError(arg
-								.getLocalizedMessage()));
+				if (arg.getLocalizedMessage().contains("500")) {
+					view.getResourceContentView()
+							.error(ConsoleUtil.messages
+									.serverError(ConsoleUtil.policyAdminConstants
+											.genericErrorMessage()));
+				} else {
+					view.getResourceContentView().error(
+							ConsoleUtil.messages.serverError(arg
+									.getLocalizedMessage()));
+				}
 			}
 		});
 

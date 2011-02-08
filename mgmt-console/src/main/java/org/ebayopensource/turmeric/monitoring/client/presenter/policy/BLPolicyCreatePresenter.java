@@ -92,9 +92,18 @@ public class BLPolicyCreatePresenter extends PolicyCreatePresenter {
 									new AsyncCallback<org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.CreatePolicyResponse>() {
 
 										public void onFailure(Throwable err) {
-											view.getResourceContentView()
-													.error(ConsoleUtil.messages.serverError(err
-															.getLocalizedMessage()));
+											if (err.getLocalizedMessage()
+													.contains("500")) {
+												view.getResourceContentView()
+														.error(ConsoleUtil.messages
+																.serverError(ConsoleUtil.policyAdminConstants
+																		.genericErrorMessage()));
+											} else {
+												view.getResourceContentView()
+														.error(ConsoleUtil.messages
+																.serverError(err
+																		.getLocalizedMessage()));
+											}
 										}
 
 										public void onSuccess(

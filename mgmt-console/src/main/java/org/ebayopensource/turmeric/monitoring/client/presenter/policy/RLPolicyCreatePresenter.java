@@ -157,9 +157,15 @@ public class RLPolicyCreatePresenter extends PolicyCreatePresenter {
 		service.getResources(rsKeys, new AsyncCallback<GetResourcesResponse>() {
 
 			@Override
-			public void onFailure(Throwable caught) {
-				view.error(ConsoleUtil.messages.serverError(caught
-						.getLocalizedMessage()));
+			public void onFailure(Throwable arg) {
+				if (arg.getLocalizedMessage().contains("500")) {
+					view.error(ConsoleUtil.messages
+							.serverError(ConsoleUtil.policyAdminConstants
+									.genericErrorMessage()));
+				} else {
+					view.error(ConsoleUtil.messages.serverError(arg
+							.getLocalizedMessage()));
+				}
 			}
 
 			@Override
@@ -250,10 +256,16 @@ public class RLPolicyCreatePresenter extends PolicyCreatePresenter {
 								p,
 								new AsyncCallback<org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.CreatePolicyResponse>() {
 
-									public void onFailure(Throwable err) {
-										view.error(ConsoleUtil.messages
-												.serverError(err
-														.getLocalizedMessage()));
+									public void onFailure(Throwable arg) {
+										if (arg.getLocalizedMessage().contains(
+												"500")) {
+											view.error(ConsoleUtil.messages
+													.serverError(ConsoleUtil.policyAdminConstants
+															.genericErrorMessage()));
+										} else {
+											view.error(ConsoleUtil.messages.serverError(arg
+													.getLocalizedMessage()));
+										}
 									}
 
 									public void onSuccess(

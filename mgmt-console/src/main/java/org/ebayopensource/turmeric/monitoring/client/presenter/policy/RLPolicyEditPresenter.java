@@ -153,10 +153,16 @@ public class RLPolicyEditPresenter extends PolicyEditPresenter {
 							service.updatePolicy(UpdateMode.REPLACE, p,
 									new AsyncCallback<UpdatePolicyResponse>() {
 
-										public void onFailure(Throwable err) {
-											view.getResourceContentView()
-													.error(ConsoleUtil.messages.serverError(err
-															.getLocalizedMessage()));
+										public void onFailure(Throwable arg) {
+											if (arg.getLocalizedMessage()
+													.contains("500")) {
+												view.error(ConsoleUtil.messages
+														.serverError(ConsoleUtil.policyAdminConstants
+																.genericErrorMessage()));
+											} else {
+												view.error(ConsoleUtil.messages.serverError(arg
+														.getLocalizedMessage()));
+											}
 										}
 
 										public void onSuccess(
@@ -210,9 +216,15 @@ public class RLPolicyEditPresenter extends PolicyEditPresenter {
 		service.getResources(rsKeys, new AsyncCallback<GetResourcesResponse>() {
 
 			@Override
-			public void onFailure(Throwable caught) {
-				view.error(ConsoleUtil.messages.serverError(caught
-						.getLocalizedMessage()));
+			public void onFailure(Throwable arg) {
+				if (arg.getLocalizedMessage().contains("500")) {
+					view.error(ConsoleUtil.messages
+							.serverError(ConsoleUtil.policyAdminConstants
+									.genericErrorMessage()));
+				} else {
+					view.error(ConsoleUtil.messages.serverError(arg
+							.getLocalizedMessage()));
+				}
 			}
 
 			@Override

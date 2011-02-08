@@ -128,8 +128,17 @@ public class SubjectGroupCreatePresenter extends AbstractGenericPresenter {
 					service.findExternalSubjects(query,
 							new AsyncCallback<FindExternalSubjectsResponse>() {
 
-								public void onFailure(Throwable arg0) {
-									view.error(arg0.getLocalizedMessage());
+								public void onFailure(Throwable arg) {
+									if (arg.getLocalizedMessage().contains(
+											"500")) {
+										view.error(ConsoleUtil.messages
+												.serverError(ConsoleUtil.policyAdminConstants
+														.genericErrorMessage()));
+									} else {
+										view.error(ConsoleUtil.messages
+												.serverError(arg
+														.getLocalizedMessage()));
+									}
 								}
 
 								public void onSuccess(
@@ -152,9 +161,17 @@ public class SubjectGroupCreatePresenter extends AbstractGenericPresenter {
 							new AsyncCallback<FindSubjectsResponse>() {
 
 								@Override
-								public void onFailure(Throwable arg0) {
-									SubjectGroupCreatePresenter.this.view
-											.error(arg0.getMessage());
+								public void onFailure(Throwable arg) {
+									if (arg.getLocalizedMessage().contains(
+											"500")) {
+										view.error(ConsoleUtil.messages
+												.serverError(ConsoleUtil.policyAdminConstants
+														.genericErrorMessage()));
+									} else {
+										view.error(ConsoleUtil.messages
+												.serverError(arg
+														.getLocalizedMessage()));
+									}
 								}
 
 								@Override
@@ -198,9 +215,9 @@ public class SubjectGroupCreatePresenter extends AbstractGenericPresenter {
 					return;
 				}
 
-				if("USER".equals(view.getSubjectType())){				
-					 //external subjects todays are only USER types
-	    		     List<Subject> subjects = new ArrayList<Subject>();
+				if ("USER".equals(view.getSubjectType())) {
+					// external subjects todays are only USER types
+					List<Subject> subjects = new ArrayList<Subject>();
 					for (String sbName : subjectNames) {
 						SubjectImpl subject = new SubjectImpl();
 						subject.setType("USER");
@@ -232,16 +249,22 @@ public class SubjectGroupCreatePresenter extends AbstractGenericPresenter {
 				 */
 				Timer timer = new Timer() {
 					public void run() {
-						
 
 						service.createSubjectGroups(
 								Collections.singletonList((SubjectGroup) group),
 								new AsyncCallback<CreateSubjectGroupsResponse>() {
 
 									@Override
-									public void onFailure(Throwable arg0) {
-										SubjectGroupCreatePresenter.this.view
-												.error(arg0.getMessage());
+									public void onFailure(Throwable arg) {
+										if (arg.getLocalizedMessage().contains(
+												"500")) {
+											view.error(ConsoleUtil.messages
+													.serverError(ConsoleUtil.policyAdminConstants
+															.genericErrorMessage()));
+										} else {
+											view.error(ConsoleUtil.messages.serverError(arg
+													.getLocalizedMessage()));
+										}
 									}
 
 									@Override
@@ -265,18 +288,18 @@ public class SubjectGroupCreatePresenter extends AbstractGenericPresenter {
 									}
 
 								});
-						
+
 						view.getCreateButton().setEnabled(true);
 
 					}
 
 				};
-				if("USER".equals(view.getSubjectType())){
+				if ("USER".equals(view.getSubjectType())) {
 					view.getCreateButton().setEnabled(false);
 					timer.schedule(3000);
-				}else{
-		        	timer.schedule(1);
-		        }
+				} else {
+					timer.schedule(1);
+				}
 			}
 		});
 
@@ -303,32 +326,49 @@ public class SubjectGroupCreatePresenter extends AbstractGenericPresenter {
 
 		final SubjectQuery query = new SubjectQuery();
 		query.setSubjectKeys(keys);
-		//looking for already created subjects 
+		// looking for already created subjects
 		service.findSubjects(query,
 				new AsyncCallback<PolicyQueryService.FindSubjectsResponse>() {
 
 					public void onSuccess(FindSubjectsResponse result) {
 						subjects.removeAll(result.getSubjects());
-						if(subjects.size()>0){
+						if (subjects.size() > 0) {
 							service.createSubjects(
 									subjects,
 									new AsyncCallback<PolicyQueryService.CreateSubjectsResponse>() {
-	
+
 										public void onSuccess(
 												final CreateSubjectsResponse result) {
-											// do nothing, subjects has been stored,
+											// do nothing, subjects has been
+											// stored,
 											// we can continue...
 										}
-	
-										public void onFailure(final Throwable caught) {
-											view.error(caught.getLocalizedMessage());
+
+										public void onFailure(
+												final Throwable arg) {
+											if (arg.getLocalizedMessage()
+													.contains("500")) {
+												view.error(ConsoleUtil.messages
+														.serverError(ConsoleUtil.policyAdminConstants
+																.genericErrorMessage()));
+											} else {
+												view.error(ConsoleUtil.messages.serverError(arg
+														.getLocalizedMessage()));
+											}
 										}
 									});
 						}
 					}
 
-					public void onFailure(Throwable caught) {
-						view.error(caught.getLocalizedMessage());
+					public void onFailure(Throwable arg) {
+						if (arg.getLocalizedMessage().contains("500")) {
+							view.error(ConsoleUtil.messages
+									.serverError(ConsoleUtil.policyAdminConstants
+											.genericErrorMessage()));
+						} else {
+							view.error(ConsoleUtil.messages.serverError(arg
+									.getLocalizedMessage()));
+						}
 					}
 
 				});

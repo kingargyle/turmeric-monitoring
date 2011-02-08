@@ -305,5 +305,11 @@ public interface PolicyAdminConstants extends Constants {
     @DefaultStringValue("Comments")
     public String ehCommentsColumn();
 
+    /*
+     * Generic Error message. This message should never be shown  unless 
+     * that the error message received from server be improperly set 
+     */
+    @DefaultStringValue("Operation not valid. Please contact your site administrator.")
+    public String genericErrorMessage();
   
 }

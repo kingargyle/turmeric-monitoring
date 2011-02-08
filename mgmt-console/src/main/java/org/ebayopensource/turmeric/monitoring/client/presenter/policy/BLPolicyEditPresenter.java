@@ -90,9 +90,18 @@ public class BLPolicyEditPresenter extends PolicyEditPresenter {
 									new AsyncCallback<UpdatePolicyResponse>() {
 
 										public void onFailure(Throwable err) {
-											view.getResourceContentView()
-													.error(ConsoleUtil.messages.serverError(err
-															.getLocalizedMessage()));
+											if (err.getLocalizedMessage()
+													.contains("500")) {
+												view.getResourceContentView()
+														.error(ConsoleUtil.messages
+																.serverError(ConsoleUtil.policyAdminConstants
+																		.genericErrorMessage()));
+											} else {
+												view.getResourceContentView()
+														.error(ConsoleUtil.messages
+																.serverError(err
+																		.getLocalizedMessage()));
+											}
 										}
 
 										public void onSuccess(

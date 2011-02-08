@@ -22,6 +22,7 @@ import org.ebayopensource.turmeric.monitoring.client.SupportedService;
 import org.ebayopensource.turmeric.monitoring.client.model.ConsoleService;
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
 import org.ebayopensource.turmeric.monitoring.client.model.UserAction;
+import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorSeverity;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.GenericPolicy;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.GenericPolicyImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.Operation;
@@ -60,6 +61,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.text.client.IntegerParser;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -73,7 +75,7 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 	protected Map<SupportedService, ConsoleService> serviceMap;
 	protected List<GenericPolicy> policies;
 	protected List<Resource> resources;
-    protected Map<GenericPolicy, List<UserAction>> permissions = new HashMap<GenericPolicy, List<UserAction>>();
+	protected Map<GenericPolicy, List<UserAction>> permissions = new HashMap<GenericPolicy, List<UserAction>>();
 	protected List<String> types;
 	protected PolicyQueryService service;
 
@@ -97,8 +99,8 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 		String getSelectedResource();
 
 		String getSelectedOperation();
-		
-	    Map<GenericPolicy, UserAction> getPendingActions();
+
+		Map<GenericPolicy, UserAction> getPendingActions();
 
 		boolean isSearchCriteriaEnabled();
 
@@ -116,7 +118,8 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 
 		void setOperationNames();
 
-		void setPermittedActions(GenericPolicy policy, List<UserAction> permittedActions);
+		void setPermittedActions(GenericPolicy policy,
+				List<UserAction> permittedActions);
 
 		HasClickHandlers getActionButton();
 
@@ -360,8 +363,14 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
                                     service.enablePolicy(key,
                                             new AsyncCallback<EnablePolicyResponse>() {
                                                 public void onFailure(Throwable arg) {
-                                                    PolicySummaryPresenter.this.view.error(ConsoleUtil.messages.serverError(arg
-                                                            .getLocalizedMessage()));
+                                                	if (arg.getLocalizedMessage().contains("500")) {
+                            							view.error(ConsoleUtil.messages
+                            									.serverError(ConsoleUtil.policyAdminConstants
+                            											.genericErrorMessage()));
+                            						} else {
+                            							view.error(ConsoleUtil.messages.serverError(arg
+                            									.getLocalizedMessage()));
+                            						}
                                                     GWT.log("ERROR - Enabling fails");
                                                 }
 
@@ -382,8 +391,14 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
                                     service.disablePolicy(key,
                                             new AsyncCallback<DisablePolicyResponse>() {
                                                 public void onFailure(Throwable arg) {
-                                                    PolicySummaryPresenter.this.view.error(ConsoleUtil.messages.serverError(arg
-                                                                                                                           .getLocalizedMessage()));
+                                                	if (arg.getLocalizedMessage().contains("500")) {
+                            							view.error(ConsoleUtil.messages
+                            									.serverError(ConsoleUtil.policyAdminConstants
+                            											.genericErrorMessage()));
+                            						} else {
+                            							view.error(ConsoleUtil.messages.serverError(arg
+                            									.getLocalizedMessage()));
+                            						}                                                                                                                           
                                                 }
 
                                                 public void onSuccess(
@@ -413,9 +428,15 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 
                                                     
                                                     public void onFailure(
-                                                            Throwable caught) {
-                                                        view.error(ConsoleUtil.messages.serverError(caught
-                                                                .getLocalizedMessage()));
+                                                            Throwable arg) {
+                                                    	if (arg.getLocalizedMessage().contains("500")) {
+                                							view.error(ConsoleUtil.messages
+                                									.serverError(ConsoleUtil.policyAdminConstants
+                                											.genericErrorMessage()));
+                                						} else {
+                                							view.error(ConsoleUtil.messages.serverError(arg
+                                									.getLocalizedMessage()));
+                                						}
                                                     }
                                                 });
                             break;
@@ -447,32 +468,32 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 				itor.remove();
 		}
 	}
-	
-	private List<GenericPolicy> copyToWriteable(Collection<GenericPolicy> policies) {
-	    List<GenericPolicy> list = new ArrayList<GenericPolicy>();
-	    if (policies == null)
-	        return list;
-	    for (GenericPolicy p:policies) {
-	        GenericPolicyImpl writeable = new GenericPolicyImpl();
-            writeable.setId(p.getId());
-            writeable.setType(p.getType());
-            writeable.setName(p.getName());
-            writeable.setDescription(p.getDescription());
-            writeable.setCreatedBy(p.getCreatedBy());
-            writeable.setCreationDate(p.getCreationDate());
-            writeable.setLastModified(p.getLastModified());
-            writeable.setLastModifiedBy(p.getLastModifiedBy());
-            writeable.setResources(p.getResources());
-            writeable.setSubjectGroups(p.getSubjectGroups());
-            writeable.setExclusionSG(p.getExclusionSG());
-            writeable.setSubjects(p.getSubjects());
-            writeable.setExclusionSubjects(p.getExclusionSubjects());
-            writeable.setEnabled(p.getEnabled());
-            list.add(writeable);
-	    }
-	    return list;
-	}
 
+	private List<GenericPolicy> copyToWriteable(
+			Collection<GenericPolicy> policies) {
+		List<GenericPolicy> list = new ArrayList<GenericPolicy>();
+		if (policies == null)
+			return list;
+		for (GenericPolicy p : policies) {
+			GenericPolicyImpl writeable = new GenericPolicyImpl();
+			writeable.setId(p.getId());
+			writeable.setType(p.getType());
+			writeable.setName(p.getName());
+			writeable.setDescription(p.getDescription());
+			writeable.setCreatedBy(p.getCreatedBy());
+			writeable.setCreationDate(p.getCreationDate());
+			writeable.setLastModified(p.getLastModified());
+			writeable.setLastModifiedBy(p.getLastModifiedBy());
+			writeable.setResources(p.getResources());
+			writeable.setSubjectGroups(p.getSubjectGroups());
+			writeable.setExclusionSG(p.getExclusionSG());
+			writeable.setSubjects(p.getSubjects());
+			writeable.setExclusionSubjects(p.getExclusionSubjects());
+			writeable.setEnabled(p.getEnabled());
+			list.add(writeable);
+		}
+		return list;
+	}
 
 	@Override
 	public void go(HasWidgets container, final HistoryToken token) {
@@ -486,15 +507,15 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 		String srchName = token.getValue(HistoryToken.SRCH_POLICY_NAME);
 
 		if (srchType != null && srchName != null) {
-		    this.view.setSearchCriteriaEnabled(true);
-		    this.view.setPolicyCriteriaEnabled(true);
-		    this.view.setSubjectCriteriaEnabled(false);
-		    this.view.setSubjectGroupCriteriaEnabled(false);
-		    this.view.setResourceCriteriaEnabled(false);
-		    this.view.setAvailableTypes(fetchPolicyTypes());
-		    this.view.setSelectedType(srchType);
-		    this.view.setSelectedSearchTerm(srchName);
-		    fetchPoliciesByName(srchName, srchType, null);
+			this.view.setSearchCriteriaEnabled(true);
+			this.view.setPolicyCriteriaEnabled(true);
+			this.view.setSubjectCriteriaEnabled(false);
+			this.view.setSubjectGroupCriteriaEnabled(false);
+			this.view.setResourceCriteriaEnabled(false);
+			this.view.setAvailableTypes(fetchPolicyTypes());
+			this.view.setSelectedType(srchType);
+			this.view.setSelectedSearchTerm(srchName);
+			fetchPoliciesByName(srchName, srchType, null);
 		}
 
 		setRLEffect();
@@ -543,22 +564,28 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 		condition.addQuery(new QueryCondition.Query(
 				QueryCondition.ActivePoliciesOnlyValue.FALSE));
 
-				service.findPolicies(null, Collections.singletonList(key), null, null,
+		service.findPolicies(null, Collections.singletonList(key), null, null,
 				null, null, null, condition,
 				new AsyncCallback<GetPoliciesResponse>() {
 
 					public void onFailure(Throwable arg) {
-						PolicySummaryPresenter.this.view
-								.error(ConsoleUtil.messages.serverError(arg
-										.getLocalizedMessage()));
+
+						if (arg.getLocalizedMessage().contains("500")) {
+							view.error(ConsoleUtil.messages
+									.serverError(ConsoleUtil.policyAdminConstants
+											.genericErrorMessage()));
+						} else {
+							view.error(ConsoleUtil.messages.serverError(arg
+									.getLocalizedMessage()));
+						}
 					}
 
-					
 					public void onSuccess(GetPoliciesResponse result) {
-						PolicySummaryPresenter.this.policies = copyToWriteable(result.getPolicies());
+						PolicySummaryPresenter.this.policies = copyToWriteable(result
+								.getPolicies());
 						PolicySummaryPresenter.this.view.setPolicies(policies);
-					      for (GenericPolicy p:policies)
-	                            fetchAccess(p);
+						for (GenericPolicy p : policies)
+							fetchAccess(p);
 					}
 				});
 
@@ -572,12 +599,16 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 				new AsyncCallback<GetResourcesResponse>() {
 
 					public void onFailure(Throwable arg) {
-						PolicySummaryPresenter.this.view
-								.error(ConsoleUtil.messages.serverError(arg
-										.getLocalizedMessage()));
+						if (arg.getLocalizedMessage().contains("500")) {
+							view.error(ConsoleUtil.messages
+									.serverError(ConsoleUtil.policyAdminConstants
+											.genericErrorMessage()));
+						} else {
+							view.error(ConsoleUtil.messages.serverError(arg
+									.getLocalizedMessage()));
+						}
 					}
 
-					
 					public void onSuccess(GetResourcesResponse result) {
 						PolicySummaryPresenter.this.resources = new ArrayList<Resource>(
 								result.getResources());
@@ -633,17 +664,22 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 				new AsyncCallback<GetPoliciesResponse>() {
 
 					public void onFailure(Throwable arg) {
-						PolicySummaryPresenter.this.view
-								.error(ConsoleUtil.messages.serverError(arg
-										.getLocalizedMessage()));
+						if (arg.getLocalizedMessage().contains("500")) {
+							view.error(ConsoleUtil.messages
+									.serverError(ConsoleUtil.policyAdminConstants
+											.genericErrorMessage()));
+						} else {
+							view.error(ConsoleUtil.messages.serverError(arg
+									.getLocalizedMessage()));
+						}
 					}
 
-					
 					public void onSuccess(GetPoliciesResponse result) {
-						PolicySummaryPresenter.this.policies = copyToWriteable(result.getPolicies());
+						PolicySummaryPresenter.this.policies = copyToWriteable(result
+								.getPolicies());
 						PolicySummaryPresenter.this.view.setPolicies(policies);
-					      for (GenericPolicy p:policies)
-	                            fetchAccess(p);
+						for (GenericPolicy p : policies)
+							fetchAccess(p);
 					}
 				});
 
@@ -664,17 +700,22 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 				new AsyncCallback<GetPoliciesResponse>() {
 
 					public void onFailure(Throwable arg) {
-						PolicySummaryPresenter.this.view
-								.error(ConsoleUtil.messages.serverError(arg
-										.getLocalizedMessage()));
+						if (arg.getLocalizedMessage().contains("500")) {
+							view.error(ConsoleUtil.messages
+									.serverError(ConsoleUtil.policyAdminConstants
+											.genericErrorMessage()));
+						} else {
+							view.error(ConsoleUtil.messages.serverError(arg
+									.getLocalizedMessage()));
+						}
 					}
 
-					
 					public void onSuccess(GetPoliciesResponse result) {
-						PolicySummaryPresenter.this.policies = copyToWriteable(result.getPolicies());
+						PolicySummaryPresenter.this.policies = copyToWriteable(result
+								.getPolicies());
 						PolicySummaryPresenter.this.view.setPolicies(policies);
-					      for (GenericPolicy p:policies)
-	                            fetchAccess(p);
+						for (GenericPolicy p : policies)
+							fetchAccess(p);
 					}
 				});
 	}
@@ -732,130 +773,159 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 				new AsyncCallback<GetPoliciesResponse>() {
 
 					public void onFailure(Throwable arg) {
-						PolicySummaryPresenter.this.view
-								.error(ConsoleUtil.messages.serverError(arg
-										.getLocalizedMessage()));
+						if (arg.getLocalizedMessage().contains("500")) {
+							view.error(ConsoleUtil.messages
+									.serverError(ConsoleUtil.policyAdminConstants
+											.genericErrorMessage()));
+						} else {
+							view.error(ConsoleUtil.messages.serverError(arg
+									.getLocalizedMessage()));
+						}
 					}
 
-					
 					public void onSuccess(GetPoliciesResponse result) {
-						PolicySummaryPresenter.this.policies = copyToWriteable(result.getPolicies());
+						PolicySummaryPresenter.this.policies = copyToWriteable(result
+								.getPolicies());
 						PolicySummaryPresenter.this.view.setPolicies(policies);
-						for (GenericPolicy p:policies){
-						    fetchAccess(p);
+						for (GenericPolicy p : policies) {
+							fetchAccess(p);
 						}
 					}
 				});
 	}
-	
-	private void fetchAccess (final GenericPolicy policy) {
-	    List<UserAction> actions = newPermissions();
-	    permissions.put(policy, actions);
-	    
-	    fetchAccess(UserAction.POLICY_DELETE, policy,
-	                new AsyncCallback<Boolean>() {
-	        public void onFailure(Throwable arg0) {
-                view.error(arg0.getLocalizedMessage());
-            }
 
-	        public void onSuccess(Boolean allowed) {
-	            List<UserAction> permits = permissions.get(policy);
-	            if (allowed.booleanValue())
-	                permits.add(UserAction.POLICY_DELETE);
-	            else
-	                permits.remove(UserAction.POLICY_DELETE);
-	            view.setPermittedActions(policy, permits);     
-            }
-	    });
-	    
-	    
-	    fetchAccess(UserAction.POLICY_EDIT, policy, 
-	                new AsyncCallback<Boolean> () {
-	        public void onFailure(Throwable arg0) {
-                view.error(arg0.getLocalizedMessage());
-            }
+	private void fetchAccess(final GenericPolicy policy) {
+		List<UserAction> actions = newPermissions();
+		permissions.put(policy, actions);
 
-            public void onSuccess(Boolean allowed) {
-                List<UserAction> permits = permissions.get(policy); 
-                if (allowed.booleanValue()) {
-                    permits.add(UserAction.POLICY_EDIT);
-                    permits.add(UserAction.POLICY_DISABLE);
-                    permits.add(UserAction.POLICY_ENABLE);
-                } else {
-                    permits.remove(UserAction.POLICY_EDIT);
-                    permits.remove(UserAction.POLICY_DISABLE);
-                    permits.remove(UserAction.POLICY_ENABLE);
-                }
-                view.setPermittedActions(policy, permits);
-            }
-	    });
+		fetchAccess(UserAction.POLICY_DELETE, policy,
+				new AsyncCallback<Boolean>() {
+					public void onFailure(Throwable arg) {
+						if (arg.getLocalizedMessage().contains("500")) {
+							view.error(ConsoleUtil.messages
+									.serverError(ConsoleUtil.policyAdminConstants
+											.genericErrorMessage()));
+						} else {
+							view.error(ConsoleUtil.messages.serverError(arg
+									.getLocalizedMessage()));
+						}
+					}
+
+					public void onSuccess(Boolean allowed) {
+						List<UserAction> permits = permissions.get(policy);
+						if (allowed.booleanValue())
+							permits.add(UserAction.POLICY_DELETE);
+						else
+							permits.remove(UserAction.POLICY_DELETE);
+						view.setPermittedActions(policy, permits);
+					}
+				});
+
+		fetchAccess(UserAction.POLICY_EDIT, policy,
+				new AsyncCallback<Boolean>() {
+					public void onFailure(Throwable arg) {
+						if (arg.getLocalizedMessage().contains("500")) {
+							view.error(ConsoleUtil.messages
+									.serverError(ConsoleUtil.policyAdminConstants
+											.genericErrorMessage()));
+						} else {
+							view.error(ConsoleUtil.messages.serverError(arg
+									.getLocalizedMessage()));
+						}
+					}
+
+					public void onSuccess(Boolean allowed) {
+						List<UserAction> permits = permissions.get(policy);
+						if (allowed.booleanValue()) {
+							permits.add(UserAction.POLICY_EDIT);
+							permits.add(UserAction.POLICY_DISABLE);
+							permits.add(UserAction.POLICY_ENABLE);
+						} else {
+							permits.remove(UserAction.POLICY_EDIT);
+							permits.remove(UserAction.POLICY_DISABLE);
+							permits.remove(UserAction.POLICY_ENABLE);
+						}
+						view.setPermittedActions(policy, permits);
+					}
+				});
 	}
 
-	private void fetchAccess (final UserAction action, final GenericPolicy policy, final AsyncCallback<Boolean> callback) {
-	    
-	    //TODO TODO TODO
-	    //Remove after PES starts working properly with valid JSON
-	    /*
-        
-	    callback.onSuccess(Boolean.TRUE);
-	    return;
-	       */
+	private void fetchAccess(final UserAction action,
+			final GenericPolicy policy, final AsyncCallback<Boolean> callback) {
 
-	    PolicyEnforcementService enforcementService = (PolicyEnforcementService)serviceMap.get(SupportedService.POLICY_ENFORCEMENT_SERVICE);
-	    if (enforcementService == null)
-	        return;
-	    if (policy == null)
-	        return;
-	    if (action == null)
-	        return;
+		// TODO TODO TODO
+		// Remove after PES starts working properly with valid JSON
+		/*
+		 * 
+		 * callback.onSuccess(Boolean.TRUE); return;
+		 */
 
-	    String resName =  null;
-	    String opName = null;
-	    switch (action) {
-	        case POLICY_DELETE: {
-	            resName = PolicyEnforcementService.POLICY_DELETE_RESOURCE;
-	            opName = policy.getId().toString();
-	            break;
-	        }
-	        case POLICY_EDIT: {
-	            resName = PolicyEnforcementService.POLICY_EDIT_RESOURCE;
-	            opName = policy.getId().toString();
-	            break;
-	        }
-	    }
+		PolicyEnforcementService enforcementService = (PolicyEnforcementService) serviceMap
+				.get(SupportedService.POLICY_ENFORCEMENT_SERVICE);
+		if (enforcementService == null)
+			return;
+		if (policy == null)
+			return;
+		if (action == null)
+			return;
 
-	    //TODO - are credentials necessary?
-	    Map<String,String> credentials = new HashMap<String,String>();
-	    credentials.put("X-TURMERIC-SECURITY-PASSWORD", AppUser.getUser().getPassword());
-	    OperationKey opKey = new OperationKey();
-	    opKey.setResourceName(resName);
-	    opKey.setOperationName(opName);
-	    opKey.setResourceType("OBJECT");
+		String resName = null;
+		String opName = null;
+		switch (action) {
+		case POLICY_DELETE: {
+			resName = PolicyEnforcementService.POLICY_DELETE_RESOURCE;
+			opName = policy.getId().toString();
+			break;
+		}
+		case POLICY_EDIT: {
+			resName = PolicyEnforcementService.POLICY_EDIT_RESOURCE;
+			opName = policy.getId().toString();
+			break;
+		}
+		}
 
-	    List<String> policyTypes = Collections.singletonList("AUTHZ");
+		// TODO - are credentials necessary?
+		Map<String, String> credentials = new HashMap<String, String>();
+		credentials.put("X-TURMERIC-SECURITY-PASSWORD", AppUser.getUser()
+				.getPassword());
+		OperationKey opKey = new OperationKey();
+		opKey.setResourceName(resName);
+		opKey.setOperationName(opName);
+		opKey.setResourceType("OBJECT");
 
-	    String[] subjectType = {"USER", AppUser.getUser().getUsername()};
-	    List<String[]> subjectTypes = Collections.singletonList(subjectType);
+		List<String> policyTypes = Collections.singletonList("AUTHZ");
 
-	    enforcementService.verify(opKey, policyTypes, credentials, subjectTypes, null, null, null, 
-	                              new AsyncCallback<VerifyAccessResponse>() {
+		String[] subjectType = { "USER", AppUser.getUser().getUsername() };
+		List<String[]> subjectTypes = Collections.singletonList(subjectType);
 
-	        public void onFailure(Throwable arg0) {
-	           callback.onFailure(arg0);
-	        }
+		enforcementService.verify(opKey, policyTypes, credentials,
+				subjectTypes, null, null, null,
+				new AsyncCallback<VerifyAccessResponse>() {
 
-	        public void onSuccess(VerifyAccessResponse response) {
-	           // System.err.println("Response = "+(!response.isErrored())+" for PES for action="+action+" on  policy "+policy.getName());
-	            callback.onSuccess(Boolean.valueOf(!response.isErrored()));
-	        }
-	    });
+					public void onFailure(Throwable arg) {
+						if (arg.getLocalizedMessage().contains("500")) {
+							view.error(ConsoleUtil.messages
+									.serverError(ConsoleUtil.policyAdminConstants
+											.genericErrorMessage()));
+						} else {
+							view.error(ConsoleUtil.messages.serverError(arg
+									.getLocalizedMessage()));
+						}
+					}
+
+					public void onSuccess(VerifyAccessResponse response) {
+						// System.err.println("Response = "+(!response.isErrored())+" for PES for action="+action+" on  policy "+policy.getName());
+						callback.onSuccess(Boolean.valueOf(!response
+								.isErrored()));
+					}
+				});
 
 	}
-	
-    private List<UserAction> newPermissions () {
-        List<UserAction> actions = new ArrayList<UserAction>();
-        actions.add(UserAction.POLICY_VIEW); //view is always allowed
-        actions.add(UserAction.POLICY_EXPORT); //allow export too
-        return actions;
-    }
+
+	private List<UserAction> newPermissions() {
+		List<UserAction> actions = new ArrayList<UserAction>();
+		actions.add(UserAction.POLICY_VIEW); // view is always allowed
+		actions.add(UserAction.POLICY_EXPORT); // allow export too
+		return actions;
+	}
 }

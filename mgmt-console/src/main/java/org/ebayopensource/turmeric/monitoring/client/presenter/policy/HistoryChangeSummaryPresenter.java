@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 import org.ebayopensource.turmeric.monitoring.client.SupportedService;
 import org.ebayopensource.turmeric.monitoring.client.model.ConsoleService;
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
@@ -182,7 +183,16 @@ public class HistoryChangeSummaryPresenter extends AbstractGenericPresenter {
 	    
 	        service.getEntityHistory(from, to , poKeys, rsKeys, null,sKeys, sgKeys, new AsyncCallback<GetEntityHistoryResponse>() {
 	            public void onFailure(Throwable arg) {
-	                view.error(arg.getLocalizedMessage());
+	            	if(arg.getLocalizedMessage().contains("500")){
+						view
+						.error(ConsoleUtil.messages.serverError(
+								ConsoleUtil.policyAdminConstants.genericErrorMessage()));
+					}else{
+						view
+						.error(ConsoleUtil.messages.serverError(arg
+								.getLocalizedMessage()));
+					}
+	                
 	            }
 
 	            public void onSuccess(GetEntityHistoryResponse result) {

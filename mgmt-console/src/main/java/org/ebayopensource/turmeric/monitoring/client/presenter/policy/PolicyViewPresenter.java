@@ -52,7 +52,6 @@ public class PolicyViewPresenter extends AbstractGenericPresenter {
 
 	public final static String PRESENTER_ID = "PolicyView";
 
-	
 	public final String getId() {
 		return PRESENTER_ID;
 	}
@@ -92,7 +91,7 @@ public class PolicyViewPresenter extends AbstractGenericPresenter {
 		void setPolicyName(String policyName);
 
 		void setPolicyType(String policyType);
-		
+
 		void setPolicyStatus(boolean enabled);
 
 		void clear();
@@ -168,10 +167,16 @@ public class PolicyViewPresenter extends AbstractGenericPresenter {
 				new AsyncCallback<PolicyQueryService.GetPoliciesResponse>() {
 
 					@Override
-					public void onFailure(Throwable caught) {
-						PolicyViewPresenter.this.view
-								.error(ConsoleUtil.messages.serverError(caught
-										.getLocalizedMessage()));
+					public void onFailure(Throwable arg) {
+						if (arg.getLocalizedMessage().contains("500")) {
+							view.error(ConsoleUtil.messages
+									.serverError(ConsoleUtil.policyAdminConstants
+											.genericErrorMessage()));
+						} else {
+							view.error(ConsoleUtil.messages.serverError(arg
+									.getLocalizedMessage()));
+						}
+						;
 						GWT.log("findPolicies:Fail");
 					}
 
@@ -223,38 +228,47 @@ public class PolicyViewPresenter extends AbstractGenericPresenter {
 									&& policy.getRules().size() > 0) {
 								Rule rule = policy.getRules().get(0);
 
-								if(rule.getAttributeList()!= null && rule.getAttributeList().size()>0){
+								if (rule.getAttributeList() != null
+										&& rule.getAttributeList().size() > 0) {
 
-									for (RuleAttribute attribute : rule.getAttributeList()) {
-									
-										if(RuleAttribute.NotifyKeys.NotifyEmails.name().equals(attribute.getKey())){
+									for (RuleAttribute attribute : rule
+											.getAttributeList()) {
+
+										if (RuleAttribute.NotifyKeys.NotifyEmails
+												.name().equals(
+														attribute.getKey())) {
 											// Policy Based Email Address
 											ExtraField field_1 = new ExtraField();
 											field_1.setFieldType("Label");
 											// TODO JOSE I18N the extra fields
 											field_1.setLabelName("Policy Based Email Address:");
 											// TODO retrieve the email
-											field_1.setValue(attribute.getValue());
+											field_1.setValue(attribute
+													.getValue());
 											field_1.setOrder(1);
 											rlExtraFields.add(field_1);
-											
+
 										}
-										if(RuleAttribute.NotifyKeys.NotifyActive.name().equals(attribute.getKey())){
-											/// Subject Based Email Address:
+										if (RuleAttribute.NotifyKeys.NotifyActive
+												.name().equals(
+														attribute.getKey())) {
+											// / Subject Based Email Address:
 											ExtraField field_2 = new ExtraField();
 											field_2.setFieldType("CheckBox");
 											// TODO JOSE I18N the extra fields
 											field_2.setLabelName("Subject Based Email Address:");
-											// TODO retrieve the value of checkbox
-											field_2.setValue(String.valueOf(attribute.getValue()));
+											// TODO retrieve the value of
+											// checkbox
+											field_2.setValue(String
+													.valueOf(attribute
+															.getValue()));
 
 											field_2.setOrder(2);
 											rlExtraFields.add(field_2);
-											
+
 										}
 									}
 								}
-						
 
 								// Effect Duration
 								ExtraField field_3 = new ExtraField();

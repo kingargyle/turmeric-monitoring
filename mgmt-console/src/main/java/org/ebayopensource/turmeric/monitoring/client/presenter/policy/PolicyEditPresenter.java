@@ -88,10 +88,15 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 				condition,
 				new AsyncCallback<PolicyQueryService.GetPoliciesResponse>() {
 
-					public void onFailure(Throwable caught) {
-						PolicyEditPresenter.this.view
-								.error(ConsoleUtil.messages.serverError(caught
-										.getLocalizedMessage()));
+					public void onFailure(Throwable arg) {
+						if (arg.getLocalizedMessage().contains("500")) {
+							view.error(ConsoleUtil.messages
+									.serverError(ConsoleUtil.policyAdminConstants
+											.genericErrorMessage()));
+						} else {
+							view.error(ConsoleUtil.messages.serverError(arg
+									.getLocalizedMessage()));
+						}
 						GWT.log("findPolicies:Fail");
 					}
 
@@ -267,7 +272,8 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 					.get(subjectType);
 			if (null != sgList) {
 				polSubAssignment.setSubjectGroups(sgList);
-	// commented on "exlusion" updates			sgAssignMap.remove(subjectType);
+				// commented on "exlusion" updates
+				// sgAssignMap.remove(subjectType);
 			}
 
 			List<SubjectGroup> exclSGList = (List<SubjectGroup>) sgAssignMap
@@ -377,7 +383,7 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 				if (a.getSubjectGroups() != null) {
 					groups.addAll(a.getSubjectGroups());
 				}
-				
+
 				if (a.getExclusionSubjectGroups() != null) {
 					exclusionGroups.addAll(a.getExclusionSubjectGroups());
 				}
