@@ -538,16 +538,18 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 
 			// operations
 			// TODO add operations name into table
-			TextColumn<Resource> resourceOpsCol = new TextColumn<Resource>() {
-				public String getValue(Resource assignment) {
-					if (assignment == null || assignment.getOpList() == null)
-						return null;
+			Column<Resource, List<String>> resourceOpsCol = new Column<Resource, List<String>>(
+					new CustomListCell(MIN_SCROLLBAR_SIZE)) {
+				public List<String> getValue(Resource resource) {
 
-					StringBuilder strbuilder = new StringBuilder();
-					for (Operation op : assignment.getOpList()) {
-						strbuilder.append(op.getOperationName() + "\n");
+					if (resource == null || resource.getOpList() == null) {
+						return null;
 					}
-					return strbuilder.toString();
+					ArrayList<String> opsNamesList = new ArrayList<String>();
+					for (Operation op : resource.getOpList()) {
+						opsNamesList.add(op.getOperationName());
+					}
+					return opsNamesList;
 				}
 			};
 
@@ -864,66 +866,80 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 					ConsoleUtil.policyAdminConstants.subjectType());
 
 			// text column for Subject names
-			TextColumn<PolicySubjectAssignment> subjectNamesCol = new TextColumn<PolicySubjectAssignment>() {
-				public String getValue(PolicySubjectAssignment assignment) {
-					if (assignment == null || assignment.getSubjects() == null)
-						return null;
+			Column<PolicySubjectAssignment, List<String>> subjectNamesCol = new Column<PolicySubjectAssignment, List<String>>(
+					new CustomListCell(MIN_SCROLLBAR_SIZE)) {
+				public List<String> getValue(PolicySubjectAssignment assignment) {
 
-					StringBuilder strbuilder = new StringBuilder();
-					for (Subject s : assignment.getSubjects()) {
-						strbuilder.append(s.getName() + " ");
+					if (assignment == null || assignment.getSubjects() == null) {
+						return null;
 					}
-					return strbuilder.toString();
+					ArrayList<String> namesList = new ArrayList<String>();
+					for (Subject subject : assignment.getSubjects()) {
+						namesList.add(subject.getName());
+					}
+
+					return namesList;
 				}
 			};
+			
 			cellTable.addColumn(subjectNamesCol,
 					ConsoleUtil.policyAdminConstants.subjects());
 			
 			// text column for Exclusion Subject names
-			TextColumn<PolicySubjectAssignment> exclusionSubjectNamesCol = new TextColumn<PolicySubjectAssignment>() {
-				public String getValue(PolicySubjectAssignment assignment) {
-					if (assignment == null || assignment.getExclusionSubjects() == null)
-						return null;
+			Column<PolicySubjectAssignment, List<String>> exclusionSubjectNamesCol = new Column<PolicySubjectAssignment, List<String>>(
+					new CustomListCell(MIN_SCROLLBAR_SIZE)) {
+				public List<String> getValue(PolicySubjectAssignment assignment) {
 
-					StringBuilder strbuilder = new StringBuilder();
-					for (Subject s : assignment.getExclusionSubjects()) {
-						strbuilder.append(s.getName() + " ");
+					if (assignment == null || assignment.getExclusionSubjects() == null) {
+						return null;
 					}
-					return strbuilder.toString();
+					ArrayList<String> namesList = new ArrayList<String>();
+					for (Subject subject : assignment.getExclusionSubjects()) {
+						namesList.add(subject.getName());
+					}
+
+					return namesList;
 				}
 			};
+			
 			cellTable.addColumn(exclusionSubjectNamesCol,
 					ConsoleUtil.policyAdminConstants.exclusionSubjects());
 
 			// text column for SubjectGroup names
-			TextColumn<PolicySubjectAssignment> subjectGroupNamesCol = new TextColumn<PolicySubjectAssignment>() {
-				public String getValue(PolicySubjectAssignment assignment) {
-					if (assignment == null
-							|| assignment.getSubjectGroups() == null)
-						return null;
+			Column<PolicySubjectAssignment, List<String>> subjectGroupNamesCol = new Column<PolicySubjectAssignment, List<String>>(
+					new CustomListCell(MIN_SCROLLBAR_SIZE)) {
+				public List<String> getValue(PolicySubjectAssignment assignment) {
 
-					StringBuilder strbuilder = new StringBuilder();
-					for (SubjectGroup s : assignment.getSubjectGroups()) {
-						strbuilder.append(s.getName() + " ");
+					if (assignment == null || assignment.getSubjectGroups()  == null) {
+						return null;
 					}
-					return strbuilder.toString();
+					ArrayList<String> namesList = new ArrayList<String>();
+					for (SubjectGroup subjectGroup : assignment.getSubjectGroups()) {
+						namesList.add(subjectGroup.getName());
+					}
+
+					return namesList;
 				}
 			};
+			
 			cellTable.addColumn(subjectGroupNamesCol,
 					ConsoleUtil.policyAdminConstants.subjectGroups());
 
 		
 			// text column for Exclusion Subject Group names
-			TextColumn<PolicySubjectAssignment> exclusionSGNamesCol = new TextColumn<PolicySubjectAssignment>() {
-				public String getValue(PolicySubjectAssignment assignment) {
-					if (assignment == null || assignment.getExclusionSubjects() == null)
-						return null;
+			Column<PolicySubjectAssignment, List<String>> exclusionSGNamesCol = new Column<PolicySubjectAssignment, List<String>>(
+					new CustomListCell(MIN_SCROLLBAR_SIZE)) {
+				public List<String> getValue(PolicySubjectAssignment assignment) {
 
-					StringBuilder strbuilder = new StringBuilder();
-					for (SubjectGroup s : assignment.getExclusionSubjectGroups()) {
-						strbuilder.append(s.getName() + " ");
+					if (assignment == null || assignment.getExclusionSubjectGroups() == null) {
+						return null;
 					}
-					return strbuilder.toString();
+					ArrayList<String> namesList = new ArrayList<String>();
+					for (SubjectGroup subjectGroup : assignment.getExclusionSubjectGroups()) {
+						namesList.add(subjectGroup.getName());
+					}
+
+					return namesList;
 				}
 			};
 			cellTable.addColumn(exclusionSGNamesCol,

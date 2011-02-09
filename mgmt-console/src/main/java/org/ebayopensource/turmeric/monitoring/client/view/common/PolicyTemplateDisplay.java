@@ -57,6 +57,7 @@ public interface PolicyTemplateDisplay {
 	 *
 	 */
 	public interface PolicyPageTemplateDisplay extends Display {
+		public static int MIN_SCROLLBAR_SIZE = 5;
 		Display getContentView();
 	
 	}

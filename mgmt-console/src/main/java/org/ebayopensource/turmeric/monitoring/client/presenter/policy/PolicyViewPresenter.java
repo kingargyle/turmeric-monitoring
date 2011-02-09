@@ -80,6 +80,9 @@ public class PolicyViewPresenter extends AbstractGenericPresenter {
 	 * Interface definitions
 	 */
 	public interface PolicyViewDisplay extends PolicyPageTemplateDisplay {
+		
+		public static int MIN_SCROLLBAR_SIZE = 5;
+		
 		Button getCancelButton();
 
 		ResourcesContentDisplay getResourceContentView();

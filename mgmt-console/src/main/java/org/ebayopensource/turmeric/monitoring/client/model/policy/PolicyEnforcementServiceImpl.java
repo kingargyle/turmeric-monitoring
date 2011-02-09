@@ -115,9 +115,6 @@ public class PolicyEnforcementServiceImpl  extends AbstractConsoleService implem
                     }
 
                     public void onResponseReceived(Request request, Response response) {
-          
-                        System.err.println("PolicyEnforcementService request="+builder.getUrl());
-                        System.err.println("PolicyEnforcementService response="+response.getText());
                         if (response.getStatusCode() != Response.SC_OK) {
                             callback.onFailure(new Throwable(ConsoleUtil.constants.error()+" "+response.getStatusCode()));
                         } else if (response.getHeader(ERROR_HEADER) != null) {

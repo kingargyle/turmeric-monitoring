@@ -29,6 +29,7 @@ import org.ebayopensource.turmeric.monitoring.client.view.common.AbstractGeneric
 
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.Button;
@@ -64,16 +65,13 @@ public class PolicyViewView extends ResizeComposite implements
 	protected Label policyType;
 	protected Label policyStatus;
 
-	
 	protected boolean extraGridAvailable;
-	
+
 	private Button cancelButton;
 
 	protected Grid extraFieldsGrid = new Grid(1, 1);
 	protected List<ExtraField> extraFieldList;
 
-
-		
 	public PolicyViewView() {
 		mainPanel = new DockLayoutPanel(Unit.EM);
 		initWidget(mainPanel);
@@ -110,8 +108,7 @@ public class PolicyViewView extends ResizeComposite implements
 
 		mainPanel.addSouth(buttonsPannel, 1);
 		mainPanel.add(policyContentPanel);
-	
-	
+
 	}
 
 	protected Widget initContentView() {
@@ -159,7 +156,7 @@ public class PolicyViewView extends ResizeComposite implements
 			policyDesc.setWidth("250px");
 			policyType.setWidth("300px");
 			policyStatus.setWidth("300px");
-			
+
 			policyInfoGrid = new Grid(4, 2);
 
 			policyInfoGrid.setWidget(0, 0, new Label(
@@ -176,16 +173,16 @@ public class PolicyViewView extends ResizeComposite implements
 			policyInfoGrid.setWidget(2, 0, new Label(
 					ConsoleUtil.policyAdminConstants.policyType() + ":"));
 			policyInfoGrid.setWidget(2, 1, policyType);
-			
+
 			policyInfoGrid.setWidget(3, 0, new Label(
 					ConsoleUtil.policyAdminConstants.status() + ":"));
 			policyInfoGrid.setWidget(3, 1, policyStatus);
-			
+
 			mainPanel.add(policyInfoGrid);
 			setExtraFields();
 			mainPanel.add(extraFieldsGrid);
 			extraFieldsGrid.setVisible(extraGridAvailable);
-			
+
 		}
 
 		protected void setExtraFields() {
@@ -194,31 +191,30 @@ public class PolicyViewView extends ResizeComposite implements
 			extraFieldsGrid = new Grid(extraFieldList.size() + 1, 3);
 			for (ExtraField extraField : extraFieldList) {
 
-				extraFieldsGrid.setWidget(extraField.getOrder()-1, 0, new Label(
-						extraField.getLabelName()));
+				extraFieldsGrid.setWidget(extraField.getOrder() - 1, 0,
+						new Label(extraField.getLabelName()));
 
 				if (extraField.getFieldType() != null
 						&& "CheckBox".equalsIgnoreCase(extraField
 								.getFieldType())) {
-					final  CheckBox chBox = new CheckBox();
+					final CheckBox chBox = new CheckBox();
 					// TODO set value
 					chBox.setEnabled(false);
 					extraField.setCheckBox(chBox);
-					extraFieldsGrid.setWidget(extraField.getOrder()-1, 1,
+					extraFieldsGrid.setWidget(extraField.getOrder() - 1, 1,
 							extraField.getCheckBox());
 				} else if (extraField.getFieldType() != null
-						&& 
-						("TextBox".equalsIgnoreCase(extraField
+						&& ("TextBox".equalsIgnoreCase(extraField
 								.getFieldType())
-						||"TextArea".equalsIgnoreCase(extraField
-								.getFieldType())
-						|| "ListBox".equalsIgnoreCase(extraField
-								.getFieldType()))) {
-					final  Label label = new Label(" ");
-					extraFieldsGrid.setWidget(extraField.getOrder()-1, 1, label);
+								|| "TextArea".equalsIgnoreCase(extraField
+										.getFieldType()) || "ListBox"
+								.equalsIgnoreCase(extraField.getFieldType()))) {
+					final Label label = new Label(" ");
+					extraFieldsGrid.setWidget(extraField.getOrder() - 1, 1,
+							label);
 				}
 			}
-			
+
 		}
 	}
 
@@ -289,17 +285,18 @@ public class PolicyViewView extends ResizeComposite implements
 
 			// operations
 			// TODO add operations name into table
-			final TextColumn<Resource> resourceOpsCol = new TextColumn<Resource>() {
-				public String getValue(final Resource assignment) {
-					if (assignment == null || assignment.getOpList() == null){
+			Column<Resource, List<String>> resourceOpsCol = new Column<Resource, List<String>>(
+					new CustomListCell(MIN_SCROLLBAR_SIZE)) {
+				public List<String> getValue(Resource resource) {
+
+					if (resource == null || resource.getOpList() == null) {
 						return null;
 					}
-						
-					StringBuilder strbuilder = new StringBuilder();
-					for (Operation op : assignment.getOpList()) {
-						strbuilder.append(op.getOperationName() + "\n");
+					ArrayList<String> opsNamesList = new ArrayList<String>();
+					for (Operation op : resource.getOpList()) {
+						opsNamesList.add(op.getOperationName());
 					}
-					return strbuilder.toString();
+					return opsNamesList;
 				}
 			};
 
@@ -325,7 +322,7 @@ public class PolicyViewView extends ResizeComposite implements
 		public void setAssignments(final List<Resource> assignments) {
 			final List<Resource> data = dataProvider.getList();
 			data.clear();
-			if (assignments != null){
+			if (assignments != null) {
 				data.addAll(assignments);
 			}
 			cellTable.redraw();
@@ -335,8 +332,8 @@ public class PolicyViewView extends ResizeComposite implements
 
 	private class SubjectContentView extends AbstractGenericView implements
 			SubjectContentDisplay {
-		private final  SimplePanel mainPanel;
-		private final  Grid mainGrid;
+		private final SimplePanel mainPanel;
+		private final Grid mainGrid;
 		private CellTable<PolicySubjectAssignment> cellTable;
 		private ProvidesKey<PolicySubjectAssignment> keyProvider;
 		private ListDataProvider<PolicySubjectAssignment> dataProvider;
@@ -385,7 +382,7 @@ public class PolicyViewView extends ResizeComposite implements
 			// text column for type
 			final TextColumn<PolicySubjectAssignment> typeCol = new TextColumn<PolicySubjectAssignment>() {
 				public String getValue(final PolicySubjectAssignment assignment) {
-					if (assignment == null || assignment.getSubjects() == null){
+					if (assignment == null || assignment.getSubjects() == null) {
 						return null;
 					}
 					return assignment.getSubjectType();
@@ -395,82 +392,93 @@ public class PolicyViewView extends ResizeComposite implements
 					ConsoleUtil.policyAdminConstants.subjectType());
 
 			// text column for Subject names
-			final TextColumn<PolicySubjectAssignment> subjectNamesCol = new TextColumn<PolicySubjectAssignment>() {
-				public String getValue(final PolicySubjectAssignment assignment) {
-					if (assignment == null || assignment.getSubjects() == null){
+			Column<PolicySubjectAssignment, List<String>> subjectNamesCol = new Column<PolicySubjectAssignment, List<String>>(
+					new CustomListCell(MIN_SCROLLBAR_SIZE)) {
+				public List<String> getValue(PolicySubjectAssignment assignment) {
+
+					if (assignment == null || assignment.getSubjects() == null) {
 						return null;
 					}
-
-					StringBuilder strbuilder = new StringBuilder();
-					for (Subject s : assignment.getSubjects()) {
-						strbuilder.append(s.getName() + " ");
+					ArrayList<String> namesList = new ArrayList<String>();
+					for (Subject subject : assignment.getSubjects()) {
+						namesList.add(subject.getName());
 					}
-					return strbuilder.toString();
+
+					return namesList;
 				}
 			};
+			
 			cellTable.addColumn(subjectNamesCol,
 					ConsoleUtil.policyAdminConstants.subjects());
 
 			// text column for Exclusion Subject names
-			TextColumn<PolicySubjectAssignment> excluionSubjectNamesCol = new TextColumn<PolicySubjectAssignment>() {
-				public String getValue(PolicySubjectAssignment assignment) {
-					if (assignment == null || assignment.getExclusionSubjects() == null)
-						return null;
+			Column<PolicySubjectAssignment, List<String>> excluionSubjectNamesCol = new Column<PolicySubjectAssignment, List<String>>(
+					new CustomListCell(MIN_SCROLLBAR_SIZE)) {
+				public List<String> getValue(PolicySubjectAssignment assignment) {
 
-					StringBuilder strbuilder = new StringBuilder();
-					for (Subject s : assignment.getExclusionSubjects()) {
-						strbuilder.append(s.getName() + " ");
+					if (assignment == null || assignment.getExclusionSubjects() == null) {
+						return null;
 					}
-					return strbuilder.toString();
+					ArrayList<String> namesList = new ArrayList<String>();
+					for (Subject subject : assignment.getExclusionSubjects()) {
+						namesList.add(subject.getName());
+					}
+
+					return namesList;
 				}
 			};
+			
 			cellTable.addColumn(excluionSubjectNamesCol,
 					ConsoleUtil.policyAdminConstants.exclusionSubjects());
 
-			
 			// text column for SubjectGroup names
-			final TextColumn<PolicySubjectAssignment> sgNamesCol = new TextColumn<PolicySubjectAssignment>() {
-				public String getValue(final PolicySubjectAssignment assignment) {
-					if (assignment == null
-							|| assignment.getSubjectGroups() == null){
+			Column<PolicySubjectAssignment, List<String>> sgNamesCol = new Column<PolicySubjectAssignment, List<String>>(
+					new CustomListCell(MIN_SCROLLBAR_SIZE)) {
+				public List<String> getValue(PolicySubjectAssignment assignment) {
+
+					if (assignment == null || assignment.getSubjectGroups()  == null) {
 						return null;
 					}
-
-					StringBuilder strbuilder = new StringBuilder();
-					for (SubjectGroup s : assignment.getSubjectGroups()) {
-						strbuilder.append(s.getName() + " ");
+					ArrayList<String> namesList = new ArrayList<String>();
+					for (SubjectGroup subjectGroup : assignment.getSubjectGroups()) {
+						namesList.add(subjectGroup.getName());
 					}
-					return strbuilder.toString();
+
+					return namesList;
 				}
 			};
+			
 			cellTable.addColumn(sgNamesCol,
 					ConsoleUtil.policyAdminConstants.subjectGroups());
-			
-			// text column for Exclusion Subject Group names
-			TextColumn<PolicySubjectAssignment> exclusionSGNamesCol = new TextColumn<PolicySubjectAssignment>() {
-				public String getValue(PolicySubjectAssignment assignment) {
-					if (assignment == null || assignment.getExclusionSubjects() == null)
-						return null;
 
-					StringBuilder strbuilder = new StringBuilder();
-					for (SubjectGroup s : assignment.getExclusionSubjectGroups()) {
-						strbuilder.append(s.getName() + " ");
+			// text column for Exclusion Subject Group names
+			Column<PolicySubjectAssignment, List<String>> exclusionSGNamesCol = new Column<PolicySubjectAssignment, List<String>>(
+					new CustomListCell(MIN_SCROLLBAR_SIZE)) {
+				public List<String> getValue(PolicySubjectAssignment assignment) {
+
+					if (assignment == null || assignment.getExclusionSubjectGroups() == null) {
+						return null;
 					}
-					return strbuilder.toString();
+					ArrayList<String> namesList = new ArrayList<String>();
+					for (SubjectGroup subjectGroup : assignment.getExclusionSubjectGroups()) {
+						namesList.add(subjectGroup.getName());
+					}
+
+					return namesList;
 				}
 			};
+			
 			cellTable.addColumn(exclusionSGNamesCol,
 					ConsoleUtil.policyAdminConstants.exclusionSubjectGroups());
 
-			
-			
 		}
 
-		public void setAssignments(final List<PolicySubjectAssignment> assignments) {
+		public void setAssignments(
+				final List<PolicySubjectAssignment> assignments) {
 			final List<PolicySubjectAssignment> data = dataProvider.getList();
 			data.clear();
 
-			if (assignments != null){
+			if (assignments != null) {
 				data.addAll(assignments);
 			}
 			cellTable.redraw();
@@ -504,57 +512,51 @@ public class PolicyViewView extends ResizeComposite implements
 		return subjectContentView;
 	}
 
-	
 	public void setPolicyDesc(final String policyDesc) {
 		this.policyDesc.setText(policyDesc);
 	}
-	
-	
+
 	public void setPolicyType(final String policyType) {
 		this.policyType.setText(policyType);
 	}
-	
-	
+
 	public void setPolicyStatus(final boolean enabled) {
-		if(enabled){
-			this.policyStatus.setText(ConsoleUtil.policyAdminConstants.enable());
-		}else{
-			this.policyStatus.setText(ConsoleUtil.policyAdminConstants.disable());
+		if (enabled) {
+			this.policyStatus
+					.setText(ConsoleUtil.policyAdminConstants.enable());
+		} else {
+			this.policyStatus.setText(ConsoleUtil.policyAdminConstants
+					.disable());
 		}
 	}
 
-	
 	public void setPolicyName(final String policyName) {
 		this.policyName.setText(policyName);
 	}
 
-	
 	public void setExtraFieldAvailable(final boolean available) {
 		this.extraGridAvailable = available;
 	}
 
-	
-	
 	public void setExtraFieldList(List<ExtraField> extraFieldList) {
 
 		for (ExtraField extraField : extraFieldList) {
 
-				if (extraField.getFieldType() != null
-						&& "CheckBox".equalsIgnoreCase(extraField
-								.getFieldType())) {
-					final CheckBox ch = (CheckBox) extraFieldsGrid.getWidget(
-							extraField.getOrder()-1, 1);
-					ch.setValue(Boolean.parseBoolean(extraField.getValue()));
+			if (extraField.getFieldType() != null
+					&& "CheckBox".equalsIgnoreCase(extraField.getFieldType())) {
+				final CheckBox ch = (CheckBox) extraFieldsGrid.getWidget(
+						extraField.getOrder() - 1, 1);
+				ch.setValue(Boolean.parseBoolean(extraField.getValue()));
 
-				} else if (extraField.getFieldType() != null
-						&& ("Label".equalsIgnoreCase(extraField.getFieldType()))) {
-					final Label lbl = (Label) extraFieldsGrid.getWidget(
-							extraField.getOrder()-1, 1);
-					lbl.setText(extraField.getValue());
-				
-				}
+			} else if (extraField.getFieldType() != null
+					&& ("Label".equalsIgnoreCase(extraField.getFieldType()))) {
+				final Label lbl = (Label) extraFieldsGrid.getWidget(
+						extraField.getOrder() - 1, 1);
+				lbl.setText(extraField.getValue());
+
 			}
-			extraFieldsGrid.setVisible(extraGridAvailable);
+		}
+		extraFieldsGrid.setVisible(extraGridAvailable);
 	}
 
 	public void clear() {
@@ -563,18 +565,16 @@ public class PolicyViewView extends ResizeComposite implements
 		policyType.setText("");
 		policyStatus.setText("");
 		extraGridAvailable = false;
-		
-		
+
 		if (this.extraFieldList != null && this.extraFieldList.size() > 0) {
-			
+
 			for (int i = 0; i < extraFieldList.size(); i++) {
 				extraFieldList.get(i).setValue("");
 			}
-				
+
 			setExtraFieldList(extraFieldList);
 		}
-		
-		
+
 	}
 
 	public void error(final String msg) {
@@ -584,7 +584,6 @@ public class PolicyViewView extends ResizeComposite implements
 		dialog.show();
 	}
 
-	
 	public void setAssociatedId(final String id) {
 		// TODO Auto-generated method stub
 
@@ -594,6 +593,5 @@ public class PolicyViewView extends ResizeComposite implements
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
+
 }

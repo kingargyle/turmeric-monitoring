@@ -23,14 +23,17 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 
 /**
  * Custom cell implementation that allows to show a list of Strings as an html
- * tag or a simple HTML-scaped string list based on the minListSize attribute
+ * tag or a simple HTML-scaped string list based on the minScrollbarSize attribute
  * 
  * 
  */
 public class CustomListCell extends AbstractInputCell<List<String>, String> {
-	private int minListSize = 3;
+	private int minScrollbarSize = 3;
 
 	interface Template extends SafeHtmlTemplates {
+		@Template("<select size=\"{0}\"  tabindex=\"-1\">{1}</select>")
+		SafeHtml selectTag(String size, SafeHtml content);
+		
 		@Template("<option value=\"{0}\">{0}</option>")
 		SafeHtml deselected(String option);
 
@@ -47,19 +50,19 @@ public class CustomListCell extends AbstractInputCell<List<String>, String> {
 		}
 	}
 
-	public CustomListCell(int minSize) {
+	public CustomListCell(int minScrollbarSize) {
 		this();
-		if (minSize < 0) {
-			throw new IllegalArgumentException("Invalid minSize parameter = "
-					+ minSize);
+		if (minScrollbarSize < 0) {
+			throw new IllegalArgumentException("Invalid minScrollbarSize parameter = "
+					+ minScrollbarSize);
 		}
-		this.minListSize = minSize;
+		this.minScrollbarSize = minScrollbarSize;
 	}
 
 	@Override
 	public void render(List<String> value, Object key, SafeHtmlBuilder sb) {
 		if (value != null) {
-			if (value.size() >= 3) {
+			if (value.size() >= minScrollbarSize) {
 				renderSelectList(value, sb);
 			} else {
 				renderSimpleList(value, sb);
@@ -77,14 +80,14 @@ public class CustomListCell extends AbstractInputCell<List<String>, String> {
 	}
 
 	private void renderSelectList(List<String> value, SafeHtmlBuilder sb) {
-		
-		sb.appendHtmlConstant("<select size=\""+this.minListSize+"\" tabindex=\"-1\">");
+		SafeHtmlBuilder content = new SafeHtmlBuilder();
 		if (value != null && !value.isEmpty()) {
 			for (String option : value) {
-				sb.append(template.deselected(option));
+				content.append(template.deselected(option));
 			}
 		}
-		sb.appendHtmlConstant("</select>");
+		sb.append(template.selectTag(String.valueOf(this.minScrollbarSize), content.toSafeHtml()));
+		
 	}
 
 }

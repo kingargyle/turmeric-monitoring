@@ -545,7 +545,6 @@ public class SubjectGroupSummaryPresenter extends AbstractGenericPresenter {
                                     }
 
                                     public void onSuccess(VerifyAccessResponse response) {
-                                      System.err.println("Response = "+(!response.isErrored())+" for PES for action="+action+" on  subjectGroup "+group.getName());
                                       callback.onSuccess(Boolean.valueOf(!response.isErrored()));
                                     }
                                   });

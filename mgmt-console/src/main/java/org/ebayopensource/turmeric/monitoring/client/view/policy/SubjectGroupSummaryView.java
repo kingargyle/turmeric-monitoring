@@ -414,7 +414,6 @@ public class SubjectGroupSummaryView extends AbstractGenericView implements
 
 					if (group == null || group.getSubjects() == null)
 						return null;
-					System.err.println(group.getSubjects());
 					return group.getSubjects();
 				}
 			};
@@ -429,7 +428,6 @@ public class SubjectGroupSummaryView extends AbstractGenericView implements
 
 					if (group == null || group.getPolicies() == null)
 						return null;
-					System.err.println(group.getPolicies());
 					return group.getPolicies();
 				}
 			};
