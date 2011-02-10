@@ -22,7 +22,7 @@ public class ConsoleUtil {
 
     public static final DateTimeFormat timeFormat = DateTimeFormat.getFormat("dd MMM yyyy HH:mm");
     public static final DateTimeFormat tzDateFormat = DateTimeFormat.getFormat("dd MM yyyy ZZZZ");
-    public static final DateTimeFormat tzTimeFormat = DateTimeFormat.getFormat("dd MM yyyy HH:mm ZZZZ");
+    public static final DateTimeFormat tzTimeFormat = DateTimeFormat.getFormat("dd MM yyyy HH:mm");
     public static final DateTimeFormat xsDateTimeFormat = DateTimeFormat.getFormat("yyyy-MM-dd'T'HH:mm:ss.SZZZ");
 	public static final ConsoleConstants constants = GWT.create(ConsoleConstants.class);
 	public static final ConsoleMessageConstants messages = GWT.create(ConsoleMessageConstants.class);
