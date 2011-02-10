@@ -22,9 +22,8 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 
 /**
- * Custom cell implementation that allows to show a list of Strings as an html
- * tag or a simple HTML-scaped string list based on the minScrollbarSize attribute
- * 
+ * Custom cell implementation that allows to show a list of Strings as an html select
+ * tag or a simple HTML-scaped string list based on the minScrollbarSize attribute.
  * 
  */
 public class CustomListCell extends AbstractInputCell<List<String>, String> {
@@ -59,6 +58,12 @@ public class CustomListCell extends AbstractInputCell<List<String>, String> {
 		this.minScrollbarSize = minScrollbarSize;
 	}
 
+	/**
+	 * Renders the element list. If the list size >= minScrollbarSize then the cell renders as a select element, else, as a 
+	 * text list of elements, separated by br tags
+	 * @param value
+	 * @param sb
+	 */
 	@Override
 	public void render(List<String> value, Object key, SafeHtmlBuilder sb) {
 		if (value != null) {
@@ -70,7 +75,7 @@ public class CustomListCell extends AbstractInputCell<List<String>, String> {
 		}
 
 	}
-
+	
 	private void renderSimpleList(List<String> value, SafeHtmlBuilder sb) {
 		if (value != null && !value.isEmpty()) {
 			for (String option : value) {
