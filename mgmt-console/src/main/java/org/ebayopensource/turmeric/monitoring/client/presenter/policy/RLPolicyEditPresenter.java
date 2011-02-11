@@ -94,6 +94,7 @@ public class RLPolicyEditPresenter extends PolicyEditPresenter {
 			this.view.getSaveButton().addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					GWT.log("EDITION MODE:");
+					rules.clear();
 					String ruleName = view.getPolicyName().getValue();
 
 					RuleEffectType ruleEffectType = RuleEffectType.valueOf(view

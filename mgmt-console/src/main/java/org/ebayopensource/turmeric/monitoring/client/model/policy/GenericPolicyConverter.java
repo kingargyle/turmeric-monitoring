@@ -40,7 +40,7 @@ public class GenericPolicyConverter {
             int i=0;
         	for (Rule rule:policy.getRules()){ 
 	        	url += (rule.getEffect()==null?"":"&ns1:policy.ns1:Rule("+i+").@Effect="+rule.getEffect());
-	        	url += (rule.getRuleName()==null?"":"&ns1:policy.ns1:Rule("+i+").@RuleName="+rule.getRuleName());
+	        	url += (rule.getRuleName()==null?"":"&ns1:policy.ns1:Rule("+i+").@RuleName="+rule.getRuleName()+String.valueOf(Math.random()).substring(2,5));
 	        	url += (rule.getPriority()==null?"":"&ns1:policy.ns1:Rule("+i+").@Priority="+rule.getPriority());
 	        	url += (rule.getRolloverPeriod()==null?"":"&ns1:policy.ns1:Rule("+i+").@RolloverPeriod="+rule.getRolloverPeriod());
 	        	url += (rule.getEffectDuration()==null?"":"&ns1:policy.ns1:Rule("+i+").@EffectDuration="+rule.getEffectDuration());
