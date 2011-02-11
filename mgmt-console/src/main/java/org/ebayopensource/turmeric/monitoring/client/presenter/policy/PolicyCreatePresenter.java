@@ -1481,15 +1481,15 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 
 				if (a.getSubjects() != null && a.getSubjects().size() > 0) {
 					// external subjects todays are only USER types
-					if ("USER".equals(a.getSubjectType())) {
-						createInternalSubject(a.getSubjects());
-					}
+//					if ("USER".equals(a.getSubjectType())) {
+//						createInternalSubject(a.getSubjects());
+//					}
 
 					// adding the created subjects (now as internal ones)
-					List<PolicySubjectAssignment> internalAssignments = view
-							.getSubjectContentView().getAssignments();
+//					List<PolicySubjectAssignment> internalAssignments = view
+//							.getSubjectContentView().getAssignments();
 
-					for (PolicySubjectAssignment policySubjectAssignment : internalAssignments) {
+					for (PolicySubjectAssignment policySubjectAssignment :  view.getSubjectContentView().getAssignments()) {
 						if (policySubjectAssignment.getSubjects() != null) {
 							subjects.addAll(policySubjectAssignment
 									.getSubjects());
@@ -1502,15 +1502,15 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 				if (a.getExclusionSubjects() != null
 						&& a.getExclusionSubjects().size() > 0) {
 					// external subjects todays are only USER types
-					if ("USER".equals(a.getSubjectType())) {
-						createInternalSubject(a.getExclusionSubjects());
-					}
+//					if ("USER".equals(a.getSubjectType())) {
+//						createInternalSubject(a.getExclusionSubjects());
+//					}
 
 					// adding the created subjects (now as internal ones)
-					List<PolicySubjectAssignment> internalAssignments = view
-							.getSubjectContentView().getAssignments();
+//					List<PolicySubjectAssignment> internalAssignments = view
+//							.getSubjectContentView().getAssignments();
 
-					for (PolicySubjectAssignment policySubjectAssignment : internalAssignments) {
+					for (PolicySubjectAssignment policySubjectAssignment : view.getSubjectContentView().getAssignments()) {
 						if (policySubjectAssignment.getExclusionSubjects() != null) {
 							exclusionSubjects.addAll(policySubjectAssignment
 									.getExclusionSubjects());
