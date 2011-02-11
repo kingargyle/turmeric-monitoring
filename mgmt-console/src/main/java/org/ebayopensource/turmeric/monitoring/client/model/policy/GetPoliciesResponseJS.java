@@ -131,15 +131,28 @@ public class GetPoliciesResponseJS extends JavaScriptObject implements
          */
 		@Override
 		public final List<SubjectGroup> getSubjectGroups() {
-			List<SubjectGroup> subjects = new ArrayList<SubjectGroup>();
+			List<SubjectGroup> subjectGroups = new ArrayList<SubjectGroup>();
 			JsArray<SubjectGroupJS> array = getSubjectGroupsArray();
 			if (array != null) {
-				for (int i = 0; i < array.length(); i++)
-					if(! array.get(i).getName().startsWith("?!")){
-						subjects.add(array.get(i));
+				for (int i = 0; i < array.length(); i++){
+					if(array.get(i).getSubjectMatchTypes() != null){
+						for (SubjectMatchType matchType :array.get(i).getSubjectMatchTypes()){
+							if("urn:oasis:names:tc:xacml:1.0:function:integer-equal".equals(matchType.getMatchId())){
+								subjectGroups.add(array.get(i));	
+							}
+							break;
+						}	
 					}
+				}
+//				for (int i = 0; i < array.length(); i++){
+//					if(array.get(i).getSubjectMatchType() != null){
+//						if("urn:oasis:names:tc:xacml:1.0:function:integer-equal".equals(array.get(i).getSubjectMatchType().getMatchId())){
+//							subjectGroups.add(array.get(i));	
+//						}
+//					}
+//				}
 			}
-			return subjects;
+			return subjectGroups;
 		}
 
 		/**
@@ -155,14 +168,24 @@ public class GetPoliciesResponseJS extends JavaScriptObject implements
 			List<Subject> subjects = new ArrayList<Subject>();
 			JsArray<SubjectJS> array = getSubjectsArray();
 			if (array != null) {
-				for (int i = 0; i < array.length(); i++)
-					if(! array.get(i).getName().startsWith("?!")){
-						subjects.add(array.get(i));
+				for (int i = 0; i < array.length(); i++){
+					if(array.get(i).getSubjectMatchTypes() != null){
+						for (SubjectMatchType matchType :array.get(i).getSubjectMatchTypes()){
+							if("urn:oasis:names:tc:xacml:1.0:function:integer-equal".equals(matchType.getMatchId())){
+								subjects.add(array.get(i));	
+							}
+							break;
+						}	
 					}
+				}
 			}
+			
 			return subjects;
 		}
 
+		
+
+		
 		public final native JsArray<SubjectJS> getSubjectsArray() /*-{
 			if (this["ns1.Target"])
 			if (this["ns1.Target"]["ns1.Subjects"])
@@ -183,6 +206,17 @@ public class GetPoliciesResponseJS extends JavaScriptObject implements
 			return null;
 		}-*/;
 
+		public final native JsArray<SubjectMatchTypeJS> getSubjectMatchTypeArray() /*-{
+		if (this["ns1.Target"])
+			if (this["ns1.Target"]["ns1.Subjects"])
+				if (this["ns1.Target"]["ns1.Subjects"]["ns1.SubjectGroup"])
+					return this["ns1.Target"]["ns1.Subjects"]["ns1.SubjectGroup"]["ns2.SubjectMatchType"];
+			else
+				return null;
+		else 
+			return null;
+		}-*/;
+		
 		public final Date getLastModified() {
 			String tmp = getLastModifiedAsString();
 			try {
@@ -235,13 +269,19 @@ public class GetPoliciesResponseJS extends JavaScriptObject implements
 	        List<Subject> exclusionSubjects = new ArrayList<Subject>();
 			JsArray<SubjectJS> array = getSubjectsArray();
 			if (array != null) {
-				for (int i = 0; i < array.length(); i++)
-					if(array.get(i).getName().startsWith("?!")){
-						exclusionSubjects.add(array.get(i));
+				for (int i = 0; i < array.length(); i++){
+					if(array.get(i).getSubjectMatchTypes() != null){
+						for (SubjectMatchType matchType :array.get(i).getSubjectMatchTypes()){
+							if("urn:oasis:names:tc:xacml:1.0:function:string-regexp-match".equals(matchType.getMatchId())){
+								exclusionSubjects.add(array.get(i));	
+							}
+							break;
+						}	
 					}
+				}
 			}
 			return exclusionSubjects;
-		}
+        }
         
         /**
          * both Inclusion List & exclusion list are store at same list. the way to distinguish include subject as following example:
@@ -255,11 +295,26 @@ public class GetPoliciesResponseJS extends JavaScriptObject implements
 		public final List<SubjectGroup> getExclusionSG() { 
 	        List<SubjectGroup> exclusionSG = new ArrayList<SubjectGroup>();
 			JsArray<SubjectGroupJS> array = getSubjectGroupsArray();
+//			if (array != null) {
+//				for (int i = 0; i < array.length(); i++){
+//					if(array.get(i).getSubjectMatchType() != null){
+//						if("urn:oasis:names:tc:xacml:1.0:function:string-regexp-match".equals(array.get(i).getSubjectMatchType().getMatchId())){
+//							exclusionSG.add(array.get(i));	
+//						}
+//					}
+//				}
+//			}
 			if (array != null) {
-				for (int i = 0; i < array.length(); i++)
-					if(array.get(i).getName().startsWith("?!")){
-						exclusionSG.add(array.get(i));
+				for (int i = 0; i < array.length(); i++){
+					if(array.get(i).getSubjectMatchTypes() != null){
+						for (SubjectMatchType matchType :array.get(i).getSubjectMatchTypes()){
+							if("urn:oasis:names:tc:xacml:1.0:function:string-regexp-match".equals(matchType.getMatchId())){
+								exclusionSG.add(array.get(i));	
+							}
+							break;
+						}	
 					}
+				}
 			}
 			return exclusionSG;
 		}
@@ -351,7 +406,7 @@ public class GetPoliciesResponseJS extends JavaScriptObject implements
 		private final native String getEffectDurationAsString() /*-{
 			return this["@EffectDuration"];
 		}-*/;
-
+ 
 		@Override
 		public final Long getConditionDuration() {
 			// TODO Auto-generated method stub

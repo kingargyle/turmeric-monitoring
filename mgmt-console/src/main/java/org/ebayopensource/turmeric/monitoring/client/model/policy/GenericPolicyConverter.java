@@ -101,61 +101,111 @@ public class GenericPolicyConverter {
             }
         }
         
+        url += createSubjectsTarget(policy.getSubjects(), policy.getExclusionSubjects());
+   
+        url += createSubjectGroupsTarget(policy.getSubjectGroups(), policy.getExclusionSG());
         
-        //subjects and subjectgroups are optional also
-        //Subject and SubjectGroups have only their keys populated as the server side
-        //is only interested in that, so that is name & type
-      
-        if (policy.getSubjectGroups() != null) {
-            int i=0;
-            for (SubjectGroup sg:policy.getSubjectGroups()) {
-                url += (sg.getName()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:SubjectGroup("+i+").@SubjectGroupName="+sg.getName());
-                url += (sg.getType()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:SubjectGroup("+i+").@SubjectType="+sg.getType().toString());
-                i++;
-            }
-        }
         
-        if (policy.getSubjects() != null) {
-            int i=0;
-            for (Subject s:policy.getSubjects()) {
-                url += (s.getName()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:Subject("+i+").@SubjectName="+s.getName());
-                url += (s.getType()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:Subject("+i+").@SubjectType="+s.getType().toString());
-                i++;
-            }
-        }
-        
-
-        /**
-         * both Inclusion List & exclusion list are store at same list. the way to distinguish include subject as following example:
-		 * assume a subject Id is 705033744 then at request schema:
-		 * include subject looks like:
-		 * <ns1:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">(705033744)</ns1:AttributeValue>
-		 * exclusion subject looks like:
-		 * <ns1:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">(?!705033744)</ns1:AttributeValue>
-         */
-        if (policy.getExclusionSubjects() != null) {
-            int i=0;
-            for (Subject s:policy.getExclusionSubjects()) {
-                url += (s.getName()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:Subject("+i+").@SubjectGroupName=?!"+s.getName());
-                url += (s.getType()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:Subject("+i+").@SubjectType="+s.getType().toString());
-                i++;
-            }
-        }
-        
-        if (policy.getExclusionSG() != null) {
-            int i=0;
-            for (SubjectGroup sg:policy.getExclusionSG()) {
-                url += (sg.getName()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:SubjectGroup("+i+").@SubjectName=?!"+sg.getName());
-                url += (sg.getType()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:SubjectGroup("+i+").@SubjectType="+sg.getType().toString());
-                i++;
-            }
-        }
-        
-         
         return url;
         
     }
+
+	private static String createSubjectGroupsTarget(List<SubjectGroup> inclusionSubjectGroups, List<SubjectGroup> exclusionSubjectGroups) {
+		String url ="";
+		int i=0;
+		//inclusion subjecs groups
+		if (inclusionSubjectGroups != null) {
+			for (SubjectGroup sg:inclusionSubjectGroups) {
+			    url += (sg.getName()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:SubjectGroup("+i+").@SubjectGroupName="+sg.getName());
+			    url += (sg.getType()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:SubjectGroup("+i+").@SubjectType="+sg.getType().toString());
+			    if (sg.getSubjectMatchTypes() != null && sg.getSubjectMatchTypes().size() > 0) {
+			    	int j=0;
+			    	for (SubjectMatchType smt : sg.getSubjectMatchTypes() ) {
+			            url += "&ns1:policy.ns1:Target.ns1:Subjects.ns1:SubjectGroup("+i+").ns2:SubjectMatch(" + j + ").@MatchId="
+							+ smt.getMatchId();
+			            url += "&ns1:policy.ns1:Target.ns1:Subjects.ns1:SubjectGroup("+i+").ns2:SubjectMatch(" + j + ").ns2:AttributeValue="
+							+ smt.getAttributeValue().getValue();
+			            
+			            url += "&ns1:policy.ns1:Target.ns1:Subjects.ns1:SubjectGroup("+i+").ns2:SubjectMatch(" + j + ").ns2:SubjectAttributeDesignator.@AttributeId="
+						+ smt.getSubjectAttributeDesignator().getAttributeId();
+			    	}
+			    }
+			    i++;
+			}
+		}
+		//exclusion subjecs groups
+		if (exclusionSubjectGroups != null) {
+	
+			for (SubjectGroup sg:exclusionSubjectGroups) {
+			    url += (sg.getName()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:SubjectGroup("+i+").@SubjectGroupName="+sg.getName());
+			    url += (sg.getType()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:SubjectGroup("+i+").@SubjectType="+sg.getType().toString());
+			    if (sg.getSubjectMatchTypes() != null && sg.getSubjectMatchTypes().size() > 0) {
+			    	int j=0;
+			    	for (SubjectMatchType smt : sg.getSubjectMatchTypes() ) {
+			            url += "&ns1:policy.ns1:Target.ns1:Subjects.ns1:SubjectGroup("+i+").ns2:SubjectMatch(" + j + ").@MatchId="
+							+ smt.getMatchId();
+			            url += "&ns1:policy.ns1:Target.ns1:Subjects.ns1:SubjectGroup("+i+").ns2:SubjectMatch(" + j + ").ns2:AttributeValue="
+							+ smt.getAttributeValue().getValue();
+			            
+			            url += "&ns1:policy.ns1:Target.ns1:Subjects.ns1:SubjectGroup("+i+").ns2:SubjectMatch(" + j + ").ns2:SubjectAttributeDesignator.@AttributeId="
+						+ smt.getSubjectAttributeDesignator().getAttributeId();
+			    	}
+			    }
+			    
+			    i++;
+			}
+		}		
+		return url;
+	}
+	
+
+	private static String createSubjectsTarget(List<Subject> inclusionSubjects, List<Subject> exclusionSubjects) {
+		String url="";
+		int i=0;
+		//inclusion Subjects
+		if (inclusionSubjects != null) {
+			for (Subject s:inclusionSubjects) {
+			    url += (s.getName()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:Subject("+i+").@SubjectName="+s.getName());
+			    url += (s.getType()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:Subject("+i+").@SubjectType="+s.getType().toString());
+			    if (s.getSubjectMatchTypes() != null && s.getSubjectMatchTypes().size() > 0) {
+			    	int j=0;
+			    	for (SubjectMatchType smt : s.getSubjectMatchTypes() ) {
+			            url += "&ns1:policy.ns1:Target.ns1:Subjects.ns1:Subject("+i+").ns2:SubjectMatch(" + j + ").@MatchId="
+							+ smt.getMatchId();
+			            url += "&ns1:policy.ns1:Target.ns1:Subjects.ns1:Subject("+i+").ns2:SubjectMatch(" + j + ").ns2:AttributeValue="
+							+ smt.getAttributeValue().getValue();
+						url += "&ns1:policy.ns1:Target.ns1:Subjects.ns1:Subject("+i+").ns2:SubjectMatch(" + j + ").ns2:SubjectAttributeDesignator.@AttributeId="
+						+ smt.getSubjectAttributeDesignator().getAttributeId();
+			    	}
+			    }
+			    i++;
+			}
+		}
+		
+		//exclusion Subjects
+		if (exclusionSubjects != null) {
+
+			for (Subject s:exclusionSubjects) {
+			    url += (s.getName()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:Subject("+i+").@SubjectName="+s.getName());
+			    url += (s.getType()==null?"":"&ns1:policy.ns1:Target.ns1:Subjects.ns1:Subject("+i+").@SubjectType="+s.getType().toString());
+			    if (s.getSubjectMatchTypes() != null && s.getSubjectMatchTypes().size() > 0) {
+			    	int j=0;
+			    	for (SubjectMatchType smt : s.getSubjectMatchTypes() ) {
+			            url += "&ns1:policy.ns1:Target.ns1:Subjects.ns1:Subject("+i+").ns2:SubjectMatch(" + j + ").@MatchId="
+							+ smt.getMatchId();
+			            url += "&ns1:policy.ns1:Target.ns1:Subjects.ns1:Subject("+i+").ns2:SubjectMatch(" + j + ").ns2:AttributeValue="
+							+ smt.getAttributeValue().getValue();
+			            url += "&ns1:policy.ns1:Target.ns1:Subjects.ns1:Subject("+i+").ns2:SubjectMatch(" + j + ").ns2:SubjectAttributeDesignator.@AttributeId="
+						+ smt.getSubjectAttributeDesignator().getAttributeId();
+			    	}
+			    }
+			    i++;
+			}
+		}
+		return url;
+	}
     
+	
     public String toJSON (GenericPolicy policy) {
         String json = "";
         if (policy == null)

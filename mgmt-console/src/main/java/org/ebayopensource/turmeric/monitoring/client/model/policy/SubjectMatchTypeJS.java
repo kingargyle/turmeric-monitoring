@@ -26,37 +26,30 @@ public class SubjectMatchTypeJS extends JavaScriptObject implements SubjectMatch
      * @see org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectMatchType#getMatchId()
      */
     @Override
-    public native final String getMatchId() /*-{
+    public native final String getMatchId() /*-{ 
         return this["@MatchId"];
     }-*/;
 
 	
 	@Override
-    public final String getAttributeValue() {
-        String result = new String();
-        AttributeValueJS attributeValue = getAttributeValueAsObject();
-        if (attributeValue != null) {
-            result = attributeValue.getValue() ;
-        }
-        return result;
+    public final AttributeValue getAttributeValue() {
+
+		return getAttributeValueAsObject();
     }
     
+	
     public final native AttributeValueJS getAttributeValueAsObject() /*-{
         return this["ns2.AttributeValue"];
 	}-*/;
-  
+
     @Override
-    public final String getSubjectAttributeDesignator() {
-        String result = new String();
-        SubjectAttributeDesignatorJS subjectAttributeDesignator = getSubjectAttributeDesignatorAsObject();
-        if (subjectAttributeDesignator != null) {
-            result = subjectAttributeDesignator.getAttributeId() ;
-        }
-        return result;
+    public final SubjectAttributeDesignator getSubjectAttributeDesignator() {
+        return getSubjectAttributeDesignatorAsObject();
     }
     
     public final native SubjectAttributeDesignatorJS getSubjectAttributeDesignatorAsObject() /*-{
         return this["ns2.SubjectAttributeDesignator"];
 	}-*/;
 
+   
 }

@@ -22,7 +22,7 @@ public class AttributeValueJS extends JavaScriptObject implements AttributeValue
     public native final String getDataType() /*-{
         return this["@DataType"];
     }-*/;
-    
+    @Override
 	public native final String getValue() /*-{
 		return this["__value__"];
 	}-*/;

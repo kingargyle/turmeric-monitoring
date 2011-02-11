@@ -14,8 +14,8 @@ package org.ebayopensource.turmeric.monitoring.client.model.policy;
  */
 public class SubjectMatchTypeImpl implements SubjectMatchType {
     private String matchId;
-    private String attributeValue;
-    private String subjectAttributeDesignator;
+    private AttributeValue attributeValue;
+    private SubjectAttributeDesignator subjectAttributeDesignator;
     
 	public void setMatchId(String matchId) {
 		this.matchId = matchId;
@@ -26,21 +26,21 @@ public class SubjectMatchTypeImpl implements SubjectMatchType {
 		return matchId;
 	}
 
-	public void setAttributeValue(String attributeValue) {
+	public void setAttributeValue(AttributeValue attributeValue) {
 		this.attributeValue = attributeValue;
 	}
 	
 	@Override
-	public String getAttributeValue() {
+	public AttributeValue getAttributeValue() {
 		return attributeValue;
 	}
 	
-	public void setSubjectAttributeDesignator(String subjectAttributeDesignator) {
+	public void setSubjectAttributeDesignator(SubjectAttributeDesignator subjectAttributeDesignator) {
 		this.subjectAttributeDesignator = subjectAttributeDesignator;
 	}
 	
 	@Override
-	public String getSubjectAttributeDesignator() {
+	public SubjectAttributeDesignator getSubjectAttributeDesignator() {
 		return subjectAttributeDesignator;
 	}
 }

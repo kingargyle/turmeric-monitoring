@@ -22,6 +22,11 @@ public class SubjectAttributeDesignatorJS extends JavaScriptObject implements Su
     public native final String getAttributeId() /*-{
         return this["@AttributeId"];
     }-*/;
+
+    @Override
+    public native final String getDataType() /*-{
+        return this["@DataType"];
+    }-*/;
         
   
 }

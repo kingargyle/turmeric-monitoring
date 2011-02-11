@@ -28,7 +28,8 @@ public class SubjectGroupImpl implements SubjectGroup {
     private String createdBy;
     private List<String> subjects;
     private List<String> policies;
-    private List<SubjectMatchType> subjectMatch;
+//    private SubjectMatchType subjectMatch;
+    private List<SubjectMatchType> subjectMatchTypes;
     private Long id;
 
     
@@ -46,7 +47,7 @@ public class SubjectGroupImpl implements SubjectGroup {
         this.createdBy = g.getCreatedBy();
         this.subjects = (g.getSubjects()==null?null:new ArrayList(g.getSubjects()));
         this.policies = (g.getPolicies()==null?null:new ArrayList(g.getPolicies()));
-        this.subjectMatch = (g.getSubjectMatchTypes()==null?null:new ArrayList(g.getSubjectMatchTypes()));
+        this.subjectMatchTypes = g.getSubjectMatchTypes();
     }
     
     public String getLastModifiedBy() {
@@ -122,14 +123,20 @@ public class SubjectGroupImpl implements SubjectGroup {
 
 	
 
-	public void setSubjectMatchTypes(List<SubjectMatchType> subjectMatch) {
-		this.subjectMatch = subjectMatch;
-	}
+//	public void setSubjectMatchType(SubjectMatchType subjectMatch) {
+//		this.subjectMatch = subjectMatch;
+//	} 
+//
+//	@Override
+//	public SubjectMatchType getSubjectMatchType() {
+//		return subjectMatch;
+//	}
 
-	@Override
+	public void setSubjectMatch(List<SubjectMatchType> subjectMatchType) {
+		this.subjectMatchTypes = subjectMatchType;
+
+	}
 	public List<SubjectMatchType> getSubjectMatchTypes() {
-		return subjectMatch;
+		return subjectMatchTypes;
 	}
-
-	
 }

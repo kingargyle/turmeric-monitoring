@@ -8,7 +8,13 @@
  *******************************************************************/
 package org.ebayopensource.turmeric.monitoring.client.model.policy;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.ebayopensource.turmeric.monitoring.client.model.policy.GetPoliciesResponseJS.RuleJS.ConditionJS;
+
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
 
 /**
  * SubjectJS
@@ -70,4 +76,38 @@ public class SubjectJS extends JavaScriptObject implements Subject {
 		return Long.parseLong(getExternalSubjectIdAsString());
 	}
 
+	@Override
+    public final List<SubjectMatchType> getSubjectMatchTypes() {
+        List<SubjectMatchType> results = new ArrayList<SubjectMatchType>();
+        JsArray<SubjectMatchTypeJS> subjectMatchs = getSubjectMatchAsArray();
+        if (subjectMatchs != null) {
+            for (int i=0;i<subjectMatchs.length();i++)
+                results.add(subjectMatchs.get(i));
+        }
+        return results;
+    }
+	
+	private final native JsArray<SubjectMatchTypeJS> getSubjectMatchAsArray() /*-{
+		return this["ns2.SubjectMatch"]
+	}-*/;
+
+	public final String getIdFromSubjectMatchAsString () {
+	    
+        JsArray<SubjectMatchTypeJS> array =  getSubjectMatchAsArray();
+        if (array == null)
+            return null;
+        
+        if (array.length() == 0)
+            return null;
+        
+        SubjectMatchTypeJS element = array.get(0);
+        SubjectAttributeDesignatorJS des = element.getSubjectAttributeDesignatorAsObject();
+        String attId = des.getAttributeId();
+        if ("urn:oasis:names:tc:xacml:1.0:subject:subject-id".equals(attId)) {
+            AttributeValueJS attVal = element.getAttributeValueAsObject();
+            return attVal.getValue();
+        } else
+            return null;
+    }
+	
 }

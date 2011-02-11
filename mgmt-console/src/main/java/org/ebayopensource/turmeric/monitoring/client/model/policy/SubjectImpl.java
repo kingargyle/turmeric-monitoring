@@ -8,6 +8,8 @@
  *******************************************************************/
 package org.ebayopensource.turmeric.monitoring.client.model.policy;
 
+import java.util.List;
+
 /**
  * SubjectImpl
  *
@@ -17,6 +19,8 @@ public class SubjectImpl implements Subject {
     private String name;
     private String createdBy;
     private long externalSubjectId;
+    private List<SubjectMatchType> subjectMatchTypes;
+
     private long lastModifiedTime;
     private String lastModifiedBy;
     
@@ -68,5 +72,13 @@ public class SubjectImpl implements Subject {
 	
 	public void setExternalSubjectId(long externalSubjectId) {
 		this.externalSubjectId = externalSubjectId;
+	}
+	
+	public void setSubjectMatch(List<SubjectMatchType> subjectMatchType) {
+		this.subjectMatchTypes = subjectMatchType;
+
+	}
+	public List<SubjectMatchType> getSubjectMatchTypes() {
+		return subjectMatchTypes;
 	}
 }

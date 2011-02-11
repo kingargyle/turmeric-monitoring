@@ -1028,25 +1028,18 @@ public class PolicyQueryServiceImpl extends AbstractConsoleService implements
 				}
 
 				// SubjectMatch for the id. Optional: 0 or 1 element
-				if (g.getSubjectMatchTypes() != null
-						&& g.getSubjectMatchTypes().size() > 0) {
+				if (g.getSubjectMatchTypes() != null && g.getSubjectMatchTypes().size() > 0) {
 					int j = 0;
-					for (SubjectMatchType sm : g.getSubjectMatchTypes()) {
-						url += "&ns1:subjectGroups(" + i
-								+ ").ns2:SubjectMatch(" + j + ").@MatchId="
+					for(SubjectMatchType sm : g.getSubjectMatchTypes()){
+						url += "&ns1:subjectGroups(" + i + ").ns2:SubjectMatch(" + j +").@MatchId="
 								+ sm.getMatchId();
-						url += "&ns1:subjectGroups(" + i
-								+ ").ns2:SubjectMatch(" + j
-								+ ").ns2:AttributeValue="
+						url += "&ns1:subjectGroups(" + i + ").ns2:SubjectMatch(" + j +").ns2:AttributeValue="
 								+ sm.getAttributeValue();
-						url += "&ns1:subjectGroups("
-								+ i
-								+ ").ns2:SubjectMatch("
-								+ j
-								+ ").ns2:SubjectAttributeDesignator.@AttributeId="
-								+ sm.getSubjectAttributeDesignator();
+						url += "&ns1:subjectGroups("+ i+ ").ns2:SubjectMatch(" + j +").ns2:SubjectAttributeDesignator.@AttributeId="
+								+ sm.getSubjectAttributeDesignator();	
 						j++;
 					}
+					
 				}
 
 				i++;

@@ -14,4 +14,5 @@ package org.ebayopensource.turmeric.monitoring.client.model.policy;
  */
 public interface SubjectAttributeDesignator {
     public String getAttributeId();
+    public String getDataType();
 }

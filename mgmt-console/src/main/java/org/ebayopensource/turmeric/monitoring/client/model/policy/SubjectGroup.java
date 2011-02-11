@@ -23,7 +23,9 @@ public interface SubjectGroup {
     public String getType();
     public String getName();
     public String getLastModifiedBy();
+//    public SubjectMatchType getSubjectMatchType();
     public List<SubjectMatchType> getSubjectMatchTypes();
+
     public Date getLastModifiedTime();
     public String getCreatedBy();
     public List<String> getSubjects();
