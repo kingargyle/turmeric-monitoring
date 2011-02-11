@@ -36,6 +36,7 @@ public class PolicySubjectAssignmentWidget extends SubjectGroupAssignmentWidget 
         super();
     }
     
+    
     public List<String> getSelectedGroups () {
         return selectGroups.getSelections();
     }
@@ -68,7 +69,11 @@ public class PolicySubjectAssignmentWidget extends SubjectGroupAssignmentWidget 
         List<String> emptyList = Collections.emptyList();
         setAvailableGroups(emptyList);
         setSelectedGroups(emptyList);
+        setAvailableExclusionSG(emptyList);
+        setSelectedExclusionSG(emptyList);
         
+        setAvailableSubjects(emptyList);
+        setSelectedSubjects(emptyList);
         setAvailableExclusionSubjects(emptyList);
         setSelectedExclusionSubjects(emptyList);
         searchGroupBox.setText("");

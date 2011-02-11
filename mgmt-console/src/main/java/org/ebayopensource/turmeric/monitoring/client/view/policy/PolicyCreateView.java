@@ -81,8 +81,7 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 	protected Label policyType;
 	protected Label policyStatus;
 	protected boolean policyEnabled;
-	protected boolean exclusionSubjectsVisible;
-	protected boolean exclusionSGVisible;
+
 	private Button saveButton;
 	private Button cancelButton;
 
@@ -1342,12 +1341,7 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 		this.policyType.setText(policyType);
 	}
 	
-	@Override
-	public void setExclusionSubjectsVisible(final boolean visible) {
-		this.exclusionSubjectsVisible= visible;
-		this.exclusionSGVisible= visible;
 
-	}
 	
 	@Override
 	public void clearConditionBuilder() {
