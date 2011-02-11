@@ -511,18 +511,30 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 						assignment.setSubjectType(view.getSubjectContentView()
 								.getSubjectType());
 						// subjects
-						final List<Subject> subjects = new ArrayList<Subject>();
+						List<Subject> subjects = new ArrayList<Subject>();
+
 						for (String s : view.getSubjectContentView()
 								.getSelectedSubjects()) {
-							subjects.add(getSubject(s, assignment.getSubjectType(), false));
+							Subject assignedSubject = getSubject(s, assignment.getSubjectType(), false);
+							//let's do a second loading, external subjects should stored in local now
+							if(assignedSubject.getSubjectMatchTypes() == null){
+								assignedSubject = getSubject(s, assignment.getSubjectType(), true);
+							}
+							subjects.add(assignedSubject);
+						
 						}
-
 						// exclusionSubjects
 						List<Subject> exclusionSubjects = new ArrayList<Subject>();
 						for (String s : view.getSubjectContentView()
 								.getSelectedExclusionSubjects()) {
-							exclusionSubjects.add(getSubject(s,
-									assignment.getSubjectType(), true));
+							Subject assignedSubject = getSubject(s, assignment.getSubjectType(), true);
+							
+							//let's do a second loading, external subjects should stored in local now
+							if(assignedSubject.getSubjectMatchTypes() == null){
+								assignedSubject = getSubject(s, assignment.getSubjectType(), true);
+							}
+							exclusionSubjects.add(assignedSubject);
+						
 						}
 						// groups
 						List<SubjectGroup> groups = new ArrayList<SubjectGroup>();
@@ -1392,7 +1404,16 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 			}
 
 		}
-
+		
+		if(s.getSubjectMatchTypes()==null){
+			s.setType(type);
+			s.setName(name);
+			createInternalSubject(new ArrayList<Subject>(Collections.singletonList(s)));
+			fetchSubjects();
+			fetchSubjectGroups();	
+		}
+		 	
+		 
 		return s;
 	}
 
