@@ -53,7 +53,6 @@ public class RLPolicyCreatePresenter extends PolicyCreatePresenter {
 		super(eventBus, view, serviceMap);
 		view.setConditionBuilderVisible(true);
 		view.setPolicyType("RL");
-		view.setExclusionSubjectsVisible(true);
 		bind();
 
 	}
@@ -206,7 +205,7 @@ public class RLPolicyCreatePresenter extends PolicyCreatePresenter {
 				Integer priority = view.getExtraFieldValue(5) != null ? Integer
 						.valueOf(view.getExtraFieldValue(5)) : null;
 				Long rolloverPeriod = Long.valueOf(view.getExtraFieldValue(4));
-				Long effectDuration = Long.valueOf(view.getExtraFieldValue(3));
+				Long effectDuration = !view.getExtraFieldValue(3).isEmpty()?Long.valueOf(view.getExtraFieldValue(3)):0;
 				Long conditionDuration = 0L;
 				String value = view.getExtraFieldValue(7);
 

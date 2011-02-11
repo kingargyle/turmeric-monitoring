@@ -40,7 +40,6 @@ public class BLPolicyCreatePresenter extends PolicyCreatePresenter {
 		super(eventBus, view, serviceMap);
 		view.setConditionBuilderVisible(false);
 		this.view.setPolicyType("BLACKLIST");
-		this.view.setExclusionSubjectsVisible(false);
 	}
 
 	public final static String PRESENTER_ID = "BLPolicyCreate";

@@ -347,11 +347,10 @@ public class PolicyViewPresenter extends AbstractGenericPresenter {
 
 	private List<PolicySubjectAssignment> fetchSubjectAndSGAssignment(
 			GenericPolicy policy) {
+		//HashMap<subject type, arraylist of assigned subjects>
 		HashMap<String, List<Subject>> sAssignMap = new HashMap<String, List<Subject>>();
-
 		for (Subject subject : policy.getSubjects()) {
 			String type = subject.getType();
-
 			if (!sAssignMap.containsKey(type)) {
 				List list = new ArrayList();
 				list.add(subject);
@@ -359,14 +358,27 @@ public class PolicyViewPresenter extends AbstractGenericPresenter {
 			} else {
 				List list = (List) sAssignMap.get(type);
 				list.add(subject);
+				sAssignMap.put(type, list);
+			}
+		}
+
+		HashMap<String, List<Subject>> exclSAssignMap = new HashMap<String, List<Subject>>();
+		for (Subject subject : policy.getExclusionSubjects()) {
+			String type = subject.getType();
+			if (!exclSAssignMap.containsKey(type)) {
+				List list = new ArrayList();
+				list.add(subject);
+				exclSAssignMap.put(type, list);
+			} else {
+				List list = (List) exclSAssignMap.get(type);
+				list.add(subject);
+				exclSAssignMap.put(type, list);
 			}
 		}
 
 		HashMap<String, List<SubjectGroup>> sgAssignMap = new HashMap<String, List<SubjectGroup>>();
-
 		for (SubjectGroup subjectGroup : policy.getSubjectGroups()) {
 			String type = subjectGroup.getType();
-
 			if (!sgAssignMap.containsKey(type)) {
 				List list = new ArrayList();
 				list.add(subjectGroup);
@@ -374,6 +386,21 @@ public class PolicyViewPresenter extends AbstractGenericPresenter {
 			} else {
 				List list = (List) sgAssignMap.get(type);
 				list.add(subjectGroup);
+				sgAssignMap.put(type, list);
+			}
+		}
+
+		HashMap<String, List<SubjectGroup>> exclSGAssignMap = new HashMap<String, List<SubjectGroup>>();
+		for (SubjectGroup subjectGroup : policy.getExclusionSG()) {
+			String type = subjectGroup.getType();
+			if (!exclSGAssignMap.containsKey(type)) {
+				List list = new ArrayList();
+				list.add(subjectGroup);
+				exclSGAssignMap.put(type, list);
+			} else {
+				List list = (List) exclSGAssignMap.get(type);
+				list.add(subjectGroup);
+				exclSGAssignMap.put(type, list);
 			}
 		}
 
@@ -381,46 +408,45 @@ public class PolicyViewPresenter extends AbstractGenericPresenter {
 		List<PolicySubjectAssignment> polSubAssignmentList = new ArrayList<PolicySubjectAssignment>();
 		PolicySubjectAssignment polSubAssignment = null;
 
-		Iterator<String> it = sAssignMap.keySet().iterator();
+		Iterator it = sAssignMap.keySet().iterator();
 		while (it.hasNext()) {
 			polSubAssignment = new PolicySubjectAssignment();
 
 			String subjectType = (String) it.next();
-			List<Subject> sList = (List<Subject>) sAssignMap.get(subjectType);
-
 			polSubAssignment.setSubjectType(subjectType);
+			
+			List<Subject> sList = (List<Subject>) sAssignMap.get(subjectType);
+			List<Subject> exclSList = (List<Subject>) exclSAssignMap.get(subjectType);
+			List<SubjectGroup> sgList = (List<SubjectGroup>) sgAssignMap.get(subjectType);
+			List<SubjectGroup> exclSGList = (List<SubjectGroup>) exclSGAssignMap.get(subjectType);
+	
 			polSubAssignment.setSubjects(sList);
-
-			List<SubjectGroup> sgList = (List<SubjectGroup>) sgAssignMap
-					.get(subjectType);
-
-			if (null != sgList) {
-				polSubAssignment.setSubjectGroups(sgList);
-				sgAssignMap.remove(subjectType);
-			}
-
+			polSubAssignment.setExclusionSubjects(exclSList);
+			polSubAssignment.setSubjectGroups(sgList);
+			polSubAssignment.setExclusionSubjectGroups(exclSGList);
+			
 			polSubAssignmentList.add(polSubAssignment);
 		}
 
-		// load remaining SG
-
-		if (sgAssignMap.size() > 0) {
-			Iterator<String> itSg = sgAssignMap.keySet().iterator();
-			while (itSg.hasNext()) {
-				polSubAssignment = new PolicySubjectAssignment();
-
-				String subjectGroupType = itSg.next();
-				List<SubjectGroup> sgList = (List<SubjectGroup>) sgAssignMap
-						.get(subjectGroupType);
-
-				polSubAssignment.setSubjectType(subjectGroupType);
-				polSubAssignment.setSubjects(null);
-				polSubAssignment.setSubjectGroups(sgList);
-
-				polSubAssignmentList.add(polSubAssignment);
-
-			}
-		}
+//		// load remaining SG
+//
+//		if (sgAssignMap.size() > 0) {
+//			Iterator itSg = sgAssignMap.keySet().iterator();
+//			while (itSg.hasNext()) {
+//				polSubAssignment = new PolicySubjectAssignment();
+//
+//				String subjectGroupType = (String) itSg.next();
+//				List<SubjectGroup> sgList = (List<SubjectGroup>) sgAssignMap
+//						.get(subjectGroupType);
+//
+//				polSubAssignment.setSubjectType(subjectGroupType);
+//				polSubAssignment.setSubjects(null);
+//				polSubAssignment.setSubjectGroups(sgList);
+//				
+//				polSubAssignmentList.add(polSubAssignment);
+//
+//			}
+//		}
 
 		return polSubAssignmentList;
 

@@ -23,6 +23,7 @@ import org.ebayopensource.turmeric.monitoring.client.SupportedService;
 import org.ebayopensource.turmeric.monitoring.client.model.ConsoleService;
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
 import org.ebayopensource.turmeric.monitoring.client.model.UserAction;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.AttributeValueImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.ExtraField;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.GenericPolicyImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.Operation;
@@ -42,16 +43,21 @@ import org.ebayopensource.turmeric.monitoring.client.model.policy.ResourceKey;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.ResourceType;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.Rule;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.Subject;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectAttributeDesignator;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectAttributeDesignatorImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectGroup;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectGroupImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectGroupKey;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectGroupQuery;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectKey;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectMatchType;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectMatchTypeImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectQuery;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectType;
 import org.ebayopensource.turmeric.monitoring.client.presenter.AbstractGenericPresenter;
 import org.ebayopensource.turmeric.monitoring.client.util.PolicyKeysUtil;
+import org.ebayopensource.turmeric.monitoring.client.util.SubjectUtil;
 import org.ebayopensource.turmeric.monitoring.client.view.common.PolicyTemplateDisplay.PolicyPageTemplateDisplay;
 import org.ebayopensource.turmeric.monitoring.client.view.common.SelectBoxesWidget;
 
@@ -65,6 +71,7 @@ import com.google.gwt.event.logical.shared.HasCloseHandlers;
 import com.google.gwt.event.logical.shared.HasOpenHandlers;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HasValue;
@@ -79,6 +86,10 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 	protected Map<SupportedService, ConsoleService> serviceMap;
 	protected List<UserAction> permittedActions = new ArrayList<UserAction>();
 	protected List<Resource> availableResourcesByType;
+	protected List<Subject> allSubjects;
+
+	protected List<SubjectGroup> allSubjectGroups;
+
 	protected List<Resource> allResources;
 	protected List<Subject> internalSubjects;
 
@@ -485,51 +496,51 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 					public void onClick(ClickEvent event) {
 						// Add a new set of subjects and groups for a given
 						// SubjectType
-						if (subjectAssignments == null)
+						if (subjectAssignments == null) {
 							subjectAssignments = new ArrayList<PolicySubjectAssignment>();
-
+						}
 						PolicySubjectAssignment assignment = null;
 						if (editSubjectAssignment != null) {
 							// we were editing an existing assignment
 							assignment = editSubjectAssignment;
 							editSubjectAssignment = null;
-						} else
+						} else {
 							assignment = new PolicySubjectAssignment();
+						}
 
 						assignment.setSubjectType(view.getSubjectContentView()
 								.getSubjectType());
 						// subjects
-						List<Subject> subjects = new ArrayList<Subject>();
+						final List<Subject> subjects = new ArrayList<Subject>();
 						for (String s : view.getSubjectContentView()
 								.getSelectedSubjects()) {
-							subjects.add(getSubject(s,
-									assignment.getSubjectType()));
+							subjects.add(getSubject(s, assignment.getSubjectType(), false));
 						}
+
 						// exclusionSubjects
 						List<Subject> exclusionSubjects = new ArrayList<Subject>();
 						for (String s : view.getSubjectContentView()
 								.getSelectedExclusionSubjects()) {
 							exclusionSubjects.add(getSubject(s,
-									assignment.getSubjectType()));
+									assignment.getSubjectType(), true));
 						}
 						// groups
 						List<SubjectGroup> groups = new ArrayList<SubjectGroup>();
 						for (String s : view.getSubjectContentView()
 								.getSelectedSubjectGroups()) {
-							groups.add(getGroup(s, assignment.getSubjectType()));
+							groups.add(getGroup(s, assignment.getSubjectType(), false));
 						}
 						// exclusion Subjectgroups
 						List<SubjectGroup> exclSg = new ArrayList<SubjectGroup>();
 						for (String s : view.getSubjectContentView()
 								.getSelectedExclusionSG()) {
-							exclSg.add(getGroup(s, assignment.getSubjectType()));
+							exclSg.add(getGroup(s, assignment.getSubjectType(), true));
 						}
 
 						assignment.setSubjects(subjects);
 						assignment.setExclusionSubjects(exclusionSubjects);
 						assignment.setSubjectGroups(groups);
 						assignment.setExclusionSubjectGroups(exclSg);
-
 						subjectAssignments.add(assignment);
 						view.getSubjectContentView().setAssignments(
 								subjectAssignments);
@@ -940,8 +951,6 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 
 		void setExtraFieldList(List<ExtraField> extraFieldList);
 
-		void setExclusionSubjectsVisible(boolean visible);
-
 		/*
 		 * Condition Builder methods
 		 */
@@ -1099,6 +1108,12 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 		if (availableResourcesByType != null) {
 			availableResourcesByType.clear();
 		}
+		 if (allSubjects != null) {
+			 allSubjects.clear();
+		 }
+		 if(allSubjectGroups != null){
+			 allSubjectGroups.clear();
+		 }
 		if (subjectAssignments != null) {
 			subjectAssignments.clear();
 		}
@@ -1128,6 +1143,8 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 					PolicyCreatePresenter.this.allResources.clear();
 					PolicyCreatePresenter.this.assignedUniqueResources.clear();
 					PolicyCreatePresenter.this.availableResourcesByType.clear();
+				    PolicyCreatePresenter.this.allSubjects.clear();
+				    PolicyCreatePresenter.this.allSubjectGroups.clear();
 					PolicyCreatePresenter.this.editResourceAssignment = null;
 
 				} catch (NullPointerException ex) {
@@ -1160,7 +1177,9 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 		subjectTypes = new ArrayList(SubjectType.getValues());
 
 		fetchResources();
-
+		fetchSubjects();
+		fetchSubjectGroups();
+		
 		this.view.getResourceContentView()
 				.setResourceLevel(getResourceLevels());
 
@@ -1278,17 +1297,139 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 		return resourceNames;
 	}
 
-	public Subject getSubject(String name, String type) {
-		SubjectImpl s = new SubjectImpl();
-		s.setName(name);
-		s.setType(type);
+	protected void fetchSubjects() {
+
+		SubjectQuery query = new SubjectQuery();
+
+		query.setSubjectKeys(PolicyKeysUtil.getAllSubjectKeyList());
+		service.findSubjects(query,
+				new AsyncCallback<PolicyQueryService.FindSubjectsResponse>() {
+
+					@Override
+					public void onSuccess(FindSubjectsResponse result) {
+						allSubjects = new ArrayList<Subject>(result.getSubjects());
+					}
+
+					@Override
+					public void onFailure(Throwable arg) {
+						if (arg.getLocalizedMessage().contains("500")) {
+							view.error(ConsoleUtil.messages
+									.serverError(ConsoleUtil.policyAdminConstants
+											.genericErrorMessage()));
+						} else {
+							view.error(ConsoleUtil.messages.serverError(arg
+									.getLocalizedMessage()));
+						}
+					}
+				});
+	}
+	
+	protected void fetchSubjectGroups() {
+
+		SubjectGroupQuery query = new SubjectGroupQuery();
+
+		query.setGroupKeys(PolicyKeysUtil.getAllSubjectGroupKeyList());
+		service.findSubjectGroups(query,
+				new AsyncCallback<PolicyQueryService.FindSubjectGroupsResponse>() {
+
+					@Override
+					public void onSuccess(FindSubjectGroupsResponse result) {
+						allSubjectGroups = new ArrayList<SubjectGroup>(result.getGroups());
+					}
+
+					@Override
+					public void onFailure(Throwable arg) {
+						if (arg.getLocalizedMessage().contains("500")) {
+							view.error(ConsoleUtil.messages
+									.serverError(ConsoleUtil.policyAdminConstants
+											.genericErrorMessage()));
+						} else {
+							view.error(ConsoleUtil.messages.serverError(arg
+									.getLocalizedMessage()));
+						}
+					}
+				});
+	}
+
+	public Subject getSubject(String name, String type,
+			final boolean exclusionList) {
+		final SubjectImpl s = new SubjectImpl();
+		for (Subject subject : allSubjects) {
+			if (subject.getType().equals(type)
+					&& subject.getName().equals(name)) {
+				s.setName(subject.getName());
+				s.setType(subject.getType());
+				SubjectMatchTypeImpl smt = new SubjectMatchTypeImpl();
+				
+				AttributeValueImpl attr = new AttributeValueImpl();
+				SubjectAttributeDesignatorImpl designator = new SubjectAttributeDesignatorImpl();
+				if (!exclusionList) {
+					smt.setMatchId("urn:oasis:names:tc:xacml:1.0:function:integer-equal");
+					attr.setDataType("http://www.w3.org/2001/XMLSchema#integer");
+					attr.setValue(SubjectUtil.getSubjectId(subject).toString());
+					designator.setAttributeId("urn:oasis:names:tc:xacml:1.0:subject:subject-id");
+					designator.setDataType("http://www.w3.org/2001/XMLSchema#integer");
+					
+				} else {
+					smt.setMatchId("urn:oasis:names:tc:xacml:1.0:function:string-regexp-match");
+					attr.setDataType("http://www.w3.org/2001/XMLSchema#string");
+					attr.setValue("(?!"
+							+ SubjectUtil.getSubjectId(subject).toString()
+							+ ")");
+					designator.setAttributeId("urn:oasis:names:tc:xacml:1.0:subject:subject-id");
+					designator.setDataType("http://www.w3.org/2001/XMLSchema#string");
+					
+				}
+				smt.setAttributeValue(attr);
+				smt.setSubjectAttributeDesignator(designator);
+
+			 
+				s.setSubjectMatch(new ArrayList<SubjectMatchType>(Collections
+						.singletonList(smt)));
+				break;
+			}
+
+		}
+
 		return s;
 	}
 
-	public SubjectGroup getGroup(String name, String type) {
+	public SubjectGroup getGroup(String name, String type, final boolean exclusionList) {
 		SubjectGroupImpl group = new SubjectGroupImpl();
-		group.setType(type);
-		group.setName(name);
+		for (SubjectGroup subjectGroup : allSubjectGroups) {
+			if (subjectGroup.getType().equals(type)
+					&& subjectGroup.getName().equals(name)) {
+				group.setType(type);
+				group.setName(name);
+				SubjectMatchTypeImpl smt = new SubjectMatchTypeImpl();
+				AttributeValueImpl attr = new AttributeValueImpl();
+				SubjectAttributeDesignatorImpl designator = new SubjectAttributeDesignatorImpl();
+
+				if (!exclusionList) {
+					smt.setMatchId("urn:oasis:names:tc:xacml:1.0:function:integer-equal");
+					attr.setDataType("http://www.w3.org/2001/XMLSchema#integer");
+					attr.setValue(SubjectUtil.getSubjectGroupId(subjectGroup).toString());
+					designator.setAttributeId("urn:oasis:names:tc:xacml:1.0:subject:subject-id");
+					designator.setDataType("http://www.w3.org/2001/XMLSchema#integer");
+					
+				} else {
+					smt.setMatchId("urn:oasis:names:tc:xacml:1.0:function:string-regexp-match");
+					attr.setDataType("http://www.w3.org/2001/XMLSchema#string");
+					attr.setValue("(?!"
+							+ SubjectUtil.getSubjectGroupId(subjectGroup).toString()
+							+ ")");
+					designator.setAttributeId("urn:oasis:names:tc:xacml:1.0:subject:subject-id");
+					designator.setDataType("http://www.w3.org/2001/XMLSchema#string");
+				
+				}
+				smt.setAttributeValue(attr);
+				smt.setSubjectAttributeDesignator(designator);
+
+				group.setSubjectMatch(new ArrayList<SubjectMatchType>(Collections
+						.singletonList(smt)));
+				break;
+			}
+		}
 		return group;
 	}
 
@@ -1310,8 +1451,8 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 		if (subjectAssignments != null) {
 			List<Subject> subjects = new ArrayList<Subject>();
 			List<Subject> exclusionSubjects = new ArrayList<Subject>();
-
 			List<SubjectGroup> groups = new ArrayList<SubjectGroup>();
+			List<SubjectGroup> exclSGroups = new ArrayList<SubjectGroup>();
 
 			for (PolicySubjectAssignment a : subjectAssignments) {
 
@@ -1356,13 +1497,19 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 
 				}
 
+				
 				if (a.getSubjectGroups() != null) {
 					groups.addAll(a.getSubjectGroups());
+				}
+
+				if (a.getExclusionSubjectGroups() != null) {
+					exclSGroups.addAll(a.getExclusionSubjectGroups());
 				}
 			}
 			p.setSubjects(subjects);
 			p.setExclusionSubjects(exclusionSubjects);
 			p.setSubjectGroups(groups);
+			p.setExclusionSG(exclSGroups);
 		}
 		return p;
 	}

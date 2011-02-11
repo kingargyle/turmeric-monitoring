@@ -187,10 +187,10 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 
 	private List<PolicySubjectAssignment> fetchSubjectAndSGAssignment(
 			GenericPolicy policy) {
+		//HashMap<subject type, arraylist of assigned subjects>
 		HashMap<String, List<Subject>> sAssignMap = new HashMap<String, List<Subject>>();
 		for (Subject subject : policy.getSubjects()) {
 			String type = subject.getType();
-			// if(!subject.getName().startsWith("?!")){
 			if (!sAssignMap.containsKey(type)) {
 				List list = new ArrayList();
 				list.add(subject);
@@ -199,25 +199,20 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 				List list = (List) sAssignMap.get(type);
 				list.add(subject);
 				sAssignMap.put(type, list);
-
 			}
-			// }
 		}
 
 		HashMap<String, List<Subject>> exclSAssignMap = new HashMap<String, List<Subject>>();
 		for (Subject subject : policy.getExclusionSubjects()) {
 			String type = subject.getType();
-			if (subject.getName().startsWith("?!")) {
-				if (!exclSAssignMap.containsKey(type)) {
-					List list = new ArrayList();
-					list.add(subject);
-					exclSAssignMap.put(type, list);
-				} else {
-					List list = (List) exclSAssignMap.get(type);
-					list.add(subject);
-					exclSAssignMap.put(type, list);
-
-				}
+			if (!exclSAssignMap.containsKey(type)) {
+				List list = new ArrayList();
+				list.add(subject);
+				exclSAssignMap.put(type, list);
+			} else {
+				List list = (List) exclSAssignMap.get(type);
+				list.add(subject);
+				exclSAssignMap.put(type, list);
 			}
 		}
 
@@ -259,54 +254,39 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 
 			String subjectType = (String) it.next();
 			polSubAssignment.setSubjectType(subjectType);
+			
 			List<Subject> sList = (List<Subject>) sAssignMap.get(subjectType);
+			List<Subject> exclSList = (List<Subject>) exclSAssignMap.get(subjectType);
+			List<SubjectGroup> sgList = (List<SubjectGroup>) sgAssignMap.get(subjectType);
+			List<SubjectGroup> exclSGList = (List<SubjectGroup>) exclSGAssignMap.get(subjectType);
+	
 			polSubAssignment.setSubjects(sList);
-
-			List<Subject> exclSList = (List<Subject>) exclSAssignMap
-					.get(subjectType);
-			if (null != exclSList) {
-				polSubAssignment.setExclusionSubjects(exclSList);
-			}
-
-			List<SubjectGroup> sgList = (List<SubjectGroup>) sgAssignMap
-					.get(subjectType);
-			if (null != sgList) {
-				polSubAssignment.setSubjectGroups(sgList);
-				// commented on "exlusion" updates
-				// sgAssignMap.remove(subjectType);
-			}
-
-			List<SubjectGroup> exclSGList = (List<SubjectGroup>) sgAssignMap
-					.get(subjectType);
-			if (null != exclSGList) {
-				polSubAssignment.setExclusionSubjectGroups(exclSGList);
-				sgAssignMap.remove(subjectType);
-			}
-
+			polSubAssignment.setExclusionSubjects(exclSList);
+			polSubAssignment.setSubjectGroups(sgList);
+			polSubAssignment.setExclusionSubjectGroups(exclSGList);
+			
 			polSubAssignmentList.add(polSubAssignment);
 		}
 
-		// load remaining SG
-
-		if (sgAssignMap.size() > 0) {
-			Iterator itSg = sgAssignMap.keySet().iterator();
-			while (itSg.hasNext()) {
-				polSubAssignment = new PolicySubjectAssignment();
-
-				String subjectGroupType = (String) itSg.next();
-				List<SubjectGroup> sgList = (List<SubjectGroup>) sgAssignMap
-						.get(subjectGroupType);
-
-				polSubAssignment.setSubjectType(subjectGroupType);
-				polSubAssignment.setSubjects(null);
-				polSubAssignment.setExclusionSubjects(null);
-				polSubAssignment.setSubjectGroups(sgList);
-				polSubAssignment.setExclusionSubjectGroups(null);
-
-				polSubAssignmentList.add(polSubAssignment);
-
-			}
-		}
+//		// load remaining SG
+//
+//		if (sgAssignMap.size() > 0) {
+//			Iterator itSg = sgAssignMap.keySet().iterator();
+//			while (itSg.hasNext()) {
+//				polSubAssignment = new PolicySubjectAssignment();
+//
+//				String subjectGroupType = (String) itSg.next();
+//				List<SubjectGroup> sgList = (List<SubjectGroup>) sgAssignMap
+//						.get(subjectGroupType);
+//
+//				polSubAssignment.setSubjectType(subjectGroupType);
+//				polSubAssignment.setSubjects(null);
+//				polSubAssignment.setSubjectGroups(sgList);
+//				
+//				polSubAssignmentList.add(polSubAssignment);
+//
+//			}
+//		}
 
 		return polSubAssignmentList;
 

@@ -34,8 +34,6 @@ public class WLPolicyCreatePresenter extends PolicyCreatePresenter {
 		super(eventBus, view, serviceMap);
 		view.setConditionBuilderVisible(false);
 		this.view.setPolicyType("WHITELIST");
-		this.view.setExclusionSubjectsVisible(false);
-
 	}
 
 	public final static String PRESENTER_ID = "WLPolicyCreate";
