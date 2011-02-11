@@ -53,6 +53,8 @@ public class RLPolicyCreatePresenter extends PolicyCreatePresenter {
 		super(eventBus, view, serviceMap);
 		view.setConditionBuilderVisible(true);
 		view.setPolicyType("RL");
+		view.setExclusionListsVisible(true);
+
 		bind();
 
 	}

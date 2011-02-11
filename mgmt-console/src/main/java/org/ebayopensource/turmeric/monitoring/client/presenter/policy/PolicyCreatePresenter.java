@@ -956,6 +956,8 @@ public abstract class PolicyCreatePresenter extends AbstractGenericPresenter {
 		 */
 		void setConditionBuilderVisible(boolean visible);
 
+		void setExclusionListsVisible(boolean visible);
+		
 		HasClickHandlers getAddConditionButton();
 
 		HasChangeHandlers getRsListBox();

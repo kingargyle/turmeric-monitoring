@@ -42,6 +42,8 @@ public class AUTHZPolicyEditPresenter extends PolicyEditPresenter {
 			Map<SupportedService, ConsoleService> serviceMap) {
 		super(eventBus, view, serviceMap);
 		view.setConditionBuilderVisible(false);
+		view.setExclusionListsVisible(false);
+
 	}
 
 	public final static String PRESENTER_ID = "AUTHZPolicyEdit";

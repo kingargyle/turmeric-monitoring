@@ -36,6 +36,10 @@ public class PolicySubjectAssignmentWidget extends SubjectGroupAssignmentWidget 
         super();
     }
     
+    public void setExclusionListVisible(boolean visible){
+    	selectExclusionSubjects.setVisible(visible);
+    	selectExclusionSG.setVisible(visible);
+    }
     
     public List<String> getSelectedGroups () {
         return selectGroups.getSelections();
@@ -59,6 +63,8 @@ public class PolicySubjectAssignmentWidget extends SubjectGroupAssignmentWidget 
     public void setAvailableGroups(List<String> availableGroups) {
         selectGroups.setAvailables(availableGroups);
     }
+    
+    
     
     public void setSelectedGroups(List<String> selectedGroups) {
         selectGroups.setSelections(selectedGroups);

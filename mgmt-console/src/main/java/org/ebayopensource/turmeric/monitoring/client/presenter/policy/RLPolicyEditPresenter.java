@@ -55,6 +55,7 @@ public class RLPolicyEditPresenter extends PolicyEditPresenter {
 			Map<SupportedService, ConsoleService> serviceMap) {
 		super(eventBus, view, serviceMap);
 		view.setConditionBuilderVisible(true);
+		view.setExclusionListsVisible(true);
 		bind();
 	}
 

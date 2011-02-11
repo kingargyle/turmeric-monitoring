@@ -1008,6 +1008,10 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 			enableActions();
 		}
 
+	    public void setExclusionListVisible(boolean visible){
+	    	subjectAssignmentWidget.setExclusionListVisible(visible);
+	    }
+	    
 		public void setAssignments(List<PolicySubjectAssignment> assignments) {
 			HashSet<PolicySubjectAssignment> tmp = new HashSet(
 					selectionModel.getSelectedSet());
@@ -1352,6 +1356,11 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 	@Override
 	public void setConditionBuilderVisible(boolean visible) {
 		((ContentView) contentView).conditionPanel.setVisible(visible);
+	}
+
+	@Override
+	public void setExclusionListsVisible(boolean visible){;
+		((SubjectContentView) subjectContentView).setExclusionListVisible(visible);
 	}
 
 
