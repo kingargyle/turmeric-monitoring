@@ -36,6 +36,7 @@ import org.ebayopensource.turmeric.monitoring.client.model.policy.Rule;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.RuleAttribute;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.Subject;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectGroup;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectType;
 import org.ebayopensource.turmeric.monitoring.client.presenter.AbstractGenericPresenter;
 import org.ebayopensource.turmeric.monitoring.client.view.common.PolicyTemplateDisplay.PolicyPageTemplateDisplay;
 
@@ -408,46 +409,46 @@ public class PolicyViewPresenter extends AbstractGenericPresenter {
 		List<PolicySubjectAssignment> polSubAssignmentList = new ArrayList<PolicySubjectAssignment>();
 		PolicySubjectAssignment polSubAssignment = null;
 
-		Iterator it = sAssignMap.keySet().iterator();
-		while (it.hasNext()) {
-			polSubAssignment = new PolicySubjectAssignment();
-
-			String subjectType = (String) it.next();
-			polSubAssignment.setSubjectType(subjectType);
-			
-			List<Subject> sList = (List<Subject>) sAssignMap.get(subjectType);
-			List<Subject> exclSList = (List<Subject>) exclSAssignMap.get(subjectType);
-			List<SubjectGroup> sgList = (List<SubjectGroup>) sgAssignMap.get(subjectType);
-			List<SubjectGroup> exclSGList = (List<SubjectGroup>) exclSGAssignMap.get(subjectType);
+		//there are 4 subject types according the metadata info
+		for(String subjectType : SubjectType.getValues()){
+			if(sAssignMap.containsKey(subjectType)){
+				if(polSubAssignment == null){
+					polSubAssignment = new PolicySubjectAssignment();
+					polSubAssignment.setSubjectType(subjectType);
+				}
+				polSubAssignment.setSubjects(sAssignMap.get(subjectType));
+			}
 	
-			polSubAssignment.setSubjects(sList);
-			polSubAssignment.setExclusionSubjects(exclSList);
-			polSubAssignment.setSubjectGroups(sgList);
-			polSubAssignment.setExclusionSubjectGroups(exclSGList);
+			if(exclSAssignMap.containsKey(subjectType)){
+				if(polSubAssignment == null){
+					polSubAssignment = new PolicySubjectAssignment();
+					polSubAssignment.setSubjectType(subjectType);
+				}
+				polSubAssignment.setExclusionSubjects(exclSAssignMap.get(subjectType));
+			}
 			
-			polSubAssignmentList.add(polSubAssignment);
+			if(sgAssignMap.containsKey(subjectType)){
+				if(polSubAssignment == null){
+					polSubAssignment = new PolicySubjectAssignment();
+					polSubAssignment.setSubjectType(subjectType);
+				}
+				polSubAssignment.setSubjectGroups(sgAssignMap.get(subjectType));
+			}
+			
+			if(exclSGAssignMap.containsKey(subjectType)){
+				if(polSubAssignment == null){
+					polSubAssignment = new PolicySubjectAssignment();
+					polSubAssignment.setSubjectType(subjectType);
+				}
+				polSubAssignment.setExclusionSubjectGroups(exclSGAssignMap.get(subjectType));
+			}
+			
+			if(polSubAssignment != null){
+				polSubAssignmentList.add(polSubAssignment);	
+			}
+			
 		}
-
-//		// load remaining SG
-//
-//		if (sgAssignMap.size() > 0) {
-//			Iterator itSg = sgAssignMap.keySet().iterator();
-//			while (itSg.hasNext()) {
-//				polSubAssignment = new PolicySubjectAssignment();
-//
-//				String subjectGroupType = (String) itSg.next();
-//				List<SubjectGroup> sgList = (List<SubjectGroup>) sgAssignMap
-//						.get(subjectGroupType);
-//
-//				polSubAssignment.setSubjectType(subjectGroupType);
-//				polSubAssignment.setSubjects(null);
-//				polSubAssignment.setSubjectGroups(sgList);
-//				
-//				polSubAssignmentList.add(polSubAssignment);
-//
-//			}
-//		}
-
+	
 		return polSubAssignmentList;
 
 	}

@@ -803,7 +803,9 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 			// SubjectAssignment
 			// - SubjectType
 			// - List of Subject
+			// - List of exclusion Subject
 			// - List of SubjectGroup
+			// - List of exclusion SubjectGroup
 
 			keyProvider = new ProvidesKey<PolicySubjectAssignment>() {
 				public Object getKey(PolicySubjectAssignment assignment) {
@@ -856,8 +858,9 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 			// text column for type
 			TextColumn<PolicySubjectAssignment> typeCol = new TextColumn<PolicySubjectAssignment>() {
 				public String getValue(PolicySubjectAssignment assignment) {
-					if (assignment == null || assignment.getSubjects() == null)
+					if (assignment == null ){
 						return null;
+					}
 					return assignment.getSubjectType();
 				}
 			};

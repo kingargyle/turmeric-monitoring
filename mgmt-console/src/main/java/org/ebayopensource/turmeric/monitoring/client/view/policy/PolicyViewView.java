@@ -382,7 +382,7 @@ public class PolicyViewView extends ResizeComposite implements
 			// text column for type
 			final TextColumn<PolicySubjectAssignment> typeCol = new TextColumn<PolicySubjectAssignment>() {
 				public String getValue(final PolicySubjectAssignment assignment) {
-					if (assignment == null || assignment.getSubjects() == null) {
+					if (assignment == null ) {
 						return null;
 					}
 					return assignment.getSubjectType();
