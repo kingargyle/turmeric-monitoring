@@ -278,6 +278,8 @@ public class SubjectGroupEditPresenter extends AbstractGenericPresenter {
 										History.newItem(token.toString(), true);
 									}
 								});
+						
+						view.getApplyButton().setEnabled(true);
 
 					}
 				};
