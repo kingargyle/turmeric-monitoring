@@ -21,8 +21,13 @@ public interface PolicyEnforcementService {
     
     public static final String SUBJECT_GROUP_DELETE_RESOURCE = "SERVICE.PolicyService.deleteSubjectGroups";
     public static final String SUBJECT_GROUP_EDIT_RESOURCE = "SERVICE.PolicyService.updateSubjectGroups";
+    public static final String SUBJECT_GROUP_DELETE_OPERATION_NAME = "deleteSubjectGroups";
+    public static final String SUBJECT_GROUP_OPERATION_NAME = "updateSubjectGroups";
     public static final String POLICY_DELETE_RESOURCE = "SERVICE.PolicyService.deletePolicy";
     public static final String POLICY_EDIT_RESOURCE = "SERVICE.PolicyService.updatePolicy";
+    public static final String POLICY_DELETE_OPERATION_NAME = "deletePolicy";
+    public static final String POLICY_EDIT_OPERATION_NAME = "updatePolicy";
+    public static final String POLICY_SERVICE_NAME = "PolicyService";
     
     public void verify (OperationKey opKey,
                         List<String> policyTypes,

@@ -207,7 +207,7 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 
 		// the user wants to search by resource type
 		this.view.getAvailableTypesBox().addChangeHandler(new ChangeHandler() {
-			
+
 			public void onChange(ChangeEvent event) {
 				if (view.isResourceCriteriaEnabled()) {
 					if (view.getSelectedType() != null
@@ -232,7 +232,7 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 
 		// the user wants to search by rs name
 		this.view.getResourceNameBox().addChangeHandler(new ChangeHandler() {
-			
+
 			public void onChange(ChangeEvent event) {
 				if (view.getSelectedType() != null
 						&& !"".equals(view.getSelectedResource())) {
@@ -252,7 +252,7 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 				});
 
 		this.view.getSearchButton().addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {	    
+			public void onClick(ClickEvent event) {
 				if (PolicySummaryPresenter.this.view.isPolicyCriteriaEnabled()) {
 					fetchPolicyTypes();
 					fetchPoliciesByName(PolicySummaryPresenter.this.view
@@ -291,163 +291,166 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 				// setPolicies();
 			}
 		});
-		
+
 		this.view.getActionButton().addClickHandler(new ClickHandler() {
 
-            public void onClick(ClickEvent event) {
-                Map<GenericPolicy, UserAction> pending = view.getPendingActions();
-                
-                if (pending == null)
-                    return;
-                if (pending.size() == 0)
-                    return;
-                
-                //Things that can be pending:
-                //1. editing/viewing a SINGLE policy
-                // or
-                //2. deleting multiple policies
-                // or
-                //3. enabling/disabling multiple policies
-                
-                for (Map.Entry<GenericPolicy, UserAction> entry:pending.entrySet()) {
-                    final GenericPolicy p = entry.getKey();
-                    switch(entry.getValue()) {
-                        case POLICY_VIEW: {
-                                    HistoryToken token = makeToken(
-                                            PolicyController.PRESENTER_ID,
-                                            PolicyViewPresenter.PRESENTER_ID, null);
-                                    token.addValue(
-                                            HistoryToken.SELECTED_POLICY_TOKEN_ID,
-                                            String.valueOf(entry.getKey().getId()));
-                                    token.addValue(
-                                        HistoryToken.SELECTED_POLICY_TOKEN_TYPE,
-                                        String.valueOf(entry.getKey().getType()));
-                                    History.newItem(token.toString(), true);
-                            break;
-                        }
-                        case POLICY_EDIT: {
-                                    GWT.log("EDIT POLICY:");
-                                    // TODO improve this, do not HRDCODE
-                                    String policyType = String.valueOf(entry.getKey().getType());
-                                    String subPresenter = null;
+			public void onClick(ClickEvent event) {
+				Map<GenericPolicy, UserAction> pending = view
+						.getPendingActions();
 
-                                    if ("BLACKLIST".equals(policyType)) {
-                                        subPresenter = BLPolicyEditPresenter.PRESENTER_ID;
-                                    } else if ("WHITELIST".equals(policyType)) {
-                                        subPresenter = WLPolicyEditPresenter.PRESENTER_ID;
-                                    } else if ("AUTHZ".equals(policyType)) {
-                                        subPresenter = AUTHZPolicyEditPresenter.PRESENTER_ID;
-                                    } else if ("RL".equals(policyType)) {
-                                        subPresenter = RLPolicyEditPresenter.PRESENTER_ID;
-                                    }
-                                    HistoryToken token = makeToken(
-                                            PolicyController.PRESENTER_ID,
-                                            subPresenter, null);
-                                    token.addValue(
-                                            HistoryToken.SELECTED_POLICY_TOKEN_ID,
-                                            String.valueOf(entry.getKey().getId()));
-                                    token.addValue(
-                                            HistoryToken.SELECTED_POLICY_TOKEN_TYPE,
-                                            String.valueOf(entry.getKey().getType()));
+				if (pending == null)
+					return;
+				if (pending.size() == 0)
+					return;
 
-                                    History.newItem(token.toString(), true);
-                            break;
-                        }
-                        case POLICY_ENABLE: {
-                                    final PolicyKey key = new PolicyKey();
-                                    key.setId(entry.getKey().getId());
-                                    key.setName(entry.getKey().getName());
-                                    key.setType(entry.getKey().getType());
-                                    GWT.log("Updating status for :" + entry.getKey().getType()
-                                            + " - " + entry.getKey().getName());
-                                    service.enablePolicy(key,
-                                            new AsyncCallback<EnablePolicyResponse>() {
-                                                public void onFailure(Throwable arg) {
-                                                	if (arg.getLocalizedMessage().contains("500")) {
-                            							view.error(ConsoleUtil.messages
-                            									.serverError(ConsoleUtil.policyAdminConstants
-                            											.genericErrorMessage()));
-                            						} else {
-                            							view.error(ConsoleUtil.messages.serverError(arg
-                            									.getLocalizedMessage()));
-                            						}
-                                                    GWT.log("ERROR - Enabling fails");
-                                                }
+				// Things that can be pending:
+				// 1. editing/viewing a SINGLE policy
+				// or
+				// 2. deleting multiple policies
+				// or
+				// 3. enabling/disabling multiple policies
 
-                                                public void onSuccess(EnablePolicyResponse result) {
-                                                    ((GenericPolicyImpl)p).setEnabled(true);
-                                                    view.setPolicies(policies);
-                                                }
-                                            });
-                            break;
-                        }
-                        case POLICY_DISABLE: {
-                                    final PolicyKey key = new PolicyKey();
-                                    key.setId(entry.getKey().getId());
-                                    key.setName(entry.getKey().getName());
-                                    key.setType(entry.getKey().getType());
-                                    GWT.log("Updating status for :" + entry.getKey().getType()
-                                            + " - " + entry.getKey().getName());
-                                    service.disablePolicy(key,
-                                            new AsyncCallback<DisablePolicyResponse>() {
-                                                public void onFailure(Throwable arg) {
-                                                	if (arg.getLocalizedMessage().contains("500")) {
-                            							view.error(ConsoleUtil.messages
-                            									.serverError(ConsoleUtil.policyAdminConstants
-                            											.genericErrorMessage()));
-                            						} else {
-                            							view.error(ConsoleUtil.messages.serverError(arg
-                            									.getLocalizedMessage()));
-                            						}                                                                                                                           
-                                                }
+				for (Map.Entry<GenericPolicy, UserAction> entry : pending
+						.entrySet()) {
+					final GenericPolicy p = entry.getKey();
+					switch (entry.getValue()) {
+					case POLICY_VIEW: {
+						HistoryToken token = makeToken(
+								PolicyController.PRESENTER_ID,
+								PolicyViewPresenter.PRESENTER_ID, null);
+						token.addValue(HistoryToken.SELECTED_POLICY_TOKEN_ID,
+								String.valueOf(entry.getKey().getId()));
+						token.addValue(HistoryToken.SELECTED_POLICY_TOKEN_TYPE,
+								String.valueOf(entry.getKey().getType()));
+						History.newItem(token.toString(), true);
+						break;
+					}
+					case POLICY_EDIT: {
+						GWT.log("EDIT POLICY:");
+						// TODO improve this, do not HRDCODE
+						String policyType = String.valueOf(entry.getKey()
+								.getType());
+						String subPresenter = null;
 
-                                                public void onSuccess(
-                                                                      DisablePolicyResponse result) {
-                                                    ((GenericPolicyImpl)p).setEnabled(false);
-                                                    view.setPolicies(policies);
-                                                }
-                                    });
-                                    break;
-                        }
-                        case POLICY_DELETE: {   
-                                        final PolicyKey key = new PolicyKey();
-                                        key.setType(entry.getKey().getType());
-                                        key.setName(entry.getKey().getName());
-                                        key.setId(entry.getKey().getId());
+						if ("BLACKLIST".equals(policyType)) {
+							subPresenter = BLPolicyEditPresenter.PRESENTER_ID;
+						} else if ("WHITELIST".equals(policyType)) {
+							subPresenter = WLPolicyEditPresenter.PRESENTER_ID;
+						} else if ("AUTHZ".equals(policyType)) {
+							subPresenter = AUTHZPolicyEditPresenter.PRESENTER_ID;
+						} else if ("RL".equals(policyType)) {
+							subPresenter = RLPolicyEditPresenter.PRESENTER_ID;
+						}
+						HistoryToken token = makeToken(
+								PolicyController.PRESENTER_ID, subPresenter,
+								null);
+						token.addValue(HistoryToken.SELECTED_POLICY_TOKEN_ID,
+								String.valueOf(entry.getKey().getId()));
+						token.addValue(HistoryToken.SELECTED_POLICY_TOKEN_TYPE,
+								String.valueOf(entry.getKey().getType()));
 
-                                        service.deletePolicy(
-                                                key,
-                                                new AsyncCallback<DeletePolicyResponse>() {
+						History.newItem(token.toString(), true);
+						break;
+					}
+					case POLICY_ENABLE: {
+						final PolicyKey key = new PolicyKey();
+						key.setId(entry.getKey().getId());
+						key.setName(entry.getKey().getName());
+						key.setType(entry.getKey().getType());
+						GWT.log("Updating status for :"
+								+ entry.getKey().getType() + " - "
+								+ entry.getKey().getName());
+						service.enablePolicy(key,
+								new AsyncCallback<EnablePolicyResponse>() {
+									public void onFailure(Throwable arg) {
+										if (arg.getLocalizedMessage().contains(
+												"500")) {
+											view.error(ConsoleUtil.messages
+													.serverError(ConsoleUtil.policyAdminConstants
+															.genericErrorMessage()));
+										} else {
+											view.error(ConsoleUtil.messages.serverError(arg
+													.getLocalizedMessage()));
+										}
+										GWT.log("ERROR - Enabling fails");
+									}
 
-                                                    
-                                                    public void onSuccess(
-                                                            DeletePolicyResponse result) {
-                                                        removePolicy(policies, key);
-                                                        view.setPolicies(policies);
-                                                    }
+									public void onSuccess(
+											EnablePolicyResponse result) {
+										((GenericPolicyImpl) p)
+												.setEnabled(true);
+										view.setPolicies(policies);
+									}
+								});
+						break;
+					}
+					case POLICY_DISABLE: {
+						final PolicyKey key = new PolicyKey();
+						key.setId(entry.getKey().getId());
+						key.setName(entry.getKey().getName());
+						key.setType(entry.getKey().getType());
+						GWT.log("Updating status for :"
+								+ entry.getKey().getType() + " - "
+								+ entry.getKey().getName());
+						service.disablePolicy(key,
+								new AsyncCallback<DisablePolicyResponse>() {
+									public void onFailure(Throwable arg) {
+										if (arg.getLocalizedMessage().contains(
+												"500")) {
+											view.error(ConsoleUtil.messages
+													.serverError(ConsoleUtil.policyAdminConstants
+															.genericErrorMessage()));
+										} else {
+											view.error(ConsoleUtil.messages.serverError(arg
+													.getLocalizedMessage()));
+										}
+									}
 
-                                                    
-                                                    public void onFailure(
-                                                            Throwable arg) {
-                                                    	if (arg.getLocalizedMessage().contains("500")) {
-                                							view.error(ConsoleUtil.messages
-                                									.serverError(ConsoleUtil.policyAdminConstants
-                                											.genericErrorMessage()));
-                                						} else {
-                                							view.error(ConsoleUtil.messages.serverError(arg
-                                									.getLocalizedMessage()));
-                                						}
-                                                    }
-                                                });
-                            break;
-                        }
-                        case POLICY_EXPORT: {
-                            // TODO
-                            break;
-                        }
-                    }
-                }
-            }
+									public void onSuccess(
+											DisablePolicyResponse result) {
+										((GenericPolicyImpl) p)
+												.setEnabled(false);
+										view.setPolicies(policies);
+									}
+								});
+						break;
+					}
+					case POLICY_DELETE: {
+						final PolicyKey key = new PolicyKey();
+						key.setType(entry.getKey().getType());
+						key.setName(entry.getKey().getName());
+						key.setId(entry.getKey().getId());
+
+						service.deletePolicy(key,
+								new AsyncCallback<DeletePolicyResponse>() {
+
+									public void onSuccess(
+											DeletePolicyResponse result) {
+										removePolicy(policies, key);
+										view.setPolicies(policies);
+									}
+
+									public void onFailure(Throwable arg) {
+										if (arg.getLocalizedMessage().contains(
+												"500")) {
+											view.error(ConsoleUtil.messages
+													.serverError(ConsoleUtil.policyAdminConstants
+															.genericErrorMessage()));
+										} else {
+											view.error(ConsoleUtil.messages.serverError(arg
+													.getLocalizedMessage()));
+										}
+									}
+								});
+						break;
+					}
+					case POLICY_EXPORT: {
+						// TODO
+						break;
+					}
+					}
+				}
+			}
 		});
 	}
 
@@ -853,13 +856,6 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 	private void fetchAccess(final UserAction action,
 			final GenericPolicy policy, final AsyncCallback<Boolean> callback) {
 
-		// TODO TODO TODO
-		// Remove after PES starts working properly with valid JSON
-		/*
-		 * 
-		 * callback.onSuccess(Boolean.TRUE); return;
-		 */
-
 		PolicyEnforcementService enforcementService = (PolicyEnforcementService) serviceMap
 				.get(SupportedService.POLICY_ENFORCEMENT_SERVICE);
 		if (enforcementService == null)
@@ -900,6 +896,84 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 
 		enforcementService.verify(opKey, policyTypes, credentials,
 				subjectTypes, null, null, null,
+				new AsyncCallback<VerifyAccessResponse>() {
+
+					public void onFailure(Throwable arg) {
+						if (arg.getLocalizedMessage().contains("500")) {
+							view.error(ConsoleUtil.messages
+									.serverError(ConsoleUtil.policyAdminConstants
+											.genericErrorMessage()));
+						} else {
+							view.error(ConsoleUtil.messages.serverError(arg
+									.getLocalizedMessage()));
+						}
+					}
+
+					public void onSuccess(VerifyAccessResponse response) {
+						// System.err.println("Response = "+(!response.isErrored())+" for PES for action="+action+" on  policy "+policy.getName());
+						boolean authorized = Boolean.valueOf(!response.isErrored());
+						if(!authorized){
+							// try the second call, for the SuperAdmin Policy
+							fetchSuperAdminAccess(action, policy, callback);
+						}else{
+							callback.onSuccess(Boolean.valueOf(!response
+									.isErrored()));
+						}
+						
+						
+					}
+				});
+
+	}
+
+	private void fetchSuperAdminAccess(final UserAction action,
+			final GenericPolicy policy, final AsyncCallback<Boolean> callback) {
+//		System.err.println("Doing the SuperAdmin call");
+		
+		PolicyEnforcementService enforcementService = (PolicyEnforcementService) serviceMap
+				.get(SupportedService.POLICY_ENFORCEMENT_SERVICE);
+		if (enforcementService == null)
+			return;
+		if (policy == null)
+			return;
+		if (action == null)
+			return;
+
+		String resName = PolicyEnforcementService.POLICY_SERVICE_NAME;
+		String opName = null;
+		Long opId = null;
+		switch (action) {
+			case POLICY_DELETE: {
+				opName = PolicyEnforcementService.POLICY_DELETE_OPERATION_NAME;
+				opId = policy.getId();
+				break;
+			}
+			case POLICY_EDIT: {
+				opName = PolicyEnforcementService.POLICY_EDIT_OPERATION_NAME;
+				opId = policy.getId();
+				break;
+			}
+		}
+
+		// TODO - are credentials necessary?
+		Map<String, String> credentials = new HashMap<String, String>();
+		credentials.put("X-TURMERIC-SECURITY-PASSWORD", AppUser.getUser()
+				.getPassword());
+		OperationKey opKey = new OperationKey();
+		
+		opKey.setResourceName(resName);
+		opKey.setOperationName(opName);
+		opKey.setOperationId(opId);
+		opKey.setResourceType("OBJECT");
+		List<String> policyTypes = Collections.singletonList("AUTHZ");
+
+		String[] subjectType = { "USER", AppUser.getUser().getUsername() };
+		List<String[]> subjectTypes = Collections.singletonList(subjectType);
+		List<String> accessControlObject = new ArrayList<String>();
+		accessControlObject.add("?");
+		
+		enforcementService.verify(opKey, policyTypes, credentials,
+				subjectTypes, null, accessControlObject, null,
 				new AsyncCallback<VerifyAccessResponse>() {
 
 					public void onFailure(Throwable arg) {

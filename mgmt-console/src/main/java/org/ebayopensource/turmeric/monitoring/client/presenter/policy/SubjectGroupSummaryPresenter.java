@@ -545,11 +545,92 @@ public class SubjectGroupSummaryPresenter extends AbstractGenericPresenter {
                                     }
 
                                     public void onSuccess(VerifyAccessResponse response) {
+                                    	boolean authorized = Boolean.valueOf(!response.isErrored());
+                						if(!authorized){
+                							// try the second call, for the SuperAdmin Policy
+                							fetchSuperAdminAccess(action, group, callback);
+                						}else{
+                							callback.onSuccess(Boolean.valueOf(!response
+                									.isErrored()));
+                						}
+                                    }
+                                  });
+                              
+	}
+	
+	private void fetchSuperAdminAccess (final UserAction action, final SubjectGroup group, final AsyncCallback<Boolean> callback) {
+	    /*
+	    callback.onSuccess(Boolean.TRUE);
+	    return;
+	    //TODO TODO TODO commented out until PES starts returning reasonable JSON
+	
+	    */
+	    
+	    PolicyEnforcementService enforcementService = (PolicyEnforcementService)serviceMap.get(SupportedService.POLICY_ENFORCEMENT_SERVICE);
+	    if (enforcementService == null)
+	        return;
+	    if (group == null)
+	        return;
+	    if (action == null)
+	        return;
+	    
+	    String resName =  PolicyEnforcementService.POLICY_SERVICE_NAME;
+	    String opName = null;
+	    Long opId = null;
+	    switch (action) {
+	        case SUBJECT_GROUP_DELETE: {
+	        	opName = PolicyEnforcementService.SUBJECT_GROUP_OPERATION_NAME;
+	        	opId = group.getId();
+	            break;
+	        }
+	        case SUBJECT_GROUP_EDIT: {
+	        	opName = PolicyEnforcementService.SUBJECT_GROUP_OPERATION_NAME;
+	        	opId = group.getId();
+	            break;
+	        }
+	    }
+	    
+	    //TODO - are credentials necessary?
+	    Map<String,String> credentials = new HashMap<String,String>();
+	    credentials.put("X-TURMERIC-SECURITY-PASSWORD", AppUser.getUser().getPassword());
+	    OperationKey opKey = new OperationKey();
+	    opKey.setResourceName(resName);
+		opKey.setOperationName(opName);
+		opKey.setOperationId(opId);
+		opKey.setResourceType("OBJECT");
+
+        List<String> policyTypes = Collections.singletonList("AUTHZ");
+
+        String[] subjectType = {"USER", AppUser.getUser().getUsername()};
+        List<String[]> subjectTypes = Collections.singletonList(subjectType);
+        List<String> accessControlObject = new ArrayList<String>();
+		accessControlObject.add("?");
+		
+        enforcementService.verify(opKey, 
+                                  policyTypes, 
+                                  credentials, 
+                                  subjectTypes, 
+                                  null, accessControlObject, null, 
+                                  new AsyncCallback<VerifyAccessResponse>() {
+
+                                    public void onFailure(Throwable arg) {
+                                    	if (arg.getLocalizedMessage().contains("500")) {
+                							view.error(ConsoleUtil.messages
+                									.serverError(ConsoleUtil.policyAdminConstants
+                											.genericErrorMessage()));
+                						} else {
+                							view.error(ConsoleUtil.messages.serverError(arg
+                									.getLocalizedMessage()));
+                						}      
+                                    }
+
+                                    public void onSuccess(VerifyAccessResponse response) {
                                       callback.onSuccess(Boolean.valueOf(!response.isErrored()));
                                     }
                                   });
                               
 	}
+	
 	
 	private List<UserAction> newPermissions () {
 	    List<UserAction> actions = new ArrayList<UserAction>();

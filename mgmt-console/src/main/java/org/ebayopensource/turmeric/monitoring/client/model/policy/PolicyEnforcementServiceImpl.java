@@ -103,18 +103,19 @@ public class PolicyEnforcementServiceImpl  extends AbstractConsoleService implem
                 url += "&ns1:resourceType="+resourceType;
             }
             
-          
             final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
             
             setSecurityHeaders(builder);
+//            System.err.println("builder = "+builder.getUrl());
             try {
                 builder.sendRequest(null, new RequestCallback() {
-
+                	
                     public void onError(Request request, Throwable err) {
                         callback.onFailure(err);
                     }
 
                     public void onResponseReceived(Request request, Response response) {
+//                    	System.err.println("response = "+response.getText());
                         if (response.getStatusCode() != Response.SC_OK) {
                             callback.onFailure(new Throwable(ConsoleUtil.constants.error()+" "+response.getStatusCode()));
                         } else if (response.getHeader(ERROR_HEADER) != null) {
