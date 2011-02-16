@@ -9,10 +9,14 @@
 package org.ebayopensource.turmeric.monitoring.client.model.policy;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 import org.ebayopensource.turmeric.monitoring.client.model.AbstractConsoleService;
+import org.ebayopensource.turmeric.monitoring.client.model.MetricsMetaDataRequest;
+import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.SubjectQuery.SubjectTypeKey;
 
 import com.google.gwt.core.client.GWT;
@@ -1096,18 +1100,27 @@ public class PolicyQueryServiceImpl extends AbstractConsoleService implements
 		if (policy == null)
 			return;
 
+		
 		String url = BASE_POLICY_URL + "?"
-				+ getPartialUrl("updatePolicy", namespaces, RequestFormat.NV);
-
-		// update mode
-		url += (mode == null ? "" : "&ns1:updateMode=" + mode.toString());
-
-		url += GenericPolicyConverter.toNV(policy);
-		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,
+				+ getPartialUrl("updatePolicy", namespaces, RequestFormat.JSON);
+		 
+		 String json = ""+
+	        "{" +
+	        "   \"jsonns.ns1\":\""+SECURITY_NAMESPACE+"\"," +
+            "   \"jsonns.ns2\":\""+OASIS_NAMESPACE+"\"," +
+	        "   \"ns1.updatePolicyRequest\":{" +
+	        "   \"ns1.updateMode\": \"" + mode.toString()+"\"," ; 
+	        
+	        json +=  GenericPolicyConverter.toJSON(policy);
+	        
+	        json += "   }" ;
+	        json += "}";
+		
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.POST,
 				URL.encode(url));
 		setSecurityHeaders(builder);
 		try {
-			builder.sendRequest(null, new RequestCallback() {
+			builder.sendRequest(json, new RequestCallback() {
 
 				public void onError(Request request, Throwable err) {
 					callback.onFailure(err);
@@ -1139,6 +1152,7 @@ public class PolicyQueryServiceImpl extends AbstractConsoleService implements
 
 	}
 
+	
 	private String createSubjectGroupKeyRequest(
 			List<SubjectGroupKey> subjectGroupKeys, String url) {
 		// subject group key is optional
