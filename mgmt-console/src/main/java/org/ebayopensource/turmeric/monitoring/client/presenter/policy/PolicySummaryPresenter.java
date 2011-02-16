@@ -60,11 +60,15 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.text.client.IntegerParser;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.Button;
 
 public class PolicySummaryPresenter extends AbstractGenericPresenter {
 
@@ -252,6 +256,7 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 				});
 
 		this.view.getSearchButton().addClickHandler(new ClickHandler() {
+			
 			public void onClick(ClickEvent event) {
 				if (PolicySummaryPresenter.this.view.isPolicyCriteriaEnabled()) {
 					fetchPolicyTypes();
@@ -426,8 +431,7 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 
 									public void onSuccess(
 											DeletePolicyResponse result) {
-										removePolicy(policies, key);
-										view.setPolicies(policies);
+										((Button)view.getSearchButton()).click();
 									}
 
 									public void onFailure(Throwable arg) {
@@ -442,6 +446,7 @@ public class PolicySummaryPresenter extends AbstractGenericPresenter {
 										}
 									}
 								});
+						
 						break;
 					}
 					case POLICY_EXPORT: {
