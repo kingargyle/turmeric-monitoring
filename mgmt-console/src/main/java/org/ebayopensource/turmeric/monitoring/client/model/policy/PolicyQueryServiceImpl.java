@@ -542,11 +542,11 @@ public class PolicyQueryServiceImpl extends AbstractConsoleService implements
 		url = createResourceKeyRequest(resKeys, url);
 		url = createOperationKeyRequest(opKeys, url);
 		url = createSubjectKeyRequest(subjectKeys, url);
+
 		url = createSubjectGroupKeyRequest(subjectGroupKeys, url);
 
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
 		setSecurityHeaders(builder);
-
 		try {
 			builder.sendRequest(null, new RequestCallback() {
 

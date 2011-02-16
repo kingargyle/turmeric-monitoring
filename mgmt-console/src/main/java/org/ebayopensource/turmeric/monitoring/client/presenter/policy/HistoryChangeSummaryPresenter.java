@@ -9,6 +9,7 @@
 package org.ebayopensource.turmeric.monitoring.client.presenter.policy;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import org.ebayopensource.turmeric.monitoring.client.SupportedService;
 import org.ebayopensource.turmeric.monitoring.client.model.ConsoleService;
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.EntityHistory;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.OperationKey;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyKey;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryService.GetEntityHistoryResponse;
@@ -108,6 +110,7 @@ public class HistoryChangeSummaryPresenter extends AbstractGenericPresenter {
 		List<String> entitiesList = new ArrayList<String>();
 		entitiesList.add("All");
 		entitiesList.add("Resource");
+		entitiesList.add("Operation");
 		entitiesList.add("Subject");
 		entitiesList.add("Subject Group");
 		entitiesList.add("Authorization Policy");
@@ -128,11 +131,12 @@ public class HistoryChangeSummaryPresenter extends AbstractGenericPresenter {
 	        to = System.currentTimeMillis();
 	    }
 	    
-	    List<PolicyKey> poKeys = new ArrayList<PolicyKey>();
+	    List<PolicyKey> poKeys = null;
 	    List<SubjectKey> sKeys = null;
 	    List<SubjectGroupKey> sgKeys = null;
 	    List<ResourceKey> rsKeys = null;
-	    
+	    List<OperationKey> opKeys = null;
+
 	    PolicyKey pkey=null;
 	    SubjectKey sKey=null;
 	    SubjectGroupKey sgKey=null;
@@ -149,39 +153,39 @@ public class HistoryChangeSummaryPresenter extends AbstractGenericPresenter {
 	    }else if("Blacklist Policy".equals(entityType)){
 	    	pkey = new PolicyKey();
 	        pkey.setType("BLACKLIST");
-		    poKeys.add(pkey);
+		    poKeys =  new ArrayList<PolicyKey>(Collections.singletonList(pkey));
 	        QueryCondition condition = new QueryCondition();
 	        condition.addQuery(new QueryCondition.Query(QueryCondition.ActivePoliciesOnlyValue.FALSE));
 	    }else if("Whitelist Policy".equals(entityType)){
 	    	pkey = new PolicyKey();
 	        pkey.setType("WHITELIST");
-		    poKeys.add(pkey);
+	        poKeys =  new ArrayList<PolicyKey>(Collections.singletonList(pkey));
 	        QueryCondition condition = new QueryCondition();
 	        condition.addQuery(new QueryCondition.Query(QueryCondition.ActivePoliciesOnlyValue.FALSE));
 	    }else if("Rate Limiting Policy".equals(entityType)){
 	    	pkey = new PolicyKey();
 	        pkey.setType("RL");
-		    poKeys.add(pkey);
+	        poKeys =  new ArrayList<PolicyKey>(Collections.singletonList(pkey));
 	        QueryCondition condition = new QueryCondition();
 	        condition.addQuery(new QueryCondition.Query(QueryCondition.ActivePoliciesOnlyValue.FALSE));
 	    }else if("Subject".equals(entityType)){
-	    	sKeys = PolicyKeysUtil.getAllSubjectKeyList();
-	    	poKeys = PolicyKeysUtil.getAllPolicyKeyList();
-	    }else if("SubjectGroup".equals(entityType)){
-	    	sgKeys = PolicyKeysUtil.getAllSubjectGroupKeyList();
-	    	poKeys = PolicyKeysUtil.getAllPolicyKeyList();
+	    	sKeys = new ArrayList<SubjectKey>(PolicyKeysUtil.getAllSubjectKeyList());
+	    }else if("Subject Group".equals(entityType)){
+	    	sgKeys = new ArrayList<SubjectGroupKey>(PolicyKeysUtil.getAllSubjectGroupKeyList());
 	    }else if("Resource".equals(entityType)){
-	    	rsKeys = PolicyKeysUtil.getAllResourceKeyList();
-	    	poKeys = PolicyKeysUtil.getAllPolicyKeyList();
+	    	rsKeys = new ArrayList<ResourceKey>(PolicyKeysUtil.getAllResourceKeyList());
+	    }else if("Operation".equals(entityType)){
+	    	opKeys = new ArrayList<OperationKey>(PolicyKeysUtil.getAllOperationKeyList());
 	    }else if ("All".equals(entityType)){
-	    	poKeys = PolicyKeysUtil.getAllPolicyKeyList();
-	    	rsKeys = PolicyKeysUtil.getAllResourceKeyList();
-	    	sKeys = PolicyKeysUtil.getAllSubjectKeyList();
-	    	sgKeys = PolicyKeysUtil.getAllSubjectGroupKeyList();
+	    	poKeys = new ArrayList<PolicyKey>(PolicyKeysUtil.getAllPolicyKeyList());
+	    	rsKeys = new ArrayList<ResourceKey>(PolicyKeysUtil.getAllResourceKeyList());
+	    	opKeys = new ArrayList<OperationKey>(PolicyKeysUtil.getAllOperationKeyList());
+	    	sKeys = new ArrayList<SubjectKey>(PolicyKeysUtil.getAllSubjectKeyList());
+	    	sgKeys = new ArrayList<SubjectGroupKey>(PolicyKeysUtil.getAllSubjectGroupKeyList());
 	    }
 	    
 	    
-	        service.getEntityHistory(from, to , poKeys, rsKeys, null,sKeys, sgKeys, new AsyncCallback<GetEntityHistoryResponse>() {
+	        service.getEntityHistory(from, to , poKeys, rsKeys, opKeys,sKeys, sgKeys, new AsyncCallback<GetEntityHistoryResponse>() {
 	            public void onFailure(Throwable arg) {
 	            	if(arg.getLocalizedMessage().contains("500")){
 						view

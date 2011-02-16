@@ -11,6 +11,7 @@ package org.ebayopensource.turmeric.monitoring.client.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ebayopensource.turmeric.monitoring.client.model.policy.OperationKey;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyKey;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyType;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.ResourceKey;
@@ -23,6 +24,7 @@ public class PolicyKeysUtil {
 
 	private static List<PolicyKey> poKeys;
 	private static List<ResourceKey> rsKeys;
+	private static List<OperationKey> opKeys;
 	private static List<SubjectKey> sKeys;
 	private static List<SubjectGroupKey> sgKeys;
 
@@ -50,6 +52,19 @@ public class PolicyKeysUtil {
 			}
 		}
 		return rsKeys;
+	}
+
+	public static List<OperationKey> getAllOperationKeyList() {
+		if (opKeys == null) {
+			opKeys = new ArrayList<OperationKey>();
+			OperationKey opKey = null;
+			for (String rsType : ResourceType.getValues()) {
+				opKey = new OperationKey();
+				opKey.setResourceType(rsType);
+				opKeys.add(opKey);
+			}
+		}
+		return opKeys;
 	}
 
 	public static List<SubjectKey> getAllSubjectKeyList() {
