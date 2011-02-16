@@ -407,10 +407,11 @@ public class PolicyViewPresenter extends AbstractGenericPresenter {
 
 		// Generates the PolicySubjectAssignment objects
 		List<PolicySubjectAssignment> polSubAssignmentList = new ArrayList<PolicySubjectAssignment>();
-		PolicySubjectAssignment polSubAssignment = null;
-
+		
 		//there are 4 subject types according the metadata info
 		for(String subjectType : SubjectType.getValues()){
+			PolicySubjectAssignment polSubAssignment = null;
+			
 			if(sAssignMap.containsKey(subjectType)){
 				if(polSubAssignment == null){
 					polSubAssignment = new PolicySubjectAssignment();
@@ -445,7 +446,6 @@ public class PolicyViewPresenter extends AbstractGenericPresenter {
 			
 			if(polSubAssignment != null){
 				polSubAssignmentList.add(polSubAssignment);	
-				polSubAssignment= null;
 			}
 			
 		}
