@@ -146,8 +146,7 @@ public class HistoryChangeSummaryPresenter extends AbstractGenericPresenter {
 	    if("Authorization Policy".equals(entityType)){
 	    	pkey = new PolicyKey();
 	        pkey.setType("AUTHZ");
-		    poKeys.add(pkey);
-
+		    poKeys =  new ArrayList<PolicyKey>(Collections.singletonList(pkey));
 	        QueryCondition condition = new QueryCondition();
 	        condition.addQuery(new QueryCondition.Query(QueryCondition.ActivePoliciesOnlyValue.FALSE));
 	    }else if("Blacklist Policy".equals(entityType)){
