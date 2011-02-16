@@ -285,10 +285,10 @@ public abstract class PolicyEditPresenter extends PolicyCreatePresenter {
 			
 			if(polSubAssignment != null){
 				polSubAssignmentList.add(polSubAssignment);	
+				polSubAssignment= null;
 			}
 			
 		}
-	
 		return polSubAssignmentList;
 
 	}

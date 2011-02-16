@@ -445,6 +445,7 @@ public class PolicyViewPresenter extends AbstractGenericPresenter {
 			
 			if(polSubAssignment != null){
 				polSubAssignmentList.add(polSubAssignment);	
+				polSubAssignment= null;
 			}
 			
 		}
