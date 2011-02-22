@@ -343,13 +343,13 @@ public class GenericPolicyConverter {
 
 		json += createRuleJSON(policy);
 		
-		if (policy.getResources() != null) {
-			json += ",\"ns1.Target\": { ";
+		json += ",\"ns1.Target\": { ";
+		
+		if (policy.getResources() != null && policy.getResources().size() > 0) {
 			json += "\"ns1.Resources\": {";
+			json += "\"ns1.Resource\": [";
 			
-
 			for (int i = 0; i < policy.getResources().size(); i++) {
-				json += "\"ns1.Resource\": [";
 				Resource rs = policy.getResources().get(i);
 				json += "{\"@ResourceName\": \"" + rs.getResourceName() + "\"";
 				json += ",\"@ResourceType\": \""
@@ -373,22 +373,25 @@ public class GenericPolicyConverter {
 
 				json += "}";
 
-				if (i < policy.getResources().size() - 1)
+				if (i < policy.getResources().size() - 1){
 					json += ",";
-				
-				json += "]";
+				}
 			}
 			
+			json += "]";
+			json += "}";
 		}
-		json += "}";
+		
+		if (policy.getResources() != null && policy.getResources().size() > 0) {
+			json += ",";
+		}
 
-		json += ",\"ns1.Subjects\": {";
+		json += "\"ns1.Subjects\": {";
 
 		json += createSubjectsTargetJSON(policy);
 
 		json += "}";
-		json += "}";
-		json += "}";
+		json += "}"; //Target close
 
 		return json;
 	}
@@ -478,12 +481,16 @@ public class GenericPolicyConverter {
 
 		String json = "";
 		boolean needComma = false;
+		if ((inclusionSubjects != null && inclusionSubjects.size() > 0)
+				|| (exclusionSubjects != null && exclusionSubjects.size() > 0)) {
+			json += "\"ns1.Subject\": [";
+		}
+		
 		// inclusion Subjects
 		if (inclusionSubjects != null && inclusionSubjects.size() > 0) {
 
 			for (int i = 0; i < inclusionSubjects.size(); i++) {
-				json += "\"ns1.Subject\": [";
-
+			
 				Subject s = inclusionSubjects.get(i);
 				json += "{\"@SubjectName\": \"" + s.getName() + "\"";
 				json += ",\"@SubjectType\": \"" + s.getType().toString()
@@ -520,7 +527,8 @@ public class GenericPolicyConverter {
 				if (i < inclusionSubjects.size() - 1) {
 					json += ",";
 				}
-				json += "]";
+				
+				
 			}
 
 			
@@ -532,8 +540,6 @@ public class GenericPolicyConverter {
 			if (needComma) {
 				json += ",";
 			}
-
-			json += "\"ns1.Subject\": [";
 
 			for (int i = 0; i < exclusionSubjects.size(); i++) {
 				Subject s = exclusionSubjects.get(i);
@@ -570,19 +576,29 @@ public class GenericPolicyConverter {
 					json += ",";
 				}
 			}
-
-			json += "]";
 			needComma = true;
 
 		}
 
-		// inclusionSubjectGroup
-		if (inclusionSubjectGroup != null && inclusionSubjectGroup.size() > 0) {
+		if ((inclusionSubjects != null && inclusionSubjects.size() > 0)
+				|| (exclusionSubjects != null && exclusionSubjects.size() > 0)) {
+			json += "]";
+		}
+
+				
+		if ((inclusionSubjectGroup != null && inclusionSubjectGroup.size() > 0) 
+				|| (exclusionSubjectGroup != null && exclusionSubjectGroup.size() > 0)){
+			
+				
 			if (needComma) {
 				json += ",";
 			}
-
+			
 			json += "\"ns1.SubjectGroup\": [";
+		}
+		// inclusionSubjectGroup
+		if (inclusionSubjectGroup != null && inclusionSubjectGroup.size() > 0) {
+			
 
 			for (int i = 0; i < inclusionSubjectGroup.size(); i++) {
 				SubjectGroup sg = inclusionSubjectGroup.get(i);
@@ -621,7 +637,6 @@ public class GenericPolicyConverter {
 				}
 			}
 
-			json += "]";
 			needComma = true;
 		}
 
@@ -630,7 +645,6 @@ public class GenericPolicyConverter {
 			if (needComma) {
 				json += ",";
 			}
-			json += "\"ns1.SubjectGroup\": [";
 
 			for (int i = 0; i < exclusionSubjectGroup.size(); i++) {
 				SubjectGroup sg = exclusionSubjectGroup.get(i);
@@ -668,9 +682,15 @@ public class GenericPolicyConverter {
 				}
 			}
 
-			json += "]";
 		}
 
+		if ((inclusionSubjectGroup != null && inclusionSubjectGroup.size() > 0) 
+				|| (exclusionSubjectGroup != null && exclusionSubjectGroup.size() > 0)){
+			json += "]";
+		}
+		
+		json += "}";
+		
 		return json;
 
 	}
