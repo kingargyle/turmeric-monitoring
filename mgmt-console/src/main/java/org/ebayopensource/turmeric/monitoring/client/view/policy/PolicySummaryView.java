@@ -769,16 +769,6 @@ public class PolicySummaryView extends AbstractGenericView implements
 			cellTable.addColumn(policyCreatedByCol,
 					ConsoleUtil.policyAdminConstants.createdBy());
 
-			// Create date
-			Column<GenericPolicy, Date> policyCreatedDateCol = new Column<GenericPolicy, Date>(
-					new DateCell(ConsoleUtil.tzTimeFormat)) {
-				public Date getValue(GenericPolicy policy) {
-					return (policy == null ? null : policy.getCreationDate());
-				}
-			};
-			cellTable.addColumn(policyCreatedDateCol,
-					ConsoleUtil.policyAdminConstants.createTime());
-
 			// Last modified by
 			TextColumn<GenericPolicy> policyModifiedByCol = new TextColumn<GenericPolicy>() {
 				public String getValue(GenericPolicy policy) {
