@@ -678,4 +678,9 @@ public class SubjectGroupSummaryView extends AbstractGenericView implements
 		dialog.show();
 	}
 
+	@Override
+	public void clearDataContent() {
+		this.setGroups(null);
+	}
+
 }

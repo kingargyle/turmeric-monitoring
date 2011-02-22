@@ -83,6 +83,7 @@ public class SubjectGroupSummaryPresenter extends AbstractGenericPresenter {
 	    void setSearchCriteriaEnabled(boolean enabled);
 	    void setPolicyCriteriaEnabled(boolean eanbled);
 	    void error(String error);
+	    void clearDataContent();
 	}
 	
 	
@@ -124,7 +125,7 @@ public class SubjectGroupSummaryPresenter extends AbstractGenericPresenter {
 		
 		this.view.getSearchButton().addClickHandler(new ClickHandler() {
 		    public void onClick(ClickEvent event) {
-		        fetchGroups(view.isSubjectCriteriaEnabled(), view.getSelectedType(), view.getSearchTerm());
+		    	fetchGroups(view.isSubjectCriteriaEnabled(), view.getSelectedType(), view.getSearchTerm());
 		    }
 		});
 
@@ -288,6 +289,7 @@ public class SubjectGroupSummaryPresenter extends AbstractGenericPresenter {
 	}
 	
 	private void fetchGroups (List<SubjectGroupKey> keys) {
+		view.clearDataContent();
 	    if (keys == null || keys.isEmpty())
 	        return;
 	    SubjectGroupQuery query = new SubjectGroupQuery();
