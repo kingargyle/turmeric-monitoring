@@ -14,6 +14,7 @@ import java.util.Map;
 import org.ebayopensource.turmeric.monitoring.client.model.UserAction;
 
 import com.google.gwt.cell.client.AbstractEditableCell;
+import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
@@ -66,14 +67,12 @@ public class CustomPermissionCheckboxCell<C, V> extends AbstractEditableCell<C, 
     /**
      * @see com.google.gwt.cell.client.AbstractEditableCell#isEditing(com.google.gwt.dom.client.Element, java.lang.Object, java.lang.Object)
      */
-    @Override
     public boolean isEditing(Element arg0, C arg1, Object arg2) {
      
         return false;
     }
 
     
-    @Override
     public void onBrowserEvent(Element parent, C value,
                                Object key, NativeEvent event,
                                ValueUpdater<C> valueUpdater) {
@@ -88,5 +87,23 @@ public class CustomPermissionCheckboxCell<C, V> extends AbstractEditableCell<C, 
             }
         }
     }
+
+	@Override
+	public boolean isEditing(com.google.gwt.cell.client.Cell.Context arg0,
+			Element arg1, C arg2) {
+		return isEditing(arg1, arg2, arg0.getKey());
+	}
+
+	@Override
+	public void onBrowserEvent(Cell.Context context, Element parent, C value, NativeEvent event, ValueUpdater<C> valueUpdater){
+		onBrowserEvent(parent, value, context.getKey(), event, valueUpdater);
+	}
+	
+	@Override
+	public void render(com.google.gwt.cell.client.Cell.Context arg0, C arg1,
+			SafeHtmlBuilder arg2) {
+		render(arg1, arg0.getKey(), arg2);
+	}
+	
 
 }

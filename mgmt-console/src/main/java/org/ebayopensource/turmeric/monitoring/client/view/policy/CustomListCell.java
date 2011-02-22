@@ -64,7 +64,6 @@ public class CustomListCell extends AbstractInputCell<List<String>, String> {
 	 * @param value
 	 * @param sb
 	 */
-	@Override
 	public void render(List<String> value, Object key, SafeHtmlBuilder sb) {
 		if (value != null) {
 			if (value.size() >= minScrollbarSize) {
@@ -93,6 +92,12 @@ public class CustomListCell extends AbstractInputCell<List<String>, String> {
 		}
 		sb.append(template.selectTag(String.valueOf(this.minScrollbarSize), content.toSafeHtml()));
 		
+	}
+
+	@Override
+	public void render(com.google.gwt.cell.client.Cell.Context paramContext,
+			List<String> paramC, SafeHtmlBuilder paramSafeHtmlBuilder) {
+		this.render(paramC, paramContext.getKey(), paramSafeHtmlBuilder);
 	}
 
 }

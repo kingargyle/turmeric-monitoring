@@ -9,6 +9,7 @@
 package org.ebayopensource.turmeric.monitoring.client.view.policy;
 
 import com.google.gwt.cell.client.AbstractCell;
+import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
@@ -32,7 +33,7 @@ public class DescriptionCell extends AbstractCell<String> {
         }
 
         // Call the super handler, which handlers the enter key.
-        super.onBrowserEvent(parent, value, key, event, valueUpdater);
+        super.onBrowserEvent(new Context(0,0,key), parent, value, event, valueUpdater);
 
         // Handle click events.
         if ("click".equals(event.getType())) {
@@ -56,7 +57,6 @@ public class DescriptionCell extends AbstractCell<String> {
     /**
      * @see com.google.gwt.cell.client.AbstractCell#render(java.lang.Object, java.lang.Object, com.google.gwt.safehtml.shared.SafeHtmlBuilder)
      */
-    @Override
     public void render(String sg, Object arg1, SafeHtmlBuilder safeHtml) {
         safeHtml.appendHtmlConstant ("<div><p class=\"clickable\">");
         if (sg != null) {
@@ -67,4 +67,16 @@ public class DescriptionCell extends AbstractCell<String> {
         }
         safeHtml.appendHtmlConstant("</p></div>");
     }
+
+	@Override
+	public void render(com.google.gwt.cell.client.Cell.Context paramContext,
+			String paramC, SafeHtmlBuilder paramSafeHtmlBuilder) {
+		render(paramC,paramContext.getKey(),paramSafeHtmlBuilder);
+		
+	}
+	
+	@Override
+	public void onBrowserEvent(Cell.Context context, Element parent, String value, NativeEvent event, ValueUpdater<String> valueUpdater){
+		onBrowserEvent(parent, value, context.getKey(), event, valueUpdater);
+	}
 }
