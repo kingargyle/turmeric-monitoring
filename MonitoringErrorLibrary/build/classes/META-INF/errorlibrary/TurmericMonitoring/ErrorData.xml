@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ErrorBundle xmlns="http://www.ebayopensource.org/turmeric/common/config" xmlns:tns="http://www.ebayopensource.org/turmeric/common/config" xmlns:xs="http://www.w3.org/2001/XMLSchema" libraryVersion="1.0.0" packageName="org.ebayopensource.turmeric.errorlibrary.turmericmonitoring" domain="TurmericMonitoring" organization="Turmeric" errorLibraryName="MonitoringErrorLibrary">
+  <errorlist>
+    <error id="50002" category="SYSTEM" subdomain="" severity="ERROR" errorGroup="" name="SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR" />
+  </errorlist>
+</ErrorBundle>
+
