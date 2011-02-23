@@ -133,9 +133,7 @@ public class SOAMetricsQueryServiceImpl
 					getCustomReportDataRequest.getReportCriteria(),
 					getCustomReportDataRequest.getMetricCriteria());
 			response.getReturnData().addAll(result);
-			response.setAck(AckValue.SUCCESS);
 		} catch (Exception e) {
-			response.setAck(AckValue.FAILURE);
 			response.setErrorMessage(new ErrorMessage());
 			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
 		}
@@ -154,9 +152,7 @@ public class SOAMetricsQueryServiceImpl
 							.getMetricCriteria(), getDetailDataRequest
 							.getMetricResourceCriteria());
 			response.getReturnData().addAll(result);
-			response.setAck(AckValue.SUCCESS);
 		} catch (Exception e) {
-			response.setAck(AckValue.FAILURE);
 			response.setErrorMessage(new ErrorMessage());
 			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
 		}
@@ -179,9 +175,7 @@ public class SOAMetricsQueryServiceImpl
 							.getErrorSeverity(), getErrorGraphRequest
 							.getMetricCriteria());
 			response.getReturnData().addAll(result);
-			response.setAck(AckValue.SUCCESS);
 		} catch (Exception e) {
-			response.setAck(AckValue.FAILURE);
 			response.setErrorMessage(new ErrorMessage());
 			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
 		}
@@ -206,9 +200,7 @@ public class SOAMetricsQueryServiceImpl
 					getErrorMetricsDataRequest.getErrorName(),
 					getErrorMetricsDataRequest.getMetricCriteria());
 			response.getReturnData().addAll(result);
-			response.setAck(AckValue.SUCCESS);
 		} catch (Exception e) {
-			response.setAck(AckValue.FAILURE);
 			response.setErrorMessage(new ErrorMessage());
 			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
 		}
@@ -227,9 +219,7 @@ public class SOAMetricsQueryServiceImpl
 					getErrorMetricsMetadataRequest.getErrorName(),
 					getErrorMetricsMetadataRequest.getServiceName());
 			response.setReturnData(result);
-			response.setAck(AckValue.SUCCESS);
 		} catch (Exception e) {
-			response.setAck(AckValue.FAILURE);
 			response.setErrorMessage(new ErrorMessage());
 			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
 		}
@@ -247,9 +237,7 @@ public class SOAMetricsQueryServiceImpl
 					getMetricsDataRequest.getMetricCriteria(),
 					getMetricsDataRequest.getMetricResourceCriteria());
 			response.getReturnData().addAll(result);
-			response.setAck(AckValue.SUCCESS);
 		} catch (Exception e) {
-			response.setAck(AckValue.FAILURE);
 			response.setErrorMessage(new ErrorMessage());
 			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
 		}
@@ -274,9 +262,7 @@ public class SOAMetricsQueryServiceImpl
 											.getResourceEntityResponseType()
 											.value());
 			response.getResourceEntityResponseNames().addAll(result);
-			response.setAck(AckValue.SUCCESS);
 		} catch (Exception e) {
-			response.setAck(AckValue.FAILURE);
 			response.setErrorMessage(new ErrorMessage());
 			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
 		}
@@ -295,9 +281,7 @@ public class SOAMetricsQueryServiceImpl
 					getMetricSummaryDataRequest.getMetricCriteria(),
 					getMetricSummaryDataRequest.getMetricResourceCriteria());
 			response.setReturnData(result);
-			response.setAck(AckValue.SUCCESS);
 		} catch (Exception e) {
-			response.setAck(AckValue.FAILURE);
 			response.setErrorMessage(new ErrorMessage());
 			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
 		}
@@ -318,9 +302,7 @@ public class SOAMetricsQueryServiceImpl
 							.getAggregationPeriod(), getMetricValueRequest
 							.getAutoDelay());
 			response.getReturnData().addAll(result);
-			response.setAck(AckValue.SUCCESS);
 		} catch (Exception e) {
-			response.setAck(AckValue.FAILURE);
 			response.setErrorMessage(new ErrorMessage());
 			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
 		}
@@ -345,9 +327,7 @@ public class SOAMetricsQueryServiceImpl
 					getPolicyMetricDataRequest.getSubjectValue(),
 					getPolicyMetricDataRequest.getEffect());
 			response.getReturnData().addAll(result);
-			response.setAck(AckValue.SUCCESS);
 		} catch (Exception e) {
-			response.setAck(AckValue.FAILURE);
 			response.setErrorMessage(new ErrorMessage());
 			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
 		}
@@ -373,9 +353,7 @@ public class SOAMetricsQueryServiceImpl
 							getPolicyMetricDetailDataRequest.getStartTime(),
 							getPolicyMetricDetailDataRequest.getEndTime());
 			response.getReturnData().addAll(result);
-			response.setAck(AckValue.SUCCESS);
 		} catch (Exception e) {
-			response.setAck(AckValue.FAILURE);
 			response.setErrorMessage(new ErrorMessage());
 			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
 		}
@@ -393,9 +371,7 @@ public class SOAMetricsQueryServiceImpl
 					getStandardReportDataRequest.getReportType(),
 					getStandardReportDataRequest.getMetricCriteria());
 			response.getReturnData().addAll(result);
-			response.setAck(AckValue.SUCCESS);
 		} catch (Exception e) {
-			response.setAck(AckValue.FAILURE);
 			response.setErrorMessage(new ErrorMessage());
 			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
 		}
