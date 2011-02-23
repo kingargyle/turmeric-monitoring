@@ -109,6 +109,11 @@
         	<artifactId>turmeric-monitoring-provider</artifactId>
         	<version>${project.version}</version>
         </dependency>
+        <dependency>
+        	<groupId>org.ebayopensource.turmeric.errorlib</groupId>
+        	<artifactId>MonitoringErrorLibrary</artifactId>
+        	<version>0.9.1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>
