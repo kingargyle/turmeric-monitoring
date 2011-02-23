@@ -14,8 +14,11 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
+import org.ebayopensource.turmeric.common.v1.types.AckValue;
+import org.ebayopensource.turmeric.common.v1.types.BaseResponse;
 import org.ebayopensource.turmeric.common.v1.types.CommonErrorData;
 import org.ebayopensource.turmeric.common.v1.types.ErrorMessage;
+import org.ebayopensource.turmeric.errorlibrary.turmericmonitoring.ErrorConstants;
 import org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService;
 import org.ebayopensource.turmeric.monitoring.provider.SOAMetricsQueryServiceProvider;
 import org.ebayopensource.turmeric.monitoring.provider.config.SOAMetricsQueryServiceProviderFactory;
@@ -52,6 +55,7 @@ import org.ebayopensource.turmeric.monitoring.v1.services.MetricGraphData;
 import org.ebayopensource.turmeric.monitoring.v1.services.MetricGroupData;
 import org.ebayopensource.turmeric.monitoring.v1.services.PolicyMetricData;
 import org.ebayopensource.turmeric.monitoring.v1.services.PolicyMetricGraphData;
+import org.ebayopensource.turmeric.runtime.common.exceptions.ErrorDataFactory;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceRuntimeException;
 
@@ -121,164 +125,280 @@ public class SOAMetricsQueryServiceImpl
 	public GetCustomReportDataResponse getCustomReportData(
 			GetCustomReportDataRequest getCustomReportDataRequest) {
 
-    	initialize();
-    	GetCustomReportDataResponse response = new GetCustomReportDataResponse();
-    	List<MetricData> result = s_provider.getCustomReportData(getCustomReportDataRequest.getReportCriteria(),
-    															getCustomReportDataRequest.getMetricCriteria());
-    	response.getReturnData().addAll(result);
-    	return response;
+    	GetCustomReportDataResponse response = null;
+    	try {
+			initialize();
+			response = new GetCustomReportDataResponse();
+			List<MetricData> result = s_provider.getCustomReportData(
+					getCustomReportDataRequest.getReportCriteria(),
+					getCustomReportDataRequest.getMetricCriteria());
+			response.getReturnData().addAll(result);
+			response.setAck(AckValue.SUCCESS);
+		} catch (Exception e) {
+			response.setAck(AckValue.FAILURE);
+			response.setErrorMessage(new ErrorMessage());
+			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
+		}
+		return response;
 	}
 
 	@Override
 	public GetDetailDataResponse getDetailData(
 			GetDetailDataRequest getDetailDataRequest) {
-		initialize();
-		GetDetailDataResponse response = new GetDetailDataResponse();
-    	List<MetricData> result = s_provider.getDetailData(getDetailDataRequest.getDc(),
-    			getDetailDataRequest.getMetricCriteria(),
-    			getDetailDataRequest.getMetricResourceCriteria());
-    	response.getReturnData().addAll(result);
-    	return response;
+		GetDetailDataResponse response = null;
+		try {
+			initialize();
+			response = new GetDetailDataResponse();
+			List<MetricData> result = s_provider.getDetailData(
+					getDetailDataRequest.getDc(), getDetailDataRequest
+							.getMetricCriteria(), getDetailDataRequest
+							.getMetricResourceCriteria());
+			response.getReturnData().addAll(result);
+			response.setAck(AckValue.SUCCESS);
+		} catch (Exception e) {
+			response.setAck(AckValue.FAILURE);
+			response.setErrorMessage(new ErrorMessage());
+			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
+		}
+		return response;
 	}
 
 	@Override
 	public GetErrorGraphResponse getErrorGraph(
 			GetErrorGraphRequest getErrorGraphRequest) {
+		GetErrorGraphResponse response = null;
 		initialize();
-		GetErrorGraphResponse response = new GetErrorGraphResponse();
-    	List<MetricGraphData> result = s_provider.getErrorGraph(getErrorGraphRequest.getServiceName(),
-    			getErrorGraphRequest.getOperationName(),
-    			getErrorGraphRequest.getConsumerName(),
-    			getErrorGraphRequest.getErrorId(),
-    			getErrorGraphRequest.getErrorCategory(),
-    			getErrorGraphRequest.getErrorSeverity(),
-    			getErrorGraphRequest.getMetricCriteria());
-    	response.getReturnData().addAll(result);
-    	return response;
+		try {
+			response = new GetErrorGraphResponse();
+			List<MetricGraphData> result = s_provider.getErrorGraph(
+					getErrorGraphRequest.getServiceName(), getErrorGraphRequest
+							.getOperationName(), getErrorGraphRequest
+							.getConsumerName(), getErrorGraphRequest
+							.getErrorId(), getErrorGraphRequest
+							.getErrorCategory(), getErrorGraphRequest
+							.getErrorSeverity(), getErrorGraphRequest
+							.getMetricCriteria());
+			response.getReturnData().addAll(result);
+			response.setAck(AckValue.SUCCESS);
+		} catch (Exception e) {
+			response.setAck(AckValue.FAILURE);
+			response.setErrorMessage(new ErrorMessage());
+			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
+		}
+		return response;
 	}
 
 	@Override
 	public GetErrorMetricsDataResponse getErrorMetricsData(
 			GetErrorMetricsDataRequest getErrorMetricsDataRequest) {
+		GetErrorMetricsDataResponse response = null;
 		initialize();
-		GetErrorMetricsDataResponse response = new GetErrorMetricsDataResponse();
-    	List<ErrorViewData> result = s_provider.getErrorMetricsData(getErrorMetricsDataRequest.getErrorType(),
-    			getErrorMetricsDataRequest.getServiceName(),
-    			getErrorMetricsDataRequest.getOperationName(),
-    			getErrorMetricsDataRequest.getConsumerName(),
-    			getErrorMetricsDataRequest.getErrorId(),
-    			getErrorMetricsDataRequest.getErrorCategory(),
-    			getErrorMetricsDataRequest.getErrorSeverity(),
-    			getErrorMetricsDataRequest.getErrorName(),
-    			getErrorMetricsDataRequest.getMetricCriteria());
-    	response.getReturnData().addAll(result);
-    	return response;
+		try {
+			response = new GetErrorMetricsDataResponse();
+			List<ErrorViewData> result = s_provider.getErrorMetricsData(
+					getErrorMetricsDataRequest.getErrorType(),
+					getErrorMetricsDataRequest.getServiceName(),
+					getErrorMetricsDataRequest.getOperationName(),
+					getErrorMetricsDataRequest.getConsumerName(),
+					getErrorMetricsDataRequest.getErrorId(),
+					getErrorMetricsDataRequest.getErrorCategory(),
+					getErrorMetricsDataRequest.getErrorSeverity(),
+					getErrorMetricsDataRequest.getErrorName(),
+					getErrorMetricsDataRequest.getMetricCriteria());
+			response.getReturnData().addAll(result);
+			response.setAck(AckValue.SUCCESS);
+		} catch (Exception e) {
+			response.setAck(AckValue.FAILURE);
+			response.setErrorMessage(new ErrorMessage());
+			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
+		}
+		return response;
 	}
 
 	@Override
 	public GetErrorMetricsMetadataResponse getErrorMetricsMetadata(
 			GetErrorMetricsMetadataRequest getErrorMetricsMetadataRequest) {
-		initialize();
-		GetErrorMetricsMetadataResponse response = new GetErrorMetricsMetadataResponse();
-    	ErrorInfos result = s_provider.getErrorMetricsMetadata(getErrorMetricsMetadataRequest.getErrorId(),
-    			getErrorMetricsMetadataRequest.getErrorName(),
-    			getErrorMetricsMetadataRequest.getServiceName());
-    	response.setReturnData(result);
-    	return response;
+		GetErrorMetricsMetadataResponse response = null;
+		try {
+			initialize();
+			response = new GetErrorMetricsMetadataResponse();
+			ErrorInfos result = s_provider.getErrorMetricsMetadata(
+					getErrorMetricsMetadataRequest.getErrorId(),
+					getErrorMetricsMetadataRequest.getErrorName(),
+					getErrorMetricsMetadataRequest.getServiceName());
+			response.setReturnData(result);
+			response.setAck(AckValue.SUCCESS);
+		} catch (Exception e) {
+			response.setAck(AckValue.FAILURE);
+			response.setErrorMessage(new ErrorMessage());
+			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
+		}
+		return response;
 	}
 
 	@Override
 	public GetMetricsResponse getMetricsData(
 			GetMetricsRequest getMetricsDataRequest) {
-		initialize();
-		GetMetricsResponse response = new GetMetricsResponse();
-    	List<MetricGroupData> result = s_provider.getMetricsData(getMetricsDataRequest.getMetricCriteria(),
-    			getMetricsDataRequest.getMetricResourceCriteria());
-    	response.getReturnData().addAll(result);
-    	return response;
+		GetMetricsResponse response = null;
+		try {
+			initialize();
+			response = new GetMetricsResponse();
+			List<MetricGroupData> result = s_provider.getMetricsData(
+					getMetricsDataRequest.getMetricCriteria(),
+					getMetricsDataRequest.getMetricResourceCriteria());
+			response.getReturnData().addAll(result);
+			response.setAck(AckValue.SUCCESS);
+		} catch (Exception e) {
+			response.setAck(AckValue.FAILURE);
+			response.setErrorMessage(new ErrorMessage());
+			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
+		}
+		return response;
 	}
 
 	@Override
 	public GetMetricsMetadataResponse getMetricsMetadata(
 			GetMetricsMetadataRequest getMetricsMetadataRequest) {
-		initialize();
-		GetMetricsMetadataResponse response = new GetMetricsMetadataResponse();
-		List<String> result = s_provider.getMetricsMetadata(getMetricsMetadataRequest.getResourceEntityType().value(),
-				getMetricsMetadataRequest.getResourceEntityName(),
-				(getMetricsMetadataRequest.getResourceEntityResponseType()==null)?null:getMetricsMetadataRequest.getResourceEntityResponseType().value());
-		response.getResourceEntityResponseNames().addAll(result);
+		GetMetricsMetadataResponse response = null;
+		try {
+			initialize();
+			response = new GetMetricsMetadataResponse();
+			List<String> result = s_provider
+					.getMetricsMetadata(
+							getMetricsMetadataRequest.getResourceEntityType()
+									.value(),
+							getMetricsMetadataRequest.getResourceEntityName(),
+							(getMetricsMetadataRequest
+									.getResourceEntityResponseType() == null) ? null
+									: getMetricsMetadataRequest
+											.getResourceEntityResponseType()
+											.value());
+			response.getResourceEntityResponseNames().addAll(result);
+			response.setAck(AckValue.SUCCESS);
+		} catch (Exception e) {
+			response.setAck(AckValue.FAILURE);
+			response.setErrorMessage(new ErrorMessage());
+			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
+		}
 		return response;
 	}
 
 	@Override
 	public GetMetricSummaryDataResponse getMetricSummaryData(
 			GetMetricSummaryDataRequest getMetricSummaryDataRequest) {
-		initialize();
-		GetMetricSummaryDataResponse response = new GetMetricSummaryDataResponse();
-    	MetricData result = s_provider.getMetricSummaryData(getMetricSummaryDataRequest.getDc(),
-    			getMetricSummaryDataRequest.getMetricCriteria(),
-    			getMetricSummaryDataRequest.getMetricResourceCriteria());
-    	response.setReturnData(result);
-    	return response;
+		GetMetricSummaryDataResponse response = null;
+		try {
+			initialize();
+			response = new GetMetricSummaryDataResponse();
+			MetricData result = s_provider.getMetricSummaryData(
+					getMetricSummaryDataRequest.getDc(),
+					getMetricSummaryDataRequest.getMetricCriteria(),
+					getMetricSummaryDataRequest.getMetricResourceCriteria());
+			response.setReturnData(result);
+			response.setAck(AckValue.SUCCESS);
+		} catch (Exception e) {
+			response.setAck(AckValue.FAILURE);
+			response.setErrorMessage(new ErrorMessage());
+			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
+		}
+		return response;
 	}
 
 	@Override
 	public GetMetricValueResponse getMetricValue(
 			GetMetricValueRequest getMetricValueRequest) {
-		initialize();
-		GetMetricValueResponse response = new GetMetricValueResponse();
-    	List<MetricGraphData> result = s_provider.getMetricValue(getMetricValueRequest.getCriteriaInfo(),
-    			getMetricValueRequest.getStartTime(),
-    			getMetricValueRequest.getDuration(),
-    			getMetricValueRequest.getAggregationPeriod(),
-    			getMetricValueRequest.getAutoDelay());
-    	response.getReturnData().addAll(result);
-    	return response;
+		GetMetricValueResponse response = null;
+		try {
+			initialize();
+			response = new GetMetricValueResponse();
+			List<MetricGraphData> result = s_provider.getMetricValue(
+					getMetricValueRequest.getCriteriaInfo(),
+					getMetricValueRequest.getStartTime(), getMetricValueRequest
+							.getDuration(), getMetricValueRequest
+							.getAggregationPeriod(), getMetricValueRequest
+							.getAutoDelay());
+			response.getReturnData().addAll(result);
+			response.setAck(AckValue.SUCCESS);
+		} catch (Exception e) {
+			response.setAck(AckValue.FAILURE);
+			response.setErrorMessage(new ErrorMessage());
+			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
+		}
+		return response;
 	}
 
 	@Override
 	public GetPolicyMetricDataResponse getPolicyMetricData(
 			GetPolicyMetricDataRequest getPolicyMetricDataRequest) {
-		initialize();
-		GetPolicyMetricDataResponse response = new GetPolicyMetricDataResponse();
-    	List<PolicyMetricData> result = s_provider.getPolicyMetricData(getPolicyMetricDataRequest.getStartTime(),
-    			getPolicyMetricDataRequest.getEndTime(),
-    			getPolicyMetricDataRequest.getPolicyType(),
-    			getPolicyMetricDataRequest.getPolicyName(),
-    			getPolicyMetricDataRequest.getServiceName(),
-    			getPolicyMetricDataRequest.getOperationName(),
-    			getPolicyMetricDataRequest.getSubjectTypeName(),
-    			getPolicyMetricDataRequest.getSubjectValue(),
-    			getPolicyMetricDataRequest.getEffect());
-    	response.getReturnData().addAll(result);
-    	return response;
+		GetPolicyMetricDataResponse response = null;
+		try {
+			initialize();
+			response = new GetPolicyMetricDataResponse();
+			List<PolicyMetricData> result = s_provider.getPolicyMetricData(
+					getPolicyMetricDataRequest.getStartTime(),
+					getPolicyMetricDataRequest.getEndTime(),
+					getPolicyMetricDataRequest.getPolicyType(),
+					getPolicyMetricDataRequest.getPolicyName(),
+					getPolicyMetricDataRequest.getServiceName(),
+					getPolicyMetricDataRequest.getOperationName(),
+					getPolicyMetricDataRequest.getSubjectTypeName(),
+					getPolicyMetricDataRequest.getSubjectValue(),
+					getPolicyMetricDataRequest.getEffect());
+			response.getReturnData().addAll(result);
+			response.setAck(AckValue.SUCCESS);
+		} catch (Exception e) {
+			response.setAck(AckValue.FAILURE);
+			response.setErrorMessage(new ErrorMessage());
+			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
+		}
+		return response;
 	}
 
 	@Override
 	public GetPolicyMetricDetailDataResponse getPolicyMetricDetailData(
 			GetPolicyMetricDetailDataRequest getPolicyMetricDetailDataRequest) {
-		initialize();
-		GetPolicyMetricDetailDataResponse response = new GetPolicyMetricDetailDataResponse();
-    	List<PolicyMetricGraphData> result = s_provider.getPolicyMetricDetailData(getPolicyMetricDetailDataRequest.getPolicyName(),
-    			getPolicyMetricDetailDataRequest.getServiceName(),
-    			getPolicyMetricDetailDataRequest.getOperationName(),
-    			getPolicyMetricDetailDataRequest.getSubjectTypeName(),
-    			getPolicyMetricDetailDataRequest.getSubjectValue(),
-    			getPolicyMetricDetailDataRequest.getListType(),
-    			getPolicyMetricDetailDataRequest.getStartTime(),
-    			getPolicyMetricDetailDataRequest.getEndTime());
-    	response.getReturnData().addAll(result);
-    	return response;
+		GetPolicyMetricDetailDataResponse response = null;
+		try {
+			initialize();
+			response = new GetPolicyMetricDetailDataResponse();
+			List<PolicyMetricGraphData> result = s_provider
+					.getPolicyMetricDetailData(getPolicyMetricDetailDataRequest
+							.getPolicyName(), getPolicyMetricDetailDataRequest
+							.getServiceName(), getPolicyMetricDetailDataRequest
+							.getOperationName(),
+							getPolicyMetricDetailDataRequest
+									.getSubjectTypeName(),
+							getPolicyMetricDetailDataRequest.getSubjectValue(),
+							getPolicyMetricDetailDataRequest.getListType(),
+							getPolicyMetricDetailDataRequest.getStartTime(),
+							getPolicyMetricDetailDataRequest.getEndTime());
+			response.getReturnData().addAll(result);
+			response.setAck(AckValue.SUCCESS);
+		} catch (Exception e) {
+			response.setAck(AckValue.FAILURE);
+			response.setErrorMessage(new ErrorMessage());
+			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
+		}
+		return response;
 	}
 
 	@Override
 	public GetStandardReportResponse getStandardReportData(
 			GetStandardReportRequest getStandardReportDataRequest) {
-		initialize();
-		GetStandardReportResponse response = new GetStandardReportResponse();
-		List<MetricData> result = s_provider.getStandardReportData(getStandardReportDataRequest.getReportType()
-				, getStandardReportDataRequest.getMetricCriteria());
-		response.getReturnData().addAll(result);
+		GetStandardReportResponse response = null;
+		try {
+			initialize();
+			response = new GetStandardReportResponse();
+			List<MetricData> result = s_provider.getStandardReportData(
+					getStandardReportDataRequest.getReportType(),
+					getStandardReportDataRequest.getMetricCriteria());
+			response.getReturnData().addAll(result);
+			response.setAck(AckValue.SUCCESS);
+		} catch (Exception e) {
+			response.setAck(AckValue.FAILURE);
+			response.setErrorMessage(new ErrorMessage());
+			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
+		}
 		return response;
 	}
 
@@ -289,6 +409,10 @@ public class SOAMetricsQueryServiceImpl
 
 		return response;
     }
+	
+	
+
+
 
 
 
