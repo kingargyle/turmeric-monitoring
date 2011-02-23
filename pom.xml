@@ -65,6 +65,7 @@
         <module>SOAMetricsQueryService</module>
         <module>SOAMetricsQueryServiceProviderInterface</module>
         <module>turmeric-monitoring-provider</module>
+        <module>MonitoringErrorLibrary</module>
         <module>SOAMetricsQueryServiceImpl</module>
         <module>SOAMetricsQueryServiceTest</module>
         <module>mgmt-console</module>
