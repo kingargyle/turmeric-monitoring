@@ -8,7 +8,9 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.client;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.ebayopensource.turmeric.monitoring.client.event.LoginEvent;
@@ -21,6 +23,9 @@ import org.ebayopensource.turmeric.monitoring.client.event.LogoutEvent;
 import org.ebayopensource.turmeric.monitoring.client.event.LogoutEventHandler;
 import org.ebayopensource.turmeric.monitoring.client.model.ConsoleService;
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.OperationKey;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyEnforcementService;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyEnforcementService.VerifyAccessResponse;
 import org.ebayopensource.turmeric.monitoring.client.presenter.MenuController;
 import org.ebayopensource.turmeric.monitoring.client.presenter.Presenter;
 import org.ebayopensource.turmeric.monitoring.client.presenter.SplashPresenter;
@@ -36,6 +41,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 
 public class AppController implements Controller, ValueChangeHandler<String>{
@@ -149,7 +155,39 @@ public class AppController implements Controller, ValueChangeHandler<String>{
 			    //it on a request.
 			    AppUser user = AppUser.newAppUser(event.getLogin(), event.getPassword(), event.getDomain());
 			    Cookies.removeCookie(AppKeyUtil.COOKIE_SESSID_KEY);
-			    AppController.this.eventBus.fireEvent(new LoginSuccessEvent(AppUser.getUser()));
+
+			    
+				Map<String, String> credentials = new HashMap<String, String>();
+				credentials.put("X-TURMERIC-SECURITY-PASSWORD", AppUser.getUser()
+						.getPassword());
+				OperationKey opKey = new OperationKey();
+				
+				opKey.setResourceName(PolicyEnforcementService.POLICY_SERVICE_NAME);
+				opKey.setOperationName("");
+				opKey.setResourceType("OBJECT");
+
+				List<String> policyTypes = Collections.singletonList("AUTHZ");
+
+				String[] subjectType = { "USER", AppUser.getUser().getUsername() };
+				List<String[]> subjectTypes = Collections.singletonList(subjectType);
+
+				PolicyEnforcementService enforcementService = (PolicyEnforcementService) serviceMap
+				.get(SupportedService.POLICY_ENFORCEMENT_SERVICE);
+				
+				enforcementService.verify(opKey, policyTypes, credentials,
+						subjectTypes, null, null, null,
+						new AsyncCallback<VerifyAccessResponse>() {
+
+							public void onFailure(Throwable arg) {
+							    AppController.this.eventBus.fireEvent(new LoginFailureEvent());
+							}
+
+							public void onSuccess(VerifyAccessResponse response) {
+							    AppController.this.eventBus.fireEvent(new LoginSuccessEvent(AppUser.getUser()));
+							
+							}
+						});
+			    
 			}
 		});
 	}
