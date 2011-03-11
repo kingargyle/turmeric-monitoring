@@ -13,13 +13,13 @@
   <parent>
     <groupId>org.ebayopensource.turmeric.monitoring</groupId>
     <artifactId>turmeric-monitoring-parent</artifactId>
-    <version>0.9.1.0-SNAPSHOT</version>
+    <version>1.0.0-Alpha</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <groupId>org.ebayopensource.turmeric.errorlib</groupId>
   <artifactId>MonitoringErrorLibrary</artifactId>
   <name>Monitoring :: Monitoring Error Library</name>
-  <version>0.9.1.0-SNAPSHOT</version>
+  <version>1.0.0-Alpha</version>
   <dependencies>
     <dependency>
       <groupId>org.ebayopensource.turmeric.typelib</groupId>
