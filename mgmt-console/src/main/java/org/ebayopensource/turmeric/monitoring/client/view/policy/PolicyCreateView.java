@@ -1212,7 +1212,6 @@ public abstract class PolicyCreateView extends ResizeComposite implements
 	public void clear() {
 		policyName.setText("");
 		policyDesc.setText("");
-		policyType.setText("");
 		policyStatus.setText("");
 		this.resourceContentView.clearAssignmentWidget();
 		this.subjectContentView.clearAssignmentWidget();

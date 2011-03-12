@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ebay:config-category-file
-	xmlns:ebay="http://www.ebay.com"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
->
-  <config-category id="com.ebay.soa.server.SOAMetricsQueryService.URLHeaderMappings" alias="null" group="com.ebay.soa.server" site-ops-command="true" category-desc="SOA Service URLHeaderMappings Config for SOAMetricsQueryService" persist-updates="true" timestamp="Fri Sep 24 05:29:00 PDT 2010" Validator="com.ebay.kernel.bean.configuration.adapter.ConfigManagementValidatorAdapter" >
-    <attribute name="EXTERNAL_MUTABLE" value="true" type="java.lang.Boolean" />
-  </config-category>
-</ebay:config-category-file>
