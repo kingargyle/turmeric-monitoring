@@ -17,7 +17,6 @@ import org.ebayopensource.turmeric.monitoring.client.Display;
 import org.ebayopensource.turmeric.monitoring.client.event.LogoutEvent;
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService;
-import org.ebayopensource.turmeric.monitoring.client.presenter.policy.PolicyController;
 import org.ebayopensource.turmeric.monitoring.client.view.ConsumerView;
 import org.ebayopensource.turmeric.monitoring.client.view.ErrorView;
 import org.ebayopensource.turmeric.monitoring.client.view.ServiceView;

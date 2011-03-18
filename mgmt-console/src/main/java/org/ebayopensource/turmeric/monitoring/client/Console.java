@@ -15,8 +15,8 @@ import java.util.Map;
 import org.ebayopensource.turmeric.monitoring.client.model.ConsoleService;
 import org.ebayopensource.turmeric.monitoring.client.model.DummyMetricsQueryServiceImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryServiceImpl;
+import org.ebayopensource.turmeric.monitoring.client.model.pes.PolicyEnforcementServiceImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.DummyPolicyQueryServiceImpl;
-import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyEnforcementServiceImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyQueryServiceImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyServiceImplTest;
 import org.ebayopensource.turmeric.monitoring.client.shared.AppUser;
@@ -72,7 +72,7 @@ public class Console implements EntryPoint
 	private Map<SupportedService, ConsoleService> createServiceMap() {
 		Map<SupportedService, ConsoleService> serviceMap = new HashMap<SupportedService, ConsoleService>();
 		serviceMap.put(SupportedService.METRICS_QUERY_SERVICE, new MetricsQueryServiceImpl());
-		serviceMap.put(SupportedService.POLICY_QUERY_SERVICE, new PolicyQueryServiceImpl());
+		//serviceMap.put(SupportedService.POLICY_QUERY_SERVICE, new PolicyQueryServiceImpl());
 		serviceMap.put(SupportedService.POLICY_ENFORCEMENT_SERVICE, new PolicyEnforcementServiceImpl());
 		return serviceMap;
 	}

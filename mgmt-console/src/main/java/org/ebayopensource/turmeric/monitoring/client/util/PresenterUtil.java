@@ -16,18 +16,7 @@ import org.ebayopensource.turmeric.monitoring.client.model.UserAction;
 import org.ebayopensource.turmeric.monitoring.client.presenter.DashboardPresenter;
 import org.ebayopensource.turmeric.monitoring.client.presenter.Presenter;
 import org.ebayopensource.turmeric.monitoring.client.presenter.SplashPresenter;
-import org.ebayopensource.turmeric.monitoring.client.presenter.policy.AuthzPolicyCreatePresenter;
-import org.ebayopensource.turmeric.monitoring.client.presenter.policy.BLPolicyCreatePresenter;
-import org.ebayopensource.turmeric.monitoring.client.presenter.policy.PolicyCreatePresenter;
-import org.ebayopensource.turmeric.monitoring.client.presenter.policy.HistoryChangeSummaryPresenter;
-import org.ebayopensource.turmeric.monitoring.client.presenter.policy.PolicyController;
-import org.ebayopensource.turmeric.monitoring.client.presenter.policy.PolicyImportPresenter;
-import org.ebayopensource.turmeric.monitoring.client.presenter.policy.PolicySummaryPresenter;
-import org.ebayopensource.turmeric.monitoring.client.presenter.policy.RLPolicyCreatePresenter;
-import org.ebayopensource.turmeric.monitoring.client.presenter.policy.SubjectGroupCreatePresenter;
-import org.ebayopensource.turmeric.monitoring.client.presenter.policy.SubjectGroupImportPresenter;
-import org.ebayopensource.turmeric.monitoring.client.presenter.policy.SubjectGroupSummaryPresenter;
-import org.ebayopensource.turmeric.monitoring.client.presenter.policy.WLPolicyCreatePresenter;
+
 
 import com.google.gwt.user.client.History;
 
@@ -37,20 +26,6 @@ public class PresenterUtil {
 	static {
 		// MAIN MENU
 		ACTION_PRESENTERID_MAPPER.put(UserAction.CONSOLE_MAIN, DashboardPresenter.DASH_ID);
-		ACTION_PRESENTERID_MAPPER.put(UserAction.POLICY_MAIN, PolicyController.PRESENTER_ID);
-		
-		// POLICY MENU
-		ACTION_PRESENTERID_MAPPER.put(UserAction.SUBJECT_GROUP_SUMMARY, SubjectGroupSummaryPresenter.PRESENTER_ID);
-		ACTION_PRESENTERID_MAPPER.put(UserAction.SUBJECT_GROUP_CREATE, SubjectGroupCreatePresenter.PRESENTER_ID);
-		ACTION_PRESENTERID_MAPPER.put(UserAction.SUBJECT_GROUP_IMPORT, SubjectGroupImportPresenter.PRESENTER_ID);
-		ACTION_PRESENTERID_MAPPER.put(UserAction.POLICY_SUMMARY, PolicySummaryPresenter.PRESENTER_ID);
-		ACTION_PRESENTERID_MAPPER.put(UserAction.POLICY_IMPORT, PolicyImportPresenter.PRESENTER_ID);
-		ACTION_PRESENTERID_MAPPER.put(UserAction.AUTHZ_POLICY_CREATE, AuthzPolicyCreatePresenter.PRESENTER_ID);
-		ACTION_PRESENTERID_MAPPER.put(UserAction.RL_POLICY_CREATE, RLPolicyCreatePresenter.PRESENTER_ID);
-		ACTION_PRESENTERID_MAPPER.put(UserAction.BL_POLICY_CREATE, BLPolicyCreatePresenter.PRESENTER_ID);
-		ACTION_PRESENTERID_MAPPER.put(UserAction.WL_POLICY_CREATE, WLPolicyCreatePresenter.PRESENTER_ID);
-		ACTION_PRESENTERID_MAPPER.put(UserAction.CHANGE_HISTORY_SUMMARY, HistoryChangeSummaryPresenter.PRESENTER_ID);
-		
 	}
 	
 	public static void forceRedirectToPresenter(HistoryToken token, Presenter presenter) {

@@ -6,9 +6,10 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *******************************************************************/
-package org.ebayopensource.turmeric.monitoring.client.model.policy;
+package org.ebayopensource.turmeric.monitoring.client.model.pes;
 
-import org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyEnforcementService.VerifyAccessResponse;
+
+import org.ebayopensource.turmeric.monitoring.client.model.pes.PolicyEnforcementService.VerifyAccessResponse;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
@@ -31,7 +32,7 @@ public class VerifyAccessResponseJS  extends JavaScriptObject implements VerifyA
     
 
     /**
-     * @see org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyEnforcementService.VerifyAccessResponse#isErrored()
+     * @see org.ebayopensource.turmeric.monitoring.client.model.pes.PolicyEnforcementService.VerifyAccessResponse#isErrored()
      */
     @Override
     public final native boolean isErrored() /*-{

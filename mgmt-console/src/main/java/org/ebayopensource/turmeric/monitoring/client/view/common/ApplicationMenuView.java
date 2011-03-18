@@ -6,7 +6,7 @@
  *
  *    http://www.apache.org/licenses/LICENSE-2.0
  *******************************************************************************/
-package org.ebayopensource.turmeric.monitoring.client.view.policy;
+package org.ebayopensource.turmeric.monitoring.client.view.common;
 
 import java.util.Iterator;
 import java.util.List;
@@ -14,8 +14,6 @@ import java.util.Map;
 
 import org.ebayopensource.turmeric.monitoring.client.model.UserAction;
 import org.ebayopensource.turmeric.monitoring.client.presenter.MenuController.MenuControllerDisplay;
-import org.ebayopensource.turmeric.monitoring.client.view.common.FooterWidget;
-import org.ebayopensource.turmeric.monitoring.client.view.common.HeaderWidget;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -107,14 +105,6 @@ public class ApplicationMenuView extends ResizeComposite implements HasWidgets, 
 
 
     /**
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.MenuController.MenuControllerDisplay#getAppSelectionChange()
-     */
-    @Override
-    public HasChangeHandlers getAppSelectionChange() {
-        return headerWidget.getAppSelectionChange();
-    }
-
-    /**
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.MenuController.MenuControllerDisplay#getLogoutComponent()
      */
     @Override
@@ -124,32 +114,15 @@ public class ApplicationMenuView extends ResizeComposite implements HasWidgets, 
 
 
     /**
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.MenuController.MenuControllerDisplay#getSelectedApp()
-     */
-    @Override
-    public String getSelectedApp() {
-       return headerWidget.getSelectedApp();
-    }
-
-    /**
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.MenuController.MenuControllerDisplay#setAvailableApps(java.util.Map)
      */
-    @Override
-    public void setAvailableApps(Map<String, String> apps) {
-        headerWidget.setAvailableApps(apps);
-    }
+    
 
     @Override
     public void setUserName(String name) {
         headerWidget.setUserName(name);
     }
 
-    /**
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.MenuController.MenuControllerDisplay#setSelectedApp(java.lang.String)
-     */
-    @Override
-    public void setSelectedApp(String useraction) {
-        headerWidget.setSelectedApp(useraction);
-    }
+
 }
     

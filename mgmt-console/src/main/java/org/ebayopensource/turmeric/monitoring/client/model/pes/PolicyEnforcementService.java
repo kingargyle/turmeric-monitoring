@@ -6,10 +6,12 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *******************************************************************/
-package org.ebayopensource.turmeric.monitoring.client.model.policy;
+package org.ebayopensource.turmeric.monitoring.client.model.pes;
 
 import java.util.List;
 import java.util.Map;
+
+import org.ebayopensource.turmeric.monitoring.client.model.policy.OperationKey;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

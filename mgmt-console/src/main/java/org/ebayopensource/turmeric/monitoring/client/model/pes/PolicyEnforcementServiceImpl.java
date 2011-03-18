@@ -6,13 +6,15 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *******************************************************************/
-package org.ebayopensource.turmeric.monitoring.client.model.policy;
+package org.ebayopensource.turmeric.monitoring.client.model.pes;
 
 import java.util.List;
 import java.util.Map;
 
 import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 import org.ebayopensource.turmeric.monitoring.client.model.AbstractConsoleService;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.OperationKey;
+import org.ebayopensource.turmeric.monitoring.client.model.policy.OperationKeyConverter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.Request;
@@ -37,7 +39,7 @@ public class PolicyEnforcementServiceImpl  extends AbstractConsoleService implem
     }
 
     /**
-     * @see org.ebayopensource.turmeric.monitoring.client.model.policy.PolicyEnforcementService#verify(org.ebayopensource.turmeric.monitoring.client.model.policy.OperationKey, java.util.List, java.util.Map, java.util.List, java.util.Map, java.util.List, java.lang.String, com.google.gwt.user.client.rpc.AsyncCallback)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.pes.PolicyEnforcementService#verify(org.ebayopensource.turmeric.monitoring.client.model.policy.OperationKey, java.util.List, java.util.Map, java.util.List, java.util.Map, java.util.List, java.lang.String, com.google.gwt.user.client.rpc.AsyncCallback)
      */
     @Override
     public void verify(OperationKey opKey, List<String> policyTypes,

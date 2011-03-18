@@ -33,8 +33,6 @@ public class HeaderWidget extends Composite {
 	
 	private HasClickHandlers logo;
 	private Button logoutButton;
-	private ListBox apps;
-	private boolean hasSelected = false;	
 
 	public HeaderWidget(String width) {
 		Panel panel = new FlowPanel();
@@ -50,45 +48,14 @@ public class HeaderWidget extends Composite {
 		headerGrid.setWidget(0, 0, (Widget) logo);
 		headerGrid.getCellFormatter().setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_LEFT);
 		
-		apps = new ListBox(false);
-		apps.addChangeHandler(new ChangeHandler() {
-
-            public void onChange(ChangeEvent event) {
-                //at least 1 app has been selected, don't show the selection message any more
-                hasSelected = true;
-            }		    
-		});
-		
 		Grid actionGrid = new Grid(1,2);
 		headerGrid.setWidget(0,1, actionGrid);
 		logoutButton = new Button(ConsoleUtil.constants.logout());	
-		actionGrid.setWidget(0, 0, apps);
 		actionGrid.setWidget(0, 1, logoutButton);
 		headerGrid.getCellFormatter().setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_RIGHT);
 		panel.add(headerGrid);
 	}
 
-	public void setAvailableApps (Map<String, String> avail) {
-	    apps.clear();
-	    if (apps == null)
-	        return;
-
-	        apps.addItem(ConsoleUtil.policyAdminMessages.selectAnApplication()+" ....");
-
-	    for (String key: avail.keySet()) {
-	        apps.addItem(key, avail.get(key));
-	    }
-	}
-
-	public void setSelectedApp (String app) {
-	    if (apps == null)
-	        return;
-	    
-	    for (int i=0;i<apps.getItemCount();i++) {
-	        if (app.equals(apps.getValue(i)))
-	            apps.setItemSelected(i, true);
-	    }
-	}
 
 	public void setUserName (String username) {
 	    if (username == null  || "".equals(username))
@@ -96,17 +63,6 @@ public class HeaderWidget extends Composite {
 	    logoutButton.setText(ConsoleUtil.constants.logout()+":"+username);
 	}
 
-	public HasChangeHandlers getAppSelectionChange () {
-	    return apps;
-	}
-	
-	public String getSelectedApp () {
-	    int i =  apps.getSelectedIndex();
-	    if (i < 0)
-	        return null;
-	    return apps.getValue(i);
-	}
-	
 	public HasClickHandlers getLogoComponent() {
 		return logo;
 	}
