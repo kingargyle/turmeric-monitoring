@@ -15,7 +15,7 @@ import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
-public interface PolicyTemplateDisplay {
+public interface TemplateDisplay {
 	
 	/**
 	 * This interface manages the menu of the template display.
@@ -50,16 +50,4 @@ public interface PolicyTemplateDisplay {
 		}
 	}
 	
-	
-	/**
-	 * This interface describes the template display. It has a menu, content, and logout components.
-	 * @author nuy
-	 *
-	 */
-	public interface PolicyPageTemplateDisplay extends Display {
-		//Minimun size required in a elements list to be rendered with scrollbar
-		public static int MIN_SCROLLBAR_SIZE = 5;
-		Display getContentView();
-	
-	}
 }

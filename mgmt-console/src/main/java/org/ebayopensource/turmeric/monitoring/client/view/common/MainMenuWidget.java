@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.ebayopensource.turmeric.monitoring.client.model.UserAction;
-import org.ebayopensource.turmeric.monitoring.client.view.common.PolicyTemplateDisplay.MenuDisplay;
+import org.ebayopensource.turmeric.monitoring.client.view.common.TemplateDisplay.MenuDisplay;
 
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.FlexTable;

@@ -27,8 +27,6 @@ public class ConsoleUtil {
 	public static final ConsoleConstants constants = GWT.create(ConsoleConstants.class);
 	public static final ConsoleMessageConstants messages = GWT.create(ConsoleMessageConstants.class);
 	public static final PolicyAdminConstants policyAdminConstants = GWT.create(PolicyAdminConstants.class);
-	public static final PolicyAdminMessageConstants policyAdminMessages = GWT.create(PolicyAdminMessageConstants.class);
-	
 	private static final Map<String,String> configMap = new HashMap<String,String>();
 	
 	public static Map<String,String> getConfig () {
