@@ -11,6 +11,7 @@ package org.ebayopensource.turmeric.monitoring.client;
 import java.util.Map;
 
 import com.google.gwt.i18n.client.Constants;
+import com.google.gwt.i18n.client.Constants.DefaultStringValue;
 
 public interface ConsoleConstants extends Constants {
 	@DefaultStringValue("Turmeric")
@@ -238,4 +239,8 @@ public interface ConsoleConstants extends Constants {
 
 	@DefaultStringValue("Unknown")
 	public String unknown();
+	
+	@DefaultStringValue("Confirm")
+	public String confirm();
+	
 }

@@ -26,7 +26,6 @@ public class ConsoleUtil {
     public static final DateTimeFormat xsDateTimeFormat = DateTimeFormat.getFormat("yyyy-MM-dd'T'HH:mm:ss.SZZZ");
 	public static final ConsoleConstants constants = GWT.create(ConsoleConstants.class);
 	public static final ConsoleMessageConstants messages = GWT.create(ConsoleMessageConstants.class);
-	public static final PolicyAdminConstants policyAdminConstants = GWT.create(PolicyAdminConstants.class);
 	private static final Map<String,String> configMap = new HashMap<String,String>();
 	
 	public static Map<String,String> getConfig () {

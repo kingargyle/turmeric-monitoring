@@ -54,8 +54,8 @@ public class GenericConfirmationWidget extends PopupPanel {
 		
 		HorizontalPanel buttonPanel = new HorizontalPanel();
 		mainPanel.add(buttonPanel);
-		confirmButton = new Button(ConsoleUtil.policyAdminConstants.confirm());
-		ignoreButton = new Button(ConsoleUtil.policyAdminConstants.cancel());
+		confirmButton = new Button(ConsoleUtil.constants.confirm());
+		ignoreButton = new Button(ConsoleUtil.constants.cancel());
 		buttonPanel.add(confirmButton);
 		buttonPanel.add(ignoreButton);
 		
