@@ -161,8 +161,7 @@
         	<groupId>com.google.gwt</groupId>
         	<artifactId>gwt-dev</artifactId>
         	<version>${gwt.version}</version>
-        	<type>jar</type>
-        	<scope>compile</scope>
+        	<scope>provided</scope>
 		</dependency> 
 		<dependency>
 			<groupId>junit</groupId>
