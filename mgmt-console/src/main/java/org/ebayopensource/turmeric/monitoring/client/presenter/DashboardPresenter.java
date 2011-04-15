@@ -14,16 +14,12 @@ import java.util.Map;
 import org.ebayopensource.turmeric.monitoring.client.Controller;
 import org.ebayopensource.turmeric.monitoring.client.Dashboard;
 import org.ebayopensource.turmeric.monitoring.client.Display;
-import org.ebayopensource.turmeric.monitoring.client.event.LogoutEvent;
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService;
 import org.ebayopensource.turmeric.monitoring.client.view.ConsumerView;
 import org.ebayopensource.turmeric.monitoring.client.view.ErrorView;
 import org.ebayopensource.turmeric.monitoring.client.view.ServiceView;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerManager;
@@ -91,26 +87,6 @@ public class DashboardPresenter implements Presenter, Controller {
             }
         });
         
-        /*
-        //listen for logout
-        this.view.getLogout().addClickHandler(new ClickHandler() {   
-            public void onClick(ClickEvent event) {
-                eventBus.fireEvent(new LogoutEvent());
-            }
-        });
-        
-        //listen for change to policy app
-        this.view.getPolicyApp().addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                //navigating away
-                added = false;
-                if (container != null)
-                    container.remove(view.asWidget());
-                HistoryToken tok = HistoryToken.newHistoryToken(PolicyController.PRESENTER_ID, null);
-                History.newItem(tok.toString());
-            }
-        });
- */
     }
 
     public void go(HasWidgets container, HistoryToken token) {
@@ -119,7 +95,6 @@ public class DashboardPresenter implements Presenter, Controller {
             container.add(this.view.asWidget());
             added = true;
         //}
-
         selectPresenter(token);
     }
 

@@ -50,18 +50,12 @@ public class HeaderWidget extends Composite {
 		
 		Grid actionGrid = new Grid(1,2);
 		headerGrid.setWidget(0,1, actionGrid);
-		logoutButton = new Button(ConsoleUtil.constants.logout());	
+		logoutButton = new Button();	
 		actionGrid.setWidget(0, 1, logoutButton);
 		headerGrid.getCellFormatter().setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_RIGHT);
 		panel.add(headerGrid);
 	}
 
-
-	public void setUserName (String username) {
-	    if (username == null  || "".equals(username))
-	        username = "";
-	    logoutButton.setText(ConsoleUtil.constants.logout()+":"+username);
-	}
 
 	public HasClickHandlers getLogoComponent() {
 		return logo;

@@ -20,6 +20,7 @@ import com.google.gwt.i18n.client.Dictionary;
 
 public class ConsoleUtil {
 
+    public static final DateTimeFormat shotTimeFormat = DateTimeFormat.getFormat("dd/MM/yyyy");
     public static final DateTimeFormat timeFormat = DateTimeFormat.getFormat("dd MMM yyyy HH:mm");
     public static final DateTimeFormat tzDateFormat = DateTimeFormat.getFormat("dd MM yyyy ZZZZ");
     public static final DateTimeFormat tzTimeFormat = DateTimeFormat.getFormat("dd MM yyyy HH:mm");

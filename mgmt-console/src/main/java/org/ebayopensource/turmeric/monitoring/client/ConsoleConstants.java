@@ -20,12 +20,6 @@ public interface ConsoleConstants extends Constants {
 	@DefaultStringValue("Turmeric Management Console")
 	public String title();
 
-	@DefaultStringValue("Login")
-	public String login();
-
-	@DefaultStringValue("Password")
-	public String password();
-
 	@DefaultStringValue("Submit")
 	public String submit();
 
@@ -46,9 +40,6 @@ public interface ConsoleConstants extends Constants {
 
 	@DefaultStringValue("Pools")
 	public String pools();
-
-	@DefaultStringValue("Logout")
-	public String logout();
 
 	@DefaultStringValue("Top Volume")
 	public String topVolume();

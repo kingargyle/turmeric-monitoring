@@ -190,13 +190,16 @@ h1 {
 */
 .summary-panel-item {
 	float: left;
-	margin: 20px;
+	margin: 5px;
+	border: 1px;
+	border-style: dashed;
 }
 
 
 
 .summary-panel-item .summary-scroll {
-	/*border: 1px solid  silver;*/
+	border: 1px solid  ;
+	min-height: 300px;
 }
 
 
@@ -331,9 +334,10 @@ h1 {
 
 .turmeric .tbl td {
 	background: white;
-	padding: 6px;
-	border-right: 1px solid silver;	
+	padding: 0px;
+	border-right: 0px solid silver;	
 	border-collapse: collapse;
+	
 }
 
 .turmeric .tbl td .gwt-Label {

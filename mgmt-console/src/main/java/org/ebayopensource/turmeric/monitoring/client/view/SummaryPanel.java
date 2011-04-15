@@ -18,17 +18,21 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.visualization.client.visualizations.LineChart;
 
 public class SummaryPanel extends Composite {
     
-    private FlowPanel panel;
+    private HorizontalPanel panel;
+    private HorizontalPanel tableDataPanel;
     private ScrollPanel scroller;
     private Label headingLabel;
     private Image downloadImg;
@@ -37,17 +41,22 @@ public class SummaryPanel extends Composite {
     private String info;
     private Image downloadImgLight;
     private Image infoImgLight;
+    private Grid contentGrid;
     
     
     public SummaryPanel () {
-        panel = new FlowPanel();
+        contentGrid = new Grid(1,2);
+        contentGrid.setWidth("100%");
+        contentGrid.setHeight("100%");
+        
+        panel = new HorizontalPanel();
         panel.addStyleName("summary-panel-item"); 
         
         Grid headingGrid = new Grid(1, 2);
         
         headingLabel = new Label("");
         headingGrid.setWidget(0, 0, headingLabel);
-        headingGrid.setWidth("100%");
+        headingGrid.setWidth("50%");
 
         Grid buttonGrid = new Grid(1,2);
         headingGrid.setWidget(0,1, buttonGrid);
@@ -98,10 +107,16 @@ public class SummaryPanel extends Composite {
         buttonGrid.setWidget(0,1,db);
        
         panel.add(headingGrid);
-        panel.setWidth("50em");
+        panel.setWidth("99%");
         scroller = new ScrollPanel();
         scroller.addStyleName("summary-scroll");
+        scroller.add(contentGrid);
+        scroller.setSize("100%", "100%");
+        //SimplePanel simplePanel = new SimplePanel();
+        //simplePanel.setHeight("500px");
+        //contentGrid.setWidget(0, 0, simplePanel);
         panel.add(scroller);
+        //panel.setHeight("100%");
         initWidget(panel);
     }
 
@@ -110,8 +125,9 @@ public class SummaryPanel extends Composite {
     }
     
     public void setContents (Widget widget) {
-        scroller.clear();
-        scroller.add(widget);
+//        scroller.clear();
+//        scroller.add(widget);
+        contentGrid.setWidget(0, 0, widget);
     }
     
     public HasClickHandlers getInfoButton () {
@@ -138,4 +154,12 @@ public class SummaryPanel extends Composite {
         downloadUrl = url;
     }
     
+    public void addChart(LineChart lineChart){
+//        if(this.lineChart!=null){
+//            panel.remove(this.lineChart);
+//        }
+//        this.lineChart = lineChart;
+//    	panel.add(lineChart);
+        contentGrid.setWidget(0, 1, lineChart);
+    }
 }

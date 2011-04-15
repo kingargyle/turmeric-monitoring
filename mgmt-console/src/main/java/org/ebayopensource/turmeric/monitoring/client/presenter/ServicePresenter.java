@@ -395,6 +395,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
             }
 
             public void onSuccess(MetricData metric) {
+                ServicePresenter.this.view.activate();
                 ServicePresenter.this.view.setMetric(m, metric);
                 switch (m) {
                     case ConsumerErrors:

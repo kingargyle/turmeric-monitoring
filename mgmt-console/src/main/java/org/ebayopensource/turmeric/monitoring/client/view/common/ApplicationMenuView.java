@@ -30,7 +30,6 @@ public class ApplicationMenuView extends ResizeComposite implements HasWidgets, 
 	private DockLayoutPanel mainPanel;
 	private HeaderWidget headerWidget;
 	private FooterWidget footerWidget;
-	private ScrollPanel contentPanel;
 	private Widget contentWidget;
 	
 	public ApplicationMenuView() {
@@ -112,17 +111,11 @@ public class ApplicationMenuView extends ResizeComposite implements HasWidgets, 
        return headerWidget.getLogoutComponent();
     }
 
-
-    /**
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.MenuController.MenuControllerDisplay#setAvailableApps(java.util.Map)
-     */
-    
-
     @Override
     public void setUserName(String name) {
-        headerWidget.setUserName(name);
+        // TODO Auto-generated method stub
+        
     }
-
 
 }
     

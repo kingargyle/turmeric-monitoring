@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
-import org.ebayopensource.turmeric.monitoring.client.shared.AppUser;
-
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.Response;
@@ -58,13 +56,7 @@ public class AbstractConsoleService implements ConsoleService {
     
 
     public void setSecurityHeaders (RequestBuilder requestBuilder) {
-        if (requestBuilder == null)
-            return;
-       AppUser user = AppUser.getUser();
-       if (user != null) {
-           requestBuilder.setHeader("X-TURMERIC-SECURITY-USERID", user.getUsername());
-           requestBuilder.setHeader("X-TURMERIC-SECURITY-PASSWORD", user.getPassword());
-       }
+       
     }
     
     

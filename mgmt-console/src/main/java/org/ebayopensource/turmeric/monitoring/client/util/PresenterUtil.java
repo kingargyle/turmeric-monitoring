@@ -15,8 +15,6 @@ import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
 import org.ebayopensource.turmeric.monitoring.client.model.UserAction;
 import org.ebayopensource.turmeric.monitoring.client.presenter.DashboardPresenter;
 import org.ebayopensource.turmeric.monitoring.client.presenter.Presenter;
-import org.ebayopensource.turmeric.monitoring.client.presenter.SplashPresenter;
-
 
 import com.google.gwt.user.client.History;
 
@@ -31,13 +29,6 @@ public class PresenterUtil {
 	public static void forceRedirectToPresenter(HistoryToken token, Presenter presenter) {
 		if (token == null || !presenter.getId().equals(token.getPresenterId())) {
 			History.newItem(HistoryToken.newHistoryToken(presenter.getId(), null).toString());
-		}
-		History.fireCurrentHistoryState();
-	}
-	
-	public static void forceRedirectToSplashPresenter(HistoryToken token) {
-		if (token == null || !SplashPresenter.SPLASH_ID.equals(token.getPresenterId())) {
-			History.newItem(HistoryToken.newHistoryToken(SplashPresenter.SPLASH_ID, null).toString());
 		}
 		History.fireCurrentHistoryState();
 	}

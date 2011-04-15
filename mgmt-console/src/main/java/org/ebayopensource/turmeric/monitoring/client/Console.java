@@ -8,21 +8,15 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.client;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.ebayopensource.turmeric.monitoring.client.model.ConsoleService;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryServiceImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.pes.PolicyEnforcementServiceImpl;
-import org.ebayopensource.turmeric.monitoring.client.shared.AppUser;
-import org.ebayopensource.turmeric.monitoring.client.util.AppKeyUtil;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.event.logical.shared.CloseEvent;
-import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 
@@ -38,24 +32,6 @@ public class Console implements EntryPoint
     public void onModuleLoad()
     { 
         Window.setTitle(ConsoleUtil.constants.title());
-        Window.addCloseHandler(new CloseHandler<Window> () {
-
-            public void onClose(CloseEvent<Window> event) {
-                //briefly save the login/password combo
-                //NOTE when using gwt hosted mode, which is sloooow, the
-                //cookie will already have expired before the reload is
-                //completed, so don't expect this to work in hosted mode
-                Date expiry = new Date(System.currentTimeMillis()+1000);
-
-                //TODO change to using secure cookies only!
-                String cookie = AppUser.toCookie();
-                if (cookie != null) {
-                    Cookies.setCookie(AppKeyUtil.COOKIE_SESSID_KEY, cookie, expiry);
-                                      //expiry, null, null, false);
-                } 
-            }
-        });
-
         final HandlerManager eventBus = new HandlerManager(null);
 
         Map<SupportedService, ConsoleService> serviceMap = createServiceMap();
