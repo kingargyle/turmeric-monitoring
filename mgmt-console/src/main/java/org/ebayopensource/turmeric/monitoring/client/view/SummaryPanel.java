@@ -32,7 +32,6 @@ import com.google.gwt.visualization.client.visualizations.LineChart;
 public class SummaryPanel extends Composite {
     
     private HorizontalPanel panel;
-    private HorizontalPanel tableDataPanel;
     private ScrollPanel scroller;
     private Label headingLabel;
     private Image downloadImg;
@@ -112,11 +111,7 @@ public class SummaryPanel extends Composite {
         scroller.addStyleName("summary-scroll");
         scroller.add(contentGrid);
         scroller.setSize("100%", "100%");
-        //SimplePanel simplePanel = new SimplePanel();
-        //simplePanel.setHeight("500px");
-        //contentGrid.setWidget(0, 0, simplePanel);
         panel.add(scroller);
-        //panel.setHeight("100%");
         initWidget(panel);
     }
 
@@ -125,8 +120,6 @@ public class SummaryPanel extends Composite {
     }
     
     public void setContents (Widget widget) {
-//        scroller.clear();
-//        scroller.add(widget);
         contentGrid.setWidget(0, 0, widget);
     }
     
@@ -155,11 +148,6 @@ public class SummaryPanel extends Composite {
     }
     
     public void addChart(LineChart lineChart){
-//        if(this.lineChart!=null){
-//            panel.remove(this.lineChart);
-//        }
-//        this.lineChart = lineChart;
-//    	panel.add(lineChart);
         contentGrid.setWidget(0, 1, lineChart);
     }
 }

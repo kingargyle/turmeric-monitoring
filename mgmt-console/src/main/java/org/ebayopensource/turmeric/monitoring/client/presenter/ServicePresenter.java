@@ -49,6 +49,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -379,7 +380,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
 	                                                         date1, date2, intervalHrs,
 	                                                         Ordering.Descending, 10, Perspective.Server,
 	                                                         false);
-        MetricResourceCriteria rmc = MetricResourceCriteria.newMetricResourceCriteria(subject, returnType);
+	    MetricResourceCriteria rmc = MetricResourceCriteria.newMetricResourceCriteria(subject, returnType);
         String url = queryService.getMetricDataDownloadUrl(mc, rmc);
         ServicePresenter.this.view.setDownloadUrl(m, url);
         

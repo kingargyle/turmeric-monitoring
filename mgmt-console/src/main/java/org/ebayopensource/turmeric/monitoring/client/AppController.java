@@ -50,21 +50,7 @@ public class AppController implements Controller, ValueChangeHandler<String>{
 	}
 
 	public void onValueChange(ValueChangeEvent<String> event) {
-		Window.alert("AppController.onValueChange. event.getValue = "+event.getValue());
 		final HistoryToken token = HistoryToken.newHistoryToken(event.getValue());
-
-//		if (AppUser.getUser() != null) {
-//			// identified
-//			if (SplashPresenter.SPLASH_ID.equals(token.getPresenterId())) {
-//				return;
-//			}
-//		} else {
-//		    //not identified, force to the "login" page
-//			if (!SplashPresenter.SPLASH_ID.equals(token.getPresenterId())) {
-//		        return;
-//		    }
-//		}
-
 		selectPresenter(token);
 	}
 

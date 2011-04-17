@@ -26,6 +26,7 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -53,7 +54,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
         Map<String,String> config = ConsoleUtil.getConfig();
         if (config == null)
             return;
-
+        
         String tmp = config.get("maxAggregationPeriod");
         if (tmp != null) {
             try {

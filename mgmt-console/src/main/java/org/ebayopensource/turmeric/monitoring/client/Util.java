@@ -14,8 +14,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.google.gwt.core.client.GWT;
-
 public class Util {
     
     public final static long HRS_24_MS = (1000*(60*60*24));

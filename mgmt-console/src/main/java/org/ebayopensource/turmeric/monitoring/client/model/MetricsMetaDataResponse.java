@@ -11,7 +11,6 @@ package org.ebayopensource.turmeric.monitoring.client.model;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
 

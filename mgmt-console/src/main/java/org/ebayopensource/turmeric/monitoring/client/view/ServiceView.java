@@ -17,14 +17,13 @@ import java.util.Set;
 import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 import org.ebayopensource.turmeric.monitoring.client.Dashboard;
 import org.ebayopensource.turmeric.monitoring.client.model.Filterable;
-import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
-import org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData;
-import org.ebayopensource.turmeric.monitoring.client.model.ServiceMetric;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricData;
+import org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Entity;
+import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
+import org.ebayopensource.turmeric.monitoring.client.model.ServiceMetric;
 import org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -32,7 +31,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.HasSelectionHandlers;
 import com.google.gwt.i18n.client.NumberFormat;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
@@ -424,7 +422,6 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
     }
 
     public void reset() {
-        // Window.alert("calling reset");
         this.activateCharts = true;
         hide(topVolumePanel);
         hide(topErrorsPanel);
@@ -527,7 +524,7 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         topVolumePanel.setHeading(ConsoleUtil.constants.topVolume());
         topVolumeTable = makeSummaryTable();
         topVolumePanel.setContents(topVolumeTable);
-        topVolumePanel.setHeight("800px");
+        topVolumePanel.setHeight("360px");
         setMetric(ServiceMetric.TopVolume, null);
     }
 

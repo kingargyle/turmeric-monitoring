@@ -45,9 +45,7 @@ public class MenuController implements Presenter, Controller {
     protected Map<SupportedService, ConsoleService> serviceMap;
 
     public interface MenuControllerDisplay extends Container {
-        HasClickHandlers getLogoutComponent();
-
-        void setUserName(String name);
+        
     }
 
     public MenuController(HandlerManager eventBus, HasWidgets rootContainer, MenuControllerDisplay view,
@@ -74,7 +72,6 @@ public class MenuController implements Presenter, Controller {
             // try my sub presenters
             id = token.getPresenterId();
         }
-        // Window.alert("MenuController: presenter id = "+id);
         if (id != null && !PRESENTER_ID.equals(id)) {
             selectPresenter(token);
         }
