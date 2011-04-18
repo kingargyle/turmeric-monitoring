@@ -380,8 +380,7 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
                 }
             };
 
-            // Load the visualization api, passing the onLoadCallback to be called
-            // when loading is done.
+            // Load the visualization api, passing the onLoadCallback to be called when loading is done.
             VisualizationUtils.loadVisualizationApi(onLoadCallback, LineChart.PACKAGE);
         }
     }
@@ -555,7 +554,7 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
     protected FlexTable makeSummaryTable() {
         FlexTable table = new FlexTable();
         table.addStyleName("tbl");
-        table.setWidth("50%");
+        table.setWidth("100%");
         return table;
     }
 
@@ -653,8 +652,6 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         options.setEnableTooltip(true);
         options.setShowCategories(true);
         options.setLegendFontSize(10);
-        // options.set3D(true);
-        //options.setTitle("My Daily Activities");
         return options;
     }
 
@@ -668,18 +665,6 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         data.setValue(1, 0, Double.valueOf(rows.get(0)[2]));
         data.setValue(1, 1, Double.valueOf(rows.get(0)[2]));
 
-        return data;
-    }
-
-    private AbstractDataTable createTable() {
-        DataTable data = DataTable.create();
-        data.addColumn(ColumnType.STRING, "Task");
-        data.addColumn(ColumnType.NUMBER, "Hours per Day");
-        data.addRows(2);
-        data.setValue(0, 0, "Work");
-        data.setValue(0, 1, 14);
-        data.setValue(1, 0, "Sleep");
-        data.setValue(1, 1, 10);
         return data;
     }
 

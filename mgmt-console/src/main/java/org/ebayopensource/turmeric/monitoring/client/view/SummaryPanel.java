@@ -8,6 +8,7 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.client.view;
 
+import com.google.gwt.dom.client.Style.VerticalAlign;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -18,6 +19,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment.VerticalAlignmentConstant;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -26,6 +29,7 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.visualizations.LineChart;
 
@@ -44,9 +48,20 @@ public class SummaryPanel extends Composite {
     
     
     public SummaryPanel () {
+        //the panel where the table and graphs go
         contentGrid = new Grid(1,2);
         contentGrid.setWidth("100%");
         contentGrid.setHeight("100%");
+        
+        //this is a grid to place the buttons on top of the data table
+        Grid verticalGrid = new Grid(2,1);
+        verticalGrid.setWidth("100%");
+        verticalGrid.setHeight("60%");
+        verticalGrid.setCellPadding(0);
+        verticalGrid.setCellSpacing(0);
+        verticalGrid.getCellFormatter().setVerticalAlignment(1, 0, HasVerticalAlignment.ALIGN_TOP);
+        
+        contentGrid.setWidget(0, 0, verticalGrid);
         
         panel = new HorizontalPanel();
         panel.addStyleName("summary-panel-item"); 
@@ -55,12 +70,11 @@ public class SummaryPanel extends Composite {
         
         headingLabel = new Label("");
         headingGrid.setWidget(0, 0, headingLabel);
-        headingGrid.setWidth("50%");
+        headingGrid.setWidth("100%");
 
         Grid buttonGrid = new Grid(1,2);
         headingGrid.setWidget(0,1, buttonGrid);
         headingGrid.getCellFormatter().setHorizontalAlignment(0,1, HasHorizontalAlignment.ALIGN_RIGHT);
-        
         infoImg = new Image();
         infoImg.setUrl("images/info.png");
         
@@ -105,7 +119,7 @@ public class SummaryPanel extends Composite {
         buttonGrid.setWidget(0,0,ib);
         buttonGrid.setWidget(0,1,db);
        
-        panel.add(headingGrid);
+        //panel.add(headingGrid);
         panel.setWidth("99%");
         scroller = new ScrollPanel();
         scroller.addStyleName("summary-scroll");
@@ -113,6 +127,11 @@ public class SummaryPanel extends Composite {
         scroller.setSize("100%", "100%");
         panel.add(scroller);
         initWidget(panel);
+        setDataTableButtonGrid(headingGrid);
+    }
+    
+    private void setDataTableButtonGrid(Grid buttonGrid){
+        ((Grid)contentGrid.getWidget(0, 0)).setWidget(0, 0, buttonGrid);
     }
 
     public void setHeading (String text) {
@@ -120,7 +139,7 @@ public class SummaryPanel extends Composite {
     }
     
     public void setContents (Widget widget) {
-        contentGrid.setWidget(0, 0, widget);
+        ((Grid)contentGrid.getWidget(0, 0)).setWidget(1, 0, widget);
     }
     
     public HasClickHandlers getInfoButton () {
