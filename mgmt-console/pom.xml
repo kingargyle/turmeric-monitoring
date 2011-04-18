@@ -71,7 +71,7 @@
 							</includes>
 						</resource>
 					</webResources>
-<!-- 					<warSourceExcludes>WEB-INF/lib/gwt-user*.jar,WEB-INF/lib/gwt-servlet*.jar,WEB-INF/lib/gwt-dev*.jar,WEB-INF/lib/junit*.jar</warSourceExcludes> -->
+					<warSourceExcludes>WEB-INF/lib/gwt-user*.jar,WEB-INF/lib/gwt-servlet*.jar,WEB-INF/lib/gwt-dev*.jar,WEB-INF/lib/junit*.jar</warSourceExcludes>
 				</configuration>
 			</plugin>
 			<plugin>
