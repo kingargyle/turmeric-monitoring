@@ -22,8 +22,10 @@ import org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Entity;
 import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
 import org.ebayopensource.turmeric.monitoring.client.model.ServiceMetric;
+import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
 import org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -31,6 +33,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.HasSelectionHandlers;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
@@ -51,6 +54,7 @@ import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.Selection;
 import com.google.gwt.visualization.client.VisualizationUtils;
+import com.google.gwt.visualization.client.events.OnMouseOverHandler;
 import com.google.gwt.visualization.client.events.SelectHandler;
 import com.google.gwt.visualization.client.visualizations.LineChart;
 import com.google.gwt.visualization.client.visualizations.LineChart.Options;
@@ -250,7 +254,6 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
                     }
                 }
                 setTabularData(topVolumeTable, columns, rows, null);
-                createChart(topVolumePanel, columns, rows);
                 panel = topVolumePanel;
                 break;
             }
@@ -370,19 +373,19 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         }
     }
 
-    private void createChart(final SummaryPanel panel, final String[] columns, final List<String[]> rows) {
-        if (columns != null && columns.length > 0 && rows != null && rows.size() > 0) {
-            Runnable onLoadCallback = new Runnable() {
-                public void run() {
-                    LineChart lineChart = new LineChart(createChartDataTable(columns, rows), createOptions());
-                    lineChart.addSelectHandler(createSelectHandler(lineChart));
-                    panel.addChart(lineChart);
-                }
-            };
+    private void createChart(final SummaryPanel panel, final List<TimeSlotData> timeData) {
+        Runnable onLoadCallback = new Runnable() {
+            public void run() {
+                LineChart lineChart = new LineChart(createChartDataTable(timeData), createOptions());
+                // lineChart.addSelectHandler(createSelectHandler(lineChart));
+                // lineChart.addOnMouseOverHandler(createMouseOverHandler(lineChart));
+                panel.addChart(lineChart);
+            }
+        };
 
-            // Load the visualization api, passing the onLoadCallback to be called when loading is done.
-            VisualizationUtils.loadVisualizationApi(onLoadCallback, LineChart.PACKAGE);
-        }
+        // Load the visualization api, passing the onLoadCallback to be called when loading is done.
+        VisualizationUtils.loadVisualizationApi(onLoadCallback, LineChart.PACKAGE);
+
     }
 
     public Filterable getFilter() {
@@ -565,14 +568,14 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         table.setText(0, 2, cols[2]);
         table.setText(0, 3, cols[3]);
         table.getRowFormatter().addStyleName(0, "tbl-header1");
-        
+
         if (rows != null) {
             int i = 0;
             for (String[] row : rows) {
                 i++;
                 Label l = new Label(row[0]);
                 table.setWidget(i, 0, l);
-                //table.getCellFormatter().setWidth(i, 0, "30%");
+                // table.getCellFormatter().setWidth(i, 0, "30%");
                 if (rowStyles != null && 0 < rowStyles.length && rowStyles[0] != null)
                     l.addStyleName(rowStyles[0]);
 
@@ -593,7 +596,7 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
                 if (rowStyles != null && 3 < rowStyles.length && rowStyles[3] != null)
                     l.addStyleName(rowStyles[3]);
             }
-            
+
         }
     }
 
@@ -647,67 +650,51 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
 
     private Options createOptions() {
         Options options = Options.create();
-        options.setWidth(400);
-        options.setHeight(260);
+        options.setWidth(650);
+        options.setHeight(290);
         options.setEnableTooltip(true);
         options.setShowCategories(true);
         options.setLegendFontSize(10);
+        options.set("curveType", "function");
         return options;
     }
 
-    private AbstractDataTable createChartDataTable(String[] cols, List<String[]> rows) {
+    private AbstractDataTable createChartDataTable(List<TimeSlotData> timeDataRange) {
+        
         DataTable data = DataTable.create();
-        data.addColumn(ColumnType.NUMBER, cols[1]);
-        data.addColumn(ColumnType.NUMBER, cols[2]);
-        data.addRows(2);
-        data.setValue(0, 0, Double.valueOf(rows.get(0)[1]));
-        data.setValue(0, 1, Double.valueOf(rows.get(0)[1]));
-        data.setValue(1, 0, Double.valueOf(rows.get(0)[2]));
-        data.setValue(1, 1, Double.valueOf(rows.get(0)[2]));
+        TimeSlotData firstDateRange = timeDataRange.get(0);
+        TimeSlotData secondDateRange = timeDataRange.get(1);
+        //Window.alert("firstDateRange.getReturnData()==null? "+(firstDateRange.getReturnData()==null));
+       //Window.alert("secondDateRange.getReturnData()==null? "+(secondDateRange.getReturnData()==null));
+        int rowSize = firstDateRange.getReturnData()!=null?firstDateRange.getReturnData().size() : 0;
+
+        if (rowSize > 0) {
+            data.addColumn(ColumnType.STRING, "x");
+            data.addColumn(ColumnType.NUMBER,
+                            ConsoleUtil.shotTimeFormat.format(new Date(firstDateRange.getReturnData().get(0).getTimeSlot()))+"- FirstDate");
+
+            data.addColumn(ColumnType.NUMBER,
+                            ConsoleUtil.shotTimeFormat.format(new Date(secondDateRange.getReturnData().get(0).getTimeSlot()))+"- SecondDate");
+            data.addRows(rowSize);
+            for (int i = 0; i < rowSize; i++) {
+                // GWT.log("getValue = "+timeData.getReturnData().get(i).getValue());
+                data.setValue(i, 0,
+                                ConsoleUtil.onlyTimeFormat.format(new Date(firstDateRange.getReturnData().get(i).getTimeSlot())));
+                data.setValue(i, 1, firstDateRange.getReturnData().get(i).getValue());
+                data.setValue(i, 2, secondDateRange.getReturnData().get(i).getValue());
+            }
+        }else{
+            data.addColumn(ColumnType.STRING, "x");
+            data.addColumn(ColumnType.NUMBER,"");
+            data.addColumn(ColumnType.NUMBER,"");
+            data.addRows(rowSize);
+        }
 
         return data;
     }
 
-    private SelectHandler createSelectHandler(final LineChart chart) {
-        return new SelectHandler() {
-            @Override
-            public void onSelect(SelectEvent event) {
-                String message = "";
-
-                // May be multiple selections.
-                JsArray<Selection> selections = chart.getSelections();
-
-                for (int i = 0; i < selections.length(); i++) {
-                    // add a new line for each selection
-                    message += i == 0 ? "" : "\n";
-
-                    Selection selection = selections.get(i);
-
-                    if (selection.isCell()) {
-                        // isCell() returns true if a cell has been selected.
-
-                        // getRow() returns the row number of the selected cell.
-                        int row = selection.getRow();
-                        // getColumn() returns the column number of the selected
-                        // cell.
-                        int column = selection.getColumn();
-                        message += "cell " + row + ":" + column + " selected";
-                    }
-                    else if (selection.isRow()) {
-                        // isRow() returns true if an entire row has been
-                        // selected.
-
-                        // getRow() returns the row number of the selected row.
-                        int row = selection.getRow();
-                        message += "row " + row + " selected";
-                    }
-                    else {
-                        // unreachable
-                        message += "Pie chart selections should be either row selections or cell selections.";
-                        message += "  Other visualizations support column selections as well.";
-                    }
-                }
-            }
-        };
+    @Override
+    public void setServiceCallTrendData(List<TimeSlotData> graphData) {
+        createChart(topVolumePanel, graphData);
     }
 }

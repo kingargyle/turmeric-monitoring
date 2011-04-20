@@ -52,7 +52,7 @@ public class MetricGroupDataJS extends JavaScriptObject implements MetricGroupDa
         impl.operationName = js.getOperationName();
         impl.poolName = js.getPoolName();
         impl.roleType = js.getRoleType();
-        impl.serviceConsumer = js.getServiceConsumerType();
+        impl.serviceConsumerType = js.getServiceConsumerType();
         impl.serviceName = js.getServiceName();
         return impl;
     }

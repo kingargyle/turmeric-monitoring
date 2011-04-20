@@ -9,6 +9,7 @@
 package org.ebayopensource.turmeric.monitoring.client.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -92,4 +93,12 @@ public interface MetricsQueryService extends ConsoleService {
 
     
     public void getErrorDetail(String errorId, String errorName, String service, AsyncCallback<ErrorDetail>callback);
+    
+    /**
+     * Get the data required to plot the service call trend in a graph, corresponding to one date. 
+     * @param firstDate
+     * @param secondDate 
+     * @param callback
+     */
+    public void getServiceCallTrend(MetricValue firstDate, MetricValue secondDate, AsyncCallback<List<TimeSlotData>> callback);
 }

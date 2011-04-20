@@ -25,4 +25,6 @@ public interface CriteriaInfo {
     public String getMetricName();
     
     public String getRoleType();
+    
+    public String asRestUrl();
 }

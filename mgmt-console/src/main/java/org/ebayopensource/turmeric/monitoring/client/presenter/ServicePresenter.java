@@ -24,21 +24,27 @@ import org.ebayopensource.turmeric.monitoring.client.event.DateFilterSelectionEv
 import org.ebayopensource.turmeric.monitoring.client.event.GetServicesEvent;
 import org.ebayopensource.turmeric.monitoring.client.event.ObjectSelectionEvent;
 import org.ebayopensource.turmeric.monitoring.client.event.ObjectSelectionEventHandler;
+import org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfo;
+import org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfoImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.FilterContext;
 import org.ebayopensource.turmeric.monitoring.client.model.Filterable;
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricResourceCriteria;
+import org.ebayopensource.turmeric.monitoring.client.model.MetricValue;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService;
 import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
 import org.ebayopensource.turmeric.monitoring.client.model.SelectionContext;
 import org.ebayopensource.turmeric.monitoring.client.model.ServiceMetric;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricData;
+import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
+import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Entity;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.EntityName;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Ordering;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Perspective;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -81,6 +87,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
 	    public void setDownloadUrl(ServiceMetric m, String url);
 	    public Filterable getFilter();
 	    public void setFilterLabel(String str);
+	    public void setServiceCallTrendData(List<TimeSlotData> dataRanges);
 	}
 	
 	public ServicePresenter (HandlerManager eventBus, Display view, MetricsQueryService queryService) {
@@ -452,6 +459,24 @@ public class ServicePresenter implements Presenter.TabPresenter {
                 }
             }
         });
+        
+        CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
+        criteriaInfo.setMetricName("CallCount");
+        criteriaInfo.setServiceName("SOAMetricsQueryService");
+        criteriaInfo.setRoleType("server");
+        queryService.getServiceCallTrend(new MetricValue(criteriaInfo, date1, 2400l, 5, ""), new MetricValue(criteriaInfo, date2, 2400l, 5, ""), new AsyncCallback<List<TimeSlotData>>() {
+            
+            @Override
+            public void onSuccess(List<TimeSlotData> dataRanges) {
+                ServicePresenter.this.view.setServiceCallTrendData(dataRanges);
+            }
+            
+            @Override
+            public void onFailure(Throwable exception) {
+                GWT.log(exception.getMessage());
+            }
+        });
+        
 	}
 
 	/**
