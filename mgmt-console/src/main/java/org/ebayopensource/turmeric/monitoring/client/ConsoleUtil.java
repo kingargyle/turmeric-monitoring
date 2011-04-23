@@ -39,7 +39,7 @@ public class ConsoleUtil {
 	            for (String key:keys)
 	                configMap.put(key, configDictionary.get(key));
 	        } catch (MissingResourceException e) {
-	            //TODO log it?
+	            //log it?
 	        }
 	        
 	    }

@@ -183,7 +183,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         this.eventBus.addHandler(GetServicesEvent.TYPE, new GetServicesEventHandler() {
 
             public void onData(GetServicesEvent event) {
-                //TODO only fetch once?
+                //only fetch once?
                 if (ConsumerPresenter.this.servicesList == null) {
                     ConsumerPresenter.this.servicesList = event.getData();
                     ConsumerPresenter.this.view.setServicesMap(event.getData());

@@ -65,7 +65,7 @@ public class DashboardPresenter implements Presenter, Controller {
                 //recall the tab selections.
                 Display display = DashboardPresenter.this.view.getView(tab);
                 
-                //TODO in creating a new history item every time we click a tab,
+                //in creating a new history item every time we click a tab,
                 //this means that we are not going back to show the last state associated
                 //with the tab. Instead we are creating new state! Eg:
                 // click Services tab

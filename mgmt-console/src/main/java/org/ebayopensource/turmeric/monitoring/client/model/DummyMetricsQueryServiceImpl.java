@@ -481,7 +481,7 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
             }
         } else {
             GWT.log("no error requested");
-            //TODO assume for now that errors are required rather than consumers
+            //assume for now that errors are required rather than consumers
             for (Map.Entry<String, ErrorDetail> entry:errorDetailsByName.entrySet()) {
                 if (ec.category != null) {
                     if (ec.category.toString().equalsIgnoreCase(entry.getValue().getCategory())) {
@@ -549,14 +549,14 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
      */
     public void getErrorTimeSlotData(ErrorCriteria ec, MetricCriteria mc,
                                      AsyncCallback<ErrorTimeSlotData> callback) {
-        // TODO Auto-generated method stub
+        // Auto-generated method stub
         
     }
 
     @Override
     public void getServiceCallTrend(MetricValue firstDate, MetricValue secondDate,
                     AsyncCallback<List<TimeSlotData>> callback) {
-        // TODO Auto-generated method stub
+        // Auto-generated method stub
         
     }
 

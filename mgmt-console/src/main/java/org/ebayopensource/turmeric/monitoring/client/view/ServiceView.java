@@ -261,7 +261,7 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
                         "% " + ConsoleUtil.constants.change() };
 
                 // convert from nanosec to microsec
-                // TODO consider moving this from the view to the presenter to do
+                // consider moving this from the view to the presenter to do
                 List<String[]> rows = new ArrayList<String[]>();
 
                 if (data != null) {

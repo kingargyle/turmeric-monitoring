@@ -56,7 +56,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                 MetricCriteria.maxAggregationPeriod = Integer.valueOf(tmp).intValue();
             }
             catch (NumberFormatException e) {
-                // TODO log?
+                // log?
             }
         }
 
@@ -66,7 +66,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                 MetricCriteria.medAggregationPeriod = Integer.valueOf(tmp).intValue();
             }
             catch (NumberFormatException e) {
-                // TODO log?
+                //log?
             }
         }
         tmp = config.get("minAggregationPeriod");
@@ -75,7 +75,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                 MetricCriteria.minAggregationPeriod = Integer.valueOf(tmp).intValue();
             }
             catch (NumberFormatException e) {
-                // TODO log?
+               //log?
             }
         }
     }
@@ -585,7 +585,6 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                         });
                     }
                     catch (RequestException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 }

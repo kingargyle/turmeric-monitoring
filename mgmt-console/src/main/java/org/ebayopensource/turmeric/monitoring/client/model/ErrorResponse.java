@@ -12,56 +12,52 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 
 /**
- * ErrorResponse
- * The result of an invocation to the SOAMetricsQueryService
- * that represents an invocation error.
+ * ErrorResponse The result of an invocation to the SOAMetricsQueryService that represents an invocation error.
  */
 public class ErrorResponse extends JavaScriptObject {
 
     protected ErrorResponse() {
     }
-    
-    
-    public static final native ErrorResponse fromJSON (String json) /*-{
-       try {
-           return eval('(' + json + ')');
-       } catch (err) {
-           return null;
-       }
-    }-*/;
-    
-    public final native boolean isServiceErrorResponse (String rname) /*-{
-        if (this[rname]["ms.errorMessage"])
-            return true;
-        return false;
-    }-*/;
-    
-    public final native JsArray<RemoteError> getServiceErrors (String rname) /*-{
-        if (this[rname]["ms.errorMessage"])
-          return this[rname]["ms.errorMessage"]["ms.error"];
-            
-    }-*/;
-    
-    //TODO - remove these!
-    public final native boolean isErrorResponse () /*-{
-        if (this["ms.error"])
-            if (this["ms.error"]["ms.errorMessage"])
-                return true;
-            else
-                return false;
-         else
-             return false;
-}-*/;
 
-public final native JsArray<RemoteError> getErrors () /*-{
-    if (this["ms.error"])
-       if (this["ms.error"]["ms.errorMessage"])
-          return this["ms.error"]["ms.errorMessage"]["error"];
-       else
-           return null;
-    else
-        return null;
-        
-}-*/;
-    
+    public static final native ErrorResponse fromJSON(String json) /*-{
+		try {
+			return eval('(' + json + ')');
+		} catch (err) {
+			return null;
+		}
+    }-*/;
+
+    public final native boolean isServiceErrorResponse(String rname) /*-{
+		if (this[rname]["ms.errorMessage"])
+			return true;
+		return false;
+    }-*/;
+
+    public final native JsArray<RemoteError> getServiceErrors(String rname) /*-{
+		if (this[rname]["ms.errorMessage"])
+			return this[rname]["ms.errorMessage"]["ms.error"];
+
+    }-*/;
+
+    public final native boolean isErrorResponse() /*-{
+		if (this["ms.error"])
+			if (this["ms.error"]["ms.errorMessage"])
+				return true;
+			else
+				return false;
+		else
+			return false;
+    }-*/;
+
+    public final native JsArray<RemoteError> getErrors() /*-{
+		if (this["ms.error"])
+			if (this["ms.error"]["ms.errorMessage"])
+				return this["ms.error"]["ms.errorMessage"]["error"];
+			else
+				return null;
+		else
+			return null;
+
+    }-*/;
+
 }
