@@ -26,7 +26,6 @@ import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
 import org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -52,10 +51,8 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
-import com.google.gwt.visualization.client.Selection;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.events.OnMouseOverHandler;
-import com.google.gwt.visualization.client.events.SelectHandler;
 import com.google.gwt.visualization.client.visualizations.LineChart;
 import com.google.gwt.visualization.client.visualizations.LineChart.Options;
 
@@ -85,7 +82,6 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
     private Dashboard dashboard;
     private FilterWidget filterWidget;
     private DialogBox filterDialog;
-    private Boolean activateCharts = Boolean.TRUE;
 
     public ServiceView(Dashboard dashboard) {
         // make the panel
@@ -374,18 +370,25 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
     }
 
     private void createChart(final SummaryPanel panel, final List<TimeSlotData> timeData) {
-        Runnable onLoadCallback = new Runnable() {
-            public void run() {
-                LineChart lineChart = new LineChart(createChartDataTable(timeData), createOptions());
-                // lineChart.addSelectHandler(createSelectHandler(lineChart));
-                // lineChart.addOnMouseOverHandler(createMouseOverHandler(lineChart));
-                panel.addChart(lineChart);
-            }
-        };
+        // Window.alert("createChart in service view");
+        LineChart chart = panel.getChart();
+        if (chart != null) {
+            GWT.log("existing chart, repainting with data");
+            chart.draw(createChartDataTable(timeData), createOptions());
+        }
+        else {
+            Runnable onLoadCallback = new Runnable() {
+                public void run() {
+                    GWT.log("new chart, inside Runnable callback");
+                    LineChart lineChart = new LineChart(createChartDataTable(timeData), createOptions());
+                    panel.addChart(lineChart);
+                }
+                
+            };
 
-        // Load the visualization api, passing the onLoadCallback to be called when loading is done.
-        VisualizationUtils.loadVisualizationApi(onLoadCallback, LineChart.PACKAGE);
-
+            // Load the visualization api, passing the onLoadCallback to be called when loading is done.
+            VisualizationUtils.loadVisualizationApi(onLoadCallback, LineChart.PACKAGE);
+        }
     }
 
     public Filterable getFilter() {
@@ -424,7 +427,7 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
     }
 
     public void reset() {
-        this.activateCharts = true;
+        // Window.alert("calling ServiceView.reset");
         hide(topVolumePanel);
         hide(topErrorsPanel);
         hide(leastPerformancePanel);
@@ -655,46 +658,59 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         options.setEnableTooltip(true);
         options.setShowCategories(true);
         options.setLegendFontSize(10);
-        options.set("curveType", "function");
+        options.setSmoothLine(true);
+        options.setPointSize(3);
+        options.setLineSize(3);
         return options;
     }
 
     private AbstractDataTable createChartDataTable(List<TimeSlotData> timeDataRange) {
-        
+
         DataTable data = DataTable.create();
         TimeSlotData firstDateRange = timeDataRange.get(0);
         TimeSlotData secondDateRange = timeDataRange.get(1);
-        //Window.alert("firstDateRange.getReturnData()==null? "+(firstDateRange.getReturnData()==null));
-       //Window.alert("secondDateRange.getReturnData()==null? "+(secondDateRange.getReturnData()==null));
-        int rowSize = firstDateRange.getReturnData()!=null?firstDateRange.getReturnData().size() : 0;
+        if (firstDateRange.getReturnData() != null && secondDateRange.getReturnData() != null) {
+            int rowSize = firstDateRange.getReturnData() != null ? firstDateRange.getReturnData().size() : 0;
 
-        if (rowSize > 0) {
-            data.addColumn(ColumnType.STRING, "x");
-            data.addColumn(ColumnType.NUMBER,
-                            ConsoleUtil.shotTimeFormat.format(new Date(firstDateRange.getReturnData().get(0).getTimeSlot()))+"- FirstDate");
+            if (rowSize > 0) {
+                data.addColumn(ColumnType.STRING, "x");
+                data.addColumn(ColumnType.NUMBER,
+                                ConsoleUtil.shotTimeFormat.format(new Date(firstDateRange.getReturnData().get(0)
+                                                .getTimeSlot()))
+                                                + "- FirstDate");
 
-            data.addColumn(ColumnType.NUMBER,
-                            ConsoleUtil.shotTimeFormat.format(new Date(secondDateRange.getReturnData().get(0).getTimeSlot()))+"- SecondDate");
-            data.addRows(rowSize);
-            for (int i = 0; i < rowSize; i++) {
-                // GWT.log("getValue = "+timeData.getReturnData().get(i).getValue());
-                data.setValue(i, 0,
-                                ConsoleUtil.onlyTimeFormat.format(new Date(firstDateRange.getReturnData().get(i).getTimeSlot())));
-                data.setValue(i, 1, firstDateRange.getReturnData().get(i).getValue());
-                data.setValue(i, 2, secondDateRange.getReturnData().get(i).getValue());
+                data.addColumn(ColumnType.NUMBER,
+                                ConsoleUtil.shotTimeFormat.format(new Date(secondDateRange.getReturnData().get(0)
+                                                .getTimeSlot()))
+                                                + "- SecondDate");
+                data.addRows(rowSize);
+                for (int i = 0; i < rowSize; i++) {
+                    // GWT.log("getValue = "+timeData.getReturnData().get(i).getValue());
+                    data.setValue(i,
+                                    0,
+                                    ConsoleUtil.onlyTimeFormat.format(new Date(firstDateRange.getReturnData().get(i)
+                                                    .getTimeSlot())));
+                    data.setValue(i, 1, firstDateRange.getReturnData().get(i).getValue());
+                    data.setValue(i, 2, secondDateRange.getReturnData().get(i).getValue());
+                }
             }
-        }else{
-            data.addColumn(ColumnType.STRING, "x");
-            data.addColumn(ColumnType.NUMBER,"");
-            data.addColumn(ColumnType.NUMBER,"");
-            data.addRows(rowSize);
+            else {
+                data.addColumn(ColumnType.STRING, "x");
+                data.addColumn(ColumnType.NUMBER, "");
+                data.addColumn(ColumnType.NUMBER, "");
+                data.addRows(rowSize);
+            }
         }
-
         return data;
     }
 
     @Override
     public void setServiceCallTrendData(List<TimeSlotData> graphData) {
-        createChart(topVolumePanel, graphData);
+        if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
+            createChart(topVolumePanel, graphData);
+        }
+        else {
+            GWT.log("empty graphData");
+        }
     }
 }

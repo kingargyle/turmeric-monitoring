@@ -9,7 +9,6 @@
 package org.ebayopensource.turmeric.monitoring.client.model;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -495,32 +494,39 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
         }
     }
 
-    private TimeSlotData getServiceCallTrend(MetricValue mv) throws RequestException {
+    private void getServiceCallTrendForDate(MetricValue mv, final AsyncCallback<TimeSlotData> callback) throws RequestException {
 
         
             final TimeSlotData data = new TimeSlotData();
+            data.setReturnData(new ArrayList<TimeSlotValue>(0));
+            
             final String url = URL.encode(MetricValueRequest.getRestURL(mv));
             RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
-            GWT.log("getServiceCallTrend url ->" + url);
+            builder.setTimeoutMillis(60000);
+            //GWT.log("getServiceCallTrend url ->" + url);
             builder.sendRequest(null, new RequestCallback() {
                 public void onError(Request request, Throwable err) {
                     GWT.log("Error calling the SQMS",err);
+                    callback.onFailure(err);
                 }
 
                 public void onResponseReceived(Request request, Response response) {
                     if (response.getStatusCode() != Response.SC_OK) {
                         GWT.log("Response status code: "+response.getStatusCode());
+                        callback.onFailure(new RequestException("Response status code: "+response.getStatusCode()));
                     }
                     else if (response.getHeader(ERROR_HEADER) != null) {
                         GWT.log("Error. Response headers : "+response.getHeadersAsString());
+                        callback.onFailure(new RequestException("Error. Response headers : "+response.getHeadersAsString()));
                     }
                     else {
-                        GWT.log(response.getText());
+                        //GWT.log(response.getText());
                         MetricValueResponse graphResponse = MetricValueResponse.fromJSON(response.getText());
                         if (graphResponse == null) {
                             GWT.log("Null response");
                         }else {
                             JsArray<MetricGraphDataJS> rows = graphResponse.getReturnData();
+                            //GWT.log("rows.size = "+rows.length());
                             List<TimeSlotValue> results = new ArrayList<TimeSlotValue>();
                             if (rows != null) {
                                 for (int i = 0; i < rows.length(); i++) {
@@ -528,29 +534,64 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                                     results.add(js);
                                 }
                             }
-                            data.setReturnData(results);
+                            //GWT.log("results  = "+results.size());
+                            data.getReturnData().addAll(results);
+                            GWT.log("adding all results: "+data.getReturnData().size());
+                            callback.onSuccess(data);
                         }
                     }
                 }
             });
-            return data;
         
     }
 
     @Override
-    public void getServiceCallTrend(MetricValue firstDate, MetricValue secondDate,
-                    final AsyncCallback<List<TimeSlotData>> callback) {
+    public void getServiceCallTrend(MetricValue firstDate, final MetricValue secondDate,
+                     final AsyncCallback<List<TimeSlotData>> callback) {
         try {
-            TimeSlotData firstDateRange = this.getServiceCallTrend(firstDate);
-            TimeSlotData secondDateRange = this.getServiceCallTrend(secondDate);
-            List<TimeSlotData> results =  new ArrayList<TimeSlotData>();
-            results.add(firstDateRange);
-            results.add(secondDateRange);
-            if(firstDateRange != null && secondDate != null){
-                callback.onSuccess(results);
-            }else{
-                callback.onFailure(new Exception("Error getting the graphs"));
-            }
+            final TimeSlotData firstDateRange = new TimeSlotData();
+            final TimeSlotData secondDateRange = new TimeSlotData();
+            this.getServiceCallTrendForDate(firstDate , new AsyncCallback<TimeSlotData>(){
+
+                @Override
+                public void onFailure(Throwable arg0) {
+                    Window.alert("error"+arg0.getMessage());
+                }
+
+                @Override
+                public void onSuccess(TimeSlotData arg0) {
+                    firstDateRange.setReturnData(arg0.getReturnData());
+                    try {
+                        getServiceCallTrendForDate(secondDate , new AsyncCallback<TimeSlotData>(){
+
+                            @Override
+                            public void onFailure(Throwable arg0) {
+                                Window.alert("error"+arg0.getMessage());
+                            }
+
+                            @Override
+                            public void onSuccess(TimeSlotData arg0) {
+                                secondDateRange.setReturnData(arg0.getReturnData());
+                                List<TimeSlotData> results =  new ArrayList<TimeSlotData>();
+                                results.add(firstDateRange);
+                                results.add(secondDateRange);
+                                if(firstDateRange != null && secondDateRange != null){
+                                    callback.onSuccess(results);
+                                }else{
+                                    callback.onFailure(new Exception("Error getting the graphs"));
+                                }
+                            }
+                            
+                        });
+                    }
+                    catch (RequestException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+                
+            });
+            
         }
         catch (RequestException x) {
             callback.onFailure(x);

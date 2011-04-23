@@ -169,4 +169,9 @@ public class SummaryPanel extends Composite {
     public void addChart(LineChart lineChart){
         contentGrid.setWidget(0, 1, lineChart);
     }
+    
+    public LineChart getChart(){
+        return (LineChart) contentGrid.getWidget(0, 1);
+    }
+    
 }

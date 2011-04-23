@@ -24,25 +24,23 @@ import org.ebayopensource.turmeric.monitoring.client.event.DateFilterSelectionEv
 import org.ebayopensource.turmeric.monitoring.client.event.GetServicesEvent;
 import org.ebayopensource.turmeric.monitoring.client.event.ObjectSelectionEvent;
 import org.ebayopensource.turmeric.monitoring.client.event.ObjectSelectionEventHandler;
-import org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfo;
 import org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfoImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.FilterContext;
 import org.ebayopensource.turmeric.monitoring.client.model.Filterable;
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria;
+import org.ebayopensource.turmeric.monitoring.client.model.MetricData;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricResourceCriteria;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricValue;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService;
-import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
-import org.ebayopensource.turmeric.monitoring.client.model.SelectionContext;
-import org.ebayopensource.turmeric.monitoring.client.model.ServiceMetric;
-import org.ebayopensource.turmeric.monitoring.client.model.MetricData;
-import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
-import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Entity;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.EntityName;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Ordering;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Perspective;
+import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
+import org.ebayopensource.turmeric.monitoring.client.model.SelectionContext;
+import org.ebayopensource.turmeric.monitoring.client.model.ServiceMetric;
+import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -60,6 +58,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.TreeItem;
+
 
 
 public class ServicePresenter implements Presenter.TabPresenter {
@@ -239,7 +238,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
 	                selectedMetrics = Util.convertToEnumFromCamelCase(ServicePresenter.this.view.getFilter().getSelectedMetricNames(), ServiceMetric.class);
 
 	                view.reset();
-
+	                //Window.alert("getApplyButton().addClickHandler. Before fetchMetrics");
 	                //Make a history event so the back/forward buttons work but don't fire it as we don't
 	                //want to change pages
 	                fetchMetrics(selectedMetrics, selectionContext, selectedDate1, selectedDate2, selectedDurationHrs);
@@ -322,6 +321,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
 	 * @param intervalHrs
 	 */
 	protected void fetchMetrics(List<ServiceMetric> metrics, SelectionContext selectionContext, long date1, long date2, int intervalHrs) {
+	    
 	    Entity returnType = null;
 	    for (ServiceMetric m:metrics) {
 	        switch (m) {
@@ -354,6 +354,28 @@ public class ServicePresenter implements Presenter.TabPresenter {
 	      
 	        fetchMetric (m, selectionContext, returnType, date1, date2, intervalHrs);
 	    }
+	    GWT.log("fecthing getValue");
+	    CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
+        criteriaInfo.setMetricName("CallCount");
+        criteriaInfo.setServiceName("SOAMetricsQueryService");
+        criteriaInfo.setRoleType("server");
+        Date firstDate = resetTo12am(date1);
+        Date secondDate = resetTo12am(date2);
+        
+        queryService.getServiceCallTrend(new MetricValue(criteriaInfo, firstDate.getTime(), 3600l*24, 3600, ""), new MetricValue(criteriaInfo, secondDate.getTime(), 3600l*24, 3600, ""), new AsyncCallback<List<TimeSlotData>>() {
+            
+            @Override
+            public void onSuccess(List<TimeSlotData> dataRanges) {
+                ServicePresenter.this.view.activate();
+                ServicePresenter.this.view.setServiceCallTrendData(dataRanges);
+            }
+            
+            @Override
+            public void onFailure(Throwable exception) {
+                GWT.log(exception.getMessage());
+            }
+        });
+	    
 	}
 	
 	/**
@@ -367,7 +389,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
 	 * @param intervalHrs
 	 */
 	protected void fetchMetric (final ServiceMetric m, final SelectionContext selectionContext, Entity returnType, final long date1, final long date2, final int intervalHrs) {
-	    
+	    //Window.alert("fetchMetric");
 	    List<EntityName> subject = new ArrayList<EntityName>();
 	    if (selectionContext.getSelection(ObjectType.ServiceName) != null) {
 	        EntityName serviceName = new EntityName();
@@ -460,24 +482,18 @@ public class ServicePresenter implements Presenter.TabPresenter {
             }
         });
         
-        CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
-        criteriaInfo.setMetricName("CallCount");
-        criteriaInfo.setServiceName("SOAMetricsQueryService");
-        criteriaInfo.setRoleType("server");
-        queryService.getServiceCallTrend(new MetricValue(criteriaInfo, date1, 2400l, 5, ""), new MetricValue(criteriaInfo, date2, 2400l, 5, ""), new AsyncCallback<List<TimeSlotData>>() {
-            
-            @Override
-            public void onSuccess(List<TimeSlotData> dataRanges) {
-                ServicePresenter.this.view.setServiceCallTrendData(dataRanges);
-            }
-            
-            @Override
-            public void onFailure(Throwable exception) {
-                GWT.log(exception.getMessage());
-            }
-        });
+        
         
 	}
+
+
+    private Date resetTo12am(final long date1) {
+        Date firstDate = new Date(date1);
+        firstDate.setHours(0);
+        firstDate.setMinutes(0);
+        firstDate.setSeconds(0);
+        return firstDate;
+    }
 
 	/**
 	 * Upload the list of Services/operations
