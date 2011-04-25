@@ -85,7 +85,7 @@ public class MainMenuWidget extends AbstractGenericView implements MenuDisplay {
 		menuTable.getColumnFormatter().setWidth(0, "10px");
 		
 		initHeaders();
-		initMenuLinks();
+		//initMenuLinks();
 	}
 
 	public void changeSelection(UserAction action) {

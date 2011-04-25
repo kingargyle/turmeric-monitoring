@@ -114,6 +114,12 @@ public class Util {
         return list;
     }
     
-    
+    public static Date resetTo12am(final long date1) {
+        Date firstDate = new Date(date1);
+        firstDate.setHours(0);
+        firstDate.setMinutes(0);
+        firstDate.setSeconds(0);
+        return firstDate;
+    }
     
 }

@@ -87,6 +87,8 @@ public class ServicePresenter implements Presenter.TabPresenter {
 	    public Filterable getFilter();
 	    public void setFilterLabel(String str);
 	    public void setServiceCallTrendData(List<TimeSlotData> dataRanges);
+        public void setServicePerformanceTrendData(List<TimeSlotData> dataRanges);
+        public void setServiceErrorTrendData(List<TimeSlotData> dataRanges);
 	}
 	
 	public ServicePresenter (HandlerManager eventBus, Display view, MetricsQueryService queryService) {
@@ -354,15 +356,27 @@ public class ServicePresenter implements Presenter.TabPresenter {
 	      
 	        fetchMetric (m, selectionContext, returnType, date1, date2, intervalHrs);
 	    }
-	    GWT.log("fecthing getValue");
-	    CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
-        criteriaInfo.setMetricName("CallCount");
-        criteriaInfo.setServiceName("SOAMetricsQueryService");
-        criteriaInfo.setRoleType("server");
-        Date firstDate = resetTo12am(date1);
-        Date secondDate = resetTo12am(date2);
+	    getServiceCallTrend(selectionContext, date1, date2);
+	    getServicePerformanceTrend(selectionContext, date1, date2);
+	    getServiceErrorTrend(selectionContext, date1, date2);
+	    
+	}
+
+
+    private void getServiceCallTrend(SelectionContext selectionContext, long date1, long date2) {
         
-        queryService.getServiceCallTrend(new MetricValue(criteriaInfo, firstDate.getTime(), 3600l*24, 3600, ""), new MetricValue(criteriaInfo, secondDate.getTime(), 3600l*24, 3600, ""), new AsyncCallback<List<TimeSlotData>>() {
+	    CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
+	    GWT.log("fecthing getServicePerforanceTrend");
+        criteriaInfo.setMetricName("CallCount");
+        criteriaInfo.setServiceName(selectionContext.getSelection(ObjectType.ServiceName));
+        if (selectionContext.getSelection(ObjectType.OperationName) != null) {
+            criteriaInfo.setOperationName(selectionContext.getSelection(ObjectType.OperationName));
+        }
+        criteriaInfo.setRoleType("server");
+        Date firstDate = Util.resetTo12am(date1);
+        Date secondDate = Util.resetTo12am(date2);
+        
+        queryService.getServiceMetricValueTrend(new MetricValue(criteriaInfo, firstDate.getTime(), 3600l*24, 3600, ""), new MetricValue(criteriaInfo, secondDate.getTime(), 3600l*24, 3600, ""), new AsyncCallback<List<TimeSlotData>>() {
             
             @Override
             public void onSuccess(List<TimeSlotData> dataRanges) {
@@ -375,8 +389,63 @@ public class ServicePresenter implements Presenter.TabPresenter {
                 GWT.log(exception.getMessage());
             }
         });
-	    
-	}
+    }
+    
+private void getServicePerformanceTrend(SelectionContext selectionContext, long date1, long date2) {
+        
+        CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
+        GWT.log("fecthing getServicePerforanceTrend");
+        criteriaInfo.setMetricName("ResponseTime");
+        criteriaInfo.setServiceName(selectionContext.getSelection(ObjectType.ServiceName));
+        if (selectionContext.getSelection(ObjectType.OperationName) != null) {
+            criteriaInfo.setOperationName(selectionContext.getSelection(ObjectType.OperationName));
+        }
+        criteriaInfo.setRoleType("server");
+        Date firstDate = Util.resetTo12am(date1);
+        Date secondDate = Util.resetTo12am(date2);
+        
+        queryService.getServiceMetricValueTrend(new MetricValue(criteriaInfo, firstDate.getTime(), 3600l*24, 3600, ""), new MetricValue(criteriaInfo, secondDate.getTime(), 3600l*24, 3600, ""), new AsyncCallback<List<TimeSlotData>>() {
+            
+            @Override
+            public void onSuccess(List<TimeSlotData> dataRanges) {
+                ServicePresenter.this.view.activate();
+                ServicePresenter.this.view.setServicePerformanceTrendData(dataRanges);
+            }
+            
+            @Override
+            public void onFailure(Throwable exception) {
+                GWT.log(exception.getMessage());
+            }
+        });
+    }
+
+private void getServiceErrorTrend(SelectionContext selectionContext, long date1, long date2) {
+    
+    CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
+    GWT.log("fecthing getServicePerforanceTrend");
+    criteriaInfo.setMetricName("ErrorCount");
+    criteriaInfo.setServiceName(selectionContext.getSelection(ObjectType.ServiceName));
+    if (selectionContext.getSelection(ObjectType.OperationName) != null) {
+        criteriaInfo.setOperationName(selectionContext.getSelection(ObjectType.OperationName));
+    }
+    criteriaInfo.setRoleType("server");
+    Date firstDate = Util.resetTo12am(date1);
+    Date secondDate = Util.resetTo12am(date2);
+    
+    queryService.getServiceMetricValueTrend(new MetricValue(criteriaInfo, firstDate.getTime(), 3600l*24, 3600, ""), new MetricValue(criteriaInfo, secondDate.getTime(), 3600l*24, 3600, ""), new AsyncCallback<List<TimeSlotData>>() {
+        
+        @Override
+        public void onSuccess(List<TimeSlotData> dataRanges) {
+            ServicePresenter.this.view.activate();
+            ServicePresenter.this.view.setServiceErrorTrendData(dataRanges);
+        }
+        
+        @Override
+        public void onFailure(Throwable exception) {
+            GWT.log(exception.getMessage());
+        }
+    });
+}
 	
 	/**
 	 * Get some metrics numbers from the server.
@@ -487,13 +556,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
 	}
 
 
-    private Date resetTo12am(final long date1) {
-        Date firstDate = new Date(date1);
-        firstDate.setHours(0);
-        firstDate.setMinutes(0);
-        firstDate.setSeconds(0);
-        return firstDate;
-    }
+    
 
 	/**
 	 * Upload the list of Services/operations

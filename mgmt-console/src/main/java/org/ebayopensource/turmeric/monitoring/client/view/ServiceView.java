@@ -369,26 +369,17 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         }
     }
 
-    private void createChart(final SummaryPanel panel, final List<TimeSlotData> timeData) {
-        // Window.alert("createChart in service view");
-        LineChart chart = panel.getChart();
-        if (chart != null) {
-            GWT.log("existing chart, repainting with data");
-            chart.draw(createChartDataTable(timeData), createOptions());
-        }
-        else {
-            Runnable onLoadCallback = new Runnable() {
-                public void run() {
-                    GWT.log("new chart, inside Runnable callback");
-                    LineChart lineChart = new LineChart(createChartDataTable(timeData), createOptions());
-                    panel.addChart(lineChart);
-                }
-                
-            };
+    private void createLineChart(final SummaryPanel panel, final List<TimeSlotData> timeData) {
+        Runnable onLoadCallback = new Runnable() {
+            public void run() {
+                GWT.log("new chart, inside Runnable callback");
+                LineChart lineChart = new LineChart(createChartDataTable(timeData), createOptions());
+                panel.addChart(lineChart);
+            }
+        };
 
-            // Load the visualization api, passing the onLoadCallback to be called when loading is done.
-            VisualizationUtils.loadVisualizationApi(onLoadCallback, LineChart.PACKAGE);
-        }
+        // Load the visualization api, passing the onLoadCallback to be called when loading is done.
+        VisualizationUtils.loadVisualizationApi(onLoadCallback, LineChart.PACKAGE);
     }
 
     public Filterable getFilter() {
@@ -676,13 +667,11 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
                 data.addColumn(ColumnType.STRING, "x");
                 data.addColumn(ColumnType.NUMBER,
                                 ConsoleUtil.shotTimeFormat.format(new Date(firstDateRange.getReturnData().get(0)
-                                                .getTimeSlot()))
-                                                + "- FirstDate");
+                                                .getTimeSlot())));
 
                 data.addColumn(ColumnType.NUMBER,
                                 ConsoleUtil.shotTimeFormat.format(new Date(secondDateRange.getReturnData().get(0)
-                                                .getTimeSlot()))
-                                                + "- SecondDate");
+                                                .getTimeSlot())));
                 data.addRows(rowSize);
                 for (int i = 0; i < rowSize; i++) {
                     // GWT.log("getValue = "+timeData.getReturnData().get(i).getValue());
@@ -707,10 +696,31 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
     @Override
     public void setServiceCallTrendData(List<TimeSlotData> graphData) {
         if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
-            createChart(topVolumePanel, graphData);
+            createLineChart(topVolumePanel, graphData);
         }
         else {
             GWT.log("empty graphData");
         }
     }
+
+    @Override
+    public void setServicePerformanceTrendData(List<TimeSlotData> graphData) {
+        if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
+            createLineChart(this.leastPerformancePanel, graphData);
+        }
+        else {
+            GWT.log("empty graphData");
+        }
+    }
+
+    @Override
+    public void setServiceErrorTrendData(List<TimeSlotData> graphData) {
+        if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
+            createLineChart(this.topErrorsPanel, graphData);
+        }
+        else {
+            GWT.log("empty graphData");
+        }
+    }
+    
 }

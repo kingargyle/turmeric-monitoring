@@ -554,13 +554,10 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
     }
 
     @Override
-    public void getServiceCallTrend(MetricValue firstDate, MetricValue secondDate,
+    public void getServiceMetricValueTrend(MetricValue firstDate, MetricValue secondDate,
                     AsyncCallback<List<TimeSlotData>> callback) {
-        // Auto-generated method stub
+        // TODO Auto-generated method stub
         
     }
-
-    
-	
 
 }

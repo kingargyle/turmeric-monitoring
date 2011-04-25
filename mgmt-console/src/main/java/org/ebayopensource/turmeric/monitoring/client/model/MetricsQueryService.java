@@ -100,5 +100,6 @@ public interface MetricsQueryService extends ConsoleService {
      * @param secondDate 
      * @param callback
      */
-    public void getServiceCallTrend(MetricValue firstDate, MetricValue secondDate, AsyncCallback<List<TimeSlotData>> callback);
+    public void getServiceMetricValueTrend(MetricValue firstDate, MetricValue secondDate, AsyncCallback<List<TimeSlotData>> callback);
+    
 }

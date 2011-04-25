@@ -494,9 +494,9 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
         }
     }
 
-    private void getServiceCallTrendForDate(MetricValue mv, final AsyncCallback<TimeSlotData> callback) throws RequestException {
+    private void getMetricValueForDate(MetricValue mv, final AsyncCallback<TimeSlotData> callback) throws RequestException {
 
-        
+            GWT.log("timestamp:"+mv.getStartTime());
             final TimeSlotData data = new TimeSlotData();
             data.setReturnData(new ArrayList<TimeSlotValue>(0));
             
@@ -536,7 +536,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                             }
                             //GWT.log("results  = "+results.size());
                             data.getReturnData().addAll(results);
-                            GWT.log("adding all results: "+data.getReturnData().size());
+                            //GWT.log("adding all results: "+data.getReturnData().size());
                             callback.onSuccess(data);
                         }
                     }
@@ -546,12 +546,12 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
     }
 
     @Override
-    public void getServiceCallTrend(MetricValue firstDate, final MetricValue secondDate,
+    public void getServiceMetricValueTrend(MetricValue firstDate, final MetricValue secondDate,
                      final AsyncCallback<List<TimeSlotData>> callback) {
         try {
             final TimeSlotData firstDateRange = new TimeSlotData();
             final TimeSlotData secondDateRange = new TimeSlotData();
-            this.getServiceCallTrendForDate(firstDate , new AsyncCallback<TimeSlotData>(){
+            this.getMetricValueForDate(firstDate , new AsyncCallback<TimeSlotData>(){
 
                 @Override
                 public void onFailure(Throwable arg0) {
@@ -562,7 +562,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                 public void onSuccess(TimeSlotData arg0) {
                     firstDateRange.setReturnData(arg0.getReturnData());
                     try {
-                        getServiceCallTrendForDate(secondDate , new AsyncCallback<TimeSlotData>(){
+                        getMetricValueForDate(secondDate , new AsyncCallback<TimeSlotData>(){
 
                             @Override
                             public void onFailure(Throwable arg0) {
