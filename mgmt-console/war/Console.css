@@ -191,15 +191,15 @@ h1 {
 .summary-panel-item {
 	float: left;
 	margin: 5px;
-	border: 1px;
-	border-style: dashed;
+/* 	border: 1px; */
+/* 	border-style: dashed; */
 }
 
 
 
 .summary-panel-item .summary-scroll {
 	border: 1px solid  ;
-	min-height: 300px;
+	min-height: 150px;
 }
 
 

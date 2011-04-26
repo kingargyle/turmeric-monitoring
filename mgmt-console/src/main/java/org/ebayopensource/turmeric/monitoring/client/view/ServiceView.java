@@ -26,6 +26,7 @@ import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
 import org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -51,6 +52,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
+import com.google.gwt.visualization.client.Selection;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.events.OnMouseOverHandler;
 import com.google.gwt.visualization.client.visualizations.LineChart;
@@ -372,14 +374,15 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
     private void createLineChart(final SummaryPanel panel, final List<TimeSlotData> timeData) {
         Runnable onLoadCallback = new Runnable() {
             public void run() {
-                GWT.log("new chart, inside Runnable callback");
-                LineChart lineChart = new LineChart(createChartDataTable(timeData), createOptions());
+                final LineChart lineChart = new LineChart(createChartDataTable(timeData), createOptions());
                 panel.addChart(lineChart);
             }
         };
 
-        // Load the visualization api, passing the onLoadCallback to be called when loading is done.
-        VisualizationUtils.loadVisualizationApi(onLoadCallback, LineChart.PACKAGE);
+        //Load the visualization api, passing the onLoadCallback to be called when loading is done.
+        //The gwt param "corechart" tells gwt to use the new charts
+        
+        VisualizationUtils.loadVisualizationApi(onLoadCallback, "corechart");
     }
 
     public Filterable getFilter() {
@@ -520,7 +523,7 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         topVolumePanel.setHeading(ConsoleUtil.constants.topVolume());
         topVolumeTable = makeSummaryTable();
         topVolumePanel.setContents(topVolumeTable);
-        topVolumePanel.setHeight("360px");
+        //topVolumePanel.setHeight("360px");
         setMetric(ServiceMetric.TopVolume, null);
     }
 
@@ -644,8 +647,8 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
 
     private Options createOptions() {
         Options options = Options.create();
-        options.setWidth(650);
-        options.setHeight(290);
+        options.setWidth(640);
+        options.setHeight(230);
         options.setEnableTooltip(true);
         options.setShowCategories(true);
         options.setLegendFontSize(10);

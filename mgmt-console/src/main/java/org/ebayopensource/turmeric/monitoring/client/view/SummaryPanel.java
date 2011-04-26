@@ -52,6 +52,8 @@ public class SummaryPanel extends Composite {
         contentGrid = new Grid(1,2);
         contentGrid.setWidth("100%");
         contentGrid.setHeight("100%");
+        contentGrid.setCellPadding(0);
+        contentGrid.setCellSpacing(0);
         
         //this is a grid to place the buttons on top of the data table
         Grid verticalGrid = new Grid(2,1);
@@ -167,6 +169,7 @@ public class SummaryPanel extends Composite {
     }
     
     public void addChart(LineChart lineChart){
+        scroller.setHeight("260px");
         contentGrid.setWidget(0, 1, lineChart);
     }
     
