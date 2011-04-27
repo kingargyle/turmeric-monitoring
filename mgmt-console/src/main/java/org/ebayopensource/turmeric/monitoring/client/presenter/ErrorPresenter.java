@@ -203,7 +203,7 @@ public class ErrorPresenter implements TabPresenter {
         this.eventBus.addHandler(GetServicesEvent.TYPE, new GetServicesEventHandler() {
 
             public void onData(GetServicesEvent event) {
-                //TODO only fetch once?
+                //only fetch once?
                 if (servicesList == null) {
                     servicesList = event.getData();
                     view.setServicesMap(event.getData());
@@ -514,7 +514,7 @@ public class ErrorPresenter implements TabPresenter {
                 */
                 /* finest drill down to specific error */
                 case ConsumerError: {
-                    //TODO work out if we will reference errors by name or by id?
+                    //work out if we will reference errors by name or by id?
                     ec = ErrorCriteria.newErrorCriteria(ErrorType.Severity, serviceNames, operationNames, consumerNames, chosenErr, isId, null, null);
                     break;
                 }
@@ -534,7 +534,7 @@ public class ErrorPresenter implements TabPresenter {
 
             public void onSuccess(ErrorMetricData data) {
                 view.setErrorMetricData(m, data);
-                //TODO depending on which metric table it is, we want to hook up click listeners so we can navigate to other tabs
+                //depending on which metric table it is, we want to hook up click listeners so we can navigate to other tabs
                 switch (m) {
                     case TopApplicationErrors:
                     case TopRequestErrors:

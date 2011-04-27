@@ -1,8 +1,5 @@
 package org.ebayopensource.turmeric.monitoring.client.model;
 
-import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorType;
-
-import com.google.gwt.core.client.GWT;
 
 /**
  * Class that holds the info required for the GetMetricValueRequest complexType in the SQMS wsdl

@@ -22,10 +22,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class MainMenuWidget extends AbstractGenericView implements MenuDisplay {
 
-	private final static String STYLE_HOVER_MENU = "policymenu";
 	private final static int COLUMN_FOR_MENU_HEADER = 0;
-	private final static int COLUMN_FOR_MENU_ITEM = 1;
-	
 	/**
 	 * This attribute holds the specific row a component needs to be inserted.
 	 */
@@ -47,7 +44,8 @@ public class MainMenuWidget extends AbstractGenericView implements MenuDisplay {
 		initialize();
 	}
 	
-	public void activate() {
+	@Override
+    public void activate() {
 		this.asWidget().setVisible(true);
 	}
 	
@@ -61,22 +59,6 @@ public class MainMenuWidget extends AbstractGenericView implements MenuDisplay {
 		menuTable.getFlexCellFormatter().setColSpan(0, 0, 2);
 	}
 	
-	private void initMenuLinks() {
-		// TODO - transfer this to constants
-	    Label monitoringMainAccess = new Label("Console Monitoring");
-	    Label policyMainAccess = new Label("Policy Admin");
-		
-		menuAccessMap = new HashMap<UserAction, Label>();
-		menuAccessMap.put(UserAction.CONSOLE_MAIN, monitoringMainAccess);
-		menuAccessMap.put(UserAction.POLICY_MAIN, policyMainAccess);
-		
-		monitoringMainAccess.addStyleName(STYLE_HOVER_MENU);
-		policyMainAccess.addStyleName(STYLE_HOVER_MENU);
-		
-		setToMenuTable(MENU_ROW_MAPPER.get(UserAction.CONSOLE_MAIN), COLUMN_FOR_MENU_ITEM, monitoringMainAccess);
-		setToMenuTable(MENU_ROW_MAPPER.get(UserAction.POLICY_MAIN), COLUMN_FOR_MENU_ITEM, policyMainAccess);
-	}
-
 	@Override
 	public void initialize() {
 		mainPanel.clear();

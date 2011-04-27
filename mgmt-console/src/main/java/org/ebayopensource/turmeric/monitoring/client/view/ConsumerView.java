@@ -23,9 +23,11 @@ import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
 import org.ebayopensource.turmeric.monitoring.client.model.ResourceEntityRequest;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricData;
+import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Entity;
 import org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -47,6 +49,12 @@ import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.visualization.client.AbstractDataTable;
+import com.google.gwt.visualization.client.DataTable;
+import com.google.gwt.visualization.client.VisualizationUtils;
+import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
+import com.google.gwt.visualization.client.visualizations.LineChart;
+import com.google.gwt.visualization.client.visualizations.LineChart.Options;
 
 /**
  * ConsumerView
@@ -168,51 +176,44 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         callVolumePanel = makePanel(ConsoleUtil.constants.callVolume(), callVolumeTable);
         panel.add(callVolumePanel);
         hide(callVolumePanel);
-        //TODO call setData(null) on the table
         
         // Performance (analogous to Least Performance for Service tab, but grouped by Consumer)
         performanceTable = makeTable();
         performancePanel = makePanel(ConsoleUtil.constants.performance(), performanceTable);
         panel.add(performancePanel);
         hide(performancePanel);
-        //TODO call setData(null) on the table
         
         // Errors (isn't this the same as Consumer Errors from service tab? Errors for Service(/Operation) by Consumer?
         errorsTable = makeTable();
         errorsPanel = makePanel(ConsoleUtil.constants.errors(), errorsTable);
         panel.add(errorsPanel);
         hide(errorsPanel);
-        //TODO call setData(null) on the table
-
+        
         //Tables for when a Consumer has been selected:
         //Top Volume (CallCount for Consumer by Service)
         topVolumeTable = makeTable();
         topVolumePanel = makePanel(ConsoleUtil.constants.topVolume(), topVolumeTable);
         panel.add(topVolumePanel);
         hide(topVolumePanel);
-        //TODO setData(null)
-
+        
         //Least Performance (ResponseTime for Consumer by Service)
         leastPerformanceTable = makeTable();
         leastPerformancePanel = makePanel(ConsoleUtil.constants.leastPerformance(), leastPerformanceTable);
         panel.add(leastPerformancePanel);
         hide(leastPerformancePanel);
-        //TODO setData(null)
-
+        
         //Top Errors (Errors for Consumer by Service(NOTE: 5 columns: service + error is returned!)
         topServiceErrorsTable = makeTable();
         topServiceErrorsPanel = makePanel(ConsoleUtil.constants.topServiceErrors(), topServiceErrorsTable);
         panel.add(topServiceErrorsPanel);
         hide(topServiceErrorsPanel);
-        //TODO setData(null)
-
+        
         //Consumer Errors (Errors for Consumer by ...?)
         topConsumerErrorsTable = makeTable();
         topConsumerErrorsPanel = makePanel(ConsoleUtil.constants.topConsumerErrors(), topConsumerErrorsTable);
         panel.add(topConsumerErrorsPanel);
         hide(topConsumerErrorsPanel);
-        //TODO setData(null)
-
+        
         rhs.add(panel);
 
         serviceListWidget = new ServiceListWidget();
@@ -722,4 +723,80 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         filterDialog.setGlassEnabled(true);
         filterDialog.show();
     }
+    
+    @Override
+    public void setConsumerCallTrendData(List<TimeSlotData> graphData) {
+        if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
+            createLineChart(topVolumePanel, graphData);
+        }
+        else {
+            GWT.log("empty graphData");
+        }
+    }
+
+    private void createLineChart(final SummaryPanel panel, final List<TimeSlotData> timeData) {
+        Runnable onLoadCallback = new Runnable() {
+            public void run() {
+                final LineChart lineChart = new LineChart(createChartDataTable(timeData), createOptions());
+                panel.addChart(lineChart);
+            }
+        };
+
+        //Load the visualization api, passing the onLoadCallback to be called when loading is done.
+        //The gwt param "corechart" tells gwt to use the new charts
+        
+        VisualizationUtils.loadVisualizationApi(onLoadCallback, "corechart");
+    }
+    
+    private AbstractDataTable createChartDataTable(List<TimeSlotData> timeDataRange) {
+
+        DataTable data = DataTable.create();
+        TimeSlotData firstDateRange = timeDataRange.get(0);
+        TimeSlotData secondDateRange = timeDataRange.get(1);
+        if (firstDateRange.getReturnData() != null && secondDateRange.getReturnData() != null) {
+            int rowSize = firstDateRange.getReturnData() != null ? firstDateRange.getReturnData().size() : 0;
+
+            if (rowSize > 0) {
+                data.addColumn(ColumnType.STRING, "x");
+                data.addColumn(ColumnType.NUMBER,
+                                ConsoleUtil.shotTimeFormat.format(new Date(firstDateRange.getReturnData().get(0)
+                                                .getTimeSlot())));
+
+                data.addColumn(ColumnType.NUMBER,
+                                ConsoleUtil.shotTimeFormat.format(new Date(secondDateRange.getReturnData().get(0)
+                                                .getTimeSlot())));
+                data.addRows(rowSize);
+                for (int i = 0; i < rowSize; i++) {
+                    // GWT.log("getValue = "+timeData.getReturnData().get(i).getValue());
+                    data.setValue(i,
+                                    0,
+                                    ConsoleUtil.onlyTimeFormat.format(new Date(firstDateRange.getReturnData().get(i)
+                                                    .getTimeSlot())));
+                    data.setValue(i, 1, firstDateRange.getReturnData().get(i).getValue());
+                    data.setValue(i, 2, secondDateRange.getReturnData().get(i).getValue());
+                }
+            }
+            else {
+                data.addColumn(ColumnType.STRING, "x");
+                data.addColumn(ColumnType.NUMBER, "");
+                data.addColumn(ColumnType.NUMBER, "");
+                data.addRows(rowSize);
+            }
+        }
+        return data;
+    }
+    
+    private Options createOptions() {
+        Options options = Options.create();
+        options.setWidth(640);
+        options.setHeight(230);
+        options.setEnableTooltip(true);
+        options.setShowCategories(true);
+        options.setLegendFontSize(10);
+        options.setSmoothLine(true);
+        options.setPointSize(3);
+        options.setLineSize(3);
+        return options;
+    }
+
 }

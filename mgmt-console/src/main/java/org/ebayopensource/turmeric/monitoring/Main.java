@@ -19,6 +19,11 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
+/**
+ * Main class for standalone running purposes.
+ * @author manuelchinea
+ *
+ */
 public class Main {
     
     public static final String GET_METRICS_DATA_JSON = "{"+

@@ -284,7 +284,7 @@ public class DownloadServlet extends HttpServlet {
             metricCriteria.put(ROLE_TYPE,request.getParameter(computeNameInNamespace(NS, elementNames)));
 
 
-            //TODO consider adding the other metricCriteria into the title
+            //consider adding the other metricCriteria into the title
            
             for (Map.Entry<String, String>entry:metricCriteria.entrySet()) {
                 name.append("_");
@@ -318,7 +318,7 @@ public class DownloadServlet extends HttpServlet {
                 request.getParameter(computeNameInNamespace(NS, Arrays.asList(new String[] {METRIC_RESOURCE_CRITERIA,RESOURCE_ENTITY_RESPONSE_TYPE})));
 
             //Output the response
-            /* TODO 
+            /* 
              * 
              * Consider how better to convert to csv format. It seems this cannot be done
              * in a generic way, but rather we need to have knowledge of the data.

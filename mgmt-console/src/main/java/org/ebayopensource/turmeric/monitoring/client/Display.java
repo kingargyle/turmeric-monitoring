@@ -8,6 +8,10 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.client;
 
+import java.util.List;
+
+import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
+
 import com.google.gwt.user.client.ui.Widget;
 
 public interface Display {

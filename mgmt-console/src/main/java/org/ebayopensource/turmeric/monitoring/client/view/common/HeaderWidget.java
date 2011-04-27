@@ -25,7 +25,6 @@ public class HeaderWidget extends Composite {
 		Panel panel = new FlowPanel();
 	    panel.addStyleName("header");
 		initWidget(panel);
-
 		panel.setWidth(width);
 		Grid headerGrid = new Grid(1,2);
 		headerGrid.setWidth("100%");

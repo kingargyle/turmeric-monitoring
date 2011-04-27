@@ -22,7 +22,7 @@ public class ApplicationMenuView extends ResizeComposite implements HasWidgets, 
 
 	private DockLayoutPanel mainPanel;
 	private HeaderWidget headerWidget;
-	private FooterWidget footerWidget;
+	//private FooterWidget footerWidget;
 	private Widget contentWidget;
 	
 	public ApplicationMenuView() {
@@ -35,11 +35,11 @@ public class ApplicationMenuView extends ResizeComposite implements HasWidgets, 
 	    mainPanel = new DockLayoutPanel(Unit.PX);
         mainPanel.setWidth("100%");
 
-        headerWidget = new HeaderWidget("88");
-        footerWidget = new FooterWidget();
+        headerWidget = new HeaderWidget("58");
+        //footerWidget = new FooterWidget();
 
-        mainPanel.addNorth(headerWidget,88);
-        mainPanel.addSouth(footerWidget,40);
+        mainPanel.addNorth(headerWidget,58);
+        //mainPanel.addSouth(footerWidget,40);
 	}
 
 	

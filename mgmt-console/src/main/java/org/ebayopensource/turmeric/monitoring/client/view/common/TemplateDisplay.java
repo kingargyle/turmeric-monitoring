@@ -11,7 +11,6 @@ package org.ebayopensource.turmeric.monitoring.client.view.common;
 import org.ebayopensource.turmeric.monitoring.client.Display;
 import org.ebayopensource.turmeric.monitoring.client.model.UserAction;
 
-import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 

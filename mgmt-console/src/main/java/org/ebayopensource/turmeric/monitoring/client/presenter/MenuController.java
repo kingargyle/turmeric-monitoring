@@ -20,7 +20,6 @@ import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService;
 import org.ebayopensource.turmeric.monitoring.client.model.UserAction;
 import org.ebayopensource.turmeric.monitoring.client.view.DashboardContainer;
 
-import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.HasWidgets;

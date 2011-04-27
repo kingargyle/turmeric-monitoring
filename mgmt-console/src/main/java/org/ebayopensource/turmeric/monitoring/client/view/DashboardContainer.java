@@ -12,13 +12,9 @@ import java.util.Iterator;
 
 import org.ebayopensource.turmeric.monitoring.client.Dashboard;
 import org.ebayopensource.turmeric.monitoring.client.Display;
-import org.ebayopensource.turmeric.monitoring.client.view.common.FooterWidget;
-import org.ebayopensource.turmeric.monitoring.client.view.common.HeaderWidget;
 
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.HasSelectionHandlers;
-import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.TabLayoutPanel;

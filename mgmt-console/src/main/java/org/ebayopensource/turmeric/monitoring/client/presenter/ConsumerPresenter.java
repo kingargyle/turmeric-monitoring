@@ -39,6 +39,7 @@ import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.O
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Perspective;
 import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
 import org.ebayopensource.turmeric.monitoring.client.model.SelectionContext;
+import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -95,6 +96,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
 	    public void reset();
 	    public Filterable getFilter ();
 	    public void setFilterLabel(String str);
+        void setConsumerCallTrendData(List<TimeSlotData> graphData);
 	}
 
 	
@@ -452,6 +454,8 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
 
                 public void onSuccess(MetricData result) {
                     ConsumerPresenter.this.view.setMetric(m, result);
+                    
+                    //here I need to call the getMetricsValue for each consumer name I get. Also I need the 2 dates
                     switch (m) {
                         case CallVolume:
                         case Performance:

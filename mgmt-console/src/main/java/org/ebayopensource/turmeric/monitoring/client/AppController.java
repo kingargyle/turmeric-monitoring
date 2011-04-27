@@ -28,6 +28,9 @@ public class AppController implements Controller, ValueChangeHandler<String>{
 	
 	protected HandlerManager eventBus;
 	protected HasWidgets rootContainer;
+	/**
+	 * Map of registered presenters
+	 */
 	protected Map<String, Presenter> presenters = new HashMap<String, Presenter>();
 	protected Map<SupportedService, ConsoleService> serviceMap;
 	
@@ -67,10 +70,18 @@ public class AppController implements Controller, ValueChangeHandler<String>{
 	    this.presenters.clear();
 	}
 
+	/**
+	 * @param id The Presenter id
+	 * @param p the Presenter object to be added to {@link #presenters}
+	 * 
+	 */
     public void addPresenter(String id, Presenter p) {
         this.presenters.put(id, p);
     }
 
+    /**
+     * 
+     */
     public Presenter getPresenter(String id) {
         return this.presenters.get(id);
     }
