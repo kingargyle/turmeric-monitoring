@@ -24,8 +24,16 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 
+/**
+ * Base Controller class in the application
+ * 
+ *
+ */
 public class AppController implements Controller, ValueChangeHandler<String>{
 	
+    /**
+     * Base event bus for comunicatting to listener the multiple events in the system
+     */
 	protected HandlerManager eventBus;
 	protected HasWidgets rootContainer;
 	/**

@@ -555,7 +555,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
                 @Override
                 public void onFailure(Throwable arg0) {
-                    Window.alert("error"+arg0.getMessage());
+                    Window.alert("Error: "+arg0.getMessage());
                 }
 
                 @Override
@@ -566,7 +566,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
                             @Override
                             public void onFailure(Throwable arg0) {
-                                Window.alert("error"+arg0.getMessage());
+                                Window.alert("Error: "+arg0.getMessage());
                             }
 
                             @Override

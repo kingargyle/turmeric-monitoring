@@ -26,12 +26,16 @@ import org.ebayopensource.turmeric.monitoring.client.event.GetServicesEventHandl
 import org.ebayopensource.turmeric.monitoring.client.event.ObjectSelectionEvent;
 import org.ebayopensource.turmeric.monitoring.client.event.ObjectSelectionEventHandler;
 import org.ebayopensource.turmeric.monitoring.client.model.ConsumerMetric;
+import org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfo;
+import org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfoImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.FilterContext;
 import org.ebayopensource.turmeric.monitoring.client.model.Filterable;
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricData;
+import org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricResourceCriteria;
+import org.ebayopensource.turmeric.monitoring.client.model.MetricValue;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Entity;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.EntityName;
@@ -41,6 +45,7 @@ import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
 import org.ebayopensource.turmeric.monitoring.client.model.SelectionContext;
 import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -58,98 +63,102 @@ import com.google.gwt.user.client.ui.TreeItem;
 
 /**
  * ConsumerPresenter
- *
+ * 
  */
 public class ConsumerPresenter implements Presenter.TabPresenter {
 
     protected final static String CONSUMER_ID = "Consumer";
-    protected final static List<ConsumerMetric> ONE_CONSUMER_METRICS = 
-        Arrays.asList(new ConsumerMetric[]
-                                         {ConsumerMetric.TopVolume, 
-                                          ConsumerMetric.LeastPerformance, 
-                                          ConsumerMetric.TopServiceErrors, 
-                                          ConsumerMetric.TopConsumerErrors});
-    protected final static List<ConsumerMetric> ANY_CONSUMER_METRICS = 
-        Arrays.asList(new ConsumerMetric[]
-                                         {ConsumerMetric.CallVolume,
-                                          ConsumerMetric.Performance,
-                                          ConsumerMetric.Errors
-                                         });
+    protected final static List<ConsumerMetric> ONE_CONSUMER_METRICS = Arrays.asList(new ConsumerMetric[] {
+            ConsumerMetric.TopVolume, ConsumerMetric.LeastPerformance, ConsumerMetric.TopServiceErrors,
+            ConsumerMetric.TopConsumerErrors });
+    protected final static List<ConsumerMetric> ANY_CONSUMER_METRICS = Arrays.asList(new ConsumerMetric[] {
+            ConsumerMetric.CallVolume, ConsumerMetric.Performance, ConsumerMetric.Errors });
     protected Display view;
     protected HandlerManager eventBus;
     protected MetricsQueryService queryService;
-    protected Map<String,Set<String>> servicesList;
+    protected Map<String, Set<String>> servicesList;
     protected SelectionContext selectionContext;
     protected int selectedDuration;
     protected long selectedDate1;
     protected long selectedDate2;
     protected List<ConsumerMetric> selectedMetrics;
 
-	public interface Display extends org.ebayopensource.turmeric.monitoring.client.Display {
-	    public List<HasClickHandlers> getTableColumn (ConsumerMetric metric, int startRow, int col);
-	    public void error (String error);
-	    public void setServicesMap(Map<String, Set<String>> map);
-	    public void setSelection(Map<ObjectType,String>selections);
-	    public HasSelectionHandlers<TreeItem> getSelector();
-	    public void setMetric(ConsumerMetric m, MetricData result);
-	    public void setDownloadUrl(ConsumerMetric m, String url);
-	    public void reset();
-	    public Filterable getFilter ();
-	    public void setFilterLabel(String str);
+    public interface Display extends org.ebayopensource.turmeric.monitoring.client.Display {
+        public List<HasClickHandlers> getTableColumn(ConsumerMetric metric, int startRow, int col);
+
+        public void error(String error);
+
+        public void setServicesMap(Map<String, Set<String>> map);
+
+        public void setSelection(Map<ObjectType, String> selections);
+
+        public HasSelectionHandlers<TreeItem> getSelector();
+
+        public void setMetric(ConsumerMetric m, MetricData result);
+
+        public void setDownloadUrl(ConsumerMetric m, String url);
+
+        public void reset();
+
+        public Filterable getFilter();
+
+        public void setFilterLabel(String str);
+
         void setConsumerCallTrendData(List<TimeSlotData> graphData);
-	}
+    }
 
-	
-	public ConsumerPresenter (HandlerManager eventBus, Display view, MetricsQueryService queryService) {
-		this.eventBus = eventBus;
-		this.view = view;
-		this.view.setAssociatedId(CONSUMER_ID);
-		this.queryService = queryService;
-		bind();
-	}
-	public String getId() {
-		return CONSUMER_ID;
-	}
+    public ConsumerPresenter(HandlerManager eventBus, Display view, MetricsQueryService queryService) {
+        this.eventBus = eventBus;
+        this.view = view;
+        this.view.setAssociatedId(CONSUMER_ID);
+        this.queryService = queryService;
+        bind();
+    }
 
-	public void go(HasWidgets container, HistoryToken token) {
-	    //find out which entities have been selected in context
+    public String getId() {
+        return CONSUMER_ID;
+    }
+
+    public void go(HasWidgets container, HistoryToken token) {
+        // find out which entities have been selected in context
         selectionContext = SelectionContext.fromHistoryToken(token);
         view.setSelection(selectionContext.getSelections());
 
         if (servicesList == null)
             fetchServices();
-        
-        //find out the filter criteria
+
+        // find out the filter criteria
         FilterContext filter = FilterContext.fromHistoryToken(token);
-        //if no dates have been selected, then by default compare the last fully complete
-        //hour of today with yesterday
+        // if no dates have been selected, then by default compare the last fully complete
+        // hour of today with yesterday
         Date now = new Date();
         long fullTimeLastHour = Util.getLastHour(now);
         long sameTimeYesterday = Util.get24HrsPrevious(fullTimeLastHour);
-        
-        selectedDate1 = (filter.getDate1()==0? new Date(sameTimeYesterday).getTime() : filter.getDate1());
-        selectedDate2 = (filter.getDate2()==0? new Date(fullTimeLastHour).getTime() : filter.getDate2());
+
+        selectedDate1 = (filter.getDate1() == 0 ? new Date(sameTimeYesterday).getTime() : filter.getDate1());
+        selectedDate2 = (filter.getDate2() == 0 ? new Date(fullTimeLastHour).getTime() : filter.getDate2());
         view.getFilter().setHours1(Util.getAvailableHours(selectedDate1));
-      
+
         view.getFilter().setHour1(new Date(selectedDate1).getHours());
         view.getFilter().setDate1(new Date(selectedDate1));
 
-        view.getFilter().setHours2(Util.getAvailableHours(selectedDate2)); 
+        view.getFilter().setHours2(Util.getAvailableHours(selectedDate2));
         view.getFilter().setHour2(new Date(selectedDate2).getHours());
         view.getFilter().setDate2(new Date(selectedDate2));
-        
-        //duration 
+
+        // duration
         String tmp = HistoryToken.getValue(token, HistoryToken.SELECTED_DURATION_TOKEN);
-        selectedDuration = (filter.getDurationHrs()==0? MetricsQueryService.DEFAULT_DURATION_HRS: filter.getDurationHrs());
+        selectedDuration = (filter.getDurationHrs() == 0 ? MetricsQueryService.DEFAULT_DURATION_HRS : filter
+                        .getDurationHrs());
         int[] intervals = new int[24];
-        for (int i=0;i<24;i++)
-            intervals[i]=i+1;
+        for (int i = 0; i < 24; i++)
+            intervals[i] = i + 1;
         view.getFilter().setDurations(intervals);
         view.getFilter().setDuration(selectedDuration);
         view.setFilterLabel(makeFilterLabel(selectedDate1, selectedDate2, selectedDuration));
-        
-        //which metrics are available
-        if (selectionContext.getSelection(ObjectType.ConsumerName) == null) {         
+
+        // which metrics are available
+        if (selectionContext.getSelection(ObjectType.ConsumerName) == null) {
             view.getFilter().setMetricNames(Util.convertFromEnumToCamelCase(ANY_CONSUMER_METRICS));
             if (filter.getMetricNames() == null) {
                 selectedMetrics = ANY_CONSUMER_METRICS;
@@ -167,34 +176,31 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
             else
                 selectedMetrics = Util.convertToEnumFromCamelCase(filter.getMetricNames(), ConsumerMetric.class);
         }
-            
+
         view.getFilter().setSelectedMetricNames(Util.convertFromEnumToCamelCase(selectedMetrics));
         view.reset();
-        
+
         fetchMetrics(selectedMetrics, selectionContext, selectedDate1, selectedDate2, selectedDuration);
-        
-		//this.view.activate();
-		((Dashboard)container).activate(this.view);
-	}
-  
-	
-	
+
+        // this.view.activate();
+        ((Dashboard) container).activate(this.view);
+    }
 
     public void bind() {
-        //listen for any uploads of the services/operations list by other tabs
+        // listen for any uploads of the services/operations list by other tabs
         this.eventBus.addHandler(GetServicesEvent.TYPE, new GetServicesEventHandler() {
 
             public void onData(GetServicesEvent event) {
-                //only fetch once?
+                // only fetch once?
                 if (ConsumerPresenter.this.servicesList == null) {
                     ConsumerPresenter.this.servicesList = event.getData();
                     ConsumerPresenter.this.view.setServicesMap(event.getData());
                 }
             }
-            
+
         });
-        
-        //listen for any changes from other tabs to the currently selected service or operation
+
+        // listen for any changes from other tabs to the currently selected service or operation
         this.eventBus.addHandler(ObjectSelectionEvent.TYPE, new ObjectSelectionEventHandler() {
 
             public void onSelection(ObjectSelectionEvent event) {
@@ -205,10 +211,10 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
                     selectionContext.select(ObjectType.OperationName, event.getSelection(ObjectType.OperationName));
             }
         });
-        
-        //listen for any changes from other tabs to the currently selected dates
+
+        // listen for any changes from other tabs to the currently selected dates
         this.eventBus.addHandler(DateFilterSelectionEvent.TYPE, new DateFilterSelectionHandler() {
-            
+
             public void onSelection(DateFilterSelectionEvent event) {
                 selectedDate1 = event.getDate1();
                 selectedDate2 = event.getDate2();
@@ -217,15 +223,15 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
                 view.getFilter().setHour1(new Date(selectedDate1).getHours());
                 view.getFilter().setDate1(new Date(selectedDate1));
 
-                view.getFilter().setHours2(Util.getAvailableHours(selectedDate2)); 
+                view.getFilter().setHours2(Util.getAvailableHours(selectedDate2));
                 view.getFilter().setHour2(new Date(selectedDate2).getHours());
                 view.getFilter().setDate2(new Date(selectedDate2));
                 view.getFilter().setDuration(selectedDuration);
             }
         });
 
-        //listen for user selection of date1
-        this.view.getFilter().getDate1().addValueChangeHandler(new ValueChangeHandler<Date> () {
+        // listen for user selection of date1
+        this.view.getFilter().getDate1().addValueChangeHandler(new ValueChangeHandler<Date>() {
 
             public void onValueChange(ValueChangeEvent<Date> event) {
                 Date date = event.getValue();
@@ -234,8 +240,8 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
             }
         });
 
-        //listen for user selection of date2
-        this.view.getFilter().getDate2().addValueChangeHandler(new ValueChangeHandler<Date> () {
+        // listen for user selection of date2
+        this.view.getFilter().getDate2().addValueChangeHandler(new ValueChangeHandler<Date>() {
 
             public void onValueChange(ValueChangeEvent<Date> event) {
                 Date date = event.getValue();
@@ -243,105 +249,102 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
                 ConsumerPresenter.this.view.getFilter().setHours2(hrs);
             }
         });
-        
-        //handle user selection of some new dates and intervals to see metrics for
-        
+
+        // handle user selection of some new dates and intervals to see metrics for
+
         this.view.getFilter().getApplyButton().addClickHandler(new ClickHandler() {
 
             public void onClick(ClickEvent event) {
-                //Get the date component
+                // Get the date component
                 long oldDate1 = selectedDate1;
                 long oldDate2 = selectedDate2;
                 selectedDate1 = ConsumerPresenter.this.view.getFilter().getDate1().getValue().getTime();
                 selectedDate2 = ConsumerPresenter.this.view.getFilter().getDate2().getValue().getTime();
-     
-                //Get the hour component
+
+                // Get the hour component
                 int hour1 = ConsumerPresenter.this.view.getFilter().getHour1();
                 int hour2 = ConsumerPresenter.this.view.getFilter().getHour2();
                 selectedDate1 += (Util.HRS_1_MS * hour1);
                 selectedDate2 += (Util.HRS_1_MS * hour2);
-                
-       
-                //Get the selected interval
+
+                // Get the selected interval
                 int oldDuration = selectedDuration;
                 selectedDuration = ConsumerPresenter.this.view.getFilter().getDuration();
-                
+
                 view.setFilterLabel(makeFilterLabel(selectedDate1, selectedDate2, selectedDuration));
-                
-                //tell other interested tabs that the selected dates have changed
-                if ((oldDate1 != selectedDate1) ||
-                    (oldDate2 != selectedDate2) ||
-                    (oldDuration != selectedDuration)) {
+
+                // tell other interested tabs that the selected dates have changed
+                if ((oldDate1 != selectedDate1) || (oldDate2 != selectedDate2) || (oldDuration != selectedDuration)) {
                     eventBus.fireEvent(new DateFilterSelectionEvent(selectedDate1, selectedDate2, selectedDuration));
                 }
-                
-                //Get which metrics are required
-                selectedMetrics = Util.convertToEnumFromCamelCase(ConsumerPresenter.this.view.getFilter().getSelectedMetricNames(), ConsumerMetric.class);
-                
-                //Clean up from previous selections
+
+                // Get which metrics are required
+                selectedMetrics = Util.convertToEnumFromCamelCase(ConsumerPresenter.this.view.getFilter()
+                                .getSelectedMetricNames(), ConsumerMetric.class);
+
+                // Clean up from previous selections
                 ConsumerPresenter.this.view.reset();
-             
-                //Make a history event so the back/forward buttons work but don't fire it as we don't
-                //want to change pages
+
+                // Make a history event so the back/forward buttons work but don't fire it as we don't
+                // want to change pages
                 fetchMetrics(selectedMetrics, selectionContext, selectedDate1, selectedDate2, selectedDuration);
                 insertHistory(selectionContext, selectedDate1, selectedDate2, selectedDuration, selectedMetrics, false);
             }
         });
-    
 
-        
-        //handle selection of service or operation from list
-        this.view.getSelector().addSelectionHandler(new SelectionHandler<TreeItem> () {
+        // handle selection of service or operation from list
+        this.view.getSelector().addSelectionHandler(new SelectionHandler<TreeItem>() {
 
             public void onSelection(SelectionEvent<TreeItem> event) {
                 TreeItem selection = event.getSelectedItem();
-                //get service and or operation name corresponding to this selection
+                // get service and or operation name corresponding to this selection
                 selectionContext.unselect(ObjectType.ServiceName);
                 selectionContext.unselect(ObjectType.OperationName);
-                //If its the root, ignore it
+                // If its the root, ignore it
                 if (selection.getParentItem() != null) {
-                    //If its a leaf, its an operation
+                    // If its a leaf, its an operation
                     if (selection.getChildCount() == 0) {
-                        selectionContext.select(ObjectType.OperationName,selection.getText());
+                        selectionContext.select(ObjectType.OperationName, selection.getText());
                         selectionContext.select(ObjectType.ServiceName, selection.getParentItem().getText());
 
-                    } else {
-                        //Its a service
-                        selectionContext.select(ObjectType.ServiceName,selection.getText());
+                    }
+                    else {
+                        // Its a service
+                        selectionContext.select(ObjectType.ServiceName, selection.getText());
                     }
                 }
                 view.setSelection(selectionContext.getSelections());
-                
+
                 eventBus.fireEvent(new ObjectSelectionEvent(selectionContext.getSelections()));
-                
-                //Get the date component
+
+                // Get the date component
                 selectedDate1 = ConsumerPresenter.this.view.getFilter().getDate1().getValue().getTime();
                 selectedDate2 = ConsumerPresenter.this.view.getFilter().getDate2().getValue().getTime();
 
-                //Get the hour component
+                // Get the hour component
                 int hour1 = ConsumerPresenter.this.view.getFilter().getHour1();
                 int hour2 = ConsumerPresenter.this.view.getFilter().getHour2();
                 selectedDate1 += (Util.HRS_1_MS * hour1);
                 selectedDate2 += (Util.HRS_1_MS * hour2);
-                
-                //Get the interval
+
+                // Get the interval
                 selectedDuration = ConsumerPresenter.this.view.getFilter().getDuration();
-                
-                //Get the metrics requested
-                selectedMetrics = Util.convertToEnumFromCamelCase(ConsumerPresenter.this.view.getFilter().getSelectedMetricNames(), ConsumerMetric.class);
+
+                // Get the metrics requested
+                selectedMetrics = Util.convertToEnumFromCamelCase(ConsumerPresenter.this.view.getFilter()
+                                .getSelectedMetricNames(), ConsumerMetric.class);
                 view.reset();
-                //Fetch set of metrics for the selected service/operation for the currently selected dates
+                // Fetch set of metrics for the selected service/operation for the currently selected dates
                 fetchMetrics(selectedMetrics, selectionContext, selectedDate1, selectedDate2, selectedDuration);
-                
-                //Make a history event so the back/forward buttons work but don't fire it as we don't
-                //want to change pages
-                insertHistory(selectionContext, selectedDate1, selectedDate2, selectedDuration, selectedMetrics,false);
+
+                // Make a history event so the back/forward buttons work but don't fire it as we don't
+                // want to change pages
+                insertHistory(selectionContext, selectedDate1, selectedDate2, selectedDuration, selectedMetrics, false);
             }
         });
     }
 
-
-    public HistoryToken getStateAsHistoryToken () {
+    public HistoryToken getStateAsHistoryToken() {
         HistoryToken token = HistoryToken.newHistoryToken(DashboardPresenter.DASH_ID);
         token.addValue(DashboardPresenter.TAB, CONSUMER_ID);
         if (selectionContext != null)
@@ -351,12 +354,12 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         token.addValue(HistoryToken.SELECTED_DATE2_TOKEN, String.valueOf(selectedDate2));
         if (selectedDuration > 0)
             token.addValue(HistoryToken.SELECTED_DURATION_TOKEN, String.valueOf(selectedDuration));
-      
+
         return token;
     }
 
-    protected void fetchServices () {
-        queryService.getServices(new AsyncCallback<Map<String,Set<String>>>() {
+    protected void fetchServices() {
+        queryService.getServices(new AsyncCallback<Map<String, Set<String>>>() {
 
             public void onFailure(Throwable error) {
                 ConsumerPresenter.this.view.error(ConsoleUtil.messages.serverError(error.getLocalizedMessage()));
@@ -368,13 +371,14 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
             }
         });
     }
-    
-    protected void fetchMetrics(List<ConsumerMetric> metrics, SelectionContext sc, long date1, long date2, int intervalHrs) {
-        for (ConsumerMetric m:metrics) {
+
+    protected void fetchMetrics(List<ConsumerMetric> metrics, SelectionContext sc, long date1, long date2,
+                    int intervalHrs) {
+        for (ConsumerMetric m : metrics) {
             Entity returnType = null;
             switch (m) {
                 case CallVolume: {
-                        returnType = Entity.Consumer;
+                    returnType = Entity.Consumer;
                     break;
                 }
                 case Performance: {
@@ -408,146 +412,186 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
                     break;
                 }
             }
-            fetchMetric (m, sc, returnType, date1, date2, intervalHrs);
+            fetchMetric(m, sc, returnType, date1, date2, intervalHrs);
         }
     }
-    
-    protected void fetchMetric (final ConsumerMetric m, final SelectionContext sc, final Entity returnType, 
-                                final long date1, final long date2, final int durationHrs) {
-        
+
+    protected void fetchMetric(final ConsumerMetric m, final SelectionContext sc, final Entity returnType,
+                    final long date1, final long date2, final int durationHrs) {
+
         List<EntityName> subject = new ArrayList<EntityName>();
         EntityName serviceName = new EntityName();
         EntityName opName = new EntityName();
         EntityName consumerName = new EntityName();
-        
+
         if (sc.getSelection(ObjectType.ServiceName) != null) {
             serviceName.type = Entity.Service;
             serviceName.add(sc.getSelection(ObjectType.ServiceName));
             subject.add(serviceName);
         }
-      
+
         if (sc.getSelection(ObjectType.OperationName) != null) {
             opName.type = Entity.Operation;
             opName.add(sc.getSelection(ObjectType.OperationName));
             subject.add(opName);
         }
-        
+
         if (sc.getSelection(ObjectType.ConsumerName) != null) {
             consumerName.type = Entity.Consumer;
             consumerName.add(ConsoleUtil.convertConsumerToMissing(sc.getSelection(ObjectType.ConsumerName)));
             subject.add(consumerName);
         }
-             
-        MetricCriteria mc = MetricCriteria.newMetricCriteria(m.toMetricName(), date1, date2, durationHrs, Ordering.Descending, 10, Perspective.Server, false);
+
+        MetricCriteria mc = MetricCriteria.newMetricCriteria(m.toMetricName(), date1, date2, durationHrs,
+                        Ordering.Descending, 10, Perspective.Server, false);
         MetricResourceCriteria rmc = MetricResourceCriteria.newMetricResourceCriteria(subject, returnType);
-        String url =  queryService.getMetricDataDownloadUrl(mc,rmc);
-        ConsumerPresenter.this.view.setDownloadUrl (m, url);
-            queryService.getMetricData(mc,rmc,
-                    new AsyncCallback<MetricData>() {
+        String url = queryService.getMetricDataDownloadUrl(mc, rmc);
+        ConsumerPresenter.this.view.setDownloadUrl(m, url);
+        queryService.getMetricData(mc, rmc, new AsyncCallback<MetricData>() {
 
-                public void onFailure(Throwable error) {
-                    if (!ConsoleUtil.messages.badOrMissingResponseData().equals(error.getMessage()))
-                        ConsumerPresenter.this.view.error(ConsoleUtil.messages.serverError(error.getLocalizedMessage()));
-                    else
-                        ConsumerPresenter.this.view.setMetric(m, null);
-                }
+            public void onFailure(Throwable error) {
+                if (!ConsoleUtil.messages.badOrMissingResponseData().equals(error.getMessage()))
+                    ConsumerPresenter.this.view.error(ConsoleUtil.messages.serverError(error.getLocalizedMessage()));
+                else
+                    ConsumerPresenter.this.view.setMetric(m, null);
+            }
 
-                public void onSuccess(MetricData result) {
-                    ConsumerPresenter.this.view.setMetric(m, result);
-                    
-                    //here I need to call the getMetricsValue for each consumer name I get. Also I need the 2 dates
-                    switch (m) {
-                        case CallVolume:
-                        case Performance:
-                        case Errors: {
-                            List<HasClickHandlers> clickHandlers = ConsumerPresenter.this.view.getTableColumn(m, 1, 0);
-                            if (clickHandlers != null) {
-                                for (HasClickHandlers h:clickHandlers) {
-                                    h.addClickHandler(new ClickHandler () {
-                                        public void onClick(ClickEvent event) {
-                                            Object o = event.getSource();
-                                            if (o instanceof HasText) {
-                                                String consumer = ((HasText)o).getText();
-                                                SelectionContext tmpCtx = new SelectionContext();
-                                                tmpCtx.selectAll(selectionContext);
-                                                tmpCtx.select(ObjectType.ConsumerName, consumer);
-                                                
-                                                view.reset();
-                                                fetchMetrics(ONE_CONSUMER_METRICS, tmpCtx, date1, date2, durationHrs);
-                                                insertHistory(ConsumerPresenter.CONSUMER_ID, tmpCtx, date1, date2, durationHrs, false);
-                                            }
-                                        }
-                                    });
-                                }
-                            }
-                            break;
-                        }
-                        case TopVolume:
-                        case TopServiceErrors:
-                        case LeastPerformance: {
-                            List<HasClickHandlers> clickHandlers = ConsumerPresenter.this.view.getTableColumn(m, 1, 0);
-                            if (clickHandlers != null) {
-                                for (HasClickHandlers h:clickHandlers) {
-                                    h.addClickHandler(new ClickHandler() {
-                                        public void onClick(ClickEvent event) {
-                                            Object o = event.getSource();
-                                            if (o instanceof HasText) {
-                                                String name = ((HasText)o).getText();
-                                                SelectionContext ctx = new SelectionContext();
-                                                if (returnType==returnType.Service)
-                                                    ctx.select(ObjectType.ServiceName, name);
-                                                else if (returnType==returnType.Operation) {
-                                                    ctx.select(ObjectType.ServiceName, sc.getSelection(ObjectType.ServiceName));
-                                                    ctx.select(ObjectType.OperationName, name);
-                                                }
-                                                insertHistory(ServicePresenter.SERVICE_ID, ctx, date1, date2, durationHrs, true);
-                                            }
-                                        }
-                                    });
-                                }
-                            }
-                            break;
-                        }
+            public void onSuccess(MetricData result) {
+                ConsumerPresenter.this.view.setMetric(m, result);
 
-                        /* Commented out. At the time of first release, the errors listed
-                         * in the Top Errors table are in fact the names of the error
-                         * metrics (eg SoaFwk.Op.Error.Total, SoaFwk.Op.Err.Category.System etc)
-                         * instead of a meaningful name of the errors themselves.
-                         */
-                        /*
-                        case TopConsumerErrors: { 
-                            List<HasClickHandlers> clickHandlers = ConsumerPresenter.this.view.getTableColumn(m, 1, 0);
+                switch (m) {
+                    case CallVolume:
+                        // here I need to call the getMetricsValue for each consumer name I get. Also I need the 2 dates
+                        //getConsumerServiceTrends(sc.getSelection(ObjectType.ServiceName), date1, date2,
+                        //                result.getReturnData(), 0);
+                    case Performance:
+                    case Errors: {
+                        List<HasClickHandlers> clickHandlers = ConsumerPresenter.this.view.getTableColumn(m, 1, 0);
                         if (clickHandlers != null) {
-                            for (HasClickHandlers h:clickHandlers) {
+                            for (HasClickHandlers h : clickHandlers) {
                                 h.addClickHandler(new ClickHandler() {
                                     public void onClick(ClickEvent event) {
                                         Object o = event.getSource();
                                         if (o instanceof HasText) {
-                                            String err = ((HasText)o).getText();
-                                            SelectionContext ctx = new SelectionContext();
-                                            ctx.selectAll(sc);
-                                            ctx.select(ObjectType.ErrorName, err);
-                                            insertHistory(ErrorPresenter.ERROR_ID, ctx, date1, date2, durationHrs, true);
+                                            String consumer = ((HasText) o).getText();
+                                            SelectionContext tmpCtx = new SelectionContext();
+                                            tmpCtx.selectAll(selectionContext);
+                                            tmpCtx.select(ObjectType.ConsumerName, consumer);
+
+                                            view.reset();
+                                            fetchMetrics(ONE_CONSUMER_METRICS, tmpCtx, date1, date2, durationHrs);
+                                            insertHistory(ConsumerPresenter.CONSUMER_ID, tmpCtx, date1, date2,
+                                                            durationHrs, false);
                                         }
                                     }
                                 });
                             }
                         }
-                            break;
-                        }
-                        */
+                        break;
                     }
+                    case TopVolume:
+                    case TopServiceErrors:
+                    case LeastPerformance: {
+                        List<HasClickHandlers> clickHandlers = ConsumerPresenter.this.view.getTableColumn(m, 1, 0);
+                        if (clickHandlers != null) {
+                            for (HasClickHandlers h : clickHandlers) {
+                                h.addClickHandler(new ClickHandler() {
+                                    public void onClick(ClickEvent event) {
+                                        Object o = event.getSource();
+                                        if (o instanceof HasText) {
+                                            String name = ((HasText) o).getText();
+                                            SelectionContext ctx = new SelectionContext();
+                                            if (returnType == returnType.Service)
+                                                ctx.select(ObjectType.ServiceName, name);
+                                            else if (returnType == returnType.Operation) {
+                                                ctx.select(ObjectType.ServiceName,
+                                                                sc.getSelection(ObjectType.ServiceName));
+                                                ctx.select(ObjectType.OperationName, name);
+                                            }
+                                            insertHistory(ServicePresenter.SERVICE_ID, ctx, date1, date2, durationHrs,
+                                                            true);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                        break;
+                    }
+
+                        /*
+                         * Commented out. At the time of first release, the errors listed in the Top Errors table are in
+                         * fact the names of the error metrics (eg SoaFwk.Op.Error.Total, SoaFwk.Op.Err.Category.System
+                         * etc) instead of a meaningful name of the errors themselves.
+                         */
+                        /*
+                         * case TopConsumerErrors: { List<HasClickHandlers> clickHandlers =
+                         * ConsumerPresenter.this.view.getTableColumn(m, 1, 0); if (clickHandlers != null) { for
+                         * (HasClickHandlers h:clickHandlers) { h.addClickHandler(new ClickHandler() { public void
+                         * onClick(ClickEvent event) { Object o = event.getSource(); if (o instanceof HasText) { String
+                         * err = ((HasText)o).getText(); SelectionContext ctx = new SelectionContext();
+                         * ctx.selectAll(sc); ctx.select(ObjectType.ErrorName, err);
+                         * insertHistory(ErrorPresenter.ERROR_ID, ctx, date1, date2, durationHrs, true); } } }); } }
+                         * break; }
+                         */
+                }
+            }
+        });
+    }
+
+    protected void getConsumerServiceTrends(final String serviceName, final long date1, final long date2,
+                    final List<MetricGroupData> returnData, final int initialIndex) {
+        if (returnData != null) {
+            // first I need to iterate through the list of consumers
+            final int returnDataSize = returnData.size();
+            GWT.log("returnDataSize=" + returnDataSize);
+            if (returnDataSize == 0) {
+                return;
+            }
+            MetricGroupData metricGroupData = returnData.get(initialIndex);
+
+            // now I call the SQMS with the data for this consumer
+            CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
+            criteriaInfo.setMetricName("CallCount");
+            criteriaInfo.setConsumerName(metricGroupData.getCriteriaInfo().getConsumerName());
+            criteriaInfo.setServiceName(serviceName);
+            criteriaInfo.setRoleType("server");
+            MetricValue firstDate = new MetricValue(criteriaInfo, Util.resetTo12am(date1).getTime(), 86400l,
+                            returnDataSize, "");
+            MetricValue secondDate = new MetricValue(criteriaInfo, Util.resetTo12am(date2).getTime(), 86400l,
+                            returnDataSize, "");
+
+            queryService.getServiceMetricValueTrend(firstDate, secondDate, new AsyncCallback<List<TimeSlotData>>() {
+
+                @Override
+                public void onSuccess(List<TimeSlotData> dataRanges) {
+                    if (initialIndex < returnDataSize - 1) {
+                        ConsumerPresenter.this.getConsumerServiceTrends(serviceName, date1, date2,
+                                        returnData.subList(initialIndex, returnDataSize), initialIndex + 1);
+                    }
+                    else {
+                        ConsumerPresenter.this.view.activate();
+                        ConsumerPresenter.this.view.setConsumerCallTrendData(dataRanges);
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Throwable exception) {
+                    GWT.log(exception.getMessage());
                 }
             });
+
+        }
     }
-    
-    protected void insertHistory (SelectionContext sc, long d1, long d2, int interval, Collection<ConsumerMetric> metrics, boolean fire) {
+
+    protected void insertHistory(SelectionContext sc, long d1, long d2, int interval,
+                    Collection<ConsumerMetric> metrics, boolean fire) {
         HistoryToken token = HistoryToken.newHistoryToken(DashboardPresenter.DASH_ID, null);
         token.addValue(DashboardPresenter.TAB, CONSUMER_ID);
 
         if (sc != null)
             sc.appendToHistoryToken(token);
-      
+
         token.addValue(HistoryToken.SELECTED_DATE1_TOKEN, String.valueOf(d1));
         token.addValue(HistoryToken.SELECTED_DATE2_TOKEN, String.valueOf(d2));
         token.addValue(HistoryToken.SELECTED_DURATION_TOKEN, String.valueOf(interval));
@@ -555,11 +599,10 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         History.newItem(token.toString(), fire);
     }
 
-
-    protected void insertHistory (String tabId, SelectionContext sc, long d1, long d2, int interval, boolean fire) {
+    protected void insertHistory(String tabId, SelectionContext sc, long d1, long d2, int interval, boolean fire) {
         HistoryToken token = HistoryToken.newHistoryToken(DashboardPresenter.DASH_ID, null);
         token.addValue(DashboardPresenter.TAB, tabId);
-        
+
         if (sc != null)
             sc.appendToHistoryToken(token);
 
@@ -569,14 +612,13 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         History.newItem(token.toString(), fire);
     }
 
-    
-    private String makeFilterLabel (long d1, long d2, int durationHrs) {
+    private String makeFilterLabel(long d1, long d2, int durationHrs) {
         String d1s = ConsoleUtil.timeFormat.format(new Date(d1));
         String d2s = ConsoleUtil.timeFormat.format(new Date(d2));
 
-        String filterString = d1s+" + "+(durationHrs)+" - ";
-        filterString += d2s + " + "+(durationHrs)+" >>";
+        String filterString = d1s + " + " + (durationHrs) + " - ";
+        filterString += d2s + " + " + (durationHrs) + " >>";
         return filterString;
     }
-    
+
 }
