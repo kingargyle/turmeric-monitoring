@@ -28,7 +28,7 @@
       <servlet-name>DownloadServlet</servlet-name>
       <servlet-class>org.ebayopensource.turmeric.monitoring.server.DownloadServlet</servlet-class>
       <init-param>
-        <param-name>myPrefix</param-name><param-value>/console/dwnld</param-value>
+        <param-name>myPrefix</param-name><param-value>/console/console/dwnld</param-value>
       </init-param>
       <init-param>
         <param-name>SOAMetricsQueryServiceURL</param-name><param-value>https://localhost:8443/security/SOAMetricsQueryServiceV1</param-value>

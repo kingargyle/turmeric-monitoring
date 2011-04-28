@@ -262,7 +262,7 @@ public class DownloadServlet extends HttpServlet {
         StringBuffer name = new StringBuffer();
         name.append(dateFormat.format(new Date()));
         name.append("_");
-        String requestName = request.getHeader("X-TURMERIC-OPERATION-NAME");
+        String requestName = request.getParameter("X-TURMERIC-OPERATION-NAME");
         
         if ("getMetricsData".equals(requestName) || "getErrorMetricsData".equals(requestName)) {
             //2 part name eg metricCriteria.x
@@ -301,10 +301,10 @@ public class DownloadServlet extends HttpServlet {
     
     
     public String convertToCSV (HttpServletRequest request ,String json) {
-        String requestName = request.getHeader("X-TURMERIC-OPERATION-NAME");
+        String requestName = request.getParameter("X-TURMERIC-OPERATION-NAME");
         StringBuffer strbuff = new StringBuffer();
         
-        if ("getMetricsDataRequest".equals(requestName)) {
+        if ("getMetricsData".equals(requestName)) {
             //Output the metric criteria from the request
             strbuff.append(METRIC_NAME).append(",").append(quote(metricCriteria.get(METRIC_NAME))).append("\n");
             strbuff.append(FIRST_START_TIME).append(",").append(metricCriteria.get(FIRST_START_TIME)).append("\n");
