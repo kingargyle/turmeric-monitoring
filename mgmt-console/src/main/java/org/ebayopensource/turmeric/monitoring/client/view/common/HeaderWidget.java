@@ -17,10 +17,18 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * The Class HeaderWidget.
+ */
 public class HeaderWidget extends Composite {
 	
 	private HasClickHandlers logo;
 	
+	/**
+	 * Instantiates a new header widget.
+	 *
+	 * @param width the width
+	 */
 	public HeaderWidget(String width) {
 		Panel panel = new FlowPanel();
 	    panel.addStyleName("header");
@@ -42,10 +50,20 @@ public class HeaderWidget extends Composite {
 	}
 
 
+	/**
+	 * Gets the logo component.
+	 *
+	 * @return the logo component
+	 */
 	public HasClickHandlers getLogoComponent() {
 		return logo;
 	}
 	
+	/**
+	 * Gets the logout component.
+	 *
+	 * @return the logout component
+	 */
 	public HasClickHandlers getLogoutComponent() {
 		return null;
 	}

@@ -14,12 +14,24 @@ import java.util.TreeSet;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
 
+/**
+ * The Class MetricsMetaDataResponse.
+ */
 public class MetricsMetaDataResponse extends JavaScriptObject {
 
+    /**
+     * Instantiates a new metrics meta data response.
+     */
     protected MetricsMetaDataResponse() {
     }
     
     
+    /**
+     * From json.
+     *
+     * @param json the json
+     * @return the metrics meta data response
+     */
     public static final native MetricsMetaDataResponse fromJSON (String json) /*-{
        try {
            return eval('(' + json + ')');
@@ -29,6 +41,11 @@ public class MetricsMetaDataResponse extends JavaScriptObject {
     }-*/;
 
   
+    /**
+     * Gets the resource entity response names.
+     *
+     * @return the resource entity response names
+     */
     public final native JsArrayString getResourceEntityResponseNames () /*-{
         var data = this.getMetricsMetadataResponse;
         if (data) {
@@ -36,6 +53,11 @@ public class MetricsMetaDataResponse extends JavaScriptObject {
         } 
     }-*/;
 
+    /**
+     * Gets the ordered resource entity response names.
+     *
+     * @return the ordered resource entity response names
+     */
     public final Set<String> getOrderedResourceEntityResponseNames () {
         JsArrayString array = getResourceEntityResponseNames();
         Set<String> set = new TreeSet<String>();

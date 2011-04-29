@@ -8,6 +8,9 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.client.model;
 
+/**
+ * The Class User.
+ */
 public class User {
 	
 	private static final User user = new User();
@@ -17,14 +20,29 @@ public class User {
 		this.authState = AuthenticationState.Unknown;
 	}
 	
+	/**
+	 * Gets the single instance of User.
+	 *
+	 * @return single instance of User
+	 */
 	public static User getInstance() {
 		return user;
 	}
 	
+	/**
+	 * Checks if is authenticated.
+	 *
+	 * @return true, if is authenticated
+	 */
 	public boolean isAuthenticated () {
 		return this.authState.equals(AuthenticationState.Authenticated);
 	}
 	
+	/**
+	 * Sets the authentication state.
+	 *
+	 * @param authState the new authentication state
+	 */
 	public void setAuthenticationState (AuthenticationState authState) {
 		this.authState = authState;
 	}

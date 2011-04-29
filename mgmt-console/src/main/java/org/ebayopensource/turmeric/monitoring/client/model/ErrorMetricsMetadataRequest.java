@@ -11,23 +11,46 @@ package org.ebayopensource.turmeric.monitoring.client.model;
 import com.google.gwt.core.client.GWT;
 
 /**
- * ErrorMetricsMetadataRequest
- *
+ * ErrorMetricsMetadataRequest.
  */
 public class ErrorMetricsMetadataRequest {
     
+    /**
+     * Gets the rest url.
+     *
+     * @param errorId the error id
+     * @param errorName the error name
+     * @param service the service
+     * @return the rest url
+     */
     public static String getRestURL (String errorId, String errorName, String service) {
         String url = GWT.getModuleBaseURL()+"smqs";
         url += "?"+getUrl(errorId, errorName, service);
         return url;
     }
     
+    /**
+     * Gets the rest download url.
+     *
+     * @param errorId the error id
+     * @param errorName the error name
+     * @param service the service
+     * @return the rest download url
+     */
     public static String getRestDownloadUrl (String errorId, String errorName, String service) {
         String url = GWT.getModuleBaseURL()+"dwnld";
         url += "?"+getUrl(errorId, errorName, service);
         return url;
     }
     
+    /**
+     * Gets the url.
+     *
+     * @param errorId the error id
+     * @param errorName the error name
+     * @param service the service
+     * @return the url
+     */
     public static String getUrl (String errorId, String errorName, String service) {
         String url = "";
         url += MetricsQueryService.SERVICE_NAME_HEADER_VALUE;

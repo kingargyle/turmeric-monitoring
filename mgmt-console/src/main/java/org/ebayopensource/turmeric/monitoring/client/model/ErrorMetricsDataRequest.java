@@ -11,17 +11,30 @@ package org.ebayopensource.turmeric.monitoring.client.model;
 import com.google.gwt.core.client.GWT;
 
 /**
- * ErrorMetricsDataRequest
- *
+ * ErrorMetricsDataRequest.
  */
 public class ErrorMetricsDataRequest {
 
+    /**
+     * Gets the rest url.
+     *
+     * @param errorCriteria the error criteria
+     * @param criteria the criteria
+     * @return the rest url
+     */
     public static String getRestURL (ErrorCriteria errorCriteria, MetricCriteria criteria) {
         String url = GWT.getModuleBaseURL()+"smqs";
         url += "?"+getUrl(errorCriteria, criteria);
         return url;
     }
     
+    /**
+     * Gets the rest download url.
+     *
+     * @param errorCriteria the error criteria
+     * @param criteria the criteria
+     * @return the rest download url
+     */
     public static String getRestDownloadUrl (ErrorCriteria errorCriteria, MetricCriteria criteria) {
         String url = GWT.getModuleBaseURL()+"dwnld";
         url += "?"+getUrl(errorCriteria, criteria);

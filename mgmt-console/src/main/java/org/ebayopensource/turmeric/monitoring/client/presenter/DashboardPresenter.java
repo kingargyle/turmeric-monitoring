@@ -26,18 +26,46 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.HasWidgets;
 
+/**
+ * The Class DashboardPresenter.
+ */
 public class DashboardPresenter implements Presenter, Controller {
+    
+    /** The Constant DASH_ID. */
     public static final String DASH_ID = "dash";
+    
+    /** The Constant TAB. */
     public static final String TAB = "tab";
+    
+    /** The event bus. */
     protected HandlerManager eventBus;
+    
+    /** The view. */
     protected Dashboard view;
+    
+    /** The query service. */
     protected MetricsQueryService queryService;
+    
+    /** The default presenter. */
     protected TabPresenter defaultPresenter;
+    
+    /** The presenters. */
     protected Map<String,TabPresenter> presenters = new HashMap<String,TabPresenter>();
+    
+    /** The added. */
     protected boolean added;
+    
+    /** The container. */
     protected HasWidgets container;
   
     
+    /**
+     * Instantiates a new dashboard presenter.
+     *
+     * @param eventBus the event bus
+     * @param view the view
+     * @param queryService the query service
+     */
     public DashboardPresenter (HandlerManager eventBus, Dashboard view, MetricsQueryService queryService) {
         this.eventBus = eventBus;
         this.view = view;
@@ -46,10 +74,16 @@ public class DashboardPresenter implements Presenter, Controller {
         bind();
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#getId()
+     */
     public String getId() {
         return DASH_ID;
     }
 
+    /**
+     * Bind.
+     */
     public void bind () {
         //listen for tabs to be selected so we can update the central History
         //mechanism
@@ -89,6 +123,9 @@ public class DashboardPresenter implements Presenter, Controller {
         
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#go(com.google.gwt.user.client.ui.HasWidgets, org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
+     */
     public void go(HasWidgets container, HistoryToken token) {
         this.container = container;
         //if (!added) {
@@ -98,18 +135,33 @@ public class DashboardPresenter implements Presenter, Controller {
         selectPresenter(token);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.Controller#addPresenter(java.lang.String, org.ebayopensource.turmeric.monitoring.client.presenter.Presenter)
+     */
     public void addPresenter(String id, Presenter p) {
         presenters.put(id, (TabPresenter)p);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.Controller#getPresenter(java.lang.String)
+     */
     public Presenter getPresenter(String id) {
         return presenters.get(id);
     }
     
+    /**
+     * Gets the tab presenter.
+     *
+     * @param id the id
+     * @return the tab presenter
+     */
     public TabPresenter getTabPresenter(String id) {
         return presenters.get(id);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.Controller#selectPresenter(org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
+     */
     public void selectPresenter(HistoryToken token) {
         //we want to select the current tab presenter based on the history token
         if (token != null) {

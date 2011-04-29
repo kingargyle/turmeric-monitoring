@@ -19,21 +19,44 @@ import com.google.gwt.core.client.JavaScriptObject;
  */
 public class RemoteError extends JavaScriptObject {
 
+    /**
+     * Instantiates a new remote error.
+     */
     protected RemoteError () {
     }
     
+    /**
+     * Gets the error id.
+     *
+     * @return the error id
+     */
     public  final native String getErrorId() /*-{
         return this["ms.errorId"];
     }-*/;
     
+    /**
+     * Gets the severity.
+     *
+     * @return the severity
+     */
     public  final native String getSeverity() /*-{
         return this["ms.severity"];
     }-*/;
     
+    /**
+     * Gets the category.
+     *
+     * @return the category
+     */
     public  final native String getCategory() /*-{
         return this["ms.category"];
     }-*/;
     
+    /**
+     * Gets the message.
+     *
+     * @return the message
+     */
     public  final native String getMessage() /*-{
         return this["ms.message"];
     }-*/;

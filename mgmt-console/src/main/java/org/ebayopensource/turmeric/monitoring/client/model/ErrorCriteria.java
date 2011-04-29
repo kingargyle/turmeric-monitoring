@@ -16,19 +16,47 @@ import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.E
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorType;
 
 /**
- * ErrorCriteria
- *
+ * ErrorCriteria.
  */
 public class ErrorCriteria {
+    
+    /** The error type. */
     final public ErrorType errorType;
+    
+    /** The service names. */
     final public List<String> serviceNames;
+    
+    /** The operation names. */
     final public List<String> operationNames; 
+    
+    /** The consumer names. */
     final public List<String> consumerNames;
+    
+    /** The e. */
     final public String e;
+    
+    /** The is id. */
     final public boolean isId;
+    
+    /** The category. */
     final public ErrorCategory category;
+    
+    /** The severity. */
     final public ErrorSeverity severity;
     
+    /**
+     * New error criteria.
+     *
+     * @param errorType the error type
+     * @param serviceNames the service names
+     * @param operationNames the operation names
+     * @param consumerNames the consumer names
+     * @param e the e
+     * @param isId the is id
+     * @param category the category
+     * @param severity the severity
+     * @return the error criteria
+     */
     public static ErrorCriteria newErrorCriteria (ErrorType errorType,
                                                   List<String> serviceNames,
                                                   List<String> operationNames,
@@ -61,6 +89,11 @@ public class ErrorCriteria {
     
     
 
+    /**
+     * As rest url.
+     *
+     * @return the string
+     */
     public String asRestUrl () {
         String url = "";
         if (errorType == null)

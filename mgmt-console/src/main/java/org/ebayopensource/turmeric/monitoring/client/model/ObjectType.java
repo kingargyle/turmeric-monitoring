@@ -8,4 +8,12 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.client.model;
 
-public enum ObjectType {ServiceName, OperationName, ConsumerName, ErrorName, ErrorId}
+/**
+ * The Enum ObjectType.
+ */
+public enum ObjectType {/** The Service name. */
+ServiceName, /** The Operation name. */
+ OperationName, /** The Consumer name. */
+ ConsumerName, /** The Error name. */
+ ErrorName, /** The Error id. */
+ ErrorId}

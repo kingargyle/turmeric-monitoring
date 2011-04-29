@@ -11,23 +11,43 @@ package org.ebayopensource.turmeric.monitoring.client.model;
 import com.google.gwt.core.client.JavaScriptObject;
 
 
+/**
+ * The Class MetricGroupDataJS.
+ */
 public class MetricGroupDataJS extends JavaScriptObject implements MetricGroupData {
    
+    /**
+     * Instantiates a new metric group data js.
+     */
     protected MetricGroupDataJS () {
     }
      
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData#getDiff()
+     */
     public final native String getDiff ()   /*-{
         return this.diff;
     }-*/;
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData#getCount1()
+     */
     public final native String getCount1 () /*-{
         return this.count1;
     }-*/; 
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData#getCount2()
+     */
     public final native String getCount2 () /*-{
         return this.count2;
     }-*/;
     
+    /**
+     * Gets the criteria info js.
+     *
+     * @return the criteria info js
+     */
     public final native CriteriaInfoJS getCriteriaInfoJS() /*-{
         return this.criteriaInfo 
     }-*/;
@@ -42,6 +62,8 @@ public class MetricGroupDataJS extends JavaScriptObject implements MetricGroupDa
      * too productive to lose, the work around is to make only
      * a java object that implements CriteriaInfo interface
      * and then copy from one to the other in this method.
+     *
+     * @return the criteria info
      */
     public final CriteriaInfo getCriteriaInfo () {
         CriteriaInfoJS js = getCriteriaInfoJS();

@@ -12,27 +12,50 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TimeSlotData
- *
+ * TimeSlotData.
  */
 
 public class TimeSlotData {
+    
+    /** The rest url. */
     String restUrl;
+    
+    /** The return data. */
     List<TimeSlotValue> returnData;
     
     
+    /**
+     * Gets the rest url.
+     *
+     * @return the rest url
+     */
     public String getRestUrl() {
         return restUrl;
     }
 
+    /**
+     * Sets the rest url.
+     *
+     * @param restUrl the new rest url
+     */
     public void setRestUrl(String restUrl) {
         this.restUrl = restUrl;
     }
     
+    /**
+     * Gets the return data.
+     *
+     * @return the return data
+     */
     public List<TimeSlotValue> getReturnData() {
         return returnData;
     }
 
+    /**
+     * Sets the return data.
+     *
+     * @param tsvs the new return data
+     */
     public void setReturnData(List<TimeSlotValue> tsvs) {
         this.returnData = new ArrayList<TimeSlotValue>(tsvs);
     }

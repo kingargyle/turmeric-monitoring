@@ -13,11 +13,15 @@ import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 /**
  * ErrorDialog
  * 
- * A popup to show an error message
- *
+ * A popup to show an error message.
  */
 public class ErrorDialog extends AbstractDialog {
     
+    /**
+     * Instantiates a new error dialog.
+     *
+     * @param animationEnabled the animation enabled
+     */
     public ErrorDialog (boolean animationEnabled) {
         super(animationEnabled);
        

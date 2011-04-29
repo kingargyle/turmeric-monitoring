@@ -32,21 +32,45 @@ import com.google.gwt.user.client.ui.HasWidgets;
  */
 public class MenuController implements Presenter, Controller {
 
+    /** The Constant PRESENTER_ID. */
     public final static String PRESENTER_ID = "Menu";
 
+    /** The event bus. */
     protected HandlerManager eventBus;
+    
+    /** The view. */
     protected MenuControllerDisplay view;
+    
+    /** The root container. */
     protected HasWidgets rootContainer;
+    
+    /** The added. */
     protected boolean added;
 
+    /** The presenters. */
     protected Map<String, Presenter> presenters = new HashMap<String, Presenter>();
+    
+    /** The action map. */
     protected Map<UserAction, Presenter> actionMap = new HashMap<UserAction, Presenter>();
+    
+    /** The service map. */
     protected Map<SupportedService, ConsoleService> serviceMap;
 
+    /**
+     * The Interface MenuControllerDisplay.
+     */
     public interface MenuControllerDisplay extends Container {
         
     }
 
+    /**
+     * Instantiates a new menu controller.
+     *
+     * @param eventBus the event bus
+     * @param rootContainer the root container
+     * @param view the view
+     * @param serviceMap the service map
+     */
     public MenuController(HandlerManager eventBus, HasWidgets rootContainer, MenuControllerDisplay view,
                     Map<SupportedService, ConsoleService> serviceMap) {
         this.eventBus = eventBus;
@@ -58,6 +82,9 @@ public class MenuController implements Presenter, Controller {
         bind();
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#go(com.google.gwt.user.client.ui.HasWidgets, org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
+     */
     public void go(HasWidgets container, HistoryToken token) {
         String id = null;
 
@@ -82,21 +109,36 @@ public class MenuController implements Presenter, Controller {
 
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#getId()
+     */
     public String getId() {
         return PRESENTER_ID;
     }
 
+    /**
+     * Bind.
+     */
     public void bind() {
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.Controller#addPresenter(java.lang.String, org.ebayopensource.turmeric.monitoring.client.presenter.Presenter)
+     */
     public void addPresenter(String id, Presenter p) {
         presenters.put(id, p);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.Controller#getPresenter(java.lang.String)
+     */
     public Presenter getPresenter(String id) {
         return presenters.get(id);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.Controller#selectPresenter(org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
+     */
     public void selectPresenter(HistoryToken token) {
         String presenterId = token != null ? token.getPresenterId() : null;
 
@@ -108,6 +150,9 @@ public class MenuController implements Presenter, Controller {
         }
     }
 
+    /**
+     * Inits the presenters.
+     */
     public void initPresenters() {
         Presenter dp = new DashboardPresenter(eventBus, new DashboardContainer(),
                         (MetricsQueryService) this.serviceMap.get(SupportedService.METRICS_QUERY_SERVICE));

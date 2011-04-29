@@ -11,11 +11,16 @@ package org.ebayopensource.turmeric.monitoring.client.model.policy;
 import java.util.List;
 
 /**
- * OperationKeyConverter
- *
+ * OperationKeyConverter.
  */
 public class OperationKeyConverter {
 
+    /**
+     * To nv.
+     *
+     * @param opKeys the op keys
+     * @return the string
+     */
     public static String toNV (List<OperationKey> opKeys) {
         String url = "";
         if (opKeys != null && opKeys.size() > 0) {
@@ -28,6 +33,12 @@ public class OperationKeyConverter {
         return url;
     }
     
+    /**
+     * To nv.
+     *
+     * @param opKey the op key
+     * @return the string
+     */
     public static String toNV (OperationKey opKey) {
         return toNV(opKey, 0);
     }

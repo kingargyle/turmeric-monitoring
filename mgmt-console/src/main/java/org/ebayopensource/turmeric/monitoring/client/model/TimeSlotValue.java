@@ -9,13 +9,29 @@
 package org.ebayopensource.turmeric.monitoring.client.model;
 
 /**
- * TimeSlotValue
- *
+ * TimeSlotValue.
  */
 public interface TimeSlotValue {
     
+    /**
+     * Gets the criteria.
+     *
+     * @return the criteria
+     */
     public String getCriteria();
+    
+    /**
+     * Gets the value.
+     *
+     * @return the value
+     */
     public Double getValue();
+    
+    /**
+     * Gets the time slot.
+     *
+     * @return the time slot
+     */
     public Long getTimeSlot();
 
 }

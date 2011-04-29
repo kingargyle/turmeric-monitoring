@@ -18,13 +18,23 @@ import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.E
 
 
 /**
- * MetricResourceCriteria
- *
+ * MetricResourceCriteria.
  */
 public class MetricResourceCriteria {
+    
+    /** The resource entity requests. */
     final public List<ResourceEntityRequest> resourceEntityRequests;
+    
+    /** The resource entity response type. */
     final public Entity resourceEntityResponseType;
   
+    /**
+     * New metric resource criteria.
+     *
+     * @param requestEntityNames the request entity names
+     * @param returnType the return type
+     * @return the metric resource criteria
+     */
     public static MetricResourceCriteria newMetricResourceCriteria(final List<EntityName> requestEntityNames,
                                                                    final Entity returnType) {
         MetricResourceCriteria rc = new MetricResourceCriteria(requestEntityNames, returnType);
@@ -52,6 +62,11 @@ public class MetricResourceCriteria {
         this.resourceEntityResponseType = returnType;
     }
     
+    /**
+     * As rest url.
+     *
+     * @return the string
+     */
     public String asRestUrl () {
         String url="";
         url +="&ns:metricResourceCriteria.ns:resourceEntityResponseType="+resourceEntityResponseType.toString();

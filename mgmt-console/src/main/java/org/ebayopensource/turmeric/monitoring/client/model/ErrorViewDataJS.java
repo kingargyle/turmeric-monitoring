@@ -12,15 +12,20 @@ import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JavaScriptObject;
 
 /**
- * ErrorViewDataJS
- *
+ * ErrorViewDataJS.
  */
 public class ErrorViewDataJS extends JavaScriptObject implements ErrorViewData{
     
+    /**
+     * Instantiates a new error view data js.
+     */
     protected ErrorViewDataJS () {
     }
     
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getRatioDiff()
+     */
     public final Double getRatioDiff () {
         try {
             String s = getRatioDiffAsString();
@@ -29,6 +34,10 @@ public class ErrorViewDataJS extends JavaScriptObject implements ErrorViewData{
             throw new NumberFormatException ();
         }
     }
+    
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorDiff()
+     */
     public final Double getErrorDiff () {
         try {
             String s = getErrorDiffAsString();
@@ -38,6 +47,9 @@ public class ErrorViewDataJS extends JavaScriptObject implements ErrorViewData{
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorCallRatio1()
+     */
     public final Double getErrorCallRatio1 () {
         try {
             String s = getErrorCallRatio1AsString();
@@ -47,6 +59,9 @@ public class ErrorViewDataJS extends JavaScriptObject implements ErrorViewData{
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorCallRatio2()
+     */
     public final Double getErrorCallRatio2 (){
         try {
             String s = getErrorCallRatio2AsString();
@@ -56,6 +71,9 @@ public class ErrorViewDataJS extends JavaScriptObject implements ErrorViewData{
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorCount1()
+     */
     public final Long getErrorCount1() {
         try {
             String s = getErrorCount1AsString();
@@ -65,6 +83,9 @@ public class ErrorViewDataJS extends JavaScriptObject implements ErrorViewData{
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorCount2()
+     */
     public final Long getErrorCount2(){
         try {
             String s = getErrorCount2AsString();
@@ -74,42 +95,81 @@ public class ErrorViewDataJS extends JavaScriptObject implements ErrorViewData{
         }
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getConsumer()
+     */
     public final native String getConsumer()   /*-{
         return this.consumer;
     }-*/;
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorId()
+     */
     public final native String getErrorId() /*-{
         if (this.error)
             return this.error.errorId;
         return null;
     }-*/;
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorName()
+     */
     public final native String getErrorName() /*-{
         if (this.error)
             return this.error.errorName;
         return null;
     }-*/;
     
+    /**
+     * Gets the ratio diff as string.
+     *
+     * @return the ratio diff as string
+     */
     public final native String getRatioDiffAsString ()   /*-{
         return this.ratioDiff;
     }-*/;
     
+    /**
+     * Gets the error diff as string.
+     *
+     * @return the error diff as string
+     */
     public final native String getErrorDiffAsString ()   /*-{
         return this.errorDiff;
     }-*/;
     
+    /**
+     * Gets the error call ratio1 as string.
+     *
+     * @return the error call ratio1 as string
+     */
     public final native String getErrorCallRatio1AsString () /*-{
         return this.errorCallRatio1;
     }-*/; 
     
+    /**
+     * Gets the error call ratio2 as string.
+     *
+     * @return the error call ratio2 as string
+     */
     public final native String getErrorCallRatio2AsString () /*-{
         return this.errorCallRatio2;
     }-*/;
     
+    /**
+     * Gets the error count1 as string.
+     *
+     * @return the error count1 as string
+     */
     public final native String getErrorCount1AsString() /*-{
         return this.errorCount1; 
     }-*/;    
     
+    /**
+     * Gets the error count2 as string.
+     *
+     * @return the error count2 as string
+     */
     public final native String getErrorCount2AsString() /*-{
         return this.errorCount2; 
     }-*/;

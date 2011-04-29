@@ -57,7 +57,7 @@ import com.google.gwt.visualization.client.visualizations.LineChart.Options;
 /**
  * ServiceView
  * 
- * Display the metrics for the Services
+ * Display the metrics for the Services.
  */
 public class ServiceView extends ResizeComposite implements ServicePresenter.Display {
 
@@ -81,6 +81,11 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
     private FilterWidget filterWidget;
     private DialogBox filterDialog;
 
+    /**
+     * Instantiates a new service view.
+     *
+     * @param dashboard the dashboard
+     */
     public ServiceView(Dashboard dashboard) {
         // make the panel
         DockLayoutPanel contentPanel = new DockLayoutPanel(Unit.EM);
@@ -177,47 +182,78 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         this.dashboard.addView(this, ConsoleUtil.constants.services());
     }
 
+    /* (non-Javadoc)
+     * @see com.google.gwt.user.client.ui.Widget#asWidget()
+     */
     public Widget asWidget() {
         return this;
     }
 
     /**
-     * View about to be shown, do any clean up necessary
-     * 
+     * View about to be shown, do any clean up necessary.
+     *
      * @see org.ebayopensource.turmeric.monitoring.client.Display#activate()
      */
     public void activate() {
         dashboard.activate(this);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.Display#setAssociatedId(java.lang.String)
+     */
     public void setAssociatedId(String id) {
         this.id = id;
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.Display#getAssociatedId()
+     */
     public String getAssociatedId() {
         return this.id;
     }
 
+    /**
+     * Hide.
+     *
+     * @param o the o
+     */
     public void hide(UIObject o) {
         o.setVisible(false);
     }
 
+    /**
+     * Show.
+     *
+     * @param o the o
+     */
     public void show(UIObject o) {
         o.setVisible(true);
     }
 
+    /**
+     * Disable.
+     */
     public void disable() {
         filterWidget.disable();
     }
 
+    /**
+     * Enable.
+     */
     public void enable() {
         filterWidget.enable();
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setServicesMap(java.util.Map)
+     */
     public void setServicesMap(Map<String, Set<String>> map) {
         serviceListWidget.setServicesMap(map);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setMetric(org.ebayopensource.turmeric.monitoring.client.model.ServiceMetric, org.ebayopensource.turmeric.monitoring.client.model.MetricData)
+     */
     public void setMetric(ServiceMetric metric, MetricData data) {
         SummaryPanel panel = null;
         String date1Header = "";
@@ -381,10 +417,16 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         VisualizationUtils.loadVisualizationApi(onLoadCallback, "corechart");
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#getFilter()
+     */
     public Filterable getFilter() {
         return filterWidget;
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setSelection(java.util.Map)
+     */
     public void setSelection(Map<ObjectType, String> selection) {
         String s = "";
         if (selection != null) {
@@ -405,10 +447,16 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         enable();
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#getSelector()
+     */
     public HasSelectionHandlers<TreeItem> getSelector() {
         return serviceListWidget.getServiceTree();
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#error(java.lang.String)
+     */
     public void error(String msg) {
         ErrorDialog popup = new ErrorDialog(true);
         popup.setMessage(msg);
@@ -416,6 +464,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         popup.show();
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#reset()
+     */
     public void reset() {
         // Window.alert("calling ServiceView.reset");
         hide(topVolumePanel);
@@ -425,6 +476,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         hide(consumerTrafficPanel);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setDownloadUrl(org.ebayopensource.turmeric.monitoring.client.model.ServiceMetric, java.lang.String)
+     */
     public void setDownloadUrl(ServiceMetric m, String url) {
         SummaryPanel panel = null;
         switch (m) {
@@ -453,6 +507,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
             panel.setDownloadUrl(url);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#getTableColumn(org.ebayopensource.turmeric.monitoring.client.model.ServiceMetric, int, int)
+     */
     public List<HasClickHandlers> getTableColumn(ServiceMetric metric, int startRow, int col) {
         FlexTable table = getTable(metric);
         if (table == null)
@@ -466,6 +523,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         return list;
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#getTableRow(org.ebayopensource.turmeric.monitoring.client.model.ServiceMetric, int, int)
+     */
     public List<HasClickHandlers> getTableRow(ServiceMetric metric, int row, int startCol) {
         FlexTable table = getTable(metric);
         if (table == null)
@@ -479,6 +539,12 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         return list;
     }
 
+    /**
+     * Gets the table.
+     *
+     * @param m the m
+     * @return the table
+     */
     protected FlexTable getTable(ServiceMetric m) {
         FlexTable table = null;
         switch (m) {
@@ -506,6 +572,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         return table;
     }
 
+    /**
+     * Configure least performance.
+     */
     protected void configureLeastPerformance() {
         leastPerformancePanel = new SummaryPanel();
         leastPerformancePanel.setHeading(ConsoleUtil.constants.leastPerformance());
@@ -514,6 +583,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         leastPerformancePanel.setContents(leastPerformanceTable);
     }
 
+    /**
+     * Configure top volume.
+     */
     protected void configureTopVolume() {
         topVolumePanel = new SummaryPanel();
         topVolumePanel.setHeading(ConsoleUtil.constants.topVolume());
@@ -523,6 +595,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         setMetric(ServiceMetric.TopVolume, null);
     }
 
+    /**
+     * Configure consumer traffic.
+     */
     protected void configureConsumerTraffic() {
         consumerTrafficPanel = new SummaryPanel();
         consumerTrafficPanel.setHeading(ConsoleUtil.constants.consumerTraffic());
@@ -531,6 +606,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         consumerTrafficPanel.setContents(consumerTrafficTable);
     }
 
+    /**
+     * Configure consumer errors.
+     */
     protected void configureConsumerErrors() {
         consumerErrorsPanel = new SummaryPanel();
         consumerErrorsPanel.setHeading(ConsoleUtil.constants.consumerErrors());
@@ -539,6 +617,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         consumerErrorsPanel.setContents(consumerErrorsTable);
     }
 
+    /**
+     * Configure top errors.
+     */
     protected void configureTopErrors() {
         topErrorsPanel = new SummaryPanel();
         topErrorsPanel.setHeading(ConsoleUtil.constants.topErrors());
@@ -547,6 +628,11 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         topErrorsPanel.setContents(topErrorsTable);
     }
 
+    /**
+     * Make summary table.
+     *
+     * @return the flex table
+     */
     protected FlexTable makeSummaryTable() {
         FlexTable table = new FlexTable();
         table.addStyleName("tbl");
@@ -554,6 +640,14 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         return table;
     }
 
+    /**
+     * Sets the tabular data.
+     *
+     * @param table the table
+     * @param cols the cols
+     * @param rows the rows
+     * @param rowStyles the row styles
+     */
     protected void setTabularData(FlexTable table, String[] cols, List<String[]> rows, String[] rowStyles) {
         table.removeAllRows();
         table.setText(0, 0, cols[0]);
@@ -593,6 +687,14 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         }
     }
 
+    /**
+     * Gets the entity name.
+     *
+     * @param metric the metric
+     * @param responseEntityType the response entity type
+     * @param rd the rd
+     * @return the entity name
+     */
     protected String getEntityName(ServiceMetric metric, Entity responseEntityType, MetricGroupData rd) {
         String entityName = "";
         switch (responseEntityType) {
@@ -628,6 +730,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         return entityName;
     }
 
+    /**
+     * Pick filter.
+     */
     public void pickFilter() {
         int x = filterButton.getAbsoluteLeft();
         int y = filterButton.getAbsoluteTop() + filterButton.getOffsetHeight();
@@ -637,6 +742,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         filterDialog.show();
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setFilterLabel(java.lang.String)
+     */
     public void setFilterLabel(String s) {
         filterButton.setText(s);
     }
@@ -692,6 +800,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         return data;
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setServiceCallTrendData(java.util.List)
+     */
     @Override
     public void setServiceCallTrendData(List<TimeSlotData> graphData) {
         if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
@@ -702,6 +813,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setServicePerformanceTrendData(java.util.List)
+     */
     @Override
     public void setServicePerformanceTrendData(List<TimeSlotData> graphData) {
         if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
@@ -712,6 +826,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setServiceErrorTrendData(java.util.List)
+     */
     @Override
     public void setServiceErrorTrendData(List<TimeSlotData> graphData) {
         if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {

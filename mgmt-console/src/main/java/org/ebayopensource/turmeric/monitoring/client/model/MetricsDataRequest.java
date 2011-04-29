@@ -12,8 +12,18 @@ package org.ebayopensource.turmeric.monitoring.client.model;
 
 import com.google.gwt.core.client.GWT;
 
+/**
+ * The Class MetricsDataRequest.
+ */
 public class MetricsDataRequest {
     
+    /**
+     * Gets the rest url.
+     *
+     * @param criteria the criteria
+     * @param resourceCriteria the resource criteria
+     * @return the rest url
+     */
     public static String getRestURL (MetricCriteria criteria, MetricResourceCriteria resourceCriteria) {
         String url = GWT.getModuleBaseURL()+"smqs";
         url += "?"+getUrl(criteria, resourceCriteria);
@@ -21,6 +31,13 @@ public class MetricsDataRequest {
         return url;
     }
     
+    /**
+     * Gets the rest download url.
+     *
+     * @param criteria the criteria
+     * @param resourceCriteria the resource criteria
+     * @return the rest download url
+     */
     public static String getRestDownloadUrl (MetricCriteria criteria, MetricResourceCriteria resourceCriteria) {
         String url = GWT.getModuleBaseURL()+"dwnld";
         url += "?"+getUrl(criteria, resourceCriteria);

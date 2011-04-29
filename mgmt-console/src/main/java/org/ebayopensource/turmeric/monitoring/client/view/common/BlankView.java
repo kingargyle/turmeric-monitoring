@@ -11,8 +11,14 @@ package org.ebayopensource.turmeric.monitoring.client.view.common;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
 
+/**
+ * The Class BlankView.
+ */
 public class BlankView extends Composite {
 
+	/**
+	 * Instantiates a new blank view.
+	 */
 	public BlankView() {
 		SimplePanel panel = new SimplePanel();
 		initWidget(panel);

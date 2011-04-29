@@ -71,7 +71,8 @@
 							</includes>
 						</resource>
 					</webResources>
-					<warSourceExcludes>WEB-INF/lib/gwt-user*.jar,WEB-INF/lib/gwt-servlet*.jar,WEB-INF/lib/gwt-dev*.jar,WEB-INF/lib/junit*.jar,WEB-INF/lib/jetty-servlet*.jar</warSourceExcludes>
+					<warSourceExcludes>WEB-INF/lib/gwt-user*.jar,WEB-INF/lib/gwt-servlet*.jar,WEB-INF/lib/gwt-dev*.jar,WEB-INF/lib/junit*.jar,WEB-INF/lib/jetty-servlet*.jar,WEB-INF/classes/**.java</warSourceExcludes>
+					<packagingExcludes>**/*.java</packagingExcludes>
 				</configuration>
 			</plugin>
 			<plugin>

@@ -59,37 +59,143 @@ import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.TreeItem;
 
+/**
+ * The Class ErrorPresenter.
+ */
 public class ErrorPresenter implements TabPresenter {
 
+    /** The Constant ERROR_ID. */
     public final static String ERROR_ID = "Error";
+    
+    /** The Constant DEFAULT_ERROR_TYPE. */
     public final static ErrorType DEFAULT_ERROR_TYPE = ErrorType.Category;
+    
+    /** The Constant CATEGORY_METRICS. */
     public final static List<ErrorMetric> CATEGORY_METRICS = Arrays.asList(ErrorMetric.CATEGORY_METRICS);
+    
+    /** The Constant SEVERITY_METRICS. */
     public final static List<ErrorMetric> SEVERITY_METRICS = Arrays.asList(ErrorMetric.SEVERITY_METRICS);
+    
+    /** The view. */
     protected Display view;
+    
+    /** The event bus. */
     protected HandlerManager eventBus;
+    
+    /** The query service. */
     protected MetricsQueryService queryService;
+    
+    /** The services list. */
     protected Map<String,Set<String>> servicesList;
+    
+    /** The selection context. */
     protected SelectionContext selectionContext;
+    
+    /** The selected duration hrs. */
     protected int selectedDurationHrs;
+    
+    /** The selected date1. */
     protected long selectedDate1;
+    
+    /** The selected date2. */
     protected long selectedDate2;
+    
+    /** The selected metrics. */
     protected List<ErrorMetric> selectedMetrics;
     
     
+    /**
+     * The Interface Display.
+     */
     public interface Display extends org.ebayopensource.turmeric.monitoring.client.Display {
+        
+        /**
+         * Reset.
+         */
         public void reset();
+        
+        /**
+         * Error.
+         *
+         * @param s the s
+         */
         public void error(String s);
+        
+        /**
+         * Gets the filter.
+         *
+         * @return the filter
+         */
         public Filterable getFilter();
+        
+        /**
+         * Gets the selector.
+         *
+         * @return the selector
+         */
         public HasSelectionHandlers<TreeItem> getSelector();
+        
+        /**
+         * Sets the services map.
+         *
+         * @param map the map
+         */
         public void setServicesMap(Map<String, Set<String>> map);
+        
+        /**
+         * Sets the selection.
+         *
+         * @param selections the selections
+         */
         public void setSelection(Map<ObjectType,String>selections);
+        
+        /**
+         * Sets the filter label.
+         *
+         * @param label the new filter label
+         */
         public void setFilterLabel (String label);
+        
+        /**
+         * Sets the error detail.
+         *
+         * @param ed the new error detail
+         */
         public void setErrorDetail(ErrorDetail ed);
+        
+        /**
+         * Sets the error metric data.
+         *
+         * @param m the m
+         * @param errorData the error data
+         */
         public void setErrorMetricData (ErrorMetric m, ErrorMetricData errorData);
+        
+        /**
+         * Gets the table column.
+         *
+         * @param metric the metric
+         * @param col the col
+         * @return the table column
+         */
         public List<HasClickHandlers> getTableColumn (ErrorMetric metric, int col);
+        
+        /**
+         * Sets the download url.
+         *
+         * @param metric the metric
+         * @param url the url
+         */
         public void setDownloadUrl(ErrorMetric metric, String url);
     }
     
+    /**
+     * Instantiates a new error presenter.
+     *
+     * @param eventBus the event bus
+     * @param view the view
+     * @param queryService the query service
+     */
     public ErrorPresenter (HandlerManager eventBus, Display view, MetricsQueryService queryService) {
         this.eventBus = eventBus;
         this.view = view;
@@ -99,11 +205,17 @@ public class ErrorPresenter implements TabPresenter {
     }
     
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#getId()
+     */
     public String getId() {
         return ERROR_ID;
     }
     
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#go(com.google.gwt.user.client.ui.HasWidgets, org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
+     */
     public void go(HasWidgets container, HistoryToken token) {
         //find out which entities have been selected in context
         selectionContext = SelectionContext.fromHistoryToken(token);
@@ -197,6 +309,9 @@ public class ErrorPresenter implements TabPresenter {
 
 
 
+    /**
+     * Bind.
+     */
     public void bind () {
 
         //listen for any uploads of the services/operations list by other tabs
@@ -379,6 +494,9 @@ public class ErrorPresenter implements TabPresenter {
     }
 
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter.TabPresenter#getStateAsHistoryToken()
+     */
     public HistoryToken getStateAsHistoryToken() {
         HistoryToken token = HistoryToken.newHistoryToken(DashboardPresenter.DASH_ID);
         token.addValue(DashboardPresenter.TAB, ERROR_ID);
@@ -391,6 +509,9 @@ public class ErrorPresenter implements TabPresenter {
         return token;
     }
 
+    /**
+     * Fetch services.
+     */
     protected void fetchServices () {
         queryService.getServices(new AsyncCallback<Map<String,Set<String>>>() {
 
@@ -406,6 +527,11 @@ public class ErrorPresenter implements TabPresenter {
     }
     
     
+    /**
+     * Fetch error detail.
+     *
+     * @param sc the sc
+     */
     protected void fetchErrorDetail (SelectionContext sc) {
         
         queryService.getErrorDetail(sc.getSelection(ObjectType.ErrorId),
@@ -424,6 +550,15 @@ public class ErrorPresenter implements TabPresenter {
         });
     }
 
+    /**
+     * Fetch metrics.
+     *
+     * @param metrics the metrics
+     * @param sc the sc
+     * @param date1 the date1
+     * @param date2 the date2
+     * @param durationHrs the duration hrs
+     */
     protected void fetchMetrics(final List<ErrorMetric> metrics, SelectionContext sc, long date1, long date2, int durationHrs) {
         if (metrics == null)
             return;
@@ -524,6 +659,13 @@ public class ErrorPresenter implements TabPresenter {
     }
     
     
+    /**
+     * Fetch metric.
+     *
+     * @param m the m
+     * @param ec the ec
+     * @param mc the mc
+     */
     protected void fetchMetric (final ErrorMetric m, final ErrorCriteria ec, final MetricCriteria mc) {
 
         queryService.getErrorData(ec, mc, new AsyncCallback<ErrorMetricData>() {
@@ -611,6 +753,16 @@ public class ErrorPresenter implements TabPresenter {
         });
     }
     
+    /**
+     * Insert history.
+     *
+     * @param sc the sc
+     * @param d1 the d1
+     * @param d2 the d2
+     * @param interval the interval
+     * @param metrics the metrics
+     * @param fire the fire
+     */
     protected void insertHistory (SelectionContext sc, long d1, long d2, int interval, Collection<ErrorMetric> metrics, boolean fire) {
         HistoryToken token = HistoryToken.newHistoryToken(DashboardPresenter.DASH_ID, null);
         token.addValue(DashboardPresenter.TAB, ERROR_ID);
@@ -626,6 +778,16 @@ public class ErrorPresenter implements TabPresenter {
     }
     
     
+    /**
+     * Insert history.
+     *
+     * @param presenterId the presenter id
+     * @param sc the sc
+     * @param d1 the d1
+     * @param d2 the d2
+     * @param interval the interval
+     * @param fire the fire
+     */
     protected void insertHistory (String presenterId, SelectionContext sc, long d1, long d2, int interval, boolean fire) {
            HistoryToken token = HistoryToken.newHistoryToken(DashboardPresenter.DASH_ID, null);
             token.addValue(DashboardPresenter.TAB, presenterId);

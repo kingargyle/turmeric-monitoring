@@ -25,20 +25,37 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * ErrorFilterWidget
- *
+ * ErrorFilterWidget.
  */
 public class ErrorFilterWidget extends FilterWidget implements Filterable.ErrorFilterable{
     
+    /** The view label. */
     protected Label viewLabel;
+    
+    /** The view grid. */
     protected Grid viewGrid;
+    
+    /** The category grid. */
     protected Grid categoryGrid;
+    
+    /** The categories grid. */
     protected Grid categoriesGrid;
+    
+    /** The severity grid. */
     protected Grid severityGrid;
+    
+    /** The severities grid. */
     protected Grid severitiesGrid;
+    
+    /** The category label. */
     protected Label categoryLabel;
+    
+    /** The severity label. */
     protected Label severityLabel;
     
+    /**
+     * Instantiates a new error filter widget.
+     */
     public ErrorFilterWidget() {
         super();
         
@@ -46,6 +63,9 @@ public class ErrorFilterWidget extends FilterWidget implements Filterable.ErrorF
         
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.view.FilterWidget#createOthers()
+     */
     public void createOthers () {
         
         viewLabel = new Label(ConsoleUtil.constants.viewErrorsBy()+": ");
@@ -68,6 +88,9 @@ public class ErrorFilterWidget extends FilterWidget implements Filterable.ErrorF
         viewGrid.setWidget(0,1, severityGrid);
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.view.FilterWidget#position()
+     */
     public void position () {
         filterTable.clear();
        
@@ -99,38 +122,64 @@ public class ErrorFilterWidget extends FilterWidget implements Filterable.ErrorF
         filterTable.getFlexCellFormatter().setColSpan(4, 0, 2);
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.view.FilterWidget#createAdvancedPanel()
+     */
     public void createAdvancedPanel () {
         super.createAdvancedPanel();
         
        
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable.ErrorFilterable#setCategoryViewNames(java.util.List)
+     */
     public void setCategoryViewNames (List<String> names) {
         setGridValues(categoriesGrid, names, ConsoleUtil.constants.metricNameMap(), severitiesGrid);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable.ErrorFilterable#setSelectedCategoryViewNames(java.util.List)
+     */
     public void setSelectedCategoryViewNames (List<String> names) {
         setSelectedGridValues(categoriesGrid, names, severitiesGrid);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable.ErrorFilterable#getSelectedCategoryViewNames()
+     */
     public List<String> getSelectedCategoryViewNames() {
         return getSelectedGridValues(categoriesGrid);
     }
 
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable.ErrorFilterable#setSeverityViewNames(java.util.List)
+     */
     public void setSeverityViewNames (List<String> names) {
         setGridValues(severitiesGrid, names, ConsoleUtil.constants.metricNameMap(), categoriesGrid);
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable.ErrorFilterable#setSelectedSeverityViewNames(java.util.List)
+     */
     public void setSelectedSeverityViewNames (List<String> names) {
         setSelectedGridValues(severitiesGrid, names, categoriesGrid);
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable.ErrorFilterable#getSelectedSeverityViewNames()
+     */
     public List<String> getSelectedSeverityViewNames () {
 
         return getSelectedGridValues(severitiesGrid);
     }
 
+    /**
+     * Disable.
+     *
+     * @param g the g
+     */
     public void disable (Grid g) {
         Iterator<Widget> itor = g.iterator();
         while (itor.hasNext()) {
@@ -140,6 +189,11 @@ public class ErrorFilterWidget extends FilterWidget implements Filterable.ErrorF
         }
     }
     
+    /**
+     * Enable.
+     *
+     * @param g the g
+     */
     public void enable (Grid g) {
         Iterator<Widget> itor = g.iterator();
         while (itor.hasNext()) {
@@ -149,6 +203,14 @@ public class ErrorFilterWidget extends FilterWidget implements Filterable.ErrorF
         }
     }
     
+    /**
+     * Sets the grid values.
+     *
+     * @param grid the grid
+     * @param names the names
+     * @param localizedNameMap the localized name map
+     * @param counterpartGrid the counterpart grid
+     */
     protected void setGridValues (final Grid grid, final List<String> names, final Map localizedNameMap, final Grid counterpartGrid) {
         grid.clear();
         grid.resize(names.size(), 1);
@@ -184,6 +246,13 @@ public class ErrorFilterWidget extends FilterWidget implements Filterable.ErrorF
         }
     }
     
+    /**
+     * Sets the selected grid values.
+     *
+     * @param grid the grid
+     * @param names the names
+     * @param counterpartGrid the counterpart grid
+     */
     protected void setSelectedGridValues (Grid grid, List<String> names, final Grid counterpartGrid) {
         boolean checked = false;
         for (int i=0; i<grid.getRowCount(); i++) {
@@ -201,6 +270,12 @@ public class ErrorFilterWidget extends FilterWidget implements Filterable.ErrorF
             disable(counterpartGrid);
     }
     
+    /**
+     * Gets the selected grid values.
+     *
+     * @param grid the grid
+     * @return the selected grid values
+     */
     protected List<String> getSelectedGridValues (Grid grid) {
         List<String> names = new ArrayList<String> ();
         for (int i=0; i<grid.getRowCount(); i++) {

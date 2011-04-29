@@ -11,14 +11,23 @@ package org.ebayopensource.turmeric.monitoring.client.model;
 import com.google.gwt.core.client.JavaScriptObject;
 
 /**
- * BaseResponse
- *
+ * BaseResponse.
  */
 public abstract class BaseResponse extends JavaScriptObject {
+    
+    /**
+     * Instantiates a new base response.
+     */
     protected BaseResponse() {
     }
     
     
+    /**
+     * Checks if is errored.
+     *
+     * @param response the response
+     * @return true, if is errored
+     */
     public final native boolean isErrored (String response) /*-{   
         var ack = this[response].ack;
         if (!ack)
@@ -28,6 +37,12 @@ public abstract class BaseResponse extends JavaScriptObject {
         return true;
     }-*/;
     
+    /**
+     * Gets the error message.
+     *
+     * @param response the response
+     * @return the error message
+     */
     public final native String getErrorMessage (String response) /*-{
          if (!this[response])
           return null;
@@ -35,6 +50,12 @@ public abstract class BaseResponse extends JavaScriptObject {
           var em = this[response].errorMessage;
     }-*/;
     
+    /**
+     * Gets the version.
+     *
+     * @param response the response
+     * @return the version
+     */
     public final native String getVersion (String response) /*-{
         return null;
  

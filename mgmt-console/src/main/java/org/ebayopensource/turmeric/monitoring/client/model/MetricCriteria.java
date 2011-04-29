@@ -15,24 +15,60 @@ import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.P
 
 
 /**
- * MetricCriteria
- *
+ * MetricCriteria.
  */
 public class MetricCriteria {    
+    
+    /** The date1. */
     final public long date1;
+    
+    /** The date2. */
     final public long date2;
+    
+    /** The duration sec. */
     final public int durationSec;
+    
+    /** The aggregation period. */
     final public int aggregationPeriod;
+    
+    /** The sort order. */
     final public Ordering sortOrder;
+    
+    /** The rows. */
     final public int rows;
+    
+    /** The metric name. */
     final public String metricName;
+    
+    /** The role type. */
     final public String roleType;
+    
+    /** The auto delay. */
     final public String autoDelay;
+    
+    /** The max aggregation period. */
     public static int maxAggregationPeriod = 86400;
+    
+    /** The med aggregation period. */
     public static int medAggregationPeriod = 3600;
+    
+    /** The min aggregation period. */
     public static int minAggregationPeriod = 60;
     
 
+    /**
+     * New metric criteria.
+     *
+     * @param metricName the metric name
+     * @param date1 the date1
+     * @param date2 the date2
+     * @param durationHrs the duration hrs
+     * @param ordering the ordering
+     * @param rows the rows
+     * @param perspective the perspective
+     * @param autoDelay the auto delay
+     * @return the metric criteria
+     */
     public static MetricCriteria newMetricCriteria(String metricName,
                                                    final long date1,
                                                    final long date2,
@@ -80,6 +116,11 @@ public class MetricCriteria {
     
   
 
+    /**
+     * As rest url.
+     *
+     * @return the string
+     */
     public String asRestUrl () {
         String url = "";
 

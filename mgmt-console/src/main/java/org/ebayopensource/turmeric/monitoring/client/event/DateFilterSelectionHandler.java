@@ -10,6 +10,15 @@ package org.ebayopensource.turmeric.monitoring.client.event;
 
 import com.google.gwt.event.shared.EventHandler;
 
+/**
+ * The Interface DateFilterSelectionHandler.
+ */
 public interface DateFilterSelectionHandler extends EventHandler {
+    
+    /**
+     * On selection.
+     *
+     * @param event the event
+     */
     public void onSelection (DateFilterSelectionEvent event);
 }

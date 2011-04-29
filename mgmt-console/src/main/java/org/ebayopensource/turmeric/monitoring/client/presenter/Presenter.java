@@ -12,13 +12,37 @@ import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 
+/**
+ * The Interface Presenter.
+ */
 public interface Presenter {
 	
+	/**
+	 * Go.
+	 *
+	 * @param container the container
+	 * @param token the token
+	 */
 	public void go(final HasWidgets container, HistoryToken token);
+	
+	/**
+	 * Gets the id.
+	 *
+	 * @return the id
+	 */
 	public String getId();
 	
+	/**
+	 * The Interface TabPresenter.
+	 */
 	public interface TabPresenter extends Presenter {
-	    public HistoryToken getStateAsHistoryToken();
+	    
+    	/**
+    	 * Gets the state as history token.
+    	 *
+    	 * @return the state as history token
+    	 */
+    	public HistoryToken getStateAsHistoryToken();
 	}
 
 }

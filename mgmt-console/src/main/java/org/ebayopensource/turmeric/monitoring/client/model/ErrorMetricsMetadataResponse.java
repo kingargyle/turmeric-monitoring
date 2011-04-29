@@ -11,14 +11,22 @@ package org.ebayopensource.turmeric.monitoring.client.model;
 import com.google.gwt.core.client.JavaScriptObject;
 
 /**
- * ErrorMetricsMetadataResponse
- *
+ * ErrorMetricsMetadataResponse.
  */
 public class ErrorMetricsMetadataResponse extends JavaScriptObject {
     
+    /**
+     * Instantiates a new error metrics metadata response.
+     */
     protected ErrorMetricsMetadataResponse() {
     }
     
+    /**
+     * From json.
+     *
+     * @param json the json
+     * @return the error metrics metadata response
+     */
     public static final native ErrorMetricsMetadataResponse fromJSON (String json) /*-{
         try {
             return eval('(' + json + ')');
@@ -27,6 +35,11 @@ public class ErrorMetricsMetadataResponse extends JavaScriptObject {
         }
     }-*/;
 
+    /**
+     * Gets the return data.
+     *
+     * @return the return data
+     */
     public final native ErrorDetailJS getReturnData () /*-{
         if (!this.getErrorMetricsMetadataResponse)
             return null;

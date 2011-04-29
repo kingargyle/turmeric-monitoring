@@ -45,6 +45,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class MetricsQueryServiceImpl extends AbstractConsoleService implements MetricsQueryService {
 
+    /**
+     * Instantiates a new metrics query service impl.
+     */
     public MetricsQueryServiceImpl() {
         Map<String, String> config = ConsoleUtil.getConfig();
         if (config == null)
@@ -82,10 +85,14 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
     /**
      * Call the remote server to obtain metrics measurements.
-     * 
+     *
+     * @param criteria the criteria
+     * @param resourceCriteria the resource criteria
+     * @param callback the callback
+     * @return the metric data
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getMetricData(org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria,
-     *      org.ebayopensource.turmeric.monitoring.client.model.MetricResourceCriteria,
-     *      com.google.gwt.user.client.rpc.AsyncCallback)
+     * org.ebayopensource.turmeric.monitoring.client.model.MetricResourceCriteria,
+     * com.google.gwt.user.client.rpc.AsyncCallback)
      */
     public void getMetricData(final MetricCriteria criteria, final MetricResourceCriteria resourceCriteria,
                     final AsyncCallback<MetricData> callback) {
@@ -138,13 +145,18 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getMetricDataDownloadUrl(org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria, org.ebayopensource.turmeric.monitoring.client.model.MetricResourceCriteria)
+     */
     public String getMetricDataDownloadUrl(MetricCriteria criteria, MetricResourceCriteria resourceCriteria) {
         return URL.encode(MetricsDataRequest.getRestDownloadUrl(criteria, resourceCriteria));
     }
 
     /**
      * Call the remote server to obtain the list of services and their operations.
-     * 
+     *
+     * @param callback the callback
+     * @return the services
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getServices(com.google.gwt.user.client.rpc.AsyncCallback)
      */
     public void getServices(final AsyncCallback<Map<String, Set<String>>> callback) {
@@ -201,10 +213,10 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
     /**
      * Talk to the remote server to obtain a list of all operations for the given services.
-     * 
-     * @param serviceMap
-     *            keys are the list of services for which to obtain the operations
-     * @param callback
+     *
+     * @param serviceMap keys are the list of services for which to obtain the operations
+     * @param callback the callback
+     * @return the service operations
      */
     public void getServiceOperations(final Map<String, Set<String>> serviceMap,
                     final AsyncCallback<Map<String, Set<String>>> callback) {
@@ -264,6 +276,13 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
         }
     }
 
+    /**
+     * Gets the service operations json.
+     *
+     * @param serviceMap the service map
+     * @param callback the callback
+     * @return the service operations json
+     */
     public void getServiceOperationsJSON(final Map<String, Set<String>> serviceMap,
                     final AsyncCallback<Map<String, Set<String>>> callback) {
 
@@ -324,11 +343,17 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
     }
 
     /**
+     * Gets the error data.
+     *
+     * @param errorCriteria the error criteria
+     * @param metricCriteria the metric criteria
+     * @param callback the callback
+     * @return the error data
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getErrorData(org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorType,
-     *      java.util.List, java.util.List, java.util.List, java.lang.String, boolean,
-     *      org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorCategory,
-     *      org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorSeverity,
-     *      org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria)
+     * java.util.List, java.util.List, java.util.List, java.lang.String, boolean,
+     * org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorCategory,
+     * org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorSeverity,
+     * org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria)
      */
     public void getErrorData(final ErrorCriteria errorCriteria, final MetricCriteria metricCriteria,
                     final AsyncCallback<ErrorMetricData> callback) {
@@ -386,16 +411,28 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
     }
 
     /**
+     * Gets the error data download url.
+     *
+     * @param ec the ec
+     * @param mc the mc
+     * @return the error data download url
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getErrorDataDownloadUrl(org.ebayopensource.turmeric.monitoring.client.model.ErrorCriteria,
-     *      org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria)
+     * org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria)
      */
     public String getErrorDataDownloadUrl(ErrorCriteria ec, MetricCriteria mc) {
         return URL.encode(ErrorMetricsDataRequest.getRestDownloadUrl(ec, mc));
     }
 
     /**
+     * Gets the error detail.
+     *
+     * @param errorId the error id
+     * @param errorName the error name
+     * @param service the service
+     * @param callback the callback
+     * @return the error detail
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getErrorDetail(java.lang.String,
-     *      java.lang.String, com.google.gwt.user.client.rpc.AsyncCallback)
+     * java.lang.String, com.google.gwt.user.client.rpc.AsyncCallback)
      */
     public void getErrorDetail(final String errorId, final String errorName, final String service,
                     final AsyncCallback<ErrorDetail> callback) {
@@ -440,9 +477,15 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
     }
 
     /**
+     * Gets the error time slot data.
+     *
+     * @param ec the ec
+     * @param mc the mc
+     * @param callback the callback
+     * @return the error time slot data
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getErrorTimeSlotData(org.ebayopensource.turmeric.monitoring.client.model.ErrorCriteria,
-     *      org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria,
-     *      com.google.gwt.user.client.rpc.AsyncCallback)
+     * org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria,
+     * com.google.gwt.user.client.rpc.AsyncCallback)
      */
     public void getErrorTimeSlotData(final ErrorCriteria ec, final MetricCriteria mc,
                     final AsyncCallback<ErrorTimeSlotData> callback) {
@@ -545,6 +588,9 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
         
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getServiceMetricValueTrend(org.ebayopensource.turmeric.monitoring.client.model.MetricValue, org.ebayopensource.turmeric.monitoring.client.model.MetricValue, com.google.gwt.user.client.rpc.AsyncCallback)
+     */
     @Override
     public void getServiceMetricValueTrend(MetricValue firstDate, final MetricValue secondDate,
                      final AsyncCallback<List<TimeSlotData>> callback) {

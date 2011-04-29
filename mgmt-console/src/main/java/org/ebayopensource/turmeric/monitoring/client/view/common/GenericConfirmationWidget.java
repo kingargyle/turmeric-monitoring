@@ -24,8 +24,12 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+/**
+ * The Class GenericConfirmationWidget.
+ */
 public class GenericConfirmationWidget extends PopupPanel {
 	
+	/** The Constant CONFIRM_EVENTHANDLER_TYPE. */
 	public final static Type<ConfirmEventHandler> CONFIRM_EVENTHANDLER_TYPE = new Type<ConfirmEventHandler>();
 
 	private UserAction action;
@@ -36,6 +40,13 @@ public class GenericConfirmationWidget extends PopupPanel {
 	private Button confirmButton;
 	private Button ignoreButton;
 	
+	/**
+	 * Instantiates a new generic confirmation widget.
+	 *
+	 * @param action the action
+	 * @param textMessage the text message
+	 * @param entity the entity
+	 */
 	public GenericConfirmationWidget(UserAction action, String textMessage, Entity entity) {
 		super();
 		hide();		
@@ -62,14 +73,29 @@ public class GenericConfirmationWidget extends PopupPanel {
 		bind();
 	}
 	
+	/**
+	 * Gets the action.
+	 *
+	 * @return the action
+	 */
 	public UserAction getAction() {
 		return action;
 	}
 	
+	/**
+	 * Gets the entity.
+	 *
+	 * @return the entity
+	 */
 	public Entity getEntity() {
 		return entity;
 	}
 	
+	/**
+	 * Gets the confirm button.
+	 *
+	 * @return the confirm button
+	 */
 	public Button getConfirmButton() {
 		return confirmButton;
 	}
@@ -87,31 +113,69 @@ public class GenericConfirmationWidget extends PopupPanel {
 		});
 	}
 
+	/**
+	 * The Interface ConfirmEventHandler.
+	 */
 	public interface ConfirmEventHandler extends EventHandler {
-	    public void onSelection(ConfirmEvent event);
+	    
+    	/**
+    	 * On selection.
+    	 *
+    	 * @param event the event
+    	 */
+    	public void onSelection(ConfirmEvent event);
 	}
 
+	/**
+	 * The Class ConfirmEvent.
+	 */
 	public static class ConfirmEvent extends GwtEvent<ConfirmEventHandler> {
 		
 		private UserAction action;
 		private Long entityId;
 		
-	    public ConfirmEvent(UserAction action, Long entityId) {
+	    /**
+    	 * Instantiates a new confirm event.
+    	 *
+    	 * @param action the action
+    	 * @param entityId the entity id
+    	 */
+    	public ConfirmEvent(UserAction action, Long entityId) {
 	    	this.action = action;
 	    	this.entityId = entityId;
 	    }
-	    @Override
+	    
+    	/* (non-Javadoc)
+    	 * @see com.google.gwt.event.shared.GwtEvent#dispatch(com.google.gwt.event.shared.EventHandler)
+    	 */
+    	@Override
 	    protected void dispatch(ConfirmEventHandler handler) {
 	        handler.onSelection (this);
 	    }
-	    @Override
+	    
+    	/* (non-Javadoc)
+    	 * @see com.google.gwt.event.shared.GwtEvent#getAssociatedType()
+    	 */
+    	@Override
 	    public Type<ConfirmEventHandler> getAssociatedType() {
 	        return CONFIRM_EVENTHANDLER_TYPE;
 	    }
-	    public UserAction getAction() {
+	    
+    	/**
+    	 * Gets the action.
+    	 *
+    	 * @return the action
+    	 */
+    	public UserAction getAction() {
 			return action;
 		}
-	    public Long getEntityId() {
+	    
+    	/**
+    	 * Gets the entity id.
+    	 *
+    	 * @return the entity id
+    	 */
+    	public Long getEntityId() {
 			return entityId;
 		}
 	}

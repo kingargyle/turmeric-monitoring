@@ -8,14 +8,37 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.client.model;
 
+/**
+ * The Interface MetricGroupData.
+ */
 public interface MetricGroupData {
   
+    /**
+     * Gets the diff.
+     *
+     * @return the diff
+     */
     public String getDiff();
     
+    /**
+     * Gets the count1.
+     *
+     * @return the count1
+     */
     public String getCount1();
     
+    /**
+     * Gets the count2.
+     *
+     * @return the count2
+     */
     public String getCount2();
     
+    /**
+     * Gets the criteria info.
+     *
+     * @return the criteria info
+     */
     public CriteriaInfo getCriteriaInfo();
     
 }

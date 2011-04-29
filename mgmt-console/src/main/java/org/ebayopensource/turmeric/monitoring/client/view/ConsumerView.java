@@ -72,8 +72,7 @@ import com.google.gwt.visualization.client.visualizations.LineChart.Options;
  * <ol>
  * <li>Initial view:  (graphs) Call Volume, Least(?) Performance, Errors (Consumer Errors or Top Errors?)
  * <li>Drilldown view (requires selection of a consumer): (tables) same as Service tab, but oriented to single consumer
- * </ol>
- *
+ * </ol>.
  */
 /**
  * ConsumerView
@@ -106,6 +105,11 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     
     
 
+    /**
+     * Instantiates a new consumer view.
+     *
+     * @param dashboard the dashboard
+     */
     public ConsumerView (Dashboard dashboard) {
         //make the panel for the contents of the tab
         DockLayoutPanel contentPanel = new DockLayoutPanel(Unit.EM);
@@ -225,27 +229,40 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
 		this.dashboard.addView(this, ConsoleUtil.constants.consumers());
 	}
 
+	/* (non-Javadoc)
+	 * @see com.google.gwt.user.client.ui.Widget#asWidget()
+	 */
 	public Widget asWidget() {
 		return this;
 	}
 
 	/**
-	 * View about to be shown, do any clean up necessary
+	 * View about to be shown, do any clean up necessary.
+	 *
 	 * @see org.ebayopensource.turmeric.monitoring.client.Display#activate()
 	 */
 	public void activate () {
 	    dashboard.activate(this);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.monitoring.client.Display#setAssociatedId(java.lang.String)
+	 */
 	public void setAssociatedId (String id) {
 		this.id = id;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.monitoring.client.Display#getAssociatedId()
+	 */
 	public String getAssociatedId () {
 		return this.id;
 	}
 
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setSelection(java.util.Map)
+	 */
 	public void setSelection(Map<ObjectType,String> selections) {     
 	    String s = "";
 	    if (selections != null) {
@@ -266,15 +283,24 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
 	    summaryHeading.setText(s); 
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#getSelector()
+	 */
 	public HasSelectionHandlers<TreeItem> getSelector() {
 	    return serviceListWidget.getServiceTree();
 	}
 	
 	   
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setServicesMap(java.util.Map)
+     */
     public void setServicesMap(Map<String, Set<String>> map) {
         serviceListWidget.setServicesMap(map);
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#error(java.lang.String)
+     */
     public void error (String msg) {
        ErrorDialog dialog = new ErrorDialog(true);
        dialog.setMessage(msg);
@@ -282,19 +308,35 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
        dialog.show();
     }
 
+    /**
+     * Hide.
+     *
+     * @param o the o
+     */
     public void hide (UIObject o) {
         o.setVisible(false);
     }
     
+    /**
+     * Show.
+     *
+     * @param o the o
+     */
     public void show (UIObject o) {
         o.setVisible(true);
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#getFilter()
+     */
     public Filterable getFilter () {
         return filterWidget;
     }
 
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setDownloadUrl(org.ebayopensource.turmeric.monitoring.client.model.ConsumerMetric, java.lang.String)
+     */
     public void setDownloadUrl(ConsumerMetric m, String url) {
         SummaryPanel panel = null;
         switch (m) {
@@ -332,6 +374,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     }
 
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setMetric(org.ebayopensource.turmeric.monitoring.client.model.ConsumerMetric, org.ebayopensource.turmeric.monitoring.client.model.MetricData)
+     */
     public void setMetric(ConsumerMetric m, MetricData result) {
     
         //Fill in the appropriate table with the results
@@ -604,6 +649,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#reset()
+     */
     public void reset() {
         hide(callVolumePanel);
         hide(performancePanel);
@@ -614,6 +662,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         hide(topConsumerErrorsPanel);
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#getTableColumn(org.ebayopensource.turmeric.monitoring.client.model.ConsumerMetric, int, int)
+     */
     public List<HasClickHandlers> getTableColumn(ConsumerMetric metric, int startRow, int col) {
         FlexTable table = getTable(metric);
         if (table == null)
@@ -664,6 +715,14 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     }
     
 
+    /**
+     * Gets the table row.
+     *
+     * @param metric the metric
+     * @param row the row
+     * @param startCol the start col
+     * @return the table row
+     */
     public List<HasClickHandlers> getTableRow(ConsumerMetric metric, int row, int startCol) {
         FlexTable table = getTable(metric);
         if (table == null)
@@ -677,6 +736,13 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         return list;
     }
 
+    /**
+     * Make panel.
+     *
+     * @param heading the heading
+     * @param contents the contents
+     * @return the summary panel
+     */
     protected SummaryPanel makePanel (String heading, FlexTable contents) {
         SummaryPanel panel = new SummaryPanel();
         panel.setHeading(heading);
@@ -684,6 +750,11 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         return panel;
     }
     
+    /**
+     * Make table.
+     *
+     * @return the flex table
+     */
     protected FlexTable makeTable() {
         FlexTable table = new FlexTable();
         table.addStyleName("tbl");
@@ -691,6 +762,13 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         return table;
     }
 
+    /**
+     * Sets the tabular data.
+     *
+     * @param table the table
+     * @param cols the cols
+     * @param rows the rows
+     */
     protected void setTabularData (FlexTable table,  String[] cols, List<Widget[]> rows) {
         table.removeAllRows();
         if (cols != null) {
@@ -711,10 +789,16 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         }
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setFilterLabel(java.lang.String)
+     */
     public void setFilterLabel (String str) {
         filterButton.setText(str);
     }
     
+    /**
+     * Pick filter.
+     */
     public void pickFilter () {
         int x = filterButton.getAbsoluteLeft();
         int y = filterButton.getAbsoluteTop() + filterButton.getOffsetHeight();
@@ -724,6 +808,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         filterDialog.show();
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setConsumerCallTrendData(java.util.List)
+     */
     @Override
     public void setConsumerCallTrendData(List<TimeSlotData> graphData) {
         if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {

@@ -10,6 +10,15 @@ package org.ebayopensource.turmeric.monitoring.client.event;
 
 import com.google.gwt.event.shared.EventHandler;
 
+/**
+ * The Interface GetServicesEventHandler.
+ */
 public interface GetServicesEventHandler extends EventHandler {
+	
+	/**
+	 * On data.
+	 *
+	 * @param event the event
+	 */
 	public void onData (GetServicesEvent event);
 }

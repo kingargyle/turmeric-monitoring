@@ -33,28 +33,71 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
 
+/**
+ * The Class FilterWidget.
+ */
 public class FilterWidget extends Composite implements Filterable {
     
+    /** The panel. */
     protected Panel panel;
+    
+    /** The date1 label. */
     protected Label date1Label;
+    
+    /** The date2 label. */
     protected Label date2Label;
+    
+    /** The date1 input. */
     protected DateBox date1Input;
+    
+    /** The date2 input. */
     protected DateBox date2Input;
+    
+    /** The date1 grid. */
     protected Grid date1Grid;
+    
+    /** The hour input1. */
     protected ListBox hourInput1;
+    
+    /** The hour input2. */
     protected ListBox hourInput2;
+    
+    /** The date2 grid. */
     protected Grid date2Grid;
+    
+    /** The interval label. */
     protected Label intervalLabel;
+    
+    /** The duration input. */
     protected ListBox durationInput;
+    
+    /** The date format. */
     protected DateBox.DefaultFormat dateFormat;
+    
+    /** The metrics label. */
     protected Label metricsLabel;
+    
+    /** The metrics grid. */
     protected Grid metricsGrid;
+    
+    /** The apply button. */
     protected Button applyButton;
+    
+    /** The cancel button. */
     protected Button cancelButton;
+    
+    /** The filter table. */
     protected FlexTable filterTable;
+    
+    /** The advanced panel. */
     protected DisclosurePanel advancedPanel;
+    
+    /** The advanced panel content. */
     protected Panel advancedPanelContent;
     
+    /**
+     * Instantiates a new filter widget.
+     */
     public FilterWidget() {
         panel = new FlowPanel();
         panel.addStyleName("date-select-panel");
@@ -78,6 +121,9 @@ public class FilterWidget extends Composite implements Filterable {
         initWidget(panel);
     }
     
+    /**
+     * Position.
+     */
     public void position () {
         filterTable.clear();
         
@@ -107,21 +153,31 @@ public class FilterWidget extends Composite implements Filterable {
         filterTable.getFlexCellFormatter().setColSpan(4, 0, 2);
     }
     
+    /**
+     * Creates the others.
+     */
     public void createOthers() {
     }
     
+    /**
+     * Creates the advanced panel.
+     */
     public void createAdvancedPanel () {
         advancedPanel = new DisclosurePanel(ConsoleUtil.constants.more());
         advancedPanelContent = new FlowPanel();
         advancedPanel.setContent(advancedPanelContent);
     }
     
+    /**
+     * Creates the metrics widgets.
+     */
     public void createMetricsWidgets() {
         metricsLabel = new Label(ConsoleUtil.constants.selectMetrics()+": ");
         metricsGrid = new Grid(2,1);
     }
+    
     /**
-     * 
+     * Creates the duration widgets.
      */
     public void createDurationWidgets() {
         intervalLabel = new Label(ConsoleUtil.constants.over()+": ");
@@ -130,6 +186,9 @@ public class FilterWidget extends Composite implements Filterable {
         durationInput.addStyleName("date-select-panel-item");
     }
 
+    /**
+     * Creates the date1 widgets.
+     */
     public void createDate1Widgets () {
         
         date1Label = new Label(ConsoleUtil.constants.firstDate()+": ");
@@ -145,6 +204,9 @@ public class FilterWidget extends Composite implements Filterable {
         date1Grid.setWidget(0,1,hourInput1);
     }
 
+    /**
+     * Creates the date2 widgets.
+     */
     public void createDate2Widgets () {
         date2Label = new Label(ConsoleUtil.constants.secondDate()+": ");
         date2Label.addStyleName("date-select-panel-item");
@@ -158,6 +220,9 @@ public class FilterWidget extends Composite implements Filterable {
         date2Grid.setWidget(0, 1, hourInput2);
     }
     
+    /**
+     * Disable.
+     */
     public void disable () {
        
         date1Input.setEnabled(false);
@@ -166,6 +231,9 @@ public class FilterWidget extends Composite implements Filterable {
         hourInput2.setEnabled(false);
     }
     
+    /**
+     * Enable.
+     */
     public void enable () {
        
         date1Input.setEnabled(true);
@@ -174,70 +242,125 @@ public class FilterWidget extends Composite implements Filterable {
         hourInput2.setEnabled(true);
     }
     
+    /**
+     * Sets the date format.
+     *
+     * @param format the new date format
+     */
     public void setDateFormat (String format) {
         dateFormat = new DateBox.DefaultFormat(DateTimeFormat.getFormat(format));
         date1Input.setFormat(dateFormat);
         date2Input.setFormat(dateFormat);
     }
     
+    /**
+     * Sets the date1 label.
+     *
+     * @param text the new date1 label
+     */
     public void setDate1Label (String text) {
         date1Label.setText(text);
     }
     
+    /**
+     * Sets the date2 label.
+     *
+     * @param text the new date2 label
+     */
     public void setDate2Label (String text) {
         date2Label.setText(text);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#getApplyButton()
+     */
     public HasClickHandlers getApplyButton () {
         return applyButton;
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#getCancelButton()
+     */
     public HasClickHandlers getCancelButton () {
         return cancelButton;
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#getDate1()
+     */
     public HasValue<Date> getDate1 () {
         return date1Input;
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#getDate2()
+     */
     public HasValue<Date> getDate2 () {
         return date2Input;
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#setDate1(java.util.Date)
+     */
     public void setDate1(Date d) {
         date1Input.setValue(d);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#setDate2(java.util.Date)
+     */
     public void setDate2(Date d) {
         date2Input.setValue(d);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#setHour1(int)
+     */
     public void setHour1 (int hour) {
         if (hour < hourInput1.getItemCount())
             hourInput1.setItemSelected(hour, true);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#setHour2(int)
+     */
     public void setHour2 (int hour) {
         if (hour < hourInput2.getItemCount())
             hourInput2.setItemSelected(hour, true);
     }
+    
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#getHour1()
+     */
     public int getHour1 () {
         return hourInput1.getSelectedIndex();
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#getHour2()
+     */
     public int getHour2 () {
         return hourInput2.getSelectedIndex();
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#getDuration()
+     */
     public int getDuration () {
         return durationInput.getSelectedIndex()+1;
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#setDuration(int)
+     */
     public void setDuration (int duration) {
         if (duration >1 && duration < durationInput.getItemCount())
         durationInput.setItemSelected(duration-1, true);
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#setHours1(int[])
+     */
     public void setHours1 (int[] hours) {
         hourInput1.clear();
         for (int i=0;i<hours.length;i++) {
@@ -245,6 +368,9 @@ public class FilterWidget extends Composite implements Filterable {
         }
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#setHours2(int[])
+     */
     public void setHours2(int[] hours) {
         hourInput2.clear();
         for (int i=0;i<hours.length;i++) {
@@ -252,6 +378,9 @@ public class FilterWidget extends Composite implements Filterable {
         }
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#setDurations(int[])
+     */
     public void setDurations(int[] durations) {
         durationInput.clear();
         for (int i=0;i<durations.length;i++) {
@@ -259,6 +388,9 @@ public class FilterWidget extends Composite implements Filterable {
         }
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#setMetricNames(java.util.List)
+     */
     public void setMetricNames (List<String> names) {
         metricsGrid.clear();
         metricsGrid.resize(names.size(), 1);
@@ -272,6 +404,9 @@ public class FilterWidget extends Composite implements Filterable {
     }
     
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#getSelectedMetricNames()
+     */
     public List<String> getSelectedMetricNames() {
         List<String> names = new ArrayList<String> ();
         for (int i=0; i<metricsGrid.getRowCount(); i++) {
@@ -284,6 +419,9 @@ public class FilterWidget extends Composite implements Filterable {
         return names;
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#setSelectedMetricNames(java.util.List)
+     */
     public void setSelectedMetricNames (List<String> names) {
         for (int i=0; i<metricsGrid.getRowCount(); i++) {
             Widget w = metricsGrid.getWidget(i,0);

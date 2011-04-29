@@ -11,7 +11,16 @@ package org.ebayopensource.turmeric.monitoring.client;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * The Interface Container.
+ */
 public interface Container extends HasWidgets {
+	
+	/**
+	 * As widget.
+	 *
+	 * @return the widget
+	 */
 	Widget asWidget();
 
 }

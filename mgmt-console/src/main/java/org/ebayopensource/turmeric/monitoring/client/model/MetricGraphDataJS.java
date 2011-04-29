@@ -12,26 +12,44 @@ import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JavaScriptObject;
 
 /**
- * MetricGraphDataJS
- *
+ * MetricGraphDataJS.
  */
 public class MetricGraphDataJS extends JavaScriptObject implements TimeSlotValue {
     
+    /**
+     * Instantiates a new metric graph data js.
+     */
     protected MetricGraphDataJS () {
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue#getCriteria()
+     */
     public final native String getCriteria() /*-{
         return this.criteria;
     }-*/;
     
+    /**
+     * Gets the time slot as string.
+     *
+     * @return the time slot as string
+     */
     public final native String getTimeSlotAsString() /*-{
         return this.timeSlot;
     }-*/;
     
+    /**
+     * Gets the value as string.
+     *
+     * @return the value as string
+     */
     public final native String getValueAsString() /*-{
         return this.count;
     }-*/;
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue#getValue()
+     */
     public final Double getValue() {
         try {
             String s = getValueAsString();
@@ -41,6 +59,9 @@ public class MetricGraphDataJS extends JavaScriptObject implements TimeSlotValue
         }
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue#getTimeSlot()
+     */
     public final Long getTimeSlot() {
         try {
             String s = getTimeSlotAsString();

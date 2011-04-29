@@ -8,13 +8,30 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.client.model;
 
+/**
+ * The Enum ConsumerMetric.
+ */
 public enum ConsumerMetric {
+    
+    /** The Call volume. */
     CallVolume ("CallCount"), 
+    
+    /** The Performance. */
     Performance ("ResponseTime"),
+    
+    /** The Errors. */
     Errors ("ErrorCount"), 
+    
+    /** The Top volume. */
     TopVolume ("CallCount"), 
+    
+    /** The Least performance. */
     LeastPerformance ("ResponseTime"), 
+    
+    /** The Top service errors. */
     TopServiceErrors ("ErrorCount"), 
+    
+    /** The Top consumer errors. */
     TopConsumerErrors ("ErrorCount");
 
     private String metricName;
@@ -23,6 +40,11 @@ public enum ConsumerMetric {
         this.metricName = metricName;
     }
 
+    /**
+     * To metric name.
+     *
+     * @return the string
+     */
     public String toMetricName () {
         return this.metricName;
     }

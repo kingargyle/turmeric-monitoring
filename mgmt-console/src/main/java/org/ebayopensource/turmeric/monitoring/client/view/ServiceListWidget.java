@@ -24,14 +24,29 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 
+/**
+ * The Class ServiceListWidget.
+ */
 public class ServiceListWidget extends Composite {
     
+    /** The service list. */
     protected ScrollPanel serviceList;
+    
+    /** The service tree. */
     protected Tree serviceTree;
+    
+    /** The root. */
     protected TreeItem root;
+    
+    /** The selected service. */
     protected String selectedService;
+    
+    /** The selected operation. */
     protected String selectedOperation;
 
+    /**
+     * Instantiates a new service list widget.
+     */
     public ServiceListWidget () {
         
         serviceList = new ScrollPanel();
@@ -40,14 +55,29 @@ public class ServiceListWidget extends Composite {
         initWidget(serviceList);
     }
     
+    /**
+     * Gets the service tree.
+     *
+     * @return the service tree
+     */
     public Tree getServiceTree () {
         return serviceTree;
     }
     
+    /**
+     * Gets the service list.
+     *
+     * @return the service list
+     */
     public ScrollPanel getServiceList () {
         return serviceList;
     }
     
+    /**
+     * Sets the services map.
+     *
+     * @param map the map
+     */
     public void setServicesMap(Map<String, Set<String>> map) {
         serviceTree.removeItems();
         if (map == null) 
@@ -102,6 +132,12 @@ public class ServiceListWidget extends Composite {
         root.setState(true, false);
     }
     
+    /**
+     * Sets the selection.
+     *
+     * @param service the service
+     * @param operation the operation
+     */
     public void setSelection (String service, String operation) {
         selectedService = service;
         selectedOperation = operation;

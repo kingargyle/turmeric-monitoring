@@ -13,8 +13,19 @@ import java.util.Set;
 
 import com.google.gwt.core.client.GWT;
 
+/**
+ * The Class MetricsMetaDataRequest.
+ */
 public class MetricsMetaDataRequest {
 
+    /**
+     * Gets the rest url.
+     *
+     * @param resourceEntityType the resource entity type
+     * @param resourceEntityName the resource entity name
+     * @param resourceEntityResponseType the resource entity response type
+     * @return the rest url
+     */
     public static String getRestURL (String resourceEntityType, Set<String> resourceEntityName, String resourceEntityResponseType) {
         String baseURL = GWT.getModuleBaseURL()+"smqs";
         String url = baseURL;
@@ -42,6 +53,11 @@ public class MetricsMetaDataRequest {
         return url;
     }
     
+    /**
+     * Gets the jSON url.
+     *
+     * @return the jSON url
+     */
     public static String getJSONUrl () {
         String baseURL = GWT.getModuleBaseURL()+"smqs";
         String url = baseURL;
@@ -54,6 +70,14 @@ public class MetricsMetaDataRequest {
         return url;
     }
     
+    /**
+     * Gets the jSON.
+     *
+     * @param resourceEntityType the resource entity type
+     * @param resourceEntityName the resource entity name
+     * @param resourceEntityResponseType the resource entity response type
+     * @return the jSON
+     */
     public static String getJSON (String resourceEntityType, Set<String> resourceEntityName, String resourceEntityResponseType) {
         String json = ""+
         "{" +

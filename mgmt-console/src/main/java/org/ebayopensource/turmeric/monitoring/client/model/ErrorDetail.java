@@ -9,20 +9,49 @@
 package org.ebayopensource.turmeric.monitoring.client.model;
 
 /**
- * ErrorDetail
- *
+ * ErrorDetail.
  */
 public interface ErrorDetail {
     
+    /**
+     * Gets the id.
+     *
+     * @return the id
+     */
     public String getId();
 
+    /**
+     * Gets the name.
+     *
+     * @return the name
+     */
     public String getName();
 
+    /**
+     * Gets the domain.
+     *
+     * @return the domain
+     */
     public String getDomain();
 
+    /**
+     * Gets the sub domain.
+     *
+     * @return the sub domain
+     */
     public String getSubDomain();
 
+    /**
+     * Gets the severity.
+     *
+     * @return the severity
+     */
     public String getSeverity();
 
+    /**
+     * Gets the category.
+     *
+     * @return the category
+     */
     public String getCategory();
 }

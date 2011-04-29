@@ -18,6 +18,9 @@ import org.ebayopensource.turmeric.monitoring.client.presenter.Presenter;
 
 import com.google.gwt.user.client.History;
 
+/**
+ * The Class PresenterUtil.
+ */
 public class PresenterUtil {
 	
 	private final static Map<UserAction, String> ACTION_PRESENTERID_MAPPER = new HashMap<UserAction, String>();
@@ -26,6 +29,12 @@ public class PresenterUtil {
 		ACTION_PRESENTERID_MAPPER.put(UserAction.CONSOLE_MAIN, DashboardPresenter.DASH_ID);
 	}
 	
+	/**
+	 * Force redirect to presenter.
+	 *
+	 * @param token the token
+	 * @param presenter the presenter
+	 */
 	public static void forceRedirectToPresenter(HistoryToken token, Presenter presenter) {
 		if (token == null || !presenter.getId().equals(token.getPresenterId())) {
 			History.newItem(HistoryToken.newHistoryToken(presenter.getId(), null).toString());
@@ -33,6 +42,12 @@ public class PresenterUtil {
 		History.fireCurrentHistoryState();
 	}
 	
+	/**
+	 * Gets the presenter id.
+	 *
+	 * @param action the action
+	 * @return the presenter id
+	 */
 	public static String getPresenterId(UserAction action) {
 		return ACTION_PRESENTERID_MAPPER.get(action);
 	}

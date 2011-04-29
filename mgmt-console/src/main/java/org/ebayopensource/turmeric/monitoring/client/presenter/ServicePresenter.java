@@ -61,36 +61,161 @@ import com.google.gwt.user.client.ui.TreeItem;
 
 
 
+/**
+ * The Class ServicePresenter.
+ */
 public class ServicePresenter implements Presenter.TabPresenter {
+	
+	/** The Constant DEFAULT_SERVICE. */
 	public final static String DEFAULT_SERVICE = "FindingService";
+	
+	/** The Constant SERVICE_ID. */
 	public final static String SERVICE_ID = "Service";
+	
+	/** The view. */
 	protected Display view;
+	
+	/** The event bus. */
 	protected HandlerManager eventBus;
+	
+	/** The query service. */
 	protected MetricsQueryService queryService;
+	
+	/** The selection context. */
 	protected SelectionContext selectionContext;
+	
+	/** The selected date1. */
 	protected long selectedDate1;
+	
+	/** The selected date2. */
 	protected long selectedDate2;
+	
+	/** The selected duration hrs. */
 	protected int selectedDurationHrs;
+	
+	/** The services list. */
 	protected Map<String,Set<String>> servicesList;
+	
+	/** The selected metrics. */
 	protected List<ServiceMetric> selectedMetrics = new ArrayList<ServiceMetric>(Arrays.asList(ServiceMetric.values()));
 	
+	/**
+	 * The Interface Display.
+	 */
 	public interface Display extends org.ebayopensource.turmeric.monitoring.client.Display {
-	    public void error (String error);
-	    public void setServicesMap(Map<String, Set<String>> map);
-	    public void setMetric(ServiceMetric metric, MetricData m);
-	    public HasSelectionHandlers<TreeItem> getSelector();
-	    public List<HasClickHandlers> getTableRow (ServiceMetric metric, int row, int startCol);
-	    public List<HasClickHandlers> getTableColumn (ServiceMetric metric, int startRow, int col);
-	    public void setSelection(Map<ObjectType,String>selection);
-	    public void reset ();
-	    public void setDownloadUrl(ServiceMetric m, String url);
-	    public Filterable getFilter();
-	    public void setFilterLabel(String str);
-	    public void setServiceCallTrendData(List<TimeSlotData> dataRanges);
+	    
+    	/**
+    	 * Error.
+    	 *
+    	 * @param error the error
+    	 */
+    	public void error (String error);
+	    
+    	/**
+    	 * Sets the services map.
+    	 *
+    	 * @param map the map
+    	 */
+    	public void setServicesMap(Map<String, Set<String>> map);
+	    
+    	/**
+    	 * Sets the metric.
+    	 *
+    	 * @param metric the metric
+    	 * @param m the m
+    	 */
+    	public void setMetric(ServiceMetric metric, MetricData m);
+	    
+    	/**
+    	 * Gets the selector.
+    	 *
+    	 * @return the selector
+    	 */
+    	public HasSelectionHandlers<TreeItem> getSelector();
+	    
+    	/**
+    	 * Gets the table row.
+    	 *
+    	 * @param metric the metric
+    	 * @param row the row
+    	 * @param startCol the start col
+    	 * @return the table row
+    	 */
+    	public List<HasClickHandlers> getTableRow (ServiceMetric metric, int row, int startCol);
+	    
+    	/**
+    	 * Gets the table column.
+    	 *
+    	 * @param metric the metric
+    	 * @param startRow the start row
+    	 * @param col the col
+    	 * @return the table column
+    	 */
+    	public List<HasClickHandlers> getTableColumn (ServiceMetric metric, int startRow, int col);
+	    
+    	/**
+    	 * Sets the selection.
+    	 *
+    	 * @param selection the selection
+    	 */
+    	public void setSelection(Map<ObjectType,String>selection);
+	    
+    	/**
+    	 * Reset.
+    	 */
+    	public void reset ();
+	    
+    	/**
+    	 * Sets the download url.
+    	 *
+    	 * @param m the m
+    	 * @param url the url
+    	 */
+    	public void setDownloadUrl(ServiceMetric m, String url);
+	    
+    	/**
+    	 * Gets the filter.
+    	 *
+    	 * @return the filter
+    	 */
+    	public Filterable getFilter();
+	    
+    	/**
+    	 * Sets the filter label.
+    	 *
+    	 * @param str the new filter label
+    	 */
+    	public void setFilterLabel(String str);
+	    
+    	/**
+    	 * Sets the service call trend data.
+    	 *
+    	 * @param dataRanges the new service call trend data
+    	 */
+    	public void setServiceCallTrendData(List<TimeSlotData> dataRanges);
+        
+        /**
+         * Sets the service performance trend data.
+         *
+         * @param dataRanges the new service performance trend data
+         */
         public void setServicePerformanceTrendData(List<TimeSlotData> dataRanges);
+        
+        /**
+         * Sets the service error trend data.
+         *
+         * @param dataRanges the new service error trend data
+         */
         public void setServiceErrorTrendData(List<TimeSlotData> dataRanges);
 	}
 	
+	/**
+	 * Instantiates a new service presenter.
+	 *
+	 * @param eventBus the event bus
+	 * @param view the view
+	 * @param queryService the query service
+	 */
 	public ServicePresenter (HandlerManager eventBus, Display view, MetricsQueryService queryService) {
 		this.view = view;
 		this.view.setAssociatedId(SERVICE_ID);
@@ -100,6 +225,9 @@ public class ServicePresenter implements Presenter.TabPresenter {
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#getId()
+	 */
 	public String getId() {
 		return SERVICE_ID;
 	}
@@ -108,7 +236,10 @@ public class ServicePresenter implements Presenter.TabPresenter {
 
 	/**
 	 * Handle a navigational change, either via the history forward/back buttons
-	 * or via a user selection (for simplicity also generated as a history change)
+	 * or via a user selection (for simplicity also generated as a history change).
+	 *
+	 * @param container the container
+	 * @param token the token
 	 * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#go(com.google.gwt.user.client.ui.HasWidgets, org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
 	 */
 	public void go(HasWidgets container, HistoryToken token) {	    
@@ -178,6 +309,9 @@ public class ServicePresenter implements Presenter.TabPresenter {
 
 
    
+    /**
+     * Bind.
+     */
     public void bind() {
         //listen for any changes from other tabs to the currently selected service or operation
         this.eventBus.addHandler(ObjectSelectionEvent.TYPE, new ObjectSelectionEventHandler() {
@@ -315,12 +449,12 @@ public class ServicePresenter implements Presenter.TabPresenter {
 	
 	/**
 	 * Get a number of metrics from the server.
-	 * @param metrics
-	 * @param service
-	 * @param operation
-	 * @param date1
-	 * @param date2
-	 * @param intervalHrs
+	 *
+	 * @param metrics the metrics
+	 * @param selectionContext the selection context
+	 * @param date1 the date1
+	 * @param date2 the date2
+	 * @param intervalHrs the interval hrs
 	 */
 	protected void fetchMetrics(List<ServiceMetric> metrics, SelectionContext selectionContext, long date1, long date2, int intervalHrs) {
 	    
@@ -449,13 +583,13 @@ private void getServiceErrorTrend(SelectionContext selectionContext, long date1,
 	
 	/**
 	 * Get some metrics numbers from the server.
+	 *
 	 * @param m the metric to fetch
-	 * @param service
-	 * @param operation
-	 * @param returnType
-	 * @param date1
-	 * @param date2
-	 * @param intervalHrs
+	 * @param selectionContext the selection context
+	 * @param returnType the return type
+	 * @param date1 the date1
+	 * @param date2 the date2
+	 * @param intervalHrs the interval hrs
 	 */
 	protected void fetchMetric (final ServiceMetric m, final SelectionContext selectionContext, Entity returnType, final long date1, final long date2, final int intervalHrs) {
 	    //Window.alert("fetchMetric");
@@ -559,7 +693,7 @@ private void getServiceErrorTrend(SelectionContext selectionContext, long date1,
     
 
 	/**
-	 * Upload the list of Services/operations
+	 * Upload the list of Services/operations.
 	 */
 	protected void fetchServices () {
 	    queryService.getServices(new AsyncCallback<Map<String,Set<String>>>() {
@@ -580,10 +714,10 @@ private void getServiceErrorTrend(SelectionContext selectionContext, long date1,
 	
 	/**
 	 * Make an entry in the history so we can return to it, but do not
-	 * necessarily cause the history mechanism to fire, as we may 
+	 * necessarily cause the history mechanism to fire, as we may
 	 * want to stay on the same page.
-	 * 
-	 * @param selectionContext
+	 *
+	 * @param selectionContext the selection context
 	 * @param d1 start date1
 	 * @param d2 start date2
 	 * @param interval how many hrs to add to starting dates
@@ -602,6 +736,16 @@ private void getServiceErrorTrend(SelectionContext selectionContext, long date1,
 	}
 
 	
+	/**
+	 * Insert history.
+	 *
+	 * @param presenterId the presenter id
+	 * @param selectionContext the selection context
+	 * @param d1 the d1
+	 * @param d2 the d2
+	 * @param interval the interval
+	 * @param fire the fire
+	 */
 	protected void insertHistory (String presenterId, SelectionContext selectionContext, long d1, long d2, int interval, boolean fire) {
 	       HistoryToken token = HistoryToken.newHistoryToken(DashboardPresenter.DASH_ID, null);
 	        token.addValue(DashboardPresenter.TAB, presenterId);
@@ -612,6 +756,9 @@ private void getServiceErrorTrend(SelectionContext selectionContext, long date1,
 	        History.newItem(token.toString(), fire);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter.TabPresenter#getStateAsHistoryToken()
+	 */
 	public HistoryToken getStateAsHistoryToken () {
 	    HistoryToken token = HistoryToken.newHistoryToken(DashboardPresenter.DASH_ID);
 	    token.addValue(DashboardPresenter.TAB, SERVICE_ID);

@@ -28,6 +28,9 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.visualizations.LineChart;
 
+/**
+ * The Class SummaryPanel.
+ */
 public class SummaryPanel extends Composite {
     
     private HorizontalPanel panel;
@@ -42,6 +45,9 @@ public class SummaryPanel extends Composite {
     private Grid contentGrid;
     
     
+    /**
+     * Instantiates a new summary panel.
+     */
     public SummaryPanel () {
         //the panel where the table and graphs go
         contentGrid = new Grid(1,2);
@@ -131,43 +137,93 @@ public class SummaryPanel extends Composite {
         ((Grid)contentGrid.getWidget(0, 0)).setWidget(0, 0, buttonGrid);
     }
 
+    /**
+     * Sets the heading.
+     *
+     * @param text the new heading
+     */
     public void setHeading (String text) {
         headingLabel.setText(text);
     }
     
+    /**
+     * Sets the contents.
+     *
+     * @param widget the new contents
+     */
     public void setContents (Widget widget) {
         ((Grid)contentGrid.getWidget(0, 0)).setWidget(1, 0, widget);
     }
     
+    /**
+     * Gets the info button.
+     *
+     * @return the info button
+     */
     public HasClickHandlers getInfoButton () {
         return infoImg;
     }
     
+    /**
+     * Sets the info.
+     *
+     * @param info the new info
+     */
     public void setInfo (String info) {
         this.info = info;
     }
     
+    /**
+     * Sets the content container width.
+     *
+     * @param width the new content container width
+     */
     public void setContentContainerWidth (String width) {
         scroller.setWidth(width);
     }
     
+    /**
+     * Sets the content container height.
+     *
+     * @param height the new content container height
+     */
     public void setContentContainerHeight (String height) {
         scroller.setHeight(height);
     }
     
+    /**
+     * Gets the content container.
+     *
+     * @return the content container
+     */
     public Panel getContentContainer () {
         return scroller;
     }
     
+    /**
+     * Sets the download url.
+     *
+     * @param url the new download url
+     */
     public void setDownloadUrl (String url) {
         downloadUrl = url;
     }
     
+    /**
+     * Adds the chart.
+     *
+     * @param lineChart the line chart
+     */
     public void addChart(LineChart lineChart){
         scroller.setHeight("260px");
         contentGrid.setWidget(0, 1, lineChart);
     }
     
+    /**
+     * Gets the chart.
+     *
+     * @return the chart
+     */
     public LineChart getChart(){
         return (LineChart) contentGrid.getWidget(0, 1);
     }

@@ -10,7 +10,15 @@ package org.ebayopensource.turmeric.monitoring.client.event;
 
 import com.google.gwt.event.shared.EventHandler;
 
+/**
+ * The Interface ObjectSelectionEventHandler.
+ */
 public interface ObjectSelectionEventHandler extends EventHandler {
 
+    /**
+     * On selection.
+     *
+     * @param event the event
+     */
     public void onSelection (ObjectSelectionEvent event);
 }

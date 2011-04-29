@@ -9,11 +9,24 @@
 
 package org.ebayopensource.turmeric.monitoring.client.model;
 
+/**
+ * The Enum ServiceMetric.
+ */
 public enum ServiceMetric {
+    
+    /** The Top volume. */
     TopVolume ("CallCount"), 
+    
+    /** The Least performance. */
     LeastPerformance ("ResponseTime"), 
+    
+    /** The Top errors. */
     TopErrors ("ErrorCount"),
+    
+    /** The Consumer traffic. */
     ConsumerTraffic ("CallCount"), 
+    
+    /** The Consumer errors. */
     ConsumerErrors ("ErrorCount");
     
     private String metricName;
@@ -22,6 +35,11 @@ public enum ServiceMetric {
         this.metricName = metricName;
     }
     
+    /**
+     * To metric name.
+     *
+     * @return the string
+     */
     public String toMetricName () {
         return this.metricName;
     }

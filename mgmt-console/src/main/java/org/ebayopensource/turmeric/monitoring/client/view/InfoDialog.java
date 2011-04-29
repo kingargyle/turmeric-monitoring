@@ -12,12 +12,16 @@ import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 
 
 /**
- * InfoDialog
- *
+ * InfoDialog.
  */
 public class InfoDialog extends AbstractDialog {
 
 
+    /**
+     * Instantiates a new info dialog.
+     *
+     * @param animationEnabled the animation enabled
+     */
     public InfoDialog (boolean animationEnabled) {
         super(animationEnabled);
         dialog.setText(ConsoleUtil.constants.information());

@@ -25,23 +25,29 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 
 /**
- * Base Controller class in the application
- * 
- *
+ * Base Controller class in the application.
  */
 public class AppController implements Controller, ValueChangeHandler<String>{
 	
-    /**
-     * Base event bus for comunicatting to listener the multiple events in the system
-     */
+    /** Base event bus for comunicatting to listener the multiple events in the system. */
 	protected HandlerManager eventBus;
+	
+	/** The root container. */
 	protected HasWidgets rootContainer;
-	/**
-	 * Map of registered presenters
-	 */
+	
+	/** Map of registered presenters. */
 	protected Map<String, Presenter> presenters = new HashMap<String, Presenter>();
+	
+	/** The service map. */
 	protected Map<SupportedService, ConsoleService> serviceMap;
 	
+	/**
+	 * Instantiates a new app controller.
+	 *
+	 * @param eventBus the event bus
+	 * @param rootContainer the root container
+	 * @param serviceMap the service map
+	 */
 	public AppController(HandlerManager eventBus, HasWidgets rootContainer, Map<SupportedService, ConsoleService> serviceMap) {
 		this.eventBus = eventBus;
 		this.rootContainer = rootContainer;
@@ -60,6 +66,9 @@ public class AppController implements Controller, ValueChangeHandler<String>{
 		selectPresenter(token);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.google.gwt.event.logical.shared.ValueChangeHandler#onValueChange(com.google.gwt.event.logical.shared.ValueChangeEvent)
+	 */
 	public void onValueChange(ValueChangeEvent<String> event) {
 		final HistoryToken token = HistoryToken.newHistoryToken(event.getValue());
 		selectPresenter(token);
@@ -79,21 +88,25 @@ public class AppController implements Controller, ValueChangeHandler<String>{
 	}
 
 	/**
+	 * Adds the presenter.
+	 *
 	 * @param id The Presenter id
 	 * @param p the Presenter object to be added to {@link #presenters}
-	 * 
 	 */
     public void addPresenter(String id, Presenter p) {
         this.presenters.put(id, p);
     }
 
-    /**
-     * 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.Controller#getPresenter(java.lang.String)
      */
     public Presenter getPresenter(String id) {
         return this.presenters.get(id);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.Controller#selectPresenter(org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
+     */
     public void selectPresenter(HistoryToken token) {
     	String presenterId = token != null ? token.getPresenterId() : null;
         Presenter presenter = null;

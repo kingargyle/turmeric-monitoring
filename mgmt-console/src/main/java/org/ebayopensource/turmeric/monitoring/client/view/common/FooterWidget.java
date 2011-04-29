@@ -12,8 +12,14 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 
+/**
+ * The Class FooterWidget.
+ */
 public class FooterWidget extends Composite {
 
+	/**
+	 * Instantiates a new footer widget.
+	 */
 	public FooterWidget() {
 		Panel panel = new FlowPanel();
 		initWidget(panel);

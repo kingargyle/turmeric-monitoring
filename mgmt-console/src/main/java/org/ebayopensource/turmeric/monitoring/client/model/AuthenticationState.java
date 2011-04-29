@@ -8,9 +8,23 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.client.model;
 
+/**
+ * The Enum AuthenticationState.
+ */
 public enum AuthenticationState {
-	Unknown,Authenticated,Unauthenticated;
 	
+	/** The Unknown. */
+	Unknown,
+/** The Authenticated. */
+Authenticated,
+/** The Unauthenticated. */
+Unauthenticated;
+	
+	/**
+	 * Checks if is authenticated.
+	 *
+	 * @return true, if is authenticated
+	 */
 	public boolean isAuthenticated() {
 		return this.equals(Authenticated);
 	}

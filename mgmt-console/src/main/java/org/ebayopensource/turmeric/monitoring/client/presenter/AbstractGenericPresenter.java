@@ -15,17 +15,36 @@ import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 
+/**
+ * The Class AbstractGenericPresenter.
+ */
 public abstract class AbstractGenericPresenter implements Presenter {
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#go(com.google.gwt.user.client.ui.HasWidgets, org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
+	 */
 	public void go(HasWidgets container, HistoryToken token) {
 		container.clear();
 		getView().activate();
 		container.add(getView().asWidget());
 	}
 	
+	/**
+	 * Gets the view.
+	 *
+	 * @return the view
+	 */
 	abstract protected Display getView();
 	
 	
+	/**
+	 * Make token.
+	 *
+	 * @param presenterId the presenter id
+	 * @param subPresenterId the sub presenter id
+	 * @param values the values
+	 * @return the history token
+	 */
 	public HistoryToken makeToken (String presenterId, String subPresenterId, Map<String, String> values) {
 	    if (presenterId == null)
 	        return null;

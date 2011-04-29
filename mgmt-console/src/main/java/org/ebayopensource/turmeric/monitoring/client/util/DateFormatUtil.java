@@ -12,11 +12,20 @@ import java.util.Date;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 
+/**
+ * The Class DateFormatUtil.
+ */
 public class DateFormatUtil {
 	
 	private static final String CONSOLE_DATE_FORMAT = "dd MMM yyyy hh:mm:ss aa";
 	private static final DateTimeFormat CONSOLE_DATE_FORMATTER = DateTimeFormat.getFormat(CONSOLE_DATE_FORMAT);
 	
+	/**
+	 * To console date format.
+	 *
+	 * @param date the date
+	 * @return the string
+	 */
 	public static String toConsoleDateFormat(Date date) {
 		if (date == null) {
 			return "";

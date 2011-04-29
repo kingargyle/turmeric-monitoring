@@ -21,40 +21,87 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+/**
+ * The Class DummyMetricsQueryServiceImpl.
+ */
 public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
     
+    /** The error details by name. */
     Map<String, ErrorDetail> errorDetailsByName = new HashMap<String,ErrorDetail>();
+    
+    /** The error details by id. */
     Map<String, ErrorDetail> errorDetailsById = new HashMap<String, ErrorDetail>();
     
     
+    /**
+     * The Class ErrorDetailImpl.
+     */
     public static class ErrorDetailImpl implements ErrorDetail {
+        
+        /** The id. */
         protected String id;
+        
+        /** The name. */
         protected String name;
+        
+        /** The domain. */
         protected String domain;
+        
+        /** The sub domain. */
         protected String subDomain;
+        
+        /** The severity. */
         protected String severity;
+        
+        /** The category. */
         protected String category;
         
+        /* (non-Javadoc)
+         * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorDetail#getId()
+         */
         public String getId() {
             return id;
         }
+        
+        /* (non-Javadoc)
+         * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorDetail#getName()
+         */
         public String getName() {
             return name;
         }
+        
+        /* (non-Javadoc)
+         * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorDetail#getDomain()
+         */
         public String getDomain() {
             return domain;
         }
+        
+        /* (non-Javadoc)
+         * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorDetail#getSubDomain()
+         */
         public String getSubDomain() {
             return subDomain;
         }
+        
+        /* (non-Javadoc)
+         * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorDetail#getSeverity()
+         */
         public String getSeverity() {
             return severity;
         }
+        
+        /* (non-Javadoc)
+         * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorDetail#getCategory()
+         */
         public String getCategory() {
             return category;
         }
     }
     
+    /**
+     * The Class ErrorViewDataImpl.
+     */
     public static class ErrorViewDataImpl implements ErrorViewData {
         private String consumer;
         private Double ratioDiff;
@@ -67,115 +114,218 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
         private String errorName;
         
 
+        /**
+         * Sets the consumer.
+         *
+         * @param consumer the new consumer
+         */
         public void setConsumer(String consumer) {
             this.consumer = consumer;
         }
 
+        /**
+         * Sets the ratio diff.
+         *
+         * @param ratioDiff the new ratio diff
+         */
         public void setRatioDiff(double ratioDiff) {
             this.ratioDiff = Double.valueOf(ratioDiff);
         }
 
+        /**
+         * Sets the error diff.
+         *
+         * @param errorDiff the new error diff
+         */
         public void setErrorDiff(double errorDiff) {
             this.errorDiff = Double.valueOf(errorDiff);
         }
 
+        /**
+         * Sets the error call ratio2.
+         *
+         * @param errorCallRatio2 the new error call ratio2
+         */
         public void setErrorCallRatio2(double errorCallRatio2) {
             this.errorCallRatio2 = Double.valueOf(errorCallRatio2);
         }
 
+        /**
+         * Sets the error call ratio1.
+         *
+         * @param errorCallRatio1 the new error call ratio1
+         */
         public void setErrorCallRatio1(double errorCallRatio1) {
             this.errorCallRatio1 = Double.valueOf(errorCallRatio1);
         }
 
+        /**
+         * Sets the error count1.
+         *
+         * @param errorCount1 the new error count1
+         */
         public void setErrorCount1(long errorCount1) {
             this.errorCount1 = Long.valueOf(errorCount1);
         }
 
+        /**
+         * Sets the error count2.
+         *
+         * @param errorCount2 the new error count2
+         */
         public void setErrorCount2(long errorCount2) {
             this.errorCount2 = Long.valueOf(errorCount2);
         }
         
+        /**
+         * Sets the error id.
+         *
+         * @param id the new error id
+         */
         public void setErrorId(String id) {
             this.errorId = id;
         }
 
+        /**
+         * Sets the error name.
+         *
+         * @param name the new error name
+         */
         public void setErrorName (String name) {
             this.errorName = name;
         }
         
+        /* (non-Javadoc)
+         * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getConsumer()
+         */
         public String getConsumer() {
             return consumer;
         }
 
+        /* (non-Javadoc)
+         * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getRatioDiff()
+         */
         public Double getRatioDiff() {
             return ratioDiff;
         }
 
+        /* (non-Javadoc)
+         * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorDiff()
+         */
         public Double getErrorDiff() {
             return errorDiff;
         }
 
+        /* (non-Javadoc)
+         * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorCallRatio2()
+         */
         public Double getErrorCallRatio2() {
             return errorCallRatio2;
         }
 
+        /* (non-Javadoc)
+         * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorCallRatio1()
+         */
         public Double getErrorCallRatio1() {
             return errorCallRatio1;
         }
 
+        /* (non-Javadoc)
+         * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorCount1()
+         */
         public Long getErrorCount1() {
             return errorCount1;
         }
 
+        /* (non-Javadoc)
+         * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorCount2()
+         */
         public Long getErrorCount2() {
             return errorCount2;
         }
 
+        /* (non-Javadoc)
+         * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorId()
+         */
         public String getErrorId() {
             return errorId;
         }
 
+        /* (non-Javadoc)
+         * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorName()
+         */
         public String getErrorName() {
             return errorName;
         }
     }
     
     /**
-     * 
-     * TimeSlotValue
-     *
+     * TimeSlotValue.
      */
     public static class TimeSlotValueImpl implements TimeSlotValue {
+        
+        /** The criteria. */
         String criteria;
+        
+        /** The timeslot. */
         Long timeslot;
+        
+        /** The value. */
         Double value;
        
+        /* (non-Javadoc)
+         * @see org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue#getCriteria()
+         */
         public String getCriteria() {
            return criteria;
         }
         
+        /* (non-Javadoc)
+         * @see org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue#getTimeSlot()
+         */
         public Long getTimeSlot() {
            return timeslot;
         }
        
+        /* (non-Javadoc)
+         * @see org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue#getValue()
+         */
         public Double getValue() {
            return value;
         }
 
+        /**
+         * Sets the criteria.
+         *
+         * @param criteria the new criteria
+         */
         public void setCriteria(String criteria) {
             this.criteria = criteria;
         }
 
+        /**
+         * Sets the timeslot.
+         *
+         * @param timeslot the new timeslot
+         */
         public void setTimeslot(Long timeslot) {
             this.timeslot = timeslot;
         }
 
+        /**
+         * Sets the value.
+         *
+         * @param value the new value
+         */
         public void setValue(Double value) {
             this.value = value;
         }  
     }
     
     
+    /**
+     * Instantiates a new dummy metrics query service impl.
+     */
     public DummyMetricsQueryServiceImpl () {
         ErrorDetailImpl ed0 = new ErrorDetailImpl();
         ed0.id="100";
@@ -209,11 +359,17 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
         
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getMetricDataDownloadUrl(org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria, org.ebayopensource.turmeric.monitoring.client.model.MetricResourceCriteria)
+     */
     public String getMetricDataDownloadUrl(MetricCriteria mc, MetricResourceCriteria mrc) {
 
         return "";
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getMetricData(org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria, org.ebayopensource.turmeric.monitoring.client.model.MetricResourceCriteria, com.google.gwt.user.client.rpc.AsyncCallback)
+     */
     public void getMetricData(MetricCriteria criteria,
                               MetricResourceCriteria resourceCriteria,
                               AsyncCallback<MetricData> callback) {
@@ -444,6 +600,9 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
         callback.onSuccess(result);
     }
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getServices(com.google.gwt.user.client.rpc.AsyncCallback)
+	 */
 	public void getServices(AsyncCallback<Map<String, Set<String>>> callback) {
 		
 		HashMap<String, Set<String>> testData = new HashMap<String, Set<String>>();
@@ -457,6 +616,9 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
 		callback.onSuccess(testData);
 	}
 
+     /* (non-Javadoc)
+      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getErrorData(org.ebayopensource.turmeric.monitoring.client.model.ErrorCriteria, org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria, com.google.gwt.user.client.rpc.AsyncCallback)
+      */
      public void getErrorData(ErrorCriteria ec, MetricCriteria mc,
                              AsyncCallback<ErrorMetricData> callback) {
         ErrorMetricData result = new ErrorMetricData();
@@ -544,6 +706,12 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
     }
 
     /**
+     * Gets the error time slot data.
+     *
+     * @param ec the ec
+     * @param mc the mc
+     * @param callback the callback
+     * @return the error time slot data
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getErrorTimeSlotData(org.ebayopensource.turmeric.monitoring.client.model.ErrorCriteria, org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria, com.google.gwt.user.client.rpc.AsyncCallback)
      */
     public void getErrorTimeSlotData(ErrorCriteria ec, MetricCriteria mc,
@@ -552,6 +720,9 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
         
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getServiceMetricValueTrend(org.ebayopensource.turmeric.monitoring.client.model.MetricValue, org.ebayopensource.turmeric.monitoring.client.model.MetricValue, com.google.gwt.user.client.rpc.AsyncCallback)
+     */
     @Override
     public void getServiceMetricValueTrend(MetricValue firstDate, MetricValue secondDate,
                     AsyncCallback<List<TimeSlotData>> callback) {

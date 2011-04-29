@@ -8,6 +8,9 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.client.model.policy;
 
+/**
+ * The Interface ResourceSearchFilter.
+ */
 public interface ResourceSearchFilter {
 
 }

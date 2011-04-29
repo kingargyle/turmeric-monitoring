@@ -116,6 +116,11 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
     private FlexTable errorDetailTable;
     
     
+    /**
+     * Instantiates a new error view.
+     *
+     * @param dashboard the dashboard
+     */
     public ErrorView (Dashboard dashboard) {
         //make the panel for the contents of the tab
         DockLayoutPanel contentPanel = new DockLayoutPanel(Unit.EM);
@@ -233,43 +238,72 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
         this.dashboard.addView(this, ConsoleUtil.constants.errors());
     }
 
+    /* (non-Javadoc)
+     * @see com.google.gwt.user.client.ui.Widget#asWidget()
+     */
     public Widget asWidget() {
         return this;
     }
 
+    /**
+     * Hide.
+     *
+     * @param o the o
+     */
     public void hide (UIObject o) {
         o.setVisible(false);
     }
 
+    /**
+     * Show.
+     *
+     * @param o the o
+     */
     public void show (UIObject o) {
         o.setVisible(true);
     }
 
     /**
-     * View about to be shown, do any clean up necessary
+     * View about to be shown, do any clean up necessary.
+     *
      * @see org.ebayopensource.turmeric.monitoring.client.Display#activate()
      */
     public void activate () {
         dashboard.activate(this);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#setFilterLabel(java.lang.String)
+     */
     public void setFilterLabel (String filterString) {
         filterButton.setText(filterString);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.Display#setAssociatedId(java.lang.String)
+     */
     public void setAssociatedId (String id) {
         this.id = id;
     }
 
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.Display#getAssociatedId()
+     */
     public String getAssociatedId() {
         return this.id;
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#getFilter()
+     */
     public Filterable getFilter () {
         return this.filterWidget;
     }
    
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#error(java.lang.String)
+     */
     public void error (String msg) {
         ErrorDialog dialog = new ErrorDialog(true);
         dialog.setMessage(msg);
@@ -277,21 +311,33 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
         dialog.show();
      }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#getSelector()
+     */
     public HasSelectionHandlers<TreeItem> getSelector() {
         return serviceListWidget.getServiceTree();
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#reset()
+     */
     public void reset() {
         Iterator<Widget> itor = tablesPanel.iterator();
         while (itor.hasNext())
             hide(itor.next());
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#setServicesMap(java.util.Map)
+     */
     public void setServicesMap(Map<String, Set<String>> map) {
         serviceListWidget.setServicesMap(map);
     }
 
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#setErrorMetricData(org.ebayopensource.turmeric.monitoring.client.model.ErrorMetric, org.ebayopensource.turmeric.monitoring.client.model.ErrorMetricData)
+     */
     public void setErrorMetricData (ErrorMetric m, ErrorMetricData errorData) {
         SummaryPanel panel = null;
         
@@ -476,6 +522,9 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#setErrorDetail(org.ebayopensource.turmeric.monitoring.client.model.ErrorDetail)
+     */
     public void setErrorDetail (ErrorDetail ed) {
         if (ed == null)
             return;
@@ -500,6 +549,9 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
     
  
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#setSelection(java.util.Map)
+     */
     public void setSelection(Map<ObjectType,String> selections) {
         String s = "";
         if (selections != null) {
@@ -529,6 +581,9 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
     }
     
     
+    /**
+     * Pick filter.
+     */
     public void pickFilter () {
         int x = filterButton.getAbsoluteLeft();
         int y = filterButton.getAbsoluteTop() + filterButton.getOffsetHeight();
@@ -540,6 +595,9 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
   
  
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#getTableColumn(org.ebayopensource.turmeric.monitoring.client.model.ErrorMetric, int)
+     */
     public List<HasClickHandlers> getTableColumn(ErrorMetric m, int col) {
         List<HasClickHandlers> list = new ArrayList<HasClickHandlers>();
         FlexTable t = getTable(m);
@@ -553,12 +611,21 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
         return list;
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#setDownloadUrl(org.ebayopensource.turmeric.monitoring.client.model.ErrorMetric, java.lang.String)
+     */
     public void setDownloadUrl (ErrorMetric m, String url) {
         SummaryPanel p = getSummaryPanel(m);
         if (p != null)
             p.setDownloadUrl(url);
     }
         
+    /**
+     * Gets the table.
+     *
+     * @param m the m
+     * @return the table
+     */
     public FlexTable getTable (ErrorMetric m) {
         FlexTable table = null;
         switch (m) {
@@ -607,6 +674,12 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
     
     
     
+    /**
+     * Gets the summary panel.
+     *
+     * @param metric the metric
+     * @return the summary panel
+     */
     public SummaryPanel getSummaryPanel(ErrorMetric metric) {
         SummaryPanel panel = null;
         
@@ -654,6 +727,13 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
         return panel;
     }
 
+    /**
+     * Make panel.
+     *
+     * @param heading the heading
+     * @param contents the contents
+     * @return the summary panel
+     */
     protected SummaryPanel makePanel (String heading, Widget contents) {
         SummaryPanel panel = new SummaryPanel();
         panel.setHeading(heading);
@@ -661,6 +741,11 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
         return panel;
     }
     
+    /**
+     * Make table.
+     *
+     * @return the flex table
+     */
     protected FlexTable makeTable() {
         FlexTable table = new FlexTable();
         table.addStyleName("tbl");

@@ -42,40 +42,85 @@ import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.io.Buffer;
 import org.eclipse.jetty.util.ajax.JSON;
 
+/**
+ * The Class DownloadServlet.
+ */
 public class DownloadServlet extends HttpServlet {
+    
+    /** The Constant EMPTY_STRING. */
     public static final String EMPTY_STRING = "\"\"";
+    
+    /** The Constant NS. */
     public static final String NS = "ns";
     /* MetricCriteria */
+    /** The Constant METRIC_CRITERIA. */
     public static final String METRIC_CRITERIA = "metricCriteria";
+    
+    /** The Constant METRIC_NAME. */
     public static final String METRIC_NAME = "metricName";
+    
+    /** The Constant FIRST_START_TIME. */
     public static final String FIRST_START_TIME = "firstStartTime";
+    
+    /** The Constant SECOND_START_TIME. */
     public static final String SECOND_START_TIME = "secondStartTime";
+    
+    /** The Constant DURATION. */
     public static final String DURATION = "duration";
+    
+    /** The Constant ROLE_TYPE. */
     public static final String ROLE_TYPE = "roleType";
     
     /* MetricResourceCriteria */
+    /** The Constant METRIC_RESOURCE_CRITERIA. */
     public static final String METRIC_RESOURCE_CRITERIA = "metricResourceCriteria";
+    
+    /** The Constant RESOURCE_ENTITY_RESPONSE_TYPE. */
     public static final String RESOURCE_ENTITY_RESPONSE_TYPE = "resourceEntityResponseType";
     
+    /** The Constant GET_METRICS_DATA_RESPONSE. */
     public static final String GET_METRICS_DATA_RESPONSE = "getMetricsDataResponse";
+    
+    /** The Constant GET_ERROR_METRICS_DATA_RESPONSE. */
     public static final String GET_ERROR_METRICS_DATA_RESPONSE = "getErrorMetricsDataResponse";
 
     
+    /** The Constant RETURN_DATA. */
     public static final String RETURN_DATA = "returnData";
     
     /* MetricGroupData */
+    /** The Constant CRITERIA_INFO. */
     public static final String CRITERIA_INFO = "criteriaInfo";
+    
+    /** The Constant DIFF. */
     public static final String DIFF = "diff";
+    
+    /** The Constant COUNT1. */
     public static final String COUNT1 = "count1";
+    
+    /** The Constant COUNT2. */
     public static final String COUNT2 = "count2";
     
     /* ErrorViewData */
+    /** The Constant CRITERIA. */
     public static final String CRITERIA = "criteria";
+    
+    /** The Constant RATIO_DIFF. */
     public static final String RATIO_DIFF = "ratioDiff";
+    
+    /** The Constant ERROR_DIFF. */
     public static final String ERROR_DIFF = "errorDiff";
+    
+    /** The Constant ERROR_CALL_RATIO2. */
     public static final String ERROR_CALL_RATIO2 = "errorCallRatio2";
+    
+    /** The Constant ERROR_CALL_RATIO1. */
     public static final String ERROR_CALL_RATIO1 = "errorCallRatio1";
+    
+    /** The Constant ERROR_COUNT1. */
     public static final String ERROR_COUNT1 = "errorCount1";
+    
+    /** The Constant ERROR_COUNT2. */
     public static final String ERROR_COUNT2 = "errorCount2";
 
     private Map<String, String> metricCriteria = new HashMap<String,String>();
@@ -89,6 +134,9 @@ public class DownloadServlet extends HttpServlet {
     private HttpClient client;
    
     
+    /* (non-Javadoc)
+     * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
+     */
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
@@ -117,6 +165,9 @@ public class DownloadServlet extends HttpServlet {
 
     }
 
+    /* (non-Javadoc)
+     * @see javax.servlet.http.HttpServlet#service(javax.servlet.ServletRequest, javax.servlet.ServletResponse)
+     */
     public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
         HttpServletRequest request = (HttpServletRequest)req;
         HttpServletResponse response = (HttpServletResponse)res;
@@ -160,6 +211,15 @@ public class DownloadServlet extends HttpServlet {
         }
     }
     
+    /**
+     * Send.
+     *
+     * @param request the request
+     * @param response the response
+     * @param continuation the continuation
+     * @param uri the uri
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     public void send (final HttpServletRequest request, final HttpServletResponse response, final Continuation continuation, final HttpURI uri) throws IOException {
         
         ContentExchange exchange = new ContentExchange() {
@@ -255,8 +315,10 @@ public class DownloadServlet extends HttpServlet {
      * <li>duration
      * <li>aggregation interval
      * </ol>
-     * @param request
-     * @return
+     *
+     * @param request the request
+     * @return the string
+     * @throws ServletException the servlet exception
      */
     public String computeFilename (HttpServletRequest request)  throws ServletException {
         StringBuffer name = new StringBuffer();
@@ -300,6 +362,13 @@ public class DownloadServlet extends HttpServlet {
     }
     
     
+    /**
+     * Convert to csv.
+     *
+     * @param request the request
+     * @param json the json
+     * @return the string
+     */
     public String convertToCSV (HttpServletRequest request ,String json) {
         String requestName = request.getParameter("X-TURMERIC-OPERATION-NAME");
         StringBuffer strbuff = new StringBuffer();
@@ -449,9 +518,9 @@ public class DownloadServlet extends HttpServlet {
     /**
      * Escape double quotes and quote strings containing
      * commas, newlines and spaces.
-     * 
-     * @param s
-     * @return
+     *
+     * @param s the s
+     * @return the string
      */
     public static String quote (String s) {     
         if (s == null)
@@ -485,6 +554,13 @@ public class DownloadServlet extends HttpServlet {
             return result.toString();
     }
     
+    /**
+     * Compute name in namespace.
+     *
+     * @param ns the ns
+     * @param names the names
+     * @return the string
+     */
     public static String computeNameInNamespace(String ns, List<String> names) {
         if (names == null || names.isEmpty())
             return null;

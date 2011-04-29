@@ -8,8 +8,22 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.client.model;
 
+/**
+ * The Interface Entity.
+ */
 public interface Entity {
 
+	/**
+	 * Gets the id.
+	 *
+	 * @return the id
+	 */
 	Long getId();
+	
+	/**
+	 * Gets the name.
+	 *
+	 * @return the name
+	 */
 	String getName();
 }

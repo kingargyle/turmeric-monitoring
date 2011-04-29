@@ -12,14 +12,22 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 
 /**
- * ErrorMetricsDataResponse
- *
+ * ErrorMetricsDataResponse.
  */
 public class ErrorMetricsDataResponse extends JavaScriptObject {
     
+    /**
+     * Instantiates a new error metrics data response.
+     */
     protected ErrorMetricsDataResponse() {
     }
     
+    /**
+     * From json.
+     *
+     * @param json the json
+     * @return the error metrics data response
+     */
     public static final native ErrorMetricsDataResponse fromJSON (String json) /*-{
         try {
             return eval('(' + json + ')');
@@ -28,6 +36,11 @@ public class ErrorMetricsDataResponse extends JavaScriptObject {
         }
     }-*/;
 
+    /**
+     * Gets the return data.
+     *
+     * @return the return data
+     */
     public final native JsArray<ErrorViewDataJS> getReturnData () /*-{
         if (!this.getErrorMetricsDataResponse)
             return null;

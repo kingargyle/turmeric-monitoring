@@ -12,11 +12,47 @@ import com.google.gwt.event.logical.shared.HasSelectionHandlers;
 
 
 
+/**
+ * The Interface Dashboard.
+ */
 public interface Dashboard extends Container {
 	
+	/**
+	 * Adds the view.
+	 *
+	 * @param view the view
+	 * @param name the name
+	 * @return the int
+	 */
 	public int addView (Display view, String name);
+	
+	/**
+	 * Gets the view.
+	 *
+	 * @param index the index
+	 * @return the view
+	 */
 	public Display getView(Integer index);
+	
+	/**
+	 * Gets the index.
+	 *
+	 * @param view the view
+	 * @return the index
+	 */
 	public int getIndex (Display view);
+	
+	/**
+	 * Activate.
+	 *
+	 * @param view the view
+	 */
 	public void activate (Display view);
+    
+    /**
+     * Gets the tab selector.
+     *
+     * @return the tab selector
+     */
     public HasSelectionHandlers<Integer> getTabSelector();
 }

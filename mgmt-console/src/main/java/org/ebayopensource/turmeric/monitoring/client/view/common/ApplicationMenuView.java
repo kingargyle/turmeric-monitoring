@@ -18,6 +18,9 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * The Class ApplicationMenuView.
+ */
 public class ApplicationMenuView extends ResizeComposite implements HasWidgets, MenuControllerDisplay {
 
 	private DockLayoutPanel mainPanel;
@@ -25,11 +28,17 @@ public class ApplicationMenuView extends ResizeComposite implements HasWidgets, 
 	//private FooterWidget footerWidget;
 	private Widget contentWidget;
 	
+	/**
+	 * Instantiates a new application menu view.
+	 */
 	public ApplicationMenuView() {
 	    initialize();
 	    initWidget(mainPanel);
 	}
 
+	/**
+	 * Initialize.
+	 */
 	public void initialize() {
 	    
 	    mainPanel = new DockLayoutPanel(Unit.PX);
@@ -46,6 +55,9 @@ public class ApplicationMenuView extends ResizeComposite implements HasWidgets, 
 	
 
     /**
+     * Adds the.
+     *
+     * @param arg0 the arg0
      * @see com.google.gwt.user.client.ui.HasWidgets#add(com.google.gwt.user.client.ui.Widget)
      */
     @Override
@@ -57,6 +69,8 @@ public class ApplicationMenuView extends ResizeComposite implements HasWidgets, 
     }
 
     /**
+     * Clear.
+     *
      * @see com.google.gwt.user.client.ui.HasWidgets#clear()
      */
     @Override
@@ -67,6 +81,9 @@ public class ApplicationMenuView extends ResizeComposite implements HasWidgets, 
     }
 
     /**
+     * Iterator.
+     *
+     * @return the iterator
      * @see com.google.gwt.user.client.ui.HasWidgets#iterator()
      */
     @Override
@@ -75,6 +92,10 @@ public class ApplicationMenuView extends ResizeComposite implements HasWidgets, 
     }
 
     /**
+     * Removes the.
+     *
+     * @param arg0 the arg0
+     * @return true, if successful
      * @see com.google.gwt.user.client.ui.HasWidgets#remove(com.google.gwt.user.client.ui.Widget)
      */
     @Override
@@ -88,6 +109,9 @@ public class ApplicationMenuView extends ResizeComposite implements HasWidgets, 
     }
 
     /**
+     * As widget.
+     *
+     * @return the widget
      * @see org.ebayopensource.turmeric.monitoring.client.Container#asWidget()
      */
     @Override

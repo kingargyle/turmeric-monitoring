@@ -19,15 +19,27 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 
 /**
- * AbstractDialog
- *
+ * AbstractDialog.
  */
 public abstract class AbstractDialog extends Composite {
+    
+    /** The dialog. */
     protected DialogBox dialog;
+    
+    /** The label. */
     protected Label label;
+    
+    /** The ok. */
     protected Button ok;
+    
+    /** The contents. */
     protected FlowPanel contents;
     
+    /**
+     * Instantiates a new abstract dialog.
+     *
+     * @param animationEnabled the animation enabled
+     */
     public AbstractDialog (boolean animationEnabled) {
         dialog = new DialogBox();
         
@@ -50,19 +62,35 @@ public abstract class AbstractDialog extends Composite {
         dialogContents.add(ok);
     }
     
+    /**
+     * Sets the message.
+     *
+     * @param message the new message
+     */
     public void setMessage (String message) {
         label.setText(message);
     }
     
     
+    /**
+     * Show.
+     */
     public void show () {
         dialog.show();
     }
 
+    /**
+     * Hide.
+     */
     public void hide () {
         dialog.hide();
     }
     
+    /**
+     * Gets the dialog.
+     *
+     * @return the dialog
+     */
     public DialogBox getDialog () {
         return dialog;
     }

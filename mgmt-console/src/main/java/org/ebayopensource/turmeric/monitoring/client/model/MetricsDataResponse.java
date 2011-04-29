@@ -11,10 +11,23 @@ package org.ebayopensource.turmeric.monitoring.client.model;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 
+/**
+ * The Class MetricsDataResponse.
+ */
 public class MetricsDataResponse extends JavaScriptObject {
+    
+    /**
+     * Instantiates a new metrics data response.
+     */
     protected MetricsDataResponse() {
     }
     
+    /**
+     * From json.
+     *
+     * @param json the json
+     * @return the metrics data response
+     */
     public static final native MetricsDataResponse fromJSON (String json) /*-{
        try {
            return eval('(' + json + ')');
@@ -23,6 +36,11 @@ public class MetricsDataResponse extends JavaScriptObject {
        }
     }-*/;
 
+    /**
+     * Gets the return data.
+     *
+     * @return the return data
+     */
     public final native JsArray<MetricGroupDataJS> getReturnData () /*-{
         if (!this.getMetricsDataResponse)
             return null;

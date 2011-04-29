@@ -26,20 +26,37 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
- * SelectBoxesWidget
- *
+ * SelectBoxesWidget.
  */
 public class SelectBoxesWidget extends Composite {
     private Panel panel;
     private ListBox availableBox;
     private ListBox selectedBox;
+    
+    /** The grid. */
     protected Grid grid;
+    
+    /** The add button. */
     protected Button addButton;
+    
+    /** The del button. */
     protected Button delButton;
+    
+    /** The available label. */
     protected Label availableLabel;
+    
+    /** The selected label. */
     protected Label selectedLabel;
     
     
+    /**
+     * Instantiates a new select boxes widget.
+     *
+     * @param availableName the available name
+     * @param isAvailableMulti the is available multi
+     * @param selectedName the selected name
+     * @param isSelectedMulti the is selected multi
+     */
     public SelectBoxesWidget (String availableName, boolean isAvailableMulti, String selectedName, boolean isSelectedMulti) {
         panel = new SimplePanel();
         availableLabel = new Label(availableName);
@@ -83,6 +100,11 @@ public class SelectBoxesWidget extends Composite {
     }
     
 
+    /**
+     * Gets the selections.
+     *
+     * @return the selections
+     */
     public List<String> getSelections () {
         List<String> selectedSubjects = new ArrayList<String>();
         for (int i=0; i<selectedBox.getItemCount();i++)
@@ -91,6 +113,11 @@ public class SelectBoxesWidget extends Composite {
         return selectedSubjects;
     }
     
+    /**
+     * Gets the availables.
+     *
+     * @return the availables
+     */
     public List<String> getAvailables () {
         List<String> availables = new ArrayList<String>();
         for (int i=0; i<availableBox.getItemCount();i++)
@@ -100,6 +127,11 @@ public class SelectBoxesWidget extends Composite {
     }
     
     
+    /**
+     * Sets the availables.
+     *
+     * @param availables the new availables
+     */
     public void setAvailables (List<String> availables) {
         availableBox.clear();
         if (availables != null && availables.size() >0) {
@@ -110,6 +142,11 @@ public class SelectBoxesWidget extends Composite {
         }
     }
     
+    /**
+     * Sets the selections.
+     *
+     * @param selects the new selections
+     */
     public void setSelections (List<String> selects) {
         selectedBox.clear();
         if (selects != null && selects.size() > 0)
@@ -119,6 +156,13 @@ public class SelectBoxesWidget extends Composite {
             }
     }
     
+    /**
+     * Contains.
+     *
+     * @param box the box
+     * @param string the string
+     * @return true, if successful
+     */
     protected boolean contains (ListBox box, String string) {
         if (box == null)
             return false;
@@ -132,6 +176,12 @@ public class SelectBoxesWidget extends Composite {
         return result;
     }
     
+    /**
+     * Move.
+     *
+     * @param from the from
+     * @param to the to
+     */
     protected void move (ListBox from, ListBox to) {
         int count = from.getItemCount();
         Map<Integer, String> selections = new HashMap<Integer, String>();

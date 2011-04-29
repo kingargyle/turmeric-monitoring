@@ -14,10 +14,22 @@ import java.util.List;
 
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Entity;
 
+/**
+ * The Class ResourceEntityRequest.
+ */
 public class ResourceEntityRequest {
+    
+    /** The resource entity type. */
     public Entity resourceEntityType;
+    
+    /** The resource entity names. */
     public List<String> resourceEntityNames;
     
+    /**
+     * Adds the resource entity name.
+     *
+     * @param name the name
+     */
     public void addResourceEntityName (String name) {
         if (resourceEntityNames == null)
             resourceEntityNames = new ArrayList<String>();

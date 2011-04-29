@@ -11,9 +11,31 @@ package org.ebayopensource.turmeric.monitoring.client;
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
 import org.ebayopensource.turmeric.monitoring.client.presenter.Presenter;
 
+/**
+ * The Interface Controller.
+ */
 public interface Controller {
 
+    /**
+     * Adds the presenter.
+     *
+     * @param id the id
+     * @param p the p
+     */
     public void addPresenter(String id, Presenter p);
+    
+    /**
+     * Gets the presenter.
+     *
+     * @param id the id
+     * @return the presenter
+     */
     public Presenter getPresenter(String id);
+    
+    /**
+     * Select presenter.
+     *
+     * @param token the token
+     */
     public void selectPresenter(HistoryToken token);
 }

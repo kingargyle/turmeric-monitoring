@@ -62,51 +62,142 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.TreeItem;
 
 /**
- * ConsumerPresenter
- * 
+ * ConsumerPresenter.
  */
 public class ConsumerPresenter implements Presenter.TabPresenter {
 
+    /** The Constant CONSUMER_ID. */
     protected final static String CONSUMER_ID = "Consumer";
+    
+    /** The Constant ONE_CONSUMER_METRICS. */
     protected final static List<ConsumerMetric> ONE_CONSUMER_METRICS = Arrays.asList(new ConsumerMetric[] {
             ConsumerMetric.TopVolume, ConsumerMetric.LeastPerformance, ConsumerMetric.TopServiceErrors,
             ConsumerMetric.TopConsumerErrors });
+    
+    /** The Constant ANY_CONSUMER_METRICS. */
     protected final static List<ConsumerMetric> ANY_CONSUMER_METRICS = Arrays.asList(new ConsumerMetric[] {
             ConsumerMetric.CallVolume, ConsumerMetric.Performance, ConsumerMetric.Errors });
+    
+    /** The view. */
     protected Display view;
+    
+    /** The event bus. */
     protected HandlerManager eventBus;
+    
+    /** The query service. */
     protected MetricsQueryService queryService;
+    
+    /** The services list. */
     protected Map<String, Set<String>> servicesList;
+    
+    /** The selection context. */
     protected SelectionContext selectionContext;
+    
+    /** The selected duration. */
     protected int selectedDuration;
+    
+    /** The selected date1. */
     protected long selectedDate1;
+    
+    /** The selected date2. */
     protected long selectedDate2;
+    
+    /** The selected metrics. */
     protected List<ConsumerMetric> selectedMetrics;
 
+    /**
+     * The Interface Display.
+     */
     public interface Display extends org.ebayopensource.turmeric.monitoring.client.Display {
+        
+        /**
+         * Gets the table column.
+         *
+         * @param metric the metric
+         * @param startRow the start row
+         * @param col the col
+         * @return the table column
+         */
         public List<HasClickHandlers> getTableColumn(ConsumerMetric metric, int startRow, int col);
 
+        /**
+         * Error.
+         *
+         * @param error the error
+         */
         public void error(String error);
 
+        /**
+         * Sets the services map.
+         *
+         * @param map the map
+         */
         public void setServicesMap(Map<String, Set<String>> map);
 
+        /**
+         * Sets the selection.
+         *
+         * @param selections the selections
+         */
         public void setSelection(Map<ObjectType, String> selections);
 
+        /**
+         * Gets the selector.
+         *
+         * @return the selector
+         */
         public HasSelectionHandlers<TreeItem> getSelector();
 
+        /**
+         * Sets the metric.
+         *
+         * @param m the m
+         * @param result the result
+         */
         public void setMetric(ConsumerMetric m, MetricData result);
 
+        /**
+         * Sets the download url.
+         *
+         * @param m the m
+         * @param url the url
+         */
         public void setDownloadUrl(ConsumerMetric m, String url);
 
+        /**
+         * Reset.
+         */
         public void reset();
 
+        /**
+         * Gets the filter.
+         *
+         * @return the filter
+         */
         public Filterable getFilter();
 
+        /**
+         * Sets the filter label.
+         *
+         * @param str the new filter label
+         */
         public void setFilterLabel(String str);
 
+        /**
+         * Sets the consumer call trend data.
+         *
+         * @param graphData the new consumer call trend data
+         */
         void setConsumerCallTrendData(List<TimeSlotData> graphData);
     }
 
+    /**
+     * Instantiates a new consumer presenter.
+     *
+     * @param eventBus the event bus
+     * @param view the view
+     * @param queryService the query service
+     */
     public ConsumerPresenter(HandlerManager eventBus, Display view, MetricsQueryService queryService) {
         this.eventBus = eventBus;
         this.view = view;
@@ -115,10 +206,16 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         bind();
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#getId()
+     */
     public String getId() {
         return CONSUMER_ID;
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#go(com.google.gwt.user.client.ui.HasWidgets, org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
+     */
     public void go(HasWidgets container, HistoryToken token) {
         // find out which entities have been selected in context
         selectionContext = SelectionContext.fromHistoryToken(token);
@@ -186,6 +283,9 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         ((Dashboard) container).activate(this.view);
     }
 
+    /**
+     * Bind.
+     */
     public void bind() {
         // listen for any uploads of the services/operations list by other tabs
         this.eventBus.addHandler(GetServicesEvent.TYPE, new GetServicesEventHandler() {
@@ -344,6 +444,9 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         });
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter.TabPresenter#getStateAsHistoryToken()
+     */
     public HistoryToken getStateAsHistoryToken() {
         HistoryToken token = HistoryToken.newHistoryToken(DashboardPresenter.DASH_ID);
         token.addValue(DashboardPresenter.TAB, CONSUMER_ID);
@@ -358,6 +461,9 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         return token;
     }
 
+    /**
+     * Fetch services.
+     */
     protected void fetchServices() {
         queryService.getServices(new AsyncCallback<Map<String, Set<String>>>() {
 
@@ -372,6 +478,15 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         });
     }
 
+    /**
+     * Fetch metrics.
+     *
+     * @param metrics the metrics
+     * @param sc the sc
+     * @param date1 the date1
+     * @param date2 the date2
+     * @param intervalHrs the interval hrs
+     */
     protected void fetchMetrics(List<ConsumerMetric> metrics, SelectionContext sc, long date1, long date2,
                     int intervalHrs) {
         for (ConsumerMetric m : metrics) {
@@ -416,6 +531,16 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         }
     }
 
+    /**
+     * Fetch metric.
+     *
+     * @param m the m
+     * @param sc the sc
+     * @param returnType the return type
+     * @param date1 the date1
+     * @param date2 the date2
+     * @param durationHrs the duration hrs
+     */
     protected void fetchMetric(final ConsumerMetric m, final SelectionContext sc, final Entity returnType,
                     final long date1, final long date2, final int durationHrs) {
 
@@ -538,6 +663,16 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         });
     }
 
+    /**
+     * Gets the consumer service trends.
+     *
+     * @param serviceName the service name
+     * @param date1 the date1
+     * @param date2 the date2
+     * @param returnData the return data
+     * @param initialIndex the initial index
+     * @return the consumer service trends
+     */
     protected void getConsumerServiceTrends(final String serviceName, final long date1, final long date2,
                     final List<MetricGroupData> returnData, final int initialIndex) {
         if (returnData != null) {
@@ -584,6 +719,16 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         }
     }
 
+    /**
+     * Insert history.
+     *
+     * @param sc the sc
+     * @param d1 the d1
+     * @param d2 the d2
+     * @param interval the interval
+     * @param metrics the metrics
+     * @param fire the fire
+     */
     protected void insertHistory(SelectionContext sc, long d1, long d2, int interval,
                     Collection<ConsumerMetric> metrics, boolean fire) {
         HistoryToken token = HistoryToken.newHistoryToken(DashboardPresenter.DASH_ID, null);
@@ -599,6 +744,16 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         History.newItem(token.toString(), fire);
     }
 
+    /**
+     * Insert history.
+     *
+     * @param tabId the tab id
+     * @param sc the sc
+     * @param d1 the d1
+     * @param d2 the d2
+     * @param interval the interval
+     * @param fire the fire
+     */
     protected void insertHistory(String tabId, SelectionContext sc, long d1, long d2, int interval, boolean fire) {
         HistoryToken token = HistoryToken.newHistoryToken(DashboardPresenter.DASH_ID, null);
         token.addValue(DashboardPresenter.TAB, tabId);
