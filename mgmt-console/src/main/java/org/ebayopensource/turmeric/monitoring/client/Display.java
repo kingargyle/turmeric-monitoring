@@ -14,10 +14,34 @@ import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
 
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * The Interface Display.
+ */
 public interface Display {
 
+	/**
+	 * Activate.
+	 */
 	void activate();
+	
+	/**
+	 * As widget.
+	 *
+	 * @return the widget
+	 */
 	Widget asWidget();
+	
+	/**
+	 * Sets the associated id.
+	 *
+	 * @param id the new associated id
+	 */
 	void setAssociatedId (String id);
+	
+	/**
+	 * Gets the associated id.
+	 *
+	 * @return the associated id
+	 */
 	String getAssociatedId ();
 }

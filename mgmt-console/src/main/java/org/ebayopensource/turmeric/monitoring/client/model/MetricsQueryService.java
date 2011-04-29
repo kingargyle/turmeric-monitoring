@@ -63,7 +63,7 @@ public interface MetricsQueryService extends ConsoleService {
 	                          MetricResourceCriteria mrc,
 	                          AsyncCallback<MetricData> callback);
 	
-	/* TODO
+	/* 
 	 * public void getMetricTimeSlotData (MetricCriteria mc, MetricResourceCriteria mrc (?), AsyncCallback<MetricTimeSlotData>);
 	 */
 	

@@ -21,6 +21,5 @@ public class InfoDialog extends AbstractDialog {
     public InfoDialog (boolean animationEnabled) {
         super(animationEnabled);
         dialog.setText(ConsoleUtil.constants.information());
-        //TODO style
     }
 }

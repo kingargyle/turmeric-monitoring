@@ -13,21 +13,37 @@ import org.ebayopensource.turmeric.monitoring.client.Display;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
+
+/**
+ * The Class AbstractGenericView.
+ */
 public abstract class AbstractGenericView extends Composite implements Display {
 
 	private String associatedId;
 
+	/* (non-Javadoc)
+	 * @see com.google.gwt.user.client.ui.Widget#asWidget()
+	 */
 	public Widget asWidget() {
 		return this;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.monitoring.client.Display#getAssociatedId()
+	 */
 	public String getAssociatedId() {
 		return associatedId;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.monitoring.client.Display#setAssociatedId(java.lang.String)
+	 */
 	public void setAssociatedId(String id) {
 		this.associatedId = id;
 	}
 	
+	/**
+	 * Initialize.
+	 */
 	public abstract void initialize();
 }

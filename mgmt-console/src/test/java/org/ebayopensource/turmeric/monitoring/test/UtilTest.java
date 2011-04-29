@@ -19,8 +19,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+
+/**
+ * Test class for the methods in the {@link Util} class.
+ */
 public class UtilTest {
     
+    
+    /**
+     * Test method for the {@link Util#convertToEnum} method.
+     * @throws Exception if the method {@link Util#convertToEnum} fails
+     */
     @Test
     public void testConvertToEnum () throws Exception {
         List<ServiceMetric> list = Util.convertToEnum("TopVolume, ConsumerErrors", ServiceMetric.class);
@@ -30,6 +39,10 @@ public class UtilTest {
         assertTrue(list.contains(ServiceMetric.TopVolume));
     }
     
+    /**
+     * Test method for the {@link Util#convertToEnumFromCamelCase} method.
+     * @throws Exception if the method {@link Util#convertToEnumFromCamelCase} fails
+     */
     @Test
     public void testConvertToEnumFromCamelCase () throws Exception {
         List<ServiceMetric> list = Util.convertToEnumFromCamelCase(Arrays.asList(new String[]{"topVolume", "consumerErrors"}), ServiceMetric.class);
@@ -39,6 +52,10 @@ public class UtilTest {
         assertTrue(list.contains(ServiceMetric.TopVolume));
     }
     
+    /**
+     * Test method for the {@link Util#isToday} method.
+     * @throws Exception if the method {@link Util#isToday} fails
+     */
     @Test
     public void testIsToday () throws Exception {
         Date now = new Date();

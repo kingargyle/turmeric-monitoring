@@ -1,0 +1,10 @@
+metricName,ResponseTime
+firstStartTime,1304001000000
+secondStartTime,1304087400000
+duration,3600
+roleType,server
+
+Operation,count1,count2,diff
+getMetricsData,0.0,3.1390310086021505E7,100.0
+getMetricsMetadata,0.0,2.6344686714285713E7,100.0
+getMetricValue,0.0,1.5307742296296297E7,100.0

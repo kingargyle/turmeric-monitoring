@@ -26,6 +26,7 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
  */
 public class Main {
     
+    /** The Constant GET_METRICS_DATA_JSON. */
     public static final String GET_METRICS_DATA_JSON = "{"+
     "\"getMetricsDataResponse\":{"+
     "\"returnData\":[{"+
@@ -43,8 +44,14 @@ public class Main {
     "}"+
     "}";
     
+    /**
+     * The Class SimpleHandler.
+     */
     public static class SimpleHandler extends AbstractHandler {
 
+        /* (non-Javadoc)
+         * @see org.eclipse.jetty.server.Handler#handle(java.lang.String, org.eclipse.jetty.server.Request, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+         */
         public void handle(String target,
                 Request baseRequest,
                 HttpServletRequest request,
@@ -66,6 +73,12 @@ public class Main {
         }
     }
     
+    /**
+     * The main method.
+     *
+     * @param args the arguments
+     * @throws Exception the exception
+     */
     public static void main(String[] args) throws Exception
     {
         Server server = new Server(9090);

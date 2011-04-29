@@ -1,0 +1,10 @@
+metricName,CallCount
+firstStartTime,1303921800000
+secondStartTime,1304008200000
+duration,3600
+roleType,server
+
+Operation,count1,count2,diff
+getMetricValue,0.0,108.0,100.0
+getMetricsData,0.0,93.0,100.0
+getMetricsMetadata,0.0,35.0,100.0
