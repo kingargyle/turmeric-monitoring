@@ -48,6 +48,8 @@ public interface MetricsDAO {
     List<String> findMetricServiceAdminNames(List<String> serviceNames);
 
     List<String> findMetricOperationNames(List<String> serviceNames);
+    
+    List<String> findMetricConsumerNames(List<String> serviceNames);
 
     Machine findMachine(String hostAddress);
 

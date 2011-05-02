@@ -590,4 +590,31 @@ public class MetricsDAOImpl extends AbstractDAO implements MetricsDAO {
         Double result = getSingleResultOrNull(query);
         return result == null ? 0 : result.longValue();
     }
+
+    @Override
+    public List<String> findMetricConsumerNames(List<String> serviceAdminNames) {
+        //select distinct mv.metricClassifier.consumerName from MetricValue where
+        // mv.metric in (select m from metric where m.serviceAdminName in (:serviceAdminNames))
+        StringBuilder jpql = new StringBuilder();
+        jpql.append("select distinct mv.metricClassifier.consumerName");
+        jpql.append(" from ").append(MetricValue.class.getName()).append(" mv");
+        jpql.append(" where mv.metric in");
+        jpql.append(" (select m from ").append(Metric.class.getName()).append(" m");
+        jpql.append(" where m.serviceAdminName in (:serviceAdminNames))");
+       
+        
+        EntityManager entityManager = getEntityManager();
+        Query query = entityManager.createQuery(jpql.toString());
+        if (!serviceAdminNames.isEmpty())
+            query.setParameter("serviceAdminNames", serviceAdminNames);
+
+        @SuppressWarnings("unchecked")
+        List<Object> consumerNames = query.getResultList();
+
+        List<String> result = new ArrayList<String>();
+        for (Object consumername : consumerNames)
+            result.add(consumername.toString());
+
+        return result;
+    }
 }
