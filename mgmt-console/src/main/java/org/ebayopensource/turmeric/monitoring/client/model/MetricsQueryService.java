@@ -219,6 +219,16 @@ Warning};
      * @param callback the callback
      * @return the service metric value trend
      */
-    public void getServiceMetricValueTrend(MetricValue firstDate, MetricValue secondDate, AsyncCallback<List<TimeSlotData>> callback);
+    public void getMetricValueTrend(MetricValue firstDate, MetricValue secondDate, AsyncCallback<List<TimeSlotData>> callback);
+    
+
+    /**
+     * Talk to the remote server to obtain a list of all consumers for the given service.
+     *
+     * @param serviceName The serviceadminname
+     * @param callback the callback
+     * @return the service consumers
+     */
+    public void getServiceConsumers(final String serviceName, final AsyncCallback<Set<String>> callback);
     
 }

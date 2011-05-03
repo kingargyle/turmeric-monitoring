@@ -751,11 +751,11 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
 
     private Options createOptions() {
         Options options = Options.create();
-        options.setWidth(640);
+        options.setWidth(635);
         options.setHeight(230);
         options.setEnableTooltip(true);
         options.setShowCategories(true);
-        options.setLegendFontSize(10);
+        options.set("fontSize", 10d);
         options.setSmoothLine(true);
         options.setPointSize(3);
         options.setLineSize(3);

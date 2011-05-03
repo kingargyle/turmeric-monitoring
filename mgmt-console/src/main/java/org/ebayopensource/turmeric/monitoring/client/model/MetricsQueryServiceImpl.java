@@ -9,6 +9,7 @@
 package org.ebayopensource.turmeric.monitoring.client.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -592,7 +593,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getServiceMetricValueTrend(org.ebayopensource.turmeric.monitoring.client.model.MetricValue, org.ebayopensource.turmeric.monitoring.client.model.MetricValue, com.google.gwt.user.client.rpc.AsyncCallback)
      */
     @Override
-    public void getServiceMetricValueTrend(MetricValue firstDate, final MetricValue secondDate,
+    public void getMetricValueTrend(MetricValue firstDate, final MetricValue secondDate,
                      final AsyncCallback<List<TimeSlotData>> callback) {
         try {
             final TimeSlotData firstDateRange = new TimeSlotData();
@@ -642,6 +643,50 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
             callback.onFailure(x);
         }
 
+    }
+    
+    
+    public void getServiceConsumers(final String serviceName,
+                    final AsyncCallback<Set<String>> callback) {
+
+        Set serviceNames = new HashSet();
+        serviceNames.add(serviceName);
+        final String url = MetricsMetaDataRequest.getRestURL("Service", serviceNames, "Consumer");
+        RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+        try {
+            builder.sendRequest(null, new RequestCallback() {
+
+                public void onError(Request request, Throwable err) {
+                    callback.onFailure(err);
+                }
+
+                public void onResponseReceived(final Request request, final Response response) {
+                    if (response.getStatusCode() != Response.SC_OK) {
+                        GWT.log("Errored request: " + url + " response code=" + response.getStatusCode() + " response="
+                                        + response.getText());
+                        callback.onFailure(getErrorAsThrowable(response));
+                    }
+                    else if (response.getHeader(ERROR_HEADER) != null) {
+                        GWT.log("Errored request: " + url + " response code=" + response.getStatusCode() + " response="
+                                        + response.getText());
+                        callback.onFailure(getErrorAsThrowable(response));
+                    }
+                    else {
+                        MetricsMetaDataResponse metaDataResponse = MetricsMetaDataResponse.fromJSON(response.getText());
+                        if (metaDataResponse == null)
+                            callback.onFailure(new Throwable(ConsoleUtil.messages.badOrMissingResponseData()));
+                        else {
+                            Set<String> consumerNames = metaDataResponse.getOrderedResourceEntityResponseNames();
+                            
+                                callback.onSuccess(consumerNames);
+                        }
+                    }
+                }
+            });
+        }
+        catch (RequestException x) {
+            callback.onFailure(x);
+        }
     }
 
 }

@@ -510,7 +510,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
         Date firstDate = Util.resetTo12am(date1);
         Date secondDate = Util.resetTo12am(date2);
         
-        queryService.getServiceMetricValueTrend(new MetricValue(criteriaInfo, firstDate.getTime(), 3600l*24, 3600, ""), new MetricValue(criteriaInfo, secondDate.getTime(), 3600l*24, 3600, ""), new AsyncCallback<List<TimeSlotData>>() {
+        queryService.getMetricValueTrend(new MetricValue(criteriaInfo, firstDate.getTime(), 3600l*24, 3600, ""), new MetricValue(criteriaInfo, secondDate.getTime(), 3600l*24, 3600, ""), new AsyncCallback<List<TimeSlotData>>() {
             
             @Override
             public void onSuccess(List<TimeSlotData> dataRanges) {
@@ -538,7 +538,7 @@ private void getServicePerformanceTrend(SelectionContext selectionContext, long 
         Date firstDate = Util.resetTo12am(date1);
         Date secondDate = Util.resetTo12am(date2);
         
-        queryService.getServiceMetricValueTrend(new MetricValue(criteriaInfo, firstDate.getTime(), 3600l*24, 3600, ""), new MetricValue(criteriaInfo, secondDate.getTime(), 3600l*24, 3600, ""), new AsyncCallback<List<TimeSlotData>>() {
+        queryService.getMetricValueTrend(new MetricValue(criteriaInfo, firstDate.getTime(), 3600l*24, 3600, ""), new MetricValue(criteriaInfo, secondDate.getTime(), 3600l*24, 3600, ""), new AsyncCallback<List<TimeSlotData>>() {
             
             @Override
             public void onSuccess(List<TimeSlotData> dataRanges) {
@@ -566,7 +566,7 @@ private void getServiceErrorTrend(SelectionContext selectionContext, long date1,
     Date firstDate = Util.resetTo12am(date1);
     Date secondDate = Util.resetTo12am(date2);
     
-    queryService.getServiceMetricValueTrend(new MetricValue(criteriaInfo, firstDate.getTime(), 3600l*24, 3600, ""), new MetricValue(criteriaInfo, secondDate.getTime(), 3600l*24, 3600, ""), new AsyncCallback<List<TimeSlotData>>() {
+    queryService.getMetricValueTrend(new MetricValue(criteriaInfo, firstDate.getTime(), 3600l*24, 3600, ""), new MetricValue(criteriaInfo, secondDate.getTime(), 3600l*24, 3600, ""), new AsyncCallback<List<TimeSlotData>>() {
         
         @Override
         public void onSuccess(List<TimeSlotData> dataRanges) {

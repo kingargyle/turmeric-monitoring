@@ -27,6 +27,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.visualizations.LineChart;
+import com.google.gwt.visualization.client.visualizations.Visualization;
 
 /**
  * The Class SummaryPanel.
@@ -214,7 +215,7 @@ public class SummaryPanel extends Composite {
      *
      * @param lineChart the line chart
      */
-    public void addChart(LineChart lineChart){
+    public void addChart(Visualization lineChart){
         scroller.setHeight("260px");
         contentGrid.setWidget(0, 1, lineChart);
     }

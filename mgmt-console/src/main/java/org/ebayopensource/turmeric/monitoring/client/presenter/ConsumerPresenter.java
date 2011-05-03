@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,6 +45,8 @@ import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.P
 import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
 import org.ebayopensource.turmeric.monitoring.client.model.SelectionContext;
 import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
+import org.ebayopensource.turmeric.monitoring.client.util.callback.ConsumerCallCountTrendCallbackQueue;
+import org.ebayopensource.turmeric.monitoring.client.util.callback.ParallelCallback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -68,40 +71,40 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
 
     /** The Constant CONSUMER_ID. */
     protected final static String CONSUMER_ID = "Consumer";
-    
+
     /** The Constant ONE_CONSUMER_METRICS. */
     protected final static List<ConsumerMetric> ONE_CONSUMER_METRICS = Arrays.asList(new ConsumerMetric[] {
             ConsumerMetric.TopVolume, ConsumerMetric.LeastPerformance, ConsumerMetric.TopServiceErrors,
             ConsumerMetric.TopConsumerErrors });
-    
+
     /** The Constant ANY_CONSUMER_METRICS. */
     protected final static List<ConsumerMetric> ANY_CONSUMER_METRICS = Arrays.asList(new ConsumerMetric[] {
             ConsumerMetric.CallVolume, ConsumerMetric.Performance, ConsumerMetric.Errors });
-    
+
     /** The view. */
-    protected Display view;
-    
+    private Display view;
+
     /** The event bus. */
     protected HandlerManager eventBus;
-    
+
     /** The query service. */
     protected MetricsQueryService queryService;
-    
+
     /** The services list. */
     protected Map<String, Set<String>> servicesList;
-    
+
     /** The selection context. */
     protected SelectionContext selectionContext;
-    
+
     /** The selected duration. */
     protected int selectedDuration;
-    
+
     /** The selected date1. */
     protected long selectedDate1;
-    
+
     /** The selected date2. */
     protected long selectedDate2;
-    
+
     /** The selected metrics. */
     protected List<ConsumerMetric> selectedMetrics;
 
@@ -109,58 +112,68 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * The Interface Display.
      */
     public interface Display extends org.ebayopensource.turmeric.monitoring.client.Display {
-        
+
         /**
          * Gets the table column.
-         *
-         * @param metric the metric
-         * @param startRow the start row
-         * @param col the col
+         * 
+         * @param metric
+         *            the metric
+         * @param startRow
+         *            the start row
+         * @param col
+         *            the col
          * @return the table column
          */
         public List<HasClickHandlers> getTableColumn(ConsumerMetric metric, int startRow, int col);
 
         /**
          * Error.
-         *
-         * @param error the error
+         * 
+         * @param error
+         *            the error
          */
         public void error(String error);
 
         /**
          * Sets the services map.
-         *
-         * @param map the map
+         * 
+         * @param map
+         *            the map
          */
         public void setServicesMap(Map<String, Set<String>> map);
 
         /**
          * Sets the selection.
-         *
-         * @param selections the selections
+         * 
+         * @param selections
+         *            the selections
          */
         public void setSelection(Map<ObjectType, String> selections);
 
         /**
          * Gets the selector.
-         *
+         * 
          * @return the selector
          */
         public HasSelectionHandlers<TreeItem> getSelector();
 
         /**
          * Sets the metric.
-         *
-         * @param m the m
-         * @param result the result
+         * 
+         * @param m
+         *            the m
+         * @param result
+         *            the result
          */
         public void setMetric(ConsumerMetric m, MetricData result);
 
         /**
          * Sets the download url.
-         *
-         * @param m the m
-         * @param url the url
+         * 
+         * @param m
+         *            the m
+         * @param url
+         *            the url
          */
         public void setDownloadUrl(ConsumerMetric m, String url);
 
@@ -171,32 +184,43 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
 
         /**
          * Gets the filter.
-         *
+         * 
          * @return the filter
          */
         public Filterable getFilter();
 
         /**
          * Sets the filter label.
-         *
-         * @param str the new filter label
+         * 
+         * @param str
+         *            the new filter label
          */
         public void setFilterLabel(String str);
 
         /**
          * Sets the consumer call trend data.
-         *
-         * @param graphData the new consumer call trend data
+         * 
+         * @param graphData
+         *            the new consumer call trend data
          */
         void setConsumerCallTrendData(List<TimeSlotData> graphData);
+
+        public void setConsumerPerformanceTrendData(List<TimeSlotData> dataRanges);
+
+        public void setConsumerErrorTrendData(List<TimeSlotData> dataRanges);
+        
+        public void setConsumerServiceCallTrendData(Map<String, List<TimeSlotData>> graphData);
     }
 
     /**
      * Instantiates a new consumer presenter.
-     *
-     * @param eventBus the event bus
-     * @param view the view
-     * @param queryService the query service
+     * 
+     * @param eventBus
+     *            the event bus
+     * @param view
+     *            the view
+     * @param queryService
+     *            the query service
      */
     public ConsumerPresenter(HandlerManager eventBus, Display view, MetricsQueryService queryService) {
         this.eventBus = eventBus;
@@ -206,15 +230,19 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         bind();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#getId()
      */
     public String getId() {
         return CONSUMER_ID;
     }
 
-    /* (non-Javadoc)
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#go(com.google.gwt.user.client.ui.HasWidgets, org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#go(com.google.gwt.user.client.ui.HasWidgets,
+     * org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
      */
     public void go(HasWidgets container, HistoryToken token) {
         // find out which entities have been selected in context
@@ -444,7 +472,8 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         });
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter.TabPresenter#getStateAsHistoryToken()
      */
     public HistoryToken getStateAsHistoryToken() {
@@ -480,12 +509,17 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
 
     /**
      * Fetch metrics.
-     *
-     * @param metrics the metrics
-     * @param sc the sc
-     * @param date1 the date1
-     * @param date2 the date2
-     * @param intervalHrs the interval hrs
+     * 
+     * @param metrics
+     *            the metrics
+     * @param sc
+     *            the sc
+     * @param date1
+     *            the date1
+     * @param date2
+     *            the date2
+     * @param intervalHrs
+     *            the interval hrs
      */
     protected void fetchMetrics(List<ConsumerMetric> metrics, SelectionContext sc, long date1, long date2,
                     int intervalHrs) {
@@ -533,13 +567,19 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
 
     /**
      * Fetch metric.
-     *
-     * @param m the m
-     * @param sc the sc
-     * @param returnType the return type
-     * @param date1 the date1
-     * @param date2 the date2
-     * @param durationHrs the duration hrs
+     * 
+     * @param m
+     *            the m
+     * @param sc
+     *            the sc
+     * @param returnType
+     *            the return type
+     * @param date1
+     *            the date1
+     * @param date2
+     *            the date2
+     * @param durationHrs
+     *            the duration hrs
      */
     protected void fetchMetric(final ConsumerMetric m, final SelectionContext sc, final Entity returnType,
                     final long date1, final long date2, final int durationHrs) {
@@ -587,8 +627,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
                 switch (m) {
                     case CallVolume:
                         // here I need to call the getMetricsValue for each consumer name I get. Also I need the 2 dates
-                        //getConsumerServiceTrends(sc.getSelection(ObjectType.ServiceName), date1, date2,
-                        //                result.getReturnData(), 0);
+                        getConsumerServiceTrends(sc.getSelection(ObjectType.ServiceName), sc.getSelection(ObjectType.OperationName), date1,date2);
                     case Performance:
                     case Errors: {
                         List<HasClickHandlers> clickHandlers = ConsumerPresenter.this.view.getTableColumn(m, 1, 0);
@@ -612,10 +651,18 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
                                 });
                             }
                         }
+
                         break;
                     }
                     case TopVolume:
+                        // here i call the getMetricsValue for the selected consumer
+                        getConsumerCallTrend(sc.getSelection(ObjectType.ServiceName),
+                                        sc.getSelection(ObjectType.ConsumerName),
+                                        sc.getSelection(ObjectType.OperationName), date1, date2);
                     case TopServiceErrors:
+                        getConsumerErrorTrend(sc.getSelection(ObjectType.ServiceName),
+                                        sc.getSelection(ObjectType.ConsumerName),
+                                        sc.getSelection(ObjectType.OperationName), date1, date2);
                     case LeastPerformance: {
                         List<HasClickHandlers> clickHandlers = ConsumerPresenter.this.view.getTableColumn(m, 1, 0);
                         if (clickHandlers != null) {
@@ -640,6 +687,9 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
                                 });
                             }
                         }
+                        getConsumerPerformanceTrend(sc.getSelection(ObjectType.ServiceName),
+                                        sc.getSelection(ObjectType.ConsumerName),
+                                        sc.getSelection(ObjectType.OperationName), date1, date2);
                         break;
                     }
 
@@ -660,74 +710,189 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
                          */
                 }
             }
+
+        });
+    }
+
+    protected void getConsumerPerformanceTrend(String serviceName, String consumerName, String operationName,
+                    long date1, long date2) {
+        // now I call the SQMS with the data for this consumer
+        CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
+        criteriaInfo.setMetricName("ResponseTime");
+        criteriaInfo.setConsumerName(consumerName);
+        criteriaInfo.setServiceName(serviceName);
+        if (operationName != null) {
+            criteriaInfo.setOperationName(operationName);
+        }
+        criteriaInfo.setRoleType("server");
+        Date firstDate = Util.resetTo12am(date1);
+        Date secondDate = Util.resetTo12am(date2);
+
+        MetricValue firstDateValue = new MetricValue(criteriaInfo, firstDate.getTime(), 86400l, 3600, "false");
+        MetricValue secondDateValue = new MetricValue(criteriaInfo, secondDate.getTime(), 86400l, 3600, "false");
+
+        queryService.getMetricValueTrend(firstDateValue, secondDateValue, new AsyncCallback<List<TimeSlotData>>() {
+
+            @Override
+            public void onSuccess(List<TimeSlotData> dataRanges) {
+                ConsumerPresenter.this.view.activate();
+                ConsumerPresenter.this.view.setConsumerPerformanceTrendData(dataRanges);
+            }
+
+            @Override
+            public void onFailure(Throwable exception) {
+                GWT.log(exception.getMessage());
+            }
+        });
+    }
+
+    protected void getConsumerErrorTrend(String serviceName, String consumerName, String operationName, long date1,
+                    long date2) {
+        // now I call the SQMS with the data for this consumer
+        CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
+        criteriaInfo.setMetricName("ErrorCount");
+        criteriaInfo.setConsumerName(consumerName);
+        criteriaInfo.setServiceName(serviceName);
+        if (operationName != null) {
+            criteriaInfo.setOperationName(operationName);
+        }
+        criteriaInfo.setRoleType("server");
+        Date firstDate = Util.resetTo12am(date1);
+        Date secondDate = Util.resetTo12am(date2);
+
+        MetricValue firstDateValue = new MetricValue(criteriaInfo, firstDate.getTime(), 86400l, 3600, "false");
+        MetricValue secondDateValue = new MetricValue(criteriaInfo, secondDate.getTime(), 86400l, 3600, "false");
+
+        queryService.getMetricValueTrend(firstDateValue, secondDateValue, new AsyncCallback<List<TimeSlotData>>() {
+
+            @Override
+            public void onSuccess(List<TimeSlotData> dataRanges) {
+                ConsumerPresenter.this.view.activate();
+                ConsumerPresenter.this.view.setConsumerErrorTrendData(dataRanges);
+            }
+
+            @Override
+            public void onFailure(Throwable exception) {
+                GWT.log(exception.getMessage());
+            }
         });
     }
 
     /**
      * Gets the consumer service trends.
-     *
-     * @param serviceName the service name
-     * @param date1 the date1
-     * @param date2 the date2
-     * @param returnData the return data
-     * @param initialIndex the initial index
+     * 
+     * @param serviceName
+     *            the service name
+     * @param date1
+     *            the date1
+     * @param date2
+     *            the date2
+     * @param returnData
+     *            the return data
+     * @param initialIndex
+     *            the initial index
      * @return the consumer service trends
      */
-    protected void getConsumerServiceTrends(final String serviceName, final long date1, final long date2,
-                    final List<MetricGroupData> returnData, final int initialIndex) {
-        if (returnData != null) {
-            // first I need to iterate through the list of consumers
-            final int returnDataSize = returnData.size();
-            GWT.log("returnDataSize=" + returnDataSize);
-            if (returnDataSize == 0) {
-                return;
+    protected void getConsumerServiceTrends(final String serviceName, final String operationName, final long date1, final long date2){
+
+        // first, I need to get the list of consumers for the selected service
+        queryService.getServiceConsumers(serviceName, new AsyncCallback<Set<String>>() {
+
+            @Override
+            public void onFailure(Throwable e) {
+                GWT.log("Error getting the consumer list", e);
             }
-            MetricGroupData metricGroupData = returnData.get(initialIndex);
 
-            // now I call the SQMS with the data for this consumer
-            CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
-            criteriaInfo.setMetricName("CallCount");
-            criteriaInfo.setConsumerName(metricGroupData.getCriteriaInfo().getConsumerName());
-            criteriaInfo.setServiceName(serviceName);
-            criteriaInfo.setRoleType("server");
-            MetricValue firstDate = new MetricValue(criteriaInfo, Util.resetTo12am(date1).getTime(), 86400l,
-                            returnDataSize, "");
-            MetricValue secondDate = new MetricValue(criteriaInfo, Util.resetTo12am(date2).getTime(), 86400l,
-                            returnDataSize, "");
-
-            queryService.getServiceMetricValueTrend(firstDate, secondDate, new AsyncCallback<List<TimeSlotData>>() {
-
-                @Override
-                public void onSuccess(List<TimeSlotData> dataRanges) {
-                    if (initialIndex < returnDataSize - 1) {
-                        ConsumerPresenter.this.getConsumerServiceTrends(serviceName, date1, date2,
-                                        returnData.subList(initialIndex, returnDataSize), initialIndex + 1);
+            @Override
+            public void onSuccess(Set<String> consumerNames) {
+                
+                ConsumerCallCountTrendCallbackQueue queue = new ConsumerCallCountTrendCallbackQueue();
+                queue.setView(ConsumerPresenter.this.view);
+                final Iterator<String> consuemrIterator = consumerNames.iterator();
+                String consumerName = null;
+                while (consuemrIterator.hasNext()) {
+                    consumerName = consuemrIterator.next();
+                    GWT.log("consumerName = " + consumerName);
+                    
+                    ParallelCallback<List<TimeSlotData>> cllbck = new ParallelCallback<List<TimeSlotData>>();
+                    cllbck.setId(consumerName);
+                    queue.add(cllbck);
+                    
+                    //now i trigger the calls
+                 // now I call the SQMS with the data for this consumer
+                    CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
+                    criteriaInfo.setMetricName("CallCount");
+                    criteriaInfo.setConsumerName(consumerName);
+                    criteriaInfo.setServiceName(serviceName);
+                    if(operationName != null){
+                        criteriaInfo.setOperationName(operationName);
                     }
-                    else {
-                        ConsumerPresenter.this.view.activate();
-                        ConsumerPresenter.this.view.setConsumerCallTrendData(dataRanges);
-                    }
+                    criteriaInfo.setRoleType("server");
+                    Date firstDate = Util.resetTo12am(date1);
+                    Date secondDate = Util.resetTo12am(date2);
 
+                    MetricValue firstDateValue = new MetricValue(criteriaInfo, firstDate.getTime(), 86400l, 86400, "false");
+                    MetricValue secondDateValue = new MetricValue(criteriaInfo, secondDate.getTime(), 86400l, 86400, "false");
+                    queryService.getMetricValueTrend(firstDateValue, secondDateValue, cllbck);
+                    
+                    
+                    
                 }
+                
+                
+            }
+        });
 
-                @Override
-                public void onFailure(Throwable exception) {
-                    GWT.log(exception.getMessage());
-                }
-            });
+    }
 
+    
+
+    protected void getConsumerCallTrend(final String serviceName, final String consumerName,
+                    final String operationName, final long date1, final long date2) {
+        // now I call the SQMS with the data for this consumer
+        CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
+        criteriaInfo.setMetricName("CallCount");
+        criteriaInfo.setConsumerName(consumerName);
+        criteriaInfo.setServiceName(serviceName);
+        if (operationName != null) {
+            criteriaInfo.setOperationName(operationName);
         }
+        criteriaInfo.setRoleType("server");
+        Date firstDate = Util.resetTo12am(date1);
+        Date secondDate = Util.resetTo12am(date2);
+
+        MetricValue firstDateValue = new MetricValue(criteriaInfo, firstDate.getTime(), 86400l, 3600, "false");
+        MetricValue secondDateValue = new MetricValue(criteriaInfo, secondDate.getTime(), 86400l, 3600, "false");
+        queryService.getMetricValueTrend(firstDateValue, secondDateValue, new AsyncCallback<List<TimeSlotData>>() {
+
+            @Override
+            public void onSuccess(List<TimeSlotData> dataRanges) {
+                ConsumerPresenter.this.view.activate();
+                ConsumerPresenter.this.view.setConsumerCallTrendData(dataRanges);
+            }
+
+            @Override
+            public void onFailure(Throwable exception) {
+                GWT.log(exception.getMessage());
+            }
+        });
     }
 
     /**
      * Insert history.
-     *
-     * @param sc the sc
-     * @param d1 the d1
-     * @param d2 the d2
-     * @param interval the interval
-     * @param metrics the metrics
-     * @param fire the fire
+     * 
+     * @param sc
+     *            the sc
+     * @param d1
+     *            the d1
+     * @param d2
+     *            the d2
+     * @param interval
+     *            the interval
+     * @param metrics
+     *            the metrics
+     * @param fire
+     *            the fire
      */
     protected void insertHistory(SelectionContext sc, long d1, long d2, int interval,
                     Collection<ConsumerMetric> metrics, boolean fire) {
@@ -746,13 +911,19 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
 
     /**
      * Insert history.
-     *
-     * @param tabId the tab id
-     * @param sc the sc
-     * @param d1 the d1
-     * @param d2 the d2
-     * @param interval the interval
-     * @param fire the fire
+     * 
+     * @param tabId
+     *            the tab id
+     * @param sc
+     *            the sc
+     * @param d1
+     *            the d1
+     * @param d2
+     *            the d2
+     * @param interval
+     *            the interval
+     * @param fire
+     *            the fire
      */
     protected void insertHistory(String tabId, SelectionContext sc, long d1, long d2, int interval, boolean fire) {
         HistoryToken token = HistoryToken.newHistoryToken(DashboardPresenter.DASH_ID, null);
@@ -775,5 +946,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         filterString += d2s + " + " + (durationHrs) + " >>";
         return filterString;
     }
+
+    
 
 }

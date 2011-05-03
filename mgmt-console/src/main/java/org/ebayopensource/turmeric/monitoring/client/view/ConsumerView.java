@@ -10,10 +10,10 @@ package org.ebayopensource.turmeric.monitoring.client.view;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 
 import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 import org.ebayopensource.turmeric.monitoring.client.Dashboard;
@@ -53,8 +53,11 @@ import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
+import com.google.gwt.visualization.client.visualizations.BarChart;
+import com.google.gwt.visualization.client.visualizations.ColumnChart;
 import com.google.gwt.visualization.client.visualizations.LineChart;
 import com.google.gwt.visualization.client.visualizations.LineChart.Options;
+import com.google.gwt.visualization.client.visualizations.Visualization;
 
 /**
  * ConsumerView
@@ -76,11 +79,11 @@ import com.google.gwt.visualization.client.visualizations.LineChart.Options;
  */
 /**
  * ConsumerView
- *
+ * 
  */
 public class ConsumerView extends Composite implements ConsumerPresenter.Display {
-	
-	private String id;
+
+    private String id;
     private Label summaryHeading;
     private FilterWidget filterWidget;
     private SplitLayoutPanel splitPanel;
@@ -102,240 +105,249 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     private FlexTable topConsumerErrorsTable;
     private Button filterButton;
     private DialogBox filterDialog;
-    
-    
 
     /**
      * Instantiates a new consumer view.
-     *
-     * @param dashboard the dashboard
+     * 
+     * @param dashboard
+     *            the dashboard
      */
-    public ConsumerView (Dashboard dashboard) {
-        //make the panel for the contents of the tab
+    public ConsumerView(Dashboard dashboard) {
+        // make the panel for the contents of the tab
         DockLayoutPanel contentPanel = new DockLayoutPanel(Unit.EM);
         initWidget(contentPanel);
 
-        //heading
+        // heading
         Panel topPanel = new FlowPanel();
         topPanel.addStyleName("summary-heading-panel");
-        Grid g = new Grid (1,2);
+        Grid g = new Grid(1, 2);
         g.setHeight("100%");
         g.setWidth("100%");
         summaryHeading = new Label("&nbsp");
         summaryHeading.setWidth("50em");
         g.setWidget(0, 0, summaryHeading);
         g.getCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_MIDDLE);
-        topPanel.add (g);
-        
+        topPanel.add(g);
 
-        //filters: dates, times and metrics
+        // filters: dates, times and metrics
         filterWidget = new FilterWidget();
         filterWidget.setDateFormat("dd MMM yyyy");
-        
+
         filterButton = new Button("Filter Criteria >>");
         filterButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 pickFilter();
             }
         });
-        
+
         g.setWidget(0, 1, filterButton);
         g.getCellFormatter().setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_MIDDLE);
-      
 
         filterDialog = new DialogBox(true);
         filterDialog.setText("Select Filter Criteria");
         FlowPanel contents = new FlowPanel();
         filterDialog.setWidget(contents);
         contents.add(filterWidget);
-        
+
         filterWidget.getApplyButton().addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 filterDialog.hide(true);
             }
         });
-        
+
         filterWidget.getCancelButton().addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 filterDialog.hide(true);
             }
         });
-        
-        
+
         splitPanel = new SplitLayoutPanel();
         contentPanel.addNorth(topPanel, 2.5);
         contentPanel.add(splitPanel);
-        
-        //scrolling panel for right hand side
+
+        // scrolling panel for right hand side
         ScrollPanel rhs = new ScrollPanel();
         rhs.setAlwaysShowScrollBars(true);
         rhs.addStyleName("summary-panel");
-        
-    
+
         FlowPanel panel = new FlowPanel();
 
-        //Tables (which will be graphs in future releases) for when no Consumer is selected:
-        // Call Volume (isn't this just the same as Consumer Traffic from service tab? CallCount for Service(/Operation) by Consumer?)
+        // Tables (which will be graphs in future releases) for when no Consumer is selected:
+        // Call Volume (isn't this just the same as Consumer Traffic from service tab? CallCount for Service(/Operation)
+        // by Consumer?)
         callVolumeTable = makeTable();
         callVolumePanel = makePanel(ConsoleUtil.constants.callVolume(), callVolumeTable);
         panel.add(callVolumePanel);
         hide(callVolumePanel);
-        
+
         // Performance (analogous to Least Performance for Service tab, but grouped by Consumer)
         performanceTable = makeTable();
         performancePanel = makePanel(ConsoleUtil.constants.performance(), performanceTable);
         panel.add(performancePanel);
         hide(performancePanel);
-        
+
         // Errors (isn't this the same as Consumer Errors from service tab? Errors for Service(/Operation) by Consumer?
         errorsTable = makeTable();
         errorsPanel = makePanel(ConsoleUtil.constants.errors(), errorsTable);
         panel.add(errorsPanel);
         hide(errorsPanel);
-        
-        //Tables for when a Consumer has been selected:
-        //Top Volume (CallCount for Consumer by Service)
+
+        // Tables for when a Consumer has been selected:
+        // Top Volume (CallCount for Consumer by Service)
         topVolumeTable = makeTable();
         topVolumePanel = makePanel(ConsoleUtil.constants.topVolume(), topVolumeTable);
         panel.add(topVolumePanel);
         hide(topVolumePanel);
-        
-        //Least Performance (ResponseTime for Consumer by Service)
+
+        // Least Performance (ResponseTime for Consumer by Service)
         leastPerformanceTable = makeTable();
         leastPerformancePanel = makePanel(ConsoleUtil.constants.leastPerformance(), leastPerformanceTable);
         panel.add(leastPerformancePanel);
         hide(leastPerformancePanel);
-        
-        //Top Errors (Errors for Consumer by Service(NOTE: 5 columns: service + error is returned!)
+
+        // Top Errors (Errors for Consumer by Service(NOTE: 5 columns: service + error is returned!)
         topServiceErrorsTable = makeTable();
         topServiceErrorsPanel = makePanel(ConsoleUtil.constants.topServiceErrors(), topServiceErrorsTable);
         panel.add(topServiceErrorsPanel);
         hide(topServiceErrorsPanel);
-        
-        //Consumer Errors (Errors for Consumer by ...?)
+
+        // Consumer Errors (Errors for Consumer by ...?)
         topConsumerErrorsTable = makeTable();
         topConsumerErrorsPanel = makePanel(ConsoleUtil.constants.topConsumerErrors(), topConsumerErrorsTable);
         panel.add(topConsumerErrorsPanel);
         hide(topConsumerErrorsPanel);
-        
+
         rhs.add(panel);
 
         serviceListWidget = new ServiceListWidget();
-        
+
         splitPanel.addWest(serviceListWidget, 250);
         splitPanel.add(rhs);
-        
+
         this.dashboard = dashboard;
-		this.dashboard.addView(this, ConsoleUtil.constants.consumers());
-	}
+        this.dashboard.addView(this, ConsoleUtil.constants.consumers());
+    }
 
-	/* (non-Javadoc)
-	 * @see com.google.gwt.user.client.ui.Widget#asWidget()
-	 */
-	public Widget asWidget() {
-		return this;
-	}
+    /*
+     * (non-Javadoc)
+     * @see com.google.gwt.user.client.ui.Widget#asWidget()
+     */
+    public Widget asWidget() {
+        return this;
+    }
 
-	/**
-	 * View about to be shown, do any clean up necessary.
-	 *
-	 * @see org.ebayopensource.turmeric.monitoring.client.Display#activate()
-	 */
-	public void activate () {
-	    dashboard.activate(this);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.ebayopensource.turmeric.monitoring.client.Display#setAssociatedId(java.lang.String)
-	 */
-	public void setAssociatedId (String id) {
-		this.id = id;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.ebayopensource.turmeric.monitoring.client.Display#getAssociatedId()
-	 */
-	public String getAssociatedId () {
-		return this.id;
-	}
+    /**
+     * View about to be shown, do any clean up necessary.
+     * 
+     * @see org.ebayopensource.turmeric.monitoring.client.Display#activate()
+     */
+    public void activate() {
+        dashboard.activate(this);
+    }
 
+    /*
+     * (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.Display#setAssociatedId(java.lang.String)
+     */
+    public void setAssociatedId(String id) {
+        this.id = id;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setSelection(java.util.Map)
-	 */
-	public void setSelection(Map<ObjectType,String> selections) {     
-	    String s = "";
-	    if (selections != null) {
-	        if (selections.get(ObjectType.ServiceName) != null)
-	            s = s +" "+selections.get(ObjectType.ServiceName);
-	        if (selections.get(ObjectType.OperationName) != null)
-	            s = s+" : "+selections.get(ObjectType.OperationName);
-	        if (selections.get(ObjectType.ConsumerName) != null) 
-	            s = s+" : "+selections.get(ObjectType.ConsumerName);
+    /*
+     * (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.Display#getAssociatedId()
+     */
+    public String getAssociatedId() {
+        return this.id;
+    }
 
-	        serviceListWidget.setSelection(selections.get(ObjectType.ServiceName), selections.get(ObjectType.OperationName));
-	    }
-	    else 
-	        serviceListWidget.setSelection(null, null);
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setSelection(java.util.Map)
+     */
+    public void setSelection(Map<ObjectType, String> selections) {
+        String s = "";
+        if (selections != null) {
+            if (selections.get(ObjectType.ServiceName) != null)
+                s = s + " " + selections.get(ObjectType.ServiceName);
+            if (selections.get(ObjectType.OperationName) != null)
+                s = s + " : " + selections.get(ObjectType.OperationName);
+            if (selections.get(ObjectType.ConsumerName) != null)
+                s = s + " : " + selections.get(ObjectType.ConsumerName);
 
-	    if ("".equals(s))
-	        s = ConsoleUtil.constants.summary();
-	    summaryHeading.setText(s); 
-	}
+            serviceListWidget.setSelection(selections.get(ObjectType.ServiceName),
+                            selections.get(ObjectType.OperationName));
+        }
+        else
+            serviceListWidget.setSelection(null, null);
 
-	/* (non-Javadoc)
-	 * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#getSelector()
-	 */
-	public HasSelectionHandlers<TreeItem> getSelector() {
-	    return serviceListWidget.getServiceTree();
-	}
-	
-	   
-    /* (non-Javadoc)
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setServicesMap(java.util.Map)
+        if ("".equals(s))
+            s = ConsoleUtil.constants.summary();
+        summaryHeading.setText(s);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#getSelector()
+     */
+    public HasSelectionHandlers<TreeItem> getSelector() {
+        return serviceListWidget.getServiceTree();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setServicesMap(java.util.Map)
      */
     public void setServicesMap(Map<String, Set<String>> map) {
         serviceListWidget.setServicesMap(map);
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#error(java.lang.String)
      */
-    public void error (String msg) {
-       ErrorDialog dialog = new ErrorDialog(true);
-       dialog.setMessage(msg);
-       dialog.getDialog().center();
-       dialog.show();
+    public void error(String msg) {
+        ErrorDialog dialog = new ErrorDialog(true);
+        dialog.setMessage(msg);
+        dialog.getDialog().center();
+        dialog.show();
     }
 
     /**
      * Hide.
-     *
-     * @param o the o
+     * 
+     * @param o
+     *            the o
      */
-    public void hide (UIObject o) {
+    public void hide(UIObject o) {
         o.setVisible(false);
     }
-    
+
     /**
      * Show.
-     *
-     * @param o the o
+     * 
+     * @param o
+     *            the o
      */
-    public void show (UIObject o) {
+    public void show(UIObject o) {
         o.setVisible(true);
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#getFilter()
      */
-    public Filterable getFilter () {
+    public Filterable getFilter() {
         return filterWidget;
     }
 
-    
-    /* (non-Javadoc)
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setDownloadUrl(org.ebayopensource.turmeric.monitoring.client.model.ConsumerMetric, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setDownloadUrl(org.ebayopensource
+     * .turmeric.monitoring.client.model.ConsumerMetric, java.lang.String)
      */
     public void setDownloadUrl(ConsumerMetric m, String url) {
         SummaryPanel panel = null;
@@ -373,13 +385,15 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
             panel.setDownloadUrl(url);
     }
 
-
-    /* (non-Javadoc)
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setMetric(org.ebayopensource.turmeric.monitoring.client.model.ConsumerMetric, org.ebayopensource.turmeric.monitoring.client.model.MetricData)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setMetric(org.ebayopensource
+     * .turmeric.monitoring.client.model.ConsumerMetric, org.ebayopensource.turmeric.monitoring.client.model.MetricData)
      */
     public void setMetric(ConsumerMetric m, MetricData result) {
-    
-        //Fill in the appropriate table with the results
+
+        // Fill in the appropriate table with the results
         SummaryPanel panel = null;
         String date1Header = "";
         String date2Header = "";
@@ -387,8 +401,10 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         if (result != null) {
             String d1 = ConsoleUtil.timeFormat.format(new Date(result.getMetricCriteria().date1));
             String d2 = ConsoleUtil.timeFormat.format(new Date(result.getMetricCriteria().date2));
-            date1Header = d1+ " + "+(result.getMetricCriteria().durationSec/(60*60))+ConsoleUtil.constants.hr();
-            date2Header = d2+ " + "+(result.getMetricCriteria().durationSec/(60*60))+ConsoleUtil.constants.hr();
+            date1Header = d1 + " + " + (result.getMetricCriteria().durationSec / (60 * 60))
+                            + ConsoleUtil.constants.hr();
+            date2Header = d2 + " + " + (result.getMetricCriteria().durationSec / (60 * 60))
+                            + ConsoleUtil.constants.hr();
         }
 
         switch (m) {
@@ -396,27 +412,28 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
             case CallVolume: {
                 String[] columns = {
                         ConsoleUtil.constants.consumers(),
-                        (result==null?ConsoleUtil.constants.count():date1Header+" "+ConsoleUtil.constants.count()),
-                        (result==null?ConsoleUtil.constants.count():date2Header+" "+ConsoleUtil.constants.count()),
-                        "% "+ConsoleUtil.constants.change()
-                };
-                
+                        (result == null ? ConsoleUtil.constants.count() : date1Header + " "
+                                        + ConsoleUtil.constants.count()),
+                        (result == null ? ConsoleUtil.constants.count() : date2Header + " "
+                                        + ConsoleUtil.constants.count()), "% " + ConsoleUtil.constants.change() };
+
                 List<Widget[]> rows = new ArrayList<Widget[]>();
                 if (result != null) {
-                    for (int i=0; i<result.getReturnData().size(); i++) {
+                    for (int i = 0; i < result.getReturnData().size(); i++) {
                         MetricGroupData rd = result.getReturnData().get(i);
-                        Widget[] rowData = new Widget[4];  
+                        Widget[] rowData = new Widget[4];
                         rowData[0] = new Label(rd.getCriteriaInfo().getConsumerName());
-                        rowData[1] = new Label(NumberFormat.getDecimalFormat().format(Double.parseDouble(rd.getCount1())));
-                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(Double.parseDouble(rd.getCount2())));
+                        rowData[1] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount1())));
+                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount2())));
                         rowData[3] = new Label(rd.getDiff());
                         rows.add(rowData);
                     }
                 }
-                
-                
+
                 setTabularData(callVolumeTable, columns, rows);
-                for (int i=1; i<callVolumeTable.getRowCount(); i++) {
+                for (int i = 1; i < callVolumeTable.getRowCount(); i++) {
                     Widget w = callVolumeTable.getWidget(i, 0);
                     w.addStyleName("clickable");
                 }
@@ -426,25 +443,28 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
             case Performance: {
                 String[] columns = {
                         ConsoleUtil.constants.consumers(),
-                        (result==null?ConsoleUtil.constants.average():date1Header+" "+ConsoleUtil.constants.average()+" \u00B5s"),
-                        (result==null?ConsoleUtil.constants.average():date2Header+" "+ConsoleUtil.constants.average()+" \u00B5s"),
-                        "% "+ConsoleUtil.constants.change()
-                };
+                        (result == null ? ConsoleUtil.constants.average() : date1Header + " "
+                                        + ConsoleUtil.constants.average() + " \u00B5s"),
+                        (result == null ? ConsoleUtil.constants.average() : date2Header + " "
+                                        + ConsoleUtil.constants.average() + " \u00B5s"),
+                        "% " + ConsoleUtil.constants.change() };
                 List<Widget[]> rows = new ArrayList<Widget[]>();
                 if (result != null) {
-                    for (int i=0; i<result.getReturnData().size(); i++) {
+                    for (int i = 0; i < result.getReturnData().size(); i++) {
                         MetricGroupData rd = result.getReturnData().get(i);
-                        Widget[] rowData = new Widget[4];  
+                        Widget[] rowData = new Widget[4];
                         rowData[0] = new Label(rd.getCriteriaInfo().getConsumerName());
-                        rowData[1] = new Label(NumberFormat.getDecimalFormat().format(Double.parseDouble(rd.getCount1())));
-                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(Double.parseDouble(rd.getCount2())));
+                        rowData[1] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount1())));
+                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount2())));
                         rowData[3] = new Label(rd.getDiff());
                         rows.add(rowData);
                     }
                 }
-                
+
                 setTabularData(performanceTable, columns, rows);
-                for (int i=1; i<performanceTable.getRowCount(); i++) {
+                for (int i = 1; i < performanceTable.getRowCount(); i++) {
                     Widget w = performanceTable.getWidget(i, 0);
                     w.addStyleName("clickable");
                 }
@@ -454,66 +474,72 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
             case Errors: {
                 String[] columns = {
                         ConsoleUtil.constants.consumers(),
-                        (result==null?ConsoleUtil.constants.count():date1Header+" "+ConsoleUtil.constants.count()),
-                        (result==null?ConsoleUtil.constants.count():date2Header+" "+ConsoleUtil.constants.count()),
-                        "% "+ConsoleUtil.constants.change()
-                };
-                
+                        (result == null ? ConsoleUtil.constants.count() : date1Header + " "
+                                        + ConsoleUtil.constants.count()),
+                        (result == null ? ConsoleUtil.constants.count() : date2Header + " "
+                                        + ConsoleUtil.constants.count()), "% " + ConsoleUtil.constants.change() };
+
                 List<Widget[]> rows = new ArrayList<Widget[]>();
                 if (result != null) {
-                    for (int i=0; i<result.getReturnData().size(); i++) {
+                    for (int i = 0; i < result.getReturnData().size(); i++) {
                         MetricGroupData rd = result.getReturnData().get(i);
-                        Widget[] rowData = new Widget[4];  
+                        Widget[] rowData = new Widget[4];
                         rowData[0] = new Label(rd.getCriteriaInfo().getConsumerName());
-                        rowData[1] = new Label(NumberFormat.getDecimalFormat().format(Double.parseDouble(rd.getCount1())));
-                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(Double.parseDouble(rd.getCount2())));
+                        rowData[1] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount1())));
+                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount2())));
                         rowData[3] = new Label(rd.getDiff());
                         rows.add(rowData);
                     }
                 }
-                
+
                 setTabularData(errorsTable, columns, rows);
-                 for (int i=1; i<errorsTable.getRowCount(); i++) {
+                for (int i = 1; i < errorsTable.getRowCount(); i++) {
                     Widget w = errorsTable.getWidget(i, 0);
                     w.addStyleName("clickable");
-                } 
+                }
                 panel = errorsPanel;
                 break;
             }
-            /* End tables for all consumers */
-            /* Start tables for a particular consumer */
+                /* End tables for all consumers */
+                /* Start tables for a particular consumer */
             case TopVolume: {
-                //column 0 will either be Services or Operations of a Service
+                // column 0 will either be Services or Operations of a Service
                 String col0 = ConsoleUtil.constants.services();
-                if (result != null && result.getMetricResourceCriteria().resourceEntityResponseType.equals(Entity.Operation))
+                if (result != null
+                                && result.getMetricResourceCriteria().resourceEntityResponseType
+                                                .equals(Entity.Operation))
                     col0 = ConsoleUtil.constants.operations();
                 String[] columns = {
                         col0,
-                        (result==null?ConsoleUtil.constants.count():date1Header+" "+ConsoleUtil.constants.count()),
-                        (result==null?ConsoleUtil.constants.count():date2Header+" "+ConsoleUtil.constants.count()),
-                        "% "+ConsoleUtil.constants.change()
-                };
-                
+                        (result == null ? ConsoleUtil.constants.count() : date1Header + " "
+                                        + ConsoleUtil.constants.count()),
+                        (result == null ? ConsoleUtil.constants.count() : date2Header + " "
+                                        + ConsoleUtil.constants.count()), "% " + ConsoleUtil.constants.change() };
+
                 List<Widget[]> rows = new ArrayList<Widget[]>();
                 if (result != null) {
-                    for (int i=0; i<result.getReturnData().size(); i++) {
+                    for (int i = 0; i < result.getReturnData().size(); i++) {
                         MetricGroupData rd = result.getReturnData().get(i);
                         Widget[] rowData = new Widget[4];
                         if (result.getMetricResourceCriteria().resourceEntityResponseType.equals(Entity.Service))
                             rowData[0] = new Label(rd.getCriteriaInfo().getServiceName());
                         else if (result.getMetricResourceCriteria().resourceEntityResponseType.equals(Entity.Operation))
-                            rowData[0] =  new Label(rd.getCriteriaInfo().getOperationName());
-                        
-                        rowData[1] = new Label(NumberFormat.getDecimalFormat().format(Double.parseDouble(rd.getCount1())));
-                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(Double.parseDouble(rd.getCount2())));
+                            rowData[0] = new Label(rd.getCriteriaInfo().getOperationName());
+
+                        rowData[1] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount1())));
+                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount2())));
                         rowData[3] = new Label(rd.getDiff());
                         rows.add(rowData);
                     }
                 }
-                
-                setTabularData(topVolumeTable,columns, rows);
-                //style the column with the names of the consumers in it
-                for (int i=1; i<topVolumeTable.getRowCount(); i++) {
+
+                setTabularData(topVolumeTable, columns, rows);
+                // style the column with the names of the consumers in it
+                for (int i = 1; i < topVolumeTable.getRowCount(); i++) {
                     Widget w = topVolumeTable.getWidget(i, 0);
                     w.addStyleName("clickable");
                 }
@@ -521,47 +547,53 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
                 break;
             }
             case LeastPerformance: {
-                //column 0 will either be Services or Operations of a Service
+                // column 0 will either be Services or Operations of a Service
                 String col0 = ConsoleUtil.constants.services();
-                if (result != null && result.getMetricResourceCriteria().resourceEntityResponseType.equals(Entity.Operation))
+                if (result != null
+                                && result.getMetricResourceCriteria().resourceEntityResponseType
+                                                .equals(Entity.Operation))
                     col0 = ConsoleUtil.constants.operations();
                 String[] columns = {
                         col0,
-                        (result==null?ConsoleUtil.constants.average():date1Header+" "+ConsoleUtil.constants.average()+" \u00B5s"),
-                        (result==null?ConsoleUtil.constants.average():date2Header+" "+ConsoleUtil.constants.average()+" \u00B5s"),
-                        "% "+ConsoleUtil.constants.change()
-                };
+                        (result == null ? ConsoleUtil.constants.average() : date1Header + " "
+                                        + ConsoleUtil.constants.average() + " \u00B5s"),
+                        (result == null ? ConsoleUtil.constants.average() : date2Header + " "
+                                        + ConsoleUtil.constants.average() + " \u00B5s"),
+                        "% " + ConsoleUtil.constants.change() };
                 List<Widget[]> rows = new ArrayList<Widget[]>();
                 if (result != null) {
-                    for (int i=0; i<result.getReturnData().size(); i++) {
+                    for (int i = 0; i < result.getReturnData().size(); i++) {
                         MetricGroupData rd = result.getReturnData().get(i);
                         Widget[] rowData = new Widget[4];
                         if (result.getMetricResourceCriteria().resourceEntityResponseType.equals(Entity.Service))
                             rowData[0] = new Label(rd.getCriteriaInfo().getServiceName());
                         else if (result.getMetricResourceCriteria().resourceEntityResponseType.equals(Entity.Operation))
                             rowData[0] = new Label(rd.getCriteriaInfo().getOperationName());
-                        
-                        rowData[1] = new Label(NumberFormat.getDecimalFormat().format(Double.parseDouble(rd.getCount1())));
-                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(Double.parseDouble(rd.getCount2())));
+
+                        rowData[1] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount1())));
+                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount2())));
                         rowData[3] = new Label(rd.getDiff());
                         rows.add(rowData);
                     }
                 }
-                
+
                 setTabularData(leastPerformanceTable, columns, rows);
-                //style the column with the names of the consumers in it
-                for (int i=1; i<leastPerformanceTable.getRowCount(); i++) {
+                // style the column with the names of the consumers in it
+                for (int i = 1; i < leastPerformanceTable.getRowCount(); i++) {
                     Widget w = leastPerformanceTable.getWidget(i, 0);
                     w.addStyleName("clickable");
                 }
                 panel = leastPerformancePanel;
                 break;
             }
-            case TopServiceErrors: {               
+            case TopServiceErrors: {
                 boolean isOperation = false;
-                if (result != null && result.getMetricResourceCriteria() != null && result.getMetricResourceCriteria().resourceEntityRequests != null) {
-                    for (ResourceEntityRequest r:result.getMetricResourceCriteria().resourceEntityRequests) {
-                        if (r.resourceEntityType==Entity.Operation)
+                if (result != null && result.getMetricResourceCriteria() != null
+                                && result.getMetricResourceCriteria().resourceEntityRequests != null) {
+                    for (ResourceEntityRequest r : result.getMetricResourceCriteria().resourceEntityRequests) {
+                        if (r.resourceEntityType == Entity.Operation)
                             isOperation = true;
                     }
                 }
@@ -570,34 +602,35 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
                     col0 = ConsoleUtil.constants.operations();
                 String[] columns = {
                         col0,
-                        ConsoleUtil.constants.errors(), 
-                        (result==null?ConsoleUtil.constants.count():date1Header+" "+ConsoleUtil.constants.count()),
-                        (result==null?ConsoleUtil.constants.count():date2Header+" "+ConsoleUtil.constants.count()),
-                        "% "+ConsoleUtil.constants.change()
-                };
+                        ConsoleUtil.constants.errors(),
+                        (result == null ? ConsoleUtil.constants.count() : date1Header + " "
+                                        + ConsoleUtil.constants.count()),
+                        (result == null ? ConsoleUtil.constants.count() : date2Header + " "
+                                        + ConsoleUtil.constants.count()), "% " + ConsoleUtil.constants.change() };
                 List<Widget[]> rows = new ArrayList<Widget[]>();
                 if (result != null) {
-                    for (int i=0; i<result.getReturnData().size(); i++) {
+                    for (int i = 0; i < result.getReturnData().size(); i++) {
                         MetricGroupData rd = result.getReturnData().get(i);
-           
+
                         Widget[] rowData = new Widget[5];
-                      
-                   
+
                         if (isOperation)
                             rowData[0] = new Label(rd.getCriteriaInfo().getOperationName());
                         else
                             rowData[0] = new Label(rd.getCriteriaInfo().getServiceName());
                         rowData[1] = new Label(rd.getCriteriaInfo().getMetricName());
-                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(Double.parseDouble(rd.getCount1())));
-                        rowData[3] = new Label(NumberFormat.getDecimalFormat().format(Double.parseDouble(rd.getCount2())));
+                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount1())));
+                        rowData[3] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount2())));
                         rowData[4] = new Label(rd.getDiff());
                         rows.add(rowData);
                     }
                 }
-                
+
                 setTabularData(topServiceErrorsTable, columns, rows);
-                //style the column with the names of the consumers in it
-                for (int i=1; i<topServiceErrorsTable.getRowCount(); i++) {
+                // style the column with the names of the consumers in it
+                for (int i = 1; i < topServiceErrorsTable.getRowCount(); i++) {
                     Widget w = topServiceErrorsTable.getWidget(i, 0);
                     w.addStyleName("clickable");
                 }
@@ -607,20 +640,22 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
             case TopConsumerErrors: {
                 String[] columns = {
                         ConsoleUtil.constants.errors(),
-                        (result==null?ConsoleUtil.constants.count():date1Header+" "+ConsoleUtil.constants.count()),
-                        (result==null?ConsoleUtil.constants.count():date2Header+" "+ConsoleUtil.constants.count()),
-                        "% "+ConsoleUtil.constants.change()
-                };
-                
+                        (result == null ? ConsoleUtil.constants.count() : date1Header + " "
+                                        + ConsoleUtil.constants.count()),
+                        (result == null ? ConsoleUtil.constants.count() : date2Header + " "
+                                        + ConsoleUtil.constants.count()), "% " + ConsoleUtil.constants.change() };
+
                 List<Widget[]> rows = new ArrayList<Widget[]>();
                 if (result != null) {
-                    for (int i=0; i<result.getReturnData().size(); i++) {
+                    for (int i = 0; i < result.getReturnData().size(); i++) {
                         MetricGroupData rd = result.getReturnData().get(i);
 
                         Widget[] rowData = new Widget[4];
                         rowData[0] = new Label(rd.getCriteriaInfo().getMetricName());
-                        rowData[1] = new Label(NumberFormat.getDecimalFormat().format(Double.parseDouble(rd.getCount1())));
-                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(Double.parseDouble(rd.getCount2())));
+                        rowData[1] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount1())));
+                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount2())));
                         rowData[3] = new Label(rd.getDiff());
                         rows.add(rowData);
                     }
@@ -630,26 +665,27 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
                 panel = topConsumerErrorsPanel;
                 break;
             }
-            /* End tables for particular Consumer */
+                /* End tables for particular Consumer */
         }
         if (result != null && result.getReturnData() != null && panel != null) {
-            int rows = result.getReturnData().size()+1;
+            int rows = result.getReturnData().size() + 1;
             double height = 0;
             if (rows > 10)
-                height = 10 * 2.5; 
+                height = 10 * 2.5;
             else
                 height = rows * 2.5;
-            panel.setContentContainerHeight(String.valueOf(height)+"em");
+            panel.setContentContainerHeight(String.valueOf(height) + "em");
         }
-        
+
         if (panel != null) {
             if (result != null)
                 panel.setInfo(result.getRestUrl());
-            show (panel);
+            show(panel);
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#reset()
      */
     public void reset() {
@@ -661,23 +697,25 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         hide(leastPerformancePanel);
         hide(topConsumerErrorsPanel);
     }
-    
-    /* (non-Javadoc)
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#getTableColumn(org.ebayopensource.turmeric.monitoring.client.model.ConsumerMetric, int, int)
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#getTableColumn(org.ebayopensource
+     * .turmeric.monitoring.client.model.ConsumerMetric, int, int)
      */
     public List<HasClickHandlers> getTableColumn(ConsumerMetric metric, int startRow, int col) {
         FlexTable table = getTable(metric);
         if (table == null)
             return null;
         List<HasClickHandlers> list = new ArrayList<HasClickHandlers>();
-        for (int i=startRow;i<table.getRowCount();i++) {
+        for (int i = startRow; i < table.getRowCount(); i++) {
             Widget w = table.getWidget(i, col);
             if (w instanceof HasClickHandlers)
-                list.add((HasClickHandlers)w);
+                list.add((HasClickHandlers) w);
         }
         return list;
     }
-    
 
     private FlexTable getTable(ConsumerMetric m) {
         FlexTable table = null;
@@ -713,14 +751,16 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         }
         return table;
     }
-    
 
     /**
      * Gets the table row.
-     *
-     * @param metric the metric
-     * @param row the row
-     * @param startCol the start col
+     * 
+     * @param metric
+     *            the metric
+     * @param row
+     *            the row
+     * @param startCol
+     *            the start col
      * @return the table row
      */
     public List<HasClickHandlers> getTableRow(ConsumerMetric metric, int row, int startCol) {
@@ -728,31 +768,33 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         if (table == null)
             return null;
         List<HasClickHandlers> list = new ArrayList<HasClickHandlers>();
-        for (int i=startCol;i<table.getCellCount(startCol);i++) {
+        for (int i = startCol; i < table.getCellCount(startCol); i++) {
             Widget w = table.getWidget(row, i);
             if (w instanceof HasClickHandlers)
-                list.add((HasClickHandlers)w);
+                list.add((HasClickHandlers) w);
         }
         return list;
     }
 
     /**
      * Make panel.
-     *
-     * @param heading the heading
-     * @param contents the contents
+     * 
+     * @param heading
+     *            the heading
+     * @param contents
+     *            the contents
      * @return the summary panel
      */
-    protected SummaryPanel makePanel (String heading, FlexTable contents) {
+    protected SummaryPanel makePanel(String heading, FlexTable contents) {
         SummaryPanel panel = new SummaryPanel();
         panel.setHeading(heading);
         panel.setContents(contents);
         return panel;
     }
-    
+
     /**
      * Make table.
-     *
+     * 
      * @return the flex table
      */
     protected FlexTable makeTable() {
@@ -764,42 +806,48 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
 
     /**
      * Sets the tabular data.
-     *
-     * @param table the table
-     * @param cols the cols
-     * @param rows the rows
+     * 
+     * @param table
+     *            the table
+     * @param cols
+     *            the cols
+     * @param rows
+     *            the rows
      */
-    protected void setTabularData (FlexTable table,  String[] cols, List<Widget[]> rows) {
+    protected void setTabularData(FlexTable table, String[] cols, List<Widget[]> rows) {
         table.removeAllRows();
         if (cols != null) {
-            for (int i=0;i<cols.length;i++)
+            for (int i = 0; i < cols.length; i++)
                 table.setText(0, i, cols[i]);
         }
         table.getRowFormatter().addStyleName(0, "tbl-header1");
-    
+
         if (rows != null) {
             int i = 0;
-            for (Widget[] row:rows) {
+            for (Widget[] row : rows) {
                 i++;
-                for (int j=0; j<row.length; j++) {
-                        table.setWidget(i, j, row[j]);
-                   
+                for (int j = 0; j < row.length; j++) {
+                    table.setWidget(i, j, row[j]);
+
                 }
             }
         }
     }
-    
-    /* (non-Javadoc)
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setFilterLabel(java.lang.String)
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setFilterLabel(java.lang.String
+     * )
      */
-    public void setFilterLabel (String str) {
+    public void setFilterLabel(String str) {
         filterButton.setText(str);
     }
-    
+
     /**
      * Pick filter.
      */
-    public void pickFilter () {
+    public void pickFilter() {
         int x = filterButton.getAbsoluteLeft();
         int y = filterButton.getAbsoluteTop() + filterButton.getOffsetHeight();
         filterDialog.setPopupPosition(x, y);
@@ -807,9 +855,12 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         filterDialog.setGlassEnabled(true);
         filterDialog.show();
     }
-    
-    /* (non-Javadoc)
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setConsumerCallTrendData(java.util.List)
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setConsumerCallTrendData(java
+     * .util.List)
      */
     @Override
     public void setConsumerCallTrendData(List<TimeSlotData> graphData) {
@@ -829,12 +880,12 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
             }
         };
 
-        //Load the visualization api, passing the onLoadCallback to be called when loading is done.
-        //The gwt param "corechart" tells gwt to use the new charts
-        
+        // Load the visualization api, passing the onLoadCallback to be called when loading is done.
+        // The gwt param "corechart" tells gwt to use the new charts
+
         VisualizationUtils.loadVisualizationApi(onLoadCallback, "corechart");
     }
-    
+
     private AbstractDataTable createChartDataTable(List<TimeSlotData> timeDataRange) {
 
         DataTable data = DataTable.create();
@@ -872,18 +923,121 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         }
         return data;
     }
-    
+
     private Options createOptions() {
         Options options = Options.create();
-        options.setWidth(640);
+        options.setWidth(620);
         options.setHeight(230);
         options.setEnableTooltip(true);
         options.setShowCategories(true);
-        options.setLegendFontSize(10);
+        options.set("fontSize", 10d);
         options.setSmoothLine(true);
         options.setPointSize(3);
         options.setLineSize(3);
         return options;
+    }
+
+    @Override
+    public void setConsumerPerformanceTrendData(List<TimeSlotData> dataRanges) {
+        if (dataRanges.get(0).getReturnData() != null && dataRanges.get(1).getReturnData() != null) {
+            createLineChart(this.leastPerformancePanel, dataRanges);
+        }
+        else {
+            GWT.log("empty graphData");
+        }
+    }
+
+    @Override
+    public void setConsumerErrorTrendData(List<TimeSlotData> dataRanges) {
+        if (dataRanges.get(0).getReturnData() != null && dataRanges.get(1).getReturnData() != null) {
+            createLineChart(this.topConsumerErrorsPanel, dataRanges);
+        }
+        else {
+            GWT.log("empty graphData");
+        }
+    }
+
+    @Override
+    public void setConsumerServiceCallTrendData(Map<String, List<TimeSlotData>> dataRange) {
+        if (dataRange != null) {
+            createLineChart(this.callVolumePanel, dataRange);
+        }
+        else {
+            GWT.log("empty graphData");
+        }
+    }
+
+    private void createLineChart(final SummaryPanel panel, final Map<String, List<TimeSlotData>> dataRange) {
+        Runnable onLoadCallback = new Runnable() {
+            public void run() {
+                final Visualization barChart = new ColumnChart(createChartDataTable(dataRange),
+                                createColumnChartOptions());
+                panel.addChart(barChart);
+            }
+        };
+
+        // Load the visualization api, passing the onLoadCallback to be called when loading is done.
+        // The gwt param "corechart" tells gwt to use the new charts
+
+        VisualizationUtils.loadVisualizationApi(onLoadCallback, "corechart");
+    }
+
+    protected com.google.gwt.visualization.client.visualizations.ColumnChart.Options createColumnChartOptions() {
+        com.google.gwt.visualization.client.visualizations.ColumnChart.Options options = com.google.gwt.visualization.client.visualizations.ColumnChart.Options
+                        .create();
+        options.setWidth(640);
+        options.setHeight(230);
+        options.setEnableTooltip(true);
+        options.setShowCategories(true);
+        options.set("fontSize", 10d);
+        return options;
+    }
+
+    protected AbstractDataTable createChartDataTable(Map<String, List<TimeSlotData>> dataRange) {
+
+        DataTable data = DataTable.create();
+        Iterator<String> keys = dataRange.keySet().iterator();
+        String consumerName = null;
+        int rowSize = dataRange.keySet().size();
+        int i = 0;
+        boolean datesAlreadyAdded = false;
+        data.addRows(rowSize);
+        while (keys.hasNext()) {
+            consumerName = keys.next();
+
+            TimeSlotData firstDateRange = dataRange.get(consumerName).get(0);
+            TimeSlotData secondDateRange = dataRange.get(consumerName).get(1);
+            if (firstDateRange.getReturnData() != null && secondDateRange.getReturnData() != null) {
+
+                if (rowSize > 0) {
+                    if (!datesAlreadyAdded) {
+                        data.addColumn(ColumnType.STRING, "x");
+                        data.addColumn(ColumnType.NUMBER,
+                                        ConsoleUtil.shotTimeFormat.format(new Date(firstDateRange.getReturnData()
+                                                        .get(0).getTimeSlot())));
+
+                        data.addColumn(ColumnType.NUMBER,
+                                        ConsoleUtil.shotTimeFormat.format(new Date(secondDateRange.getReturnData()
+                                                        .get(0).getTimeSlot())));
+                        datesAlreadyAdded = true;
+                    }
+
+                    data.setValue(i, 0, consumerName);
+                    data.setValue(i, 1, firstDateRange.getReturnData().get(0).getValue());
+                    data.setValue(i, 2, secondDateRange.getReturnData().get(0).getValue());
+                    i++;
+                }
+                else {
+                    data.addColumn(ColumnType.STRING, "x");
+                    data.addColumn(ColumnType.NUMBER, "");
+                    data.addColumn(ColumnType.NUMBER, "");
+                    data.addRows(rowSize);
+                }
+            }
+
+        }
+
+        return data;
     }
 
 }

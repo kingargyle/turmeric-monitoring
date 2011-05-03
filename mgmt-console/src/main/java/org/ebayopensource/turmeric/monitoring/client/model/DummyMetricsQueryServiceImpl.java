@@ -724,9 +724,15 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getServiceMetricValueTrend(org.ebayopensource.turmeric.monitoring.client.model.MetricValue, org.ebayopensource.turmeric.monitoring.client.model.MetricValue, com.google.gwt.user.client.rpc.AsyncCallback)
      */
     @Override
-    public void getServiceMetricValueTrend(MetricValue firstDate, MetricValue secondDate,
+    public void getMetricValueTrend(MetricValue firstDate, MetricValue secondDate,
                     AsyncCallback<List<TimeSlotData>> callback) {
         // Auto-generated method stub
+        
+    }
+
+    @Override
+    public void getServiceConsumers(String serviceName, AsyncCallback<Set<String>> callback) {
+        // TODO Auto-generated method stub
         
     }
 
