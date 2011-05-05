@@ -23,6 +23,9 @@ import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
 import org.ebayopensource.turmeric.runtime.common.impl.utils.LogManager;
 import org.ebayopensource.turmeric.common.v1.types.CommonErrorData;
 
+/**
+ * A factory for creating SOAMetricsQueryServiceProvider objects.
+ */
 public class SOAMetricsQueryServiceProviderFactory {
 	private static Map<String, SOAMetricsQueryServiceProvider>  s_serviceDMProviderMap = new HashMap<String, SOAMetricsQueryServiceProvider>();
 	private static Set<String> s_failedProviders = new HashSet<String>();
@@ -45,11 +48,24 @@ public class SOAMetricsQueryServiceProviderFactory {
 
 	}
 
+	/**
+	 * Creates the.
+	 *
+	 * @return the sOA metrics query service provider
+	 * @throws ServiceException the service exception
+	 */
 	public static SOAMetricsQueryServiceProvider create() throws ServiceException
     {
 		return create(s_defaultProviderKey);
 	}
 
+	/**
+	 * Creates the.
+	 *
+	 * @param providerKey the provider key
+	 * @return the sOA metrics query service provider
+	 * @throws ServiceException the service exception
+	 */
 	public static SOAMetricsQueryServiceProvider create(String providerKey) throws ServiceException {
 
 		if (s_errorData != null)

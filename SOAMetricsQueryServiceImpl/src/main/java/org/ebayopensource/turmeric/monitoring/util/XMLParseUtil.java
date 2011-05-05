@@ -31,10 +31,16 @@ import org.xml.sax.SAXParseException;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 
+/**
+ * The Class XMLParseUtil.
+ */
 public abstract class XMLParseUtil {
+	
+	/** The Constant SYS_PROP_CONFIG_SCHEMA_CHECK. */
 	public static final String SYS_PROP_CONFIG_SCHEMA_CHECK
 	= "org.ebayopensource.turmeric.monitoring.util.schemacheck";
 
+/** The Constant s_schemaCheckLevel. */
 protected static final SchemaValidationLevel s_schemaCheckLevel;
 
 static {
@@ -48,6 +54,11 @@ static {
 	}
 }
 
+/**
+ * Gets the schema check level.
+ *
+ * @return the schema check level
+ */
 public static SchemaValidationLevel getSchemaCheckLevel() {
 	return s_schemaCheckLevel;
 }
@@ -55,6 +66,16 @@ public static SchemaValidationLevel getSchemaCheckLevel() {
 
 
 
+/**
+ * Parses the xml.
+ *
+ * @param fileName the file name
+ * @param schemaName the schema name
+ * @param isOptional the is optional
+ * @param topLevelName the top level name
+ * @return the document
+ * @throws Exception the exception
+ */
 public static synchronized Document parseXML(String fileName, String schemaName, boolean isOptional, String topLevelName) throws Exception {
 	ClassLoader classLoader = ContextUtil.getClassLoader();
 	InputStream	inStream = classLoader.getResourceAsStream(fileName);

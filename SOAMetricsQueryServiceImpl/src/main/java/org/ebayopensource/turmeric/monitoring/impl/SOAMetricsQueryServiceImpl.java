@@ -59,6 +59,9 @@ import org.ebayopensource.turmeric.runtime.common.exceptions.ErrorDataFactory;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceRuntimeException;
 
+/**
+ * The Class SOAMetricsQueryServiceImpl.
+ */
 public class SOAMetricsQueryServiceImpl
     implements SOAMetricsQueryService
 {
@@ -121,6 +124,9 @@ public class SOAMetricsQueryServiceImpl
 
 
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getCustomReportData(org.ebayopensource.turmeric.monitoring.v1.services.GetCustomReportDataRequest)
+     */
     @Override
 	public GetCustomReportDataResponse getCustomReportData(
 			GetCustomReportDataRequest getCustomReportDataRequest) {
@@ -140,6 +146,9 @@ public class SOAMetricsQueryServiceImpl
 		return response;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getDetailData(org.ebayopensource.turmeric.monitoring.v1.services.GetDetailDataRequest)
+	 */
 	@Override
 	public GetDetailDataResponse getDetailData(
 			GetDetailDataRequest getDetailDataRequest) {
@@ -159,6 +168,9 @@ public class SOAMetricsQueryServiceImpl
 		return response;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getErrorGraph(org.ebayopensource.turmeric.monitoring.v1.services.GetErrorGraphRequest)
+	 */
 	@Override
 	public GetErrorGraphResponse getErrorGraph(
 			GetErrorGraphRequest getErrorGraphRequest) {
@@ -182,6 +194,9 @@ public class SOAMetricsQueryServiceImpl
 		return response;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getErrorMetricsData(org.ebayopensource.turmeric.monitoring.v1.services.GetErrorMetricsDataRequest)
+	 */
 	@Override
 	public GetErrorMetricsDataResponse getErrorMetricsData(
 			GetErrorMetricsDataRequest getErrorMetricsDataRequest) {
@@ -207,6 +222,9 @@ public class SOAMetricsQueryServiceImpl
 		return response;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getErrorMetricsMetadata(org.ebayopensource.turmeric.monitoring.v1.services.GetErrorMetricsMetadataRequest)
+	 */
 	@Override
 	public GetErrorMetricsMetadataResponse getErrorMetricsMetadata(
 			GetErrorMetricsMetadataRequest getErrorMetricsMetadataRequest) {
@@ -226,6 +244,9 @@ public class SOAMetricsQueryServiceImpl
 		return response;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getMetricsData(org.ebayopensource.turmeric.monitoring.v1.services.GetMetricsRequest)
+	 */
 	@Override
 	public GetMetricsResponse getMetricsData(
 			GetMetricsRequest getMetricsDataRequest) {
@@ -244,6 +265,9 @@ public class SOAMetricsQueryServiceImpl
 		return response;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getMetricsMetadata(org.ebayopensource.turmeric.monitoring.v1.services.GetMetricsMetadataRequest)
+	 */
 	@Override
 	public GetMetricsMetadataResponse getMetricsMetadata(
 			GetMetricsMetadataRequest getMetricsMetadataRequest) {
@@ -269,6 +293,9 @@ public class SOAMetricsQueryServiceImpl
 		return response;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getMetricSummaryData(org.ebayopensource.turmeric.monitoring.v1.services.GetMetricSummaryDataRequest)
+	 */
 	@Override
 	public GetMetricSummaryDataResponse getMetricSummaryData(
 			GetMetricSummaryDataRequest getMetricSummaryDataRequest) {
@@ -288,6 +315,9 @@ public class SOAMetricsQueryServiceImpl
 		return response;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getMetricValue(org.ebayopensource.turmeric.monitoring.v1.services.GetMetricValueRequest)
+	 */
 	@Override
 	public GetMetricValueResponse getMetricValue(
 			GetMetricValueRequest getMetricValueRequest) {
@@ -309,6 +339,9 @@ public class SOAMetricsQueryServiceImpl
 		return response;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getPolicyMetricData(org.ebayopensource.turmeric.monitoring.v1.services.GetPolicyMetricDataRequest)
+	 */
 	@Override
 	public GetPolicyMetricDataResponse getPolicyMetricData(
 			GetPolicyMetricDataRequest getPolicyMetricDataRequest) {
@@ -334,6 +367,9 @@ public class SOAMetricsQueryServiceImpl
 		return response;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getPolicyMetricDetailData(org.ebayopensource.turmeric.monitoring.v1.services.GetPolicyMetricDetailDataRequest)
+	 */
 	@Override
 	public GetPolicyMetricDetailDataResponse getPolicyMetricDetailData(
 			GetPolicyMetricDetailDataRequest getPolicyMetricDetailDataRequest) {
@@ -360,6 +396,9 @@ public class SOAMetricsQueryServiceImpl
 		return response;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getStandardReportData(org.ebayopensource.turmeric.monitoring.v1.services.GetStandardReportRequest)
+	 */
 	@Override
 	public GetStandardReportResponse getStandardReportData(
 			GetStandardReportRequest getStandardReportDataRequest) {
@@ -378,6 +417,10 @@ public class SOAMetricsQueryServiceImpl
 		return response;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getVersion(org.ebayopensource.turmeric.monitoring.v1.services.GetVersionRequest)
+	 */
+	@Override
 	public GetVersionResponse getVersion(GetVersionRequest param0) {
 		initialize();
         GetVersionResponse response = new GetVersionResponse();

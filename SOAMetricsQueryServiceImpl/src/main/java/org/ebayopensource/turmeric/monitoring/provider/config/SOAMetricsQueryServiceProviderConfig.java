@@ -13,13 +13,22 @@ import java.util.Map;
 
 import org.ebayopensource.turmeric.runtime.binding.utils.CollectionUtils;
 
+/**
+ * The Class SOAMetricsQueryServiceProviderConfig.
+ */
 public class SOAMetricsQueryServiceProviderConfig extends BaseConfigHolder{
+	
+	/** The m_default. */
 	String m_default;
+	
+	/** The m_provider map. */
 	Map<String, String> m_providerMap;
 
 	private static final char NL = '\n';
 
 	/**
+	 * Gets the default provider.
+	 *
 	 * @return m_default The default provider name
 	 */
 	public String getDefaultProvider() {
@@ -27,6 +36,9 @@ public class SOAMetricsQueryServiceProviderConfig extends BaseConfigHolder{
 	}
 
 	/**
+	 * Gets the provider impl class name.
+	 *
+	 * @param providerKey the provider key
 	 * @return m_default The default provider name
 	 */
 	public String getProviderImplClassName(String providerKey) {
@@ -35,8 +47,9 @@ public class SOAMetricsQueryServiceProviderConfig extends BaseConfigHolder{
 
 
 	/**
-	 * @param className
-	 *            the m_default to set
+	 * Sets the default provider.
+	 *
+	 * @param providerKey the new default provider
 	 */
 	public void setDefaultProvider(String providerKey) {
 		checkReadOnly();
@@ -44,6 +57,8 @@ public class SOAMetricsQueryServiceProviderConfig extends BaseConfigHolder{
 	}
 
 	/**
+	 * Gets the provider map.
+	 *
 	 * @return the m_providerMap or copy as needed
 	 */
 	public Map<String, String> getProviderMap() {
@@ -55,13 +70,20 @@ public class SOAMetricsQueryServiceProviderConfig extends BaseConfigHolder{
 
 
 	/**
-	 * @return set the m_providerMap
+	 * Sets the provider map.
+	 *
+	 * @param providerMap the provider map
 	 */
 	public void setProviderMap(Map<String, String> providerMap) {
 		checkReadOnly();
 		m_providerMap = providerMap;
 	}
 
+	/**
+	 * Copy.
+	 *
+	 * @return the sOA metrics query service provider config
+	 */
 	public SOAMetricsQueryServiceProviderConfig copy() {
 		SOAMetricsQueryServiceProviderConfig result = new SOAMetricsQueryServiceProviderConfig();
 		result.m_default = m_default;
@@ -78,6 +100,11 @@ public class SOAMetricsQueryServiceProviderConfig extends BaseConfigHolder{
 
 	}
 
+	/**
+	 * Dump.
+	 *
+	 * @param sb the sb
+	 */
 	public void dump(StringBuffer sb) {
 		sb.append("========== Metrics Query Service Provider Config =========="+"\n");
 

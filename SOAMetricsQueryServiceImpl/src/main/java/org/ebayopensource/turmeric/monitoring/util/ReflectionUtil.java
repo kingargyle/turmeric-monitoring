@@ -10,17 +10,41 @@ package org.ebayopensource.turmeric.monitoring.util;
 
 import java.lang.reflect.Constructor;
 
+/**
+ * The Class ReflectionUtil.
+ */
 public class ReflectionUtil {
 	private ReflectionUtil() {
 		// no instances
 	}
 
+	/**
+	 * Load class.
+	 *
+	 * @param <T> the generic type
+	 * @param className the class name
+	 * @param targetType the target type
+	 * @param cl the cl
+	 * @return the class
+	 * @throws Exception the exception
+	 */
 	public static <T> Class<T> loadClass(String className, Class<T> targetType, ClassLoader cl)
 		throws Exception
 	{
 		return loadClass(className, targetType, false, cl);
 	}
 
+	/**
+	 * Load class.
+	 *
+	 * @param <T> the generic type
+	 * @param className the class name
+	 * @param targetType the target type
+	 * @param ignoreMissingClass the ignore missing class
+	 * @param cl the cl
+	 * @return the class
+	 * @throws Exception the exception
+	 */
 	public static <T> Class<T> loadClass(String className, Class<T> targetType,
 		boolean ignoreMissingClass, ClassLoader cl)
 		throws Exception
@@ -61,12 +85,34 @@ public class ReflectionUtil {
 		return result;
 	}
 
+	/**
+	 * Creates the instance.
+	 *
+	 * @param <T> the generic type
+	 * @param className the class name
+	 * @param targetType the target type
+	 * @param cl the cl
+	 * @return the t
+	 * @throws Exception the exception
+	 */
 	public static <T> T createInstance(String className, Class<T> targetType, ClassLoader cl)
 		throws Exception
 	{
 		return createInstance(className, targetType, cl, null, null);
 	}
 
+	/**
+	 * Creates the instance.
+	 *
+	 * @param <T> the generic type
+	 * @param className the class name
+	 * @param targetType the target type
+	 * @param cl the cl
+	 * @param paramTypes the param types
+	 * @param params the params
+	 * @return the t
+	 * @throws Exception the exception
+	 */
 	public static <T> T createInstance(String className, Class<T> targetType,
 		ClassLoader cl, Class[] paramTypes, Object[] params)
 		throws Exception
@@ -76,12 +122,30 @@ public class ReflectionUtil {
 		return createInstance(clazz, paramTypes, params);
 	}
 
+	/**
+	 * Creates the instance.
+	 *
+	 * @param <T> the generic type
+	 * @param clazz the clazz
+	 * @return the t
+	 * @throws Exception the exception
+	 */
 	public static <T> T createInstance(Class<T> clazz)
 		throws Exception
 	{
 		return createInstance(clazz, null, null);
 	}
 
+	/**
+	 * Creates the instance.
+	 *
+	 * @param <T> the generic type
+	 * @param clazz the clazz
+	 * @param paramTypes the param types
+	 * @param params the params
+	 * @return the t
+	 * @throws Exception the exception
+	 */
 	public static <T> T createInstance(Class<T> clazz, Class[] paramTypes, Object[] params)
 		throws Exception
 	{

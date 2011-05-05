@@ -8,17 +8,23 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.util;
 
+/**
+ * The Class NameValue.
+ */
 public class NameValue {
+	
+	/** The value. */
 	protected String value;
+    
+    /** The name. */
     protected String name;
 
     /**
      * Gets the value of the value property.
      *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
+     * @return the value
+     * possible object is
+     * {@link String }
      */
     public String getValue() {
         return value;
@@ -39,10 +45,9 @@ public class NameValue {
     /**
      * Gets the value of the name property.
      *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
+     * @return the name
+     * possible object is
+     * {@link String }
      */
     public String getName() {
         return name;

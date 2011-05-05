@@ -8,7 +8,12 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.config;
 
+/**
+ * The Class BaseConfigHolder.
+ */
 public class BaseConfigHolder {
+
+/** The m_read only. */
 protected boolean m_readOnly = false;
 
 	/**

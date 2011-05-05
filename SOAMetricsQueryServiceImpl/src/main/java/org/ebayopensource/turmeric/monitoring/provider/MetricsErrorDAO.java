@@ -36,7 +36,25 @@ public interface MetricsErrorDAO extends ErrorDAO {
 	 * @return A List of Maps with the resulting values.
 	 */
     List<Map<String, Object>> findErrorValuesByCategory(long beginTime, long endTime, boolean serverSide, int aggregationPeriod, Long errorId, String category, String severity, Map<String,List<String>> filters);
-
+    
+    
+    
+    /**
+     * Find all error values by category.
+     *
+     * @param beginTime the begin time
+     * @param endTime the end time
+     * @param serverSide the server side
+     * @param aggregationPeriod the aggregation period
+     * @param errorId the error id
+     * @param category the category
+     * @param severity the severity
+     * @param filters the filters
+     * @return the list
+     */
+    List<Map<String, Object>>  findAllErrorValuesByCategory(long beginTime, long endTime, boolean serverSide, int aggregationPeriod, Long errorId, String category, String severity, Map<String,List<String>> filters);
+    
+    
     /**
 	 * Given a <code>beginTime</code> and a <code>endTime</code> and a <code>aggregationPeriod</code>
 	 * retrieve the Error values by Severity.

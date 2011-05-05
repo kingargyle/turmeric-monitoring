@@ -11,28 +11,33 @@ package org.ebayopensource.turmeric.monitoring.util;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The Class OptionList.
+ */
 public class OptionList {
+	
+	/** The option. */
 	protected List<NameValue> option;
 
     /**
      * Gets the value of the option property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the option property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
-     *    getOption().add(newItem);
-     *
-     *
+     * getOption().add(newItem);
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
+     *
+     * @return the option
      * {@link NameValue }
-     *
-     *
      */
     public List<NameValue> getOption() {
         if (option == null) {

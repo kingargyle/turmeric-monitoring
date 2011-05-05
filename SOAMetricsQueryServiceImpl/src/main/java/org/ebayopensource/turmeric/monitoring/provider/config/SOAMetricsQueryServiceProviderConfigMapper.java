@@ -16,13 +16,18 @@ import org.ebayopensource.turmeric.monitoring.util.DomParseUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+/**
+ * The Class SOAMetricsQueryServiceProviderConfigMapper.
+ */
 public class SOAMetricsQueryServiceProviderConfigMapper {
+	
 	/**
-	 * Map subject group service configuration
-	 * @param filename
-	 * @param metricsQueryServiceConfig
-	 * @param dst
-	 * @throws Exception
+	 * Map subject group service configuration.
+	 *
+	 * @param filename the filename
+	 * @param topLevel the top level
+	 * @param dst the dst
+	 * @throws ConfigurationException the configuration exception
 	 */
 	public static void map(String filename, Element topLevel, SOAMetricsQueryServiceProviderConfig dst) throws ConfigurationException
     {
@@ -33,6 +38,14 @@ public class SOAMetricsQueryServiceProviderConfigMapper {
 		mapMetricsQueryServiceProviderConfig(filename, topLevel, dst);
 	}
 
+	/**
+	 * Map metrics query service provider config.
+	 *
+	 * @param filename the filename
+	 * @param metricsQueryServiceConfigProvider the metrics query service config provider
+	 * @param dst the dst
+	 * @throws ConfigurationException the configuration exception
+	 */
 	public static void mapMetricsQueryServiceProviderConfig(String filename, Element metricsQueryServiceConfigProvider, SOAMetricsQueryServiceProviderConfig dst) throws ConfigurationException {
 		try {
 			String defProviderKey = DomParseUtil.getElementText(filename, metricsQueryServiceConfigProvider, "default");

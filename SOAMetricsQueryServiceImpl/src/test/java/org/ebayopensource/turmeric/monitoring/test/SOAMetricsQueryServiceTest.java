@@ -31,11 +31,19 @@ import org.junit.Ignore;
 import static org.junit.Assert.assertTrue;
 
 // TODO: re-enable this test
+/**
+ * The Class SOAMetricsQueryServiceTest.
+ */
 @Ignore
 public class SOAMetricsQueryServiceTest {
 
     private SOAMetricsQueryService m_proxy;
 
+    /**
+     * Inits the proxy.
+     *
+     * @throws ServiceException the service exception
+     */
     @Before
     public void initProxy() throws ServiceException
     {
@@ -45,6 +53,11 @@ public class SOAMetricsQueryServiceTest {
         m_proxy = service.getProxy();
     }
 
+    /**
+     * Test get error metrics metadata.
+     *
+     * @throws Exception the exception
+     */
     public void testGetErrorMetricsMetadata() throws Exception {
         GetErrorMetricsMetadataResponse result = null;
         // TODO: REPLACE PARAMETER(S) WITH ACTUAL VALUE(S)
@@ -56,6 +69,11 @@ public class SOAMetricsQueryServiceTest {
         assertTrue(false);
     }
 
+    /**
+     * Test get error metrics data.
+     *
+     * @throws Exception the exception
+     */
     public void testGetErrorMetricsData() throws Exception {
         GetErrorMetricsDataResponse result = null;
         // TODO: REPLACE PARAMETER(S) WITH ACTUAL VALUE(S)
@@ -67,6 +85,11 @@ public class SOAMetricsQueryServiceTest {
         assertTrue(false);
     }
 
+    /**
+     * Test get detail data.
+     *
+     * @throws Exception the exception
+     */
     public void testGetDetailData() throws Exception {
         GetDetailDataResponse result = null;
         // TODO: REPLACE PARAMETER(S) WITH ACTUAL VALUE(S)
@@ -78,6 +101,11 @@ public class SOAMetricsQueryServiceTest {
         assertTrue(false);
     }
 
+    /**
+     * Test get error graph.
+     *
+     * @throws Exception the exception
+     */
     public void testGetErrorGraph() throws Exception {
         GetErrorGraphResponse result = null;
         // TODO: REPLACE PARAMETER(S) WITH ACTUAL VALUE(S)
@@ -89,6 +117,11 @@ public class SOAMetricsQueryServiceTest {
         assertTrue(false);
     }
 
+    /**
+     * Test get policy metric detail data.
+     *
+     * @throws Exception the exception
+     */
     public void testGetPolicyMetricDetailData() throws Exception {
         GetPolicyMetricDetailDataResponse result = null;
         // TODO: REPLACE PARAMETER(S) WITH ACTUAL VALUE(S)
@@ -100,6 +133,11 @@ public class SOAMetricsQueryServiceTest {
         assertTrue(false);
     }
 
+    /**
+     * Test get standard report data.
+     *
+     * @throws Exception the exception
+     */
     public void testGetStandardReportData() throws Exception {
         GetStandardReportResponse result = null;
         // TODO: REPLACE PARAMETER(S) WITH ACTUAL VALUE(S)
@@ -111,6 +149,11 @@ public class SOAMetricsQueryServiceTest {
         assertTrue(false);
     }
 
+    /**
+     * Test get version.
+     *
+     * @throws Exception the exception
+     */
     public void testGetVersion() throws Exception {
         GetVersionResponse result = null;
         // TODO: REPLACE PARAMETER(S) WITH ACTUAL VALUE(S)
@@ -122,6 +165,11 @@ public class SOAMetricsQueryServiceTest {
         assertTrue(false);
     }
 
+    /**
+     * Test get metrics metadata.
+     *
+     * @throws Exception the exception
+     */
     public void testGetMetricsMetadata() throws Exception {
         GetMetricsMetadataResponse result = null;
         // TODO: REPLACE PARAMETER(S) WITH ACTUAL VALUE(S)
@@ -133,6 +181,11 @@ public class SOAMetricsQueryServiceTest {
         assertTrue(false);
     }
 
+    /**
+     * Test get metric summary data.
+     *
+     * @throws Exception the exception
+     */
     public void testGetMetricSummaryData() throws Exception {
         GetMetricSummaryDataResponse result = null;
         // TODO: REPLACE PARAMETER(S) WITH ACTUAL VALUE(S)
@@ -144,6 +197,11 @@ public class SOAMetricsQueryServiceTest {
         assertTrue(false);
     }
 
+    /**
+     * Test get custom report data.
+     *
+     * @throws Exception the exception
+     */
     public void testGetCustomReportData() throws Exception {
         GetCustomReportDataResponse result = null;
         // TODO: REPLACE PARAMETER(S) WITH ACTUAL VALUE(S)
@@ -155,6 +213,11 @@ public class SOAMetricsQueryServiceTest {
         assertTrue(false);
     }
 
+    /**
+     * Test get metrics data.
+     *
+     * @throws Exception the exception
+     */
     public void testGetMetricsData() throws Exception {
         GetMetricsResponse result = null;
         // TODO: REPLACE PARAMETER(S) WITH ACTUAL VALUE(S)
@@ -166,6 +229,11 @@ public class SOAMetricsQueryServiceTest {
         assertTrue(false);
     }
 
+    /**
+     * Test get policy metric data.
+     *
+     * @throws Exception the exception
+     */
     public void testGetPolicyMetricData() throws Exception {
         GetPolicyMetricDataResponse result = null;
         // TODO: REPLACE PARAMETER(S) WITH ACTUAL VALUE(S)
@@ -177,6 +245,11 @@ public class SOAMetricsQueryServiceTest {
         assertTrue(false);
     }
 
+    /**
+     * Test get metric value.
+     *
+     * @throws Exception the exception
+     */
     public void testGetMetricValue() throws Exception {
         GetMetricValueResponse result = null;
         // TODO: REPLACE PARAMETER(S) WITH ACTUAL VALUE(S)

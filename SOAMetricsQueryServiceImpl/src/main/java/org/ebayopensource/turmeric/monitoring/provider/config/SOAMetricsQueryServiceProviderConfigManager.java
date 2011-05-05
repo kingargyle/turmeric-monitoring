@@ -11,6 +11,9 @@ package org.ebayopensource.turmeric.monitoring.provider.config;
 import org.ebayopensource.turmeric.monitoring.exception.ConfigurationException;
 import org.w3c.dom.Element;
 
+/**
+ * The Class SOAMetricsQueryServiceProviderConfigManager.
+ */
 public class SOAMetricsQueryServiceProviderConfigManager extends BaseConfigManager
 {
 	private static final String CONFIG_FILENAME = "SOAMetricsQueryServiceProviderConfig.xml";
@@ -22,6 +25,11 @@ public class SOAMetricsQueryServiceProviderConfigManager extends BaseConfigManag
 
 
 
+	/**
+	 * Gets the single instance of SOAMetricsQueryServiceProviderConfigManager.
+	 *
+	 * @return single instance of SOAMetricsQueryServiceProviderConfigManager
+	 */
 	public static SOAMetricsQueryServiceProviderConfigManager getInstance() {
     	if (s_instance == null) {
     		s_instance = new SOAMetricsQueryServiceProviderConfigManager();
@@ -30,12 +38,24 @@ public class SOAMetricsQueryServiceProviderConfigManager extends BaseConfigManag
     }
 
 
+	/**
+	 * Gets the config.
+	 *
+	 * @return the config
+	 * @throws ConfigurationException the configuration exception
+	 */
 	public synchronized SOAMetricsQueryServiceProviderConfig getConfig() throws ConfigurationException
     {
 		loadConfig();
 		return m_config;
 	}
 
+	/**
+	 * Gets the config for update.
+	 *
+	 * @return the config for update
+	 * @throws ConfigurationException the configuration exception
+	 */
 	public synchronized SOAMetricsQueryServiceProviderConfig getConfigForUpdate() throws ConfigurationException {
 		loadConfig();
 		if (m_config == null) {
@@ -45,6 +65,10 @@ public class SOAMetricsQueryServiceProviderConfigManager extends BaseConfigManag
 	}
 
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.monitoring.provider.config.BaseConfigManager#map(org.w3c.dom.Element)
+	 */
+	@Override
 	public void map(Element rootData) throws ConfigurationException {
 		// if no rootData, reset config to null (clean up previous instance)
 		if (rootData == null) {
@@ -55,15 +79,27 @@ public class SOAMetricsQueryServiceProviderConfigManager extends BaseConfigManag
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.monitoring.provider.config.BaseConfigManager#getConfigFileName()
+	 */
+	@Override
 	public String getConfigFileName() {
 		return CONFIG_FILENAME;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.monitoring.provider.config.BaseConfigManager#getSchemaFileName()
+	 */
+	@Override
 	public String getSchemaFileName() {
 		return SCHEMA_FILENAME;
 
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ebayopensource.turmeric.monitoring.provider.config.BaseConfigManager#getRootElementName()
+	 */
+	@Override
 	public String getRootElementName() {
 		return ROOT_ELEMENT;
 	}

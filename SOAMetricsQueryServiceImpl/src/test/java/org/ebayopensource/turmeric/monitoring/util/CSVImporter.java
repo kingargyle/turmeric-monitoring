@@ -40,7 +40,17 @@ import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricCompone
 import org.ebayopensource.turmeric.utils.jpa.EntityManagerContext;
 import org.ebayopensource.turmeric.utils.jpa.PersistenceContext;
 
+/**
+ * The Class CSVImporter.
+ */
 public class CSVImporter {
+    
+    /**
+     * The main method.
+     *
+     * @param args the arguments
+     * @throws Exception the exception
+     */
     public static void main(String[] args) throws Exception {
         String resourceName = "META-INF/metrics/data/dbexport/OpenSourceCSVData.zip";
         if (args.length == 1)

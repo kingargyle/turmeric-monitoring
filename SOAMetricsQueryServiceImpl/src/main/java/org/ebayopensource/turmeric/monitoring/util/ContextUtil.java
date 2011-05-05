@@ -8,7 +8,16 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.util;
 
+/**
+ * The Class ContextUtil.
+ */
 public class ContextUtil {
+	
+	/**
+	 * Gets the class loader.
+	 *
+	 * @return the class loader
+	 */
 	public static ClassLoader getClassLoader() {
 		return Thread.currentThread().getContextClassLoader();
 	}

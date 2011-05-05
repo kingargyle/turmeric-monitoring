@@ -23,11 +23,33 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * The Class DomParseUtil.
+ */
 public class DomParseUtil {
+	
+	/**
+	 * Gets the single element.
+	 *
+	 * @param filename the filename
+	 * @param parent the parent
+	 * @param name the name
+	 * @return the single element
+	 * @throws Exception the exception
+	 */
 	public static Element getSingleElement(String filename, Element parent, String name) throws Exception {
 		return (Element) getSingleNode(filename, parent, name);
 	}
 
+	/**
+	 * Gets the single node.
+	 *
+	 * @param filename the filename
+	 * @param parent the parent
+	 * @param name the name
+	 * @return the single node
+	 * @throws Exception the exception
+	 */
 	public static Node getSingleNode(String filename, Element parent, String name) throws Exception {
 		NodeList nodes = getImmediateChildrenByTagName(parent, name);
 		if (nodes.getLength() == 0) {
@@ -39,6 +61,14 @@ public class DomParseUtil {
 		return nodes.item(0);
 	}
 
+	/**
+	 * Gets the immediate children by tag name.
+	 *
+	 * @param parent the parent
+	 * @param name the name
+	 * @return the immediate children by tag name
+	 * @throws Exception the exception
+	 */
 	public static NodeList getImmediateChildrenByTagName(Element parent, String name) throws Exception {
 		NodeListAdaptor result = new NodeListAdaptor();
 		NodeList nodes = parent.getElementsByTagName(name);
@@ -50,11 +80,31 @@ public class DomParseUtil {
 		}
 		return result;
 	}
+	
+	/**
+	 * Gets the element text.
+	 *
+	 * @param filename the filename
+	 * @param parent the parent
+	 * @param name the name
+	 * @return the element text
+	 * @throws Exception the exception
+	 */
 	public static String getElementText(String filename, Element parent, String name) throws Exception {
 		return getElementText(filename, parent, name, false);
 	}
 
 
+	/**
+	 * Gets the element text.
+	 *
+	 * @param filename the filename
+	 * @param parent the parent
+	 * @param name the name
+	 * @param isRequired the is required
+	 * @return the element text
+	 * @throws Exception the exception
+	 */
 	public static String getElementText(String filename, Element parent, String name, boolean isRequired) throws Exception {
 		Element node = getSingleElement(filename, parent, name);
 		if (node == null) {
@@ -66,6 +116,12 @@ public class DomParseUtil {
 		return getText(node);
 	}
 
+	/**
+	 * Gets the text.
+	 *
+	 * @param node the node
+	 * @return the text
+	 */
 	public static String getText(Node node) {
 		StringBuffer result = new StringBuffer();
 		NodeList nodes = node.getChildNodes();
@@ -79,16 +135,43 @@ public class DomParseUtil {
 		return result.toString().trim();
 	}
 
+	/**
+	 * Gets the element integer.
+	 *
+	 * @param filename the filename
+	 * @param parent the parent
+	 * @param name the name
+	 * @return the element integer
+	 * @throws Exception the exception
+	 */
 	public static Integer getElementInteger(String filename, Element parent, String name) throws Exception {
 		String text = getElementText(filename, parent, name);
 		return textToInteger(filename, text, name);
 	}
 
+	/**
+	 * Gets the element boolean.
+	 *
+	 * @param filename the filename
+	 * @param parent the parent
+	 * @param name the name
+	 * @return the element boolean
+	 * @throws Exception the exception
+	 */
 	public static Boolean getElementBoolean(String filename, Element parent, String name) throws Exception {
 		String text = getElementText(filename, parent, name);
 		return textToBoolean(filename, text, name);
 	}
 
+	/**
+	 * Gets the attribute integer.
+	 *
+	 * @param filename the filename
+	 * @param parent the parent
+	 * @param name the name
+	 * @return the attribute integer
+	 * @throws Exception the exception
+	 */
 	public static Integer getAttributeInteger(String filename, Element parent, String name) throws Exception {
 		String attrStr = parent.getAttribute(name);
 		if (attrStr == null) {
@@ -97,6 +180,13 @@ public class DomParseUtil {
 		return textToInteger(filename, attrStr, name);
 	}
 
+	/**
+	 * Store nv list to hash map.
+	 *
+	 * @param filename the filename
+	 * @param options the options
+	 * @param dstMap the dst map
+	 */
 	public static void storeNVListToHashMap(String filename, OptionList options, Map<String, String> dstMap) {
 		if (options == null || options.getOption() == null || options.getOption().isEmpty()) {
 			return;
@@ -108,6 +198,15 @@ public class DomParseUtil {
 		}
 	}
 
+	/**
+	 * Gets the option list.
+	 *
+	 * @param filename the filename
+	 * @param parent the parent
+	 * @param childName the child name
+	 * @return the option list
+	 * @throws Exception the exception
+	 */
 	public static OptionList getOptionList(String filename, Element parent, String childName) throws Exception {
 		if (parent == null) {
 			return null;
@@ -122,6 +221,15 @@ public class DomParseUtil {
 		return result;
 	}
 
+	/**
+	 * Put nv list.
+	 *
+	 * @param filename the filename
+	 * @param containerName the container name
+	 * @param optionContainer the option container
+	 * @param outList the out list
+	 * @throws Exception the exception
+	 */
 	public static void putNVList(String filename, String containerName, Element optionContainer, List<NameValue> outList) throws Exception {
 		NodeList childElements = DomParseUtil.getImmediateChildrenByTagName(optionContainer, "option");
 		if (childElements == null) {
@@ -144,6 +252,15 @@ public class DomParseUtil {
 		}
 	}
 
+	/**
+	 * Gets the string list.
+	 *
+	 * @param filename the filename
+	 * @param parent the parent
+	 * @param name the name
+	 * @return the string list
+	 * @throws Exception the exception
+	 */
 	public static List<String> getStringList(String filename, Element parent, String name) throws Exception {
 		NodeList childElements = DomParseUtil.getImmediateChildrenByTagName(parent, name);
 		if (childElements == null) {
@@ -158,6 +275,15 @@ public class DomParseUtil {
 		return result;
 	}
 
+	/**
+	 * Gets the integer list.
+	 *
+	 * @param filename the filename
+	 * @param parent the parent
+	 * @param name the name
+	 * @return the integer list
+	 * @throws Exception the exception
+	 */
 	public static List<Integer> getIntegerList(String filename, Element parent, String name) throws Exception {
 		NodeList childElements = DomParseUtil.getImmediateChildrenByTagName(parent, name);
 		if (childElements == null) {
@@ -173,6 +299,15 @@ public class DomParseUtil {
 		return result;
 	}
 
+	/**
+	 * Gets the long list.
+	 *
+	 * @param filename the filename
+	 * @param parent the parent
+	 * @param name the name
+	 * @return the long list
+	 * @throws Exception the exception
+	 */
 	public static List<Long> getLongList(String filename, Element parent, String name) throws Exception {
 		NodeList childElements = DomParseUtil.getImmediateChildrenByTagName(parent, name);
 		if (childElements == null) {
@@ -190,11 +325,29 @@ public class DomParseUtil {
 
 
 
+	/**
+	 * Gets the q name.
+	 *
+	 * @param configFilename the config filename
+	 * @param serviceName the service name
+	 * @param namespaceURI the namespace uri
+	 * @param tagName the tag name
+	 * @return the q name
+	 */
 	public static QName getQName(String configFilename, String serviceName, String namespaceURI, String tagName) {
 		QName qname = QName.valueOf(serviceName);
 		return qname;
 	}
 
+	/**
+	 * Gets the required attribute.
+	 *
+	 * @param filename the filename
+	 * @param element the element
+	 * @param name the name
+	 * @return the required attribute
+	 * @throws Exception the exception
+	 */
 	public static String getRequiredAttribute(String filename, Element element, String name) throws Exception {
 		String value = element.getAttribute(name);
 		if (value == null || value.length() == 0) {
@@ -204,6 +357,13 @@ public class DomParseUtil {
 	}
 
 
+	/**
+	 * Throw error.
+	 *
+	 * @param filename the filename
+	 * @param cause the cause
+	 * @throws Exception the exception
+	 */
 	public static void throwError(String filename, String cause) throws Exception {
 		throw new Exception("validation error. Filename= " + filename + ", cause= " + cause);
 	}
@@ -245,6 +405,14 @@ public class DomParseUtil {
 		return booleanValue;
 	}
 
+	/**
+	 * Deserialize dom tree.
+	 *
+	 * @param xmlDocument the xml document
+	 * @param validate the validate
+	 * @return the document
+	 * @throws Exception the exception
+	 */
 	public static Document deserializeDOMTree(final String xmlDocument,
 			final boolean validate) throws Exception {
 
@@ -258,8 +426,11 @@ public class DomParseUtil {
 	}
 
 	/**
-     * Get root element of the given document.
-     */
+	 * Get root element of the given document.
+	 *
+	 * @param doc the doc
+	 * @return the root
+	 */
     public static Element getRoot(final Document doc)
     {
         if (doc != null)
@@ -267,6 +438,13 @@ public class DomParseUtil {
         return null;
     }
 
+    /**
+     * Gets the child by name.
+     *
+     * @param parent the parent
+     * @param name the name
+     * @return the child by name
+     */
     public static Element getChildByName(final Element parent, final String name){
         if (parent == null || name == null)
             return null;
@@ -281,6 +459,13 @@ public class DomParseUtil {
         return null;
     }
 
+    /**
+     * Node name equal to with no namespace.
+     *
+     * @param node the node
+     * @param target the target
+     * @return true, if successful
+     */
     public static boolean nodeNameEqualToWithNoNamespace(final Node node, final String
             target){
         if (node == null || target == null)
@@ -295,6 +480,10 @@ public class DomParseUtil {
     /**
      * Get a child element from given node with given name.
      * Return "" if not found or error.
+     *
+     * @param parent the parent
+     * @param tag the tag
+     * @return the child value
      */
     public static String getChildValue(final Element parent, final String tag){
         final Element child = getChild(parent, tag);
@@ -309,6 +498,10 @@ public class DomParseUtil {
     /**
      * Get child node with given tag name.
      * Return null if no child can be found.
+     *
+     * @param parent the parent
+     * @param tag the tag
+     * @return the child
      */
     public static Element getChild(final Element parent, final String tag){
         if (parent == null || tag == null)
@@ -327,6 +520,10 @@ public class DomParseUtil {
     /**
      * Check whether a name of given node is equal to a given name.
      * Strips namespace (if any). Case-sensitive.
+     *
+     * @param node the node
+     * @param target the target
+     * @return true, if successful
      */
     public static boolean nodeNameEqualTo(final Node node, final String target){
         if (node == null || target == null)
@@ -344,6 +541,9 @@ public class DomParseUtil {
 
     /**
      * Get value of a given node.
+     *
+     * @param node the node
+     * @return the node value
      */
     public static String getNodeValue(final Element node)
     {
@@ -386,6 +586,11 @@ public class DomParseUtil {
     }
 
 
+    /**
+     * The main method.
+     *
+     * @param args the arguments
+     */
     public static void main(final String[] args)
     {
         try {

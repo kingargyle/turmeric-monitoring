@@ -43,6 +43,8 @@ import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.Syste
 import org.ebayopensource.turmeric.utils.jpa.JPAAroundAdvice;
 import org.ebayopensource.turmeric.utils.jpa.PersistenceContext;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
+
 /**
  * A Hibernate/JPA provider implementation for the SOAMetricsQueryService.
  * 
@@ -200,8 +202,46 @@ public class DAOSOAMetricsQueryServiceProvider implements SOAMetricsQueryService
 
         @Override
         public List<MetricGraphData> getErrorGraph(String serviceName, String operationName, String consumerName,
-                        String errorId, String errorCategory, String errorSeverity, MetricCriteria metricCriteria) {
-            return null;
+                        String errorId, String errorCategoryStr, String errorSeverityStr, MetricCriteria metricCriteria) {
+            List<MetricGraphData> result = new ArrayList<MetricGraphData>();
+
+            String errorCategory = errorCategoryStr == null ? null : ErrorCategory.fromValue(errorCategoryStr).value();
+            String errorSeverity = errorSeverityStr == null ? null : ErrorSeverity.fromValue(errorSeverityStr).value();
+            int aggregationPeriod = metricCriteria.getAggregationPeriod();
+            long beginTime = metricCriteria.getFirstStartTime();
+            long duration = metricCriteria.getDuration();
+            long endTime = beginTime + TimeUnit.SECONDS.toMillis(duration);
+            boolean serverSide = MonitoringSystem.COLLECTION_LOCATION_SERVER.equals(metricCriteria.getRoleType());
+
+            Map<String, List<String>> filters = new HashMap<String, List<String>>();
+            if (serviceName != null && !"".equals(serviceName))
+                filters.put(ResourceEntity.SERVICE.value(), Collections.singletonList(serviceName));
+            if (operationName != null && !"".equals(operationName))
+                filters.put(ResourceEntity.OPERATION.value(), Collections.singletonList(operationName));
+            if (consumerName != null && !"".equals(consumerName))
+                filters.put(ResourceEntity.CONSUMER.value(), Collections.singletonList(consumerName));
+
+            List<Map<String, Object>> queryResult = errorDAO.findAllErrorValuesByCategory(beginTime, endTime,
+                            serverSide, aggregationPeriod, null, errorCategory, errorSeverity, filters);
+
+            for (int i = 0; i < duration / aggregationPeriod; ++i) {
+                long startTime = beginTime + TimeUnit.SECONDS.toMillis(i * aggregationPeriod);
+                long stopTime = startTime + TimeUnit.SECONDS.toMillis(aggregationPeriod);
+                double value = 0;
+                for (Map<String, Object> row : queryResult) {
+                    long time = (Long) row.get("timeStamp");
+                    if (startTime <= time && time < stopTime) {
+                        value += 1;
+                    }
+                }
+                MetricGraphData metricGraphData = new MetricGraphData();
+                metricGraphData.setCount(value);
+                metricGraphData.setTimeSlot(startTime);
+                metricGraphData.setCriteria(null); // Not supported for now
+                result.add(metricGraphData);
+            }
+
+            return result;
         }
 
         @Override

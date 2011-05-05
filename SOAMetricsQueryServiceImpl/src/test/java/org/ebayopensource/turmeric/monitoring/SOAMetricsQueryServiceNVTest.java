@@ -35,12 +35,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 // TODO: this test is skipped because of http://ph-0146.eva.ebay.com/jira/browse/TURMERIC-350
+/**
+ * The Class SOAMetricsQueryServiceNVTest.
+ */
 @Ignore
 public class SOAMetricsQueryServiceNVTest {
     private Server server;
     private HttpClient client;
     private String uri;
 
+    /**
+     * Start server.
+     *
+     * @throws Exception the exception
+     */
     @Before
     public void startServer() throws Exception {
         server = new Server();
@@ -61,6 +69,11 @@ public class SOAMetricsQueryServiceNVTest {
         client.start();
     }
 
+    /**
+     * Stop server.
+     *
+     * @throws Exception the exception
+     */
     @After
     public void stopServer() throws Exception {
         if (client != null) {
@@ -73,6 +86,11 @@ public class SOAMetricsQueryServiceNVTest {
         }
     }
 
+    /**
+     * Test get metrics data.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testGetMetricsData() throws Exception {
         // Simulate the call of a service that generates metrics data, using the SOAMetricsQueryService itself.
@@ -102,6 +120,11 @@ public class SOAMetricsQueryServiceNVTest {
         assertEquals("SOAMetricsQueryService", criteriaInfo.get("serviceName"));
     }
 
+   /**
+    * Test get metrics meta data.
+    *
+    * @throws Exception the exception
+    */
    @Test
     public void testGetMetricsMetaData() throws Exception {
         // Simulate the call of a service that generates metrics data, using the SOAMetricsQueryService itself.

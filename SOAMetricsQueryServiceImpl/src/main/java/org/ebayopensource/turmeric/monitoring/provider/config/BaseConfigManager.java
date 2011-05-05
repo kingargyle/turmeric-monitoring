@@ -13,21 +13,49 @@ import org.ebayopensource.turmeric.monitoring.util.XMLParseUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * The Class BaseConfigManager.
+ */
 public abstract class BaseConfigManager {
+	
+	/** The Constant BASE_PATH. */
 	protected static final String BASE_PATH = "META-INF/metrics/";
+	
+	/** The Constant BASE_SCHEMA_PATH. */
 	protected static final String BASE_SCHEMA_PATH = "META-INF/metrics/schema/";
+	
+	/** The Constant CONFIG_RELATIVE_PATH. */
 	protected static final String CONFIG_RELATIVE_PATH = "config";
 
+	/** The m_root data. */
 	protected Element m_rootData = null;
+	
+	/** The m_config loaded. */
 	protected boolean m_configLoaded = false;
+	
+	/** The m_config relative path. */
 	protected String m_configRelativePath = CONFIG_RELATIVE_PATH;
+	
+	/** The m_config full path. */
 	protected String m_configFullPath = BASE_PATH + CONFIG_RELATIVE_PATH + "/";
+	
+	/** The m_schema path. */
 	protected String m_schemaPath = BASE_SCHEMA_PATH;
 
+	/**
+	 * Inits the.
+	 *
+	 * @throws ConfigurationException the configuration exception
+	 */
 	protected synchronized void init() throws ConfigurationException {
 		loadConfig();
 	}
 
+	/**
+	 * Load config.
+	 *
+	 * @throws ConfigurationException the configuration exception
+	 */
 	protected synchronized void loadConfig() throws ConfigurationException {
 		if (m_configLoaded) {
 			return;
@@ -69,6 +97,11 @@ public abstract class BaseConfigManager {
 		}
 	}
 
+	/**
+	 * Gets the config path.
+	 *
+	 * @return the config path
+	 */
 	public String getConfigPath() {
 		return m_configFullPath;
 	}
@@ -77,6 +110,12 @@ public abstract class BaseConfigManager {
 		m_configFullPath = path;
 	}
 
+	/**
+	 * Sets the config test case.
+	 *
+	 * @param relativePath the relative path
+	 * @param force the force
+	 */
 	public synchronized void setConfigTestCase(String relativePath,
 			boolean force) {
 		m_configRelativePath = relativePath;
@@ -92,40 +131,51 @@ public abstract class BaseConfigManager {
 
 	}
 
+	/**
+	 * Sets the config test case.
+	 *
+	 * @param relativePath the new config test case
+	 */
 	public void setConfigTestCase(String relativePath) {
 		setConfigTestCase(relativePath, false);
 	}
 
+	/**
+	 * Gets the config test case.
+	 *
+	 * @return the config test case
+	 */
 	public String getConfigTestCase() {
 		return m_configRelativePath;
 	}
 
 	/**
-	 * Perform the mapping from DOM element to user-friendly config object
-	 * 
-	 * @param rootData
+	 * Perform the mapping from DOM element to user-friendly config object.
+	 *
+	 * @param rootData the root data
+	 * @throws ConfigurationException the configuration exception
 	 */
 	public abstract void map(Element rootData) throws ConfigurationException;
 
 	/**
-	 * Specify the config file name
-	 * 
-	 * @return
+	 * Specify the config file name.
+	 *
+	 * @return the config file name
 	 */
 	public abstract String getConfigFileName();
 
 	/**
-	 * Specify the schema file name
-	 * 
-	 * @return
+	 * Specify the schema file name.
+	 *
+	 * @return the schema file name
 	 */
 	public abstract String getSchemaFileName();
 
 	/**
 	 * Specify the root element name for the xml config instance. Needed for XML
 	 * instance validation purpose
-	 * 
-	 * @return
+	 *
+	 * @return the root element name
 	 */
 	public abstract String getRootElementName();
 
