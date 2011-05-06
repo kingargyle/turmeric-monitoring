@@ -976,26 +976,70 @@
             	<xs:sequence>
             		<xs:element name="firstStartTime" type="xs:long"
             			maxOccurs="1" minOccurs="1">
+            			<xs:annotation>
+            				<xs:documenation>
+            					This is a UTC long in miliseconds since 1970.
+            				</xs:documenation>
+            			</xs:annotation>
             		</xs:element>
             		<xs:element name="secondStartTime" type="xs:long"
             			maxOccurs="1" minOccurs="1">
+            			<xs:annotation>
+            			   <xs:documentation>
+            				This is a UTC long in millsecs since 1970.
+            			   </xs:documentation>
+            			</xs:annotation>
             		</xs:element>
             		<xs:element name="duration" type="xs:long"
             			maxOccurs="1" minOccurs="1">
+            			<xs:annotation>
+            				<xs:documentation>
+            					The duration value is added to firstStartTime and secondStartTime to provide a range.
+            				</xs:documentation>
+            			</xs:annotation>
             		</xs:element>
             		<xs:element name="aggregationPeriod" type="xs:int"
             			maxOccurs="1" minOccurs="1">
+            			<xs:annotation>
+            				<xs:documentation>
+            					The DB interval table to be queried. Value 1= 1H tables, Value 24= 1D tables.
+            				</xs:documentation>
+            			</xs:annotation>
             		</xs:element>
             		<xs:element name="sortOrder"
             			type="tns:SortOrderType" maxOccurs="1" minOccurs="0">
+            			<xs:annotation>
+            				<xs:documentation>
+            				    Indicates whether the call count data should be returned in ascending
+            				    or descending order.
+            				</xs:documentation>
+            			</xs:annotation>
             		</xs:element>
             		<xs:element name="numRows" type="xs:string"
             			maxOccurs="1" minOccurs="0">
+            			<xs:annotation>
+            				<xs:documentation>
+            					The number of rows to be returned
+            				</xs:documentation>
+            			</xs:annotation>
             		</xs:element>
             		<xs:element name="metricName" type="xs:string"
             			maxOccurs="1" minOccurs="0">
+            			<xs:annotation>
+            				<xs:documentation>
+            					<p>Valid Values:</p>
+            					<ul>  
+            						<li>Call Count - is used to retrieve Top Volume and Consumer Traffic</li>
+            						<li>ResponseTime - used for Least Performance</li>
+            						<li>Error Count </li>
+            						<li>ErrorToCallRatio</li>
+            						<li>All</li>
+            					</ul>
+            				</xs:documentation>
+            			</xs:annotation>
             		</xs:element>
-            		<xs:element name="roleType" type="xs:string"></xs:element>
+            		<xs:element name="roleType" type="xs:string">
+            		</xs:element>
             		<xs:element name="autoDelay" type="xs:string"></xs:element>
             	</xs:sequence>
             </xs:complexType>
@@ -1010,16 +1054,20 @@
 
             <xs:complexType name="MetricResourceCriteria">
             	<xs:sequence>
-
-
             		<xs:element name="resourceEntityResponseType"
             			type="xs:string" maxOccurs="1" minOccurs="1">
                         <xs:annotation>
                         	<xs:documentation>This field specifies the response dimension for which the metric data to be returned.  This field is kept as string (and not as enum constant) for supporting(or extending) various other dimensions in future, even combination of dimensions without any changes to wsdl definition.</xs:documentation>
+                        	<xs:documentation>Valid values are Pool,Machine,Service,Operation,Consumer</xs:documentation>
                         </xs:annotation>
             		</xs:element>
             		<xs:element name="resourceEntityResponseName"
             			type="xs:string" maxOccurs="unbounded" minOccurs="0">
+            			<xs:annotation>
+            				<xs:documentation>
+            					If response entity name is not sent, then "All" operations are to be listed.
+            				</xs:documentation>
+            			</xs:annotation>
             		</xs:element>
             		<xs:element name="resourceRequestEntities" type="tns:ResourceEntityRequest" maxOccurs="unbounded" minOccurs="0"></xs:element>
             	</xs:sequence>
@@ -1050,8 +1098,19 @@
             	<xs:sequence>
             		<xs:element name="resourceEntityType"
             			type="tns:ResourceEntity" maxOccurs="1" minOccurs="1">
+            			<xs:annotation>
+            				<xs:documentation>
+            					The type of information to retrieve.
+            				</xs:documentation>
+            			</xs:annotation>
             		</xs:element>
-            		<xs:element name="resourceEntityName" type="xs:string" maxOccurs="unbounded" minOccurs="0"></xs:element>
+            		<xs:element name="resourceEntityName" type="xs:string" maxOccurs="unbounded" minOccurs="0">
+            			<xs:annotation>
+            				<xs:documentation>
+            					This would be the name of the entity, for example "FindingService"
+            				</xs:documentation>
+            			</xs:annotation>
+            		</xs:element>
             	</xs:sequence>
             </xs:complexType>
 		</xs:schema>

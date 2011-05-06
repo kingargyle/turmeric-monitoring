@@ -7,7 +7,7 @@
         <ns2:aggregationPeriod>60</ns2:aggregationPeriod>
         <ns2:sortOrder></ns2:sortOrder>
         <ns2:numRows>10</ns2:numRows>
-        <ns2:metricName>RequestCount</ns2:metricName>
+        <ns2:metricName>CallCount</ns2:metricName>
         <ns2:roleType>server</ns2:roleType>
         <ns2:autoDelay>false</ns2:autoDelay>
     </ns2:metricCriteria>

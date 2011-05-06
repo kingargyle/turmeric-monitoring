@@ -9,9 +9,14 @@
 package org.ebayopensource.turmeric.services.monitoringservice.junit;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.io.StringWriter;
 
 import javax.xml.bind.JAXB;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.custommonkey.xmlunit.XMLAssert;
 import org.ebayopensource.turmeric.monitoring.impl.SOAMetricsQueryServiceImpl;
 import org.ebayopensource.turmeric.monitoring.v1.services.GetMetricValueRequest;
 import org.ebayopensource.turmeric.monitoring.v1.services.GetMetricValueResponse;
@@ -80,7 +85,7 @@ public class Utils {
 		ReflectionAssert.assertReflectionEquals(xmlResp, resp);
 	}
 
-	public static void testGetMetricsData(String requestXmlPath, String respXmlPath) {
+	public static void testGetMetricsData(String requestXmlPath, String respXmlPath) throws Exception {
 		init();
 		/*File reqFile = new File (requestXmlPath);
 		File respFile = new File(respXmlPath);
@@ -93,14 +98,20 @@ public class Utils {
 		ReflectionAssert.assertReflectionEquals(xmlResp, resp);*/
 		
 		ClassLoader cl = Utils.class.getClassLoader();
-		InputStream requestis = cl.getResourceAsStream(requestXmlPath);
-		InputStream responseis = cl.getResourceAsStream(respXmlPath);
+		InputStreamReader requestis = new InputStreamReader(cl.getResourceAsStream(requestXmlPath));
+		InputStreamReader responseis = new InputStreamReader(cl.getResourceAsStream(respXmlPath));		
 		
 		GetMetricsRequest req = JAXB.unmarshal(requestis, GetMetricsRequest.class);
-		GetMetricsResponse xmlResp = JAXB.unmarshal(responseis, GetMetricsResponse.class);
+//		GetMetricsResponse xmlResp = JAXB.unmarshal(responseis, GetMetricsResponse.class);
+		
 		
 		GetMetricsResponse resp = consumer.getMetricsData(req);
+		ByteArrayOutputStream xmlResp = new ByteArrayOutputStream(); 
+		JAXB.marshal(resp, xmlResp);
+		StringReader str = new StringReader(xmlResp.toString());
+		System.out.println(xmlResp.toString());
+		XMLAssert.assertXMLEqual("Responses do not match. ", responseis, str);
 		
-		ReflectionAssert.assertReflectionEquals(xmlResp, resp);
+//		ReflectionAssert.assertReflectionEquals(xmlResp, resp);
 	}
 }
