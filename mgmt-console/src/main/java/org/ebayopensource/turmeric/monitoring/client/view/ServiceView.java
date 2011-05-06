@@ -403,10 +403,10 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         }
     }
 
-    private void createLineChart(final SummaryPanel panel, final List<TimeSlotData> timeData) {
+    private void createLineChart(final SummaryPanel panel, final List<TimeSlotData> timeData, final String graphTitle) {
         Runnable onLoadCallback = new Runnable() {
             public void run() {
-                final LineChart lineChart = new LineChart(createChartDataTable(timeData), createOptions());
+                final LineChart lineChart = new LineChart(createChartDataTable(timeData), createOptions(graphTitle));
                 panel.addChart(lineChart);
             }
         };
@@ -749,9 +749,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         filterButton.setText(s);
     }
 
-    private Options createOptions() {
+    private Options createOptions(String graphTitle) {
         Options options = Options.create();
-        options.setWidth(635);
+        //options.setWidth(600);
         options.setHeight(230);
         options.setEnableTooltip(true);
         options.setShowCategories(true);
@@ -759,6 +759,8 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         options.setSmoothLine(true);
         options.setPointSize(3);
         options.setLineSize(3);
+        options.setTitle(graphTitle);
+        options.setTitleFontSize(12d);
         return options;
     }
 
@@ -804,9 +806,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setServiceCallTrendData(java.util.List)
      */
     @Override
-    public void setServiceCallTrendData(List<TimeSlotData> graphData) {
+    public void setServiceCallTrendData(List<TimeSlotData> graphData, String graphTitle) {
         if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
-            createLineChart(topVolumePanel, graphData);
+            createLineChart(topVolumePanel, graphData, graphTitle);
         }
         else {
             GWT.log("empty graphData");
@@ -817,9 +819,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setServicePerformanceTrendData(java.util.List)
      */
     @Override
-    public void setServicePerformanceTrendData(List<TimeSlotData> graphData) {
+    public void setServicePerformanceTrendData(List<TimeSlotData> graphData, String graphTitle) {
         if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
-            createLineChart(this.leastPerformancePanel, graphData);
+            createLineChart(this.leastPerformancePanel, graphData, graphTitle);
         }
         else {
             GWT.log("empty graphData");
@@ -830,9 +832,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setServiceErrorTrendData(java.util.List)
      */
     @Override
-    public void setServiceErrorTrendData(List<TimeSlotData> graphData) {
+    public void setServiceErrorTrendData(List<TimeSlotData> graphData, String graphTitle) {
         if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
-            createLineChart(this.topErrorsPanel, graphData);
+            createLineChart(this.topErrorsPanel, graphData, graphTitle);
         }
         else {
             GWT.log("empty graphData");

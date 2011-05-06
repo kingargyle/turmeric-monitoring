@@ -39,11 +39,11 @@ public class HeaderWidget extends Composite {
 
 		
 		logo = new Image("images/turmeric-small.png");
-		headerGrid.setWidget(0, 0, (Widget) logo);
-		headerGrid.getCellFormatter().setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_LEFT);
-		
-		Grid actionGrid = new Grid(1,2);
-		headerGrid.setWidget(0,1, actionGrid);
+		headerGrid.setWidget(0, 1, (Widget) logo);
+//		headerGrid.getCellFormatter().setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_LEFT);
+//		
+//		Grid actionGrid = new Grid(1,2);
+//		headerGrid.setWidget(0,0, actionGrid);
 
 		headerGrid.getCellFormatter().setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_RIGHT);
 		panel.add(headerGrid);

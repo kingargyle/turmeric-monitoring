@@ -221,7 +221,7 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
 
         serviceListWidget = new ServiceListWidget();
 
-        splitPanel.addWest(serviceListWidget, 250);
+        splitPanel.addWest(serviceListWidget, 200);
         splitPanel.add(rhs);
 
         this.dashboard = dashboard;
@@ -926,7 +926,7 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
 
     private Options createOptions() {
         Options options = Options.create();
-        options.setWidth(620);
+        //options.setWidth(620);
         options.setHeight(230);
         options.setEnableTooltip(true);
         options.setShowCategories(true);
@@ -950,7 +950,7 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     @Override
     public void setConsumerErrorTrendData(List<TimeSlotData> dataRanges) {
         if (dataRanges.get(0).getReturnData() != null && dataRanges.get(1).getReturnData() != null) {
-            createLineChart(this.topConsumerErrorsPanel, dataRanges);
+            createLineChart(this.topServiceErrorsPanel, dataRanges);
         }
         else {
             GWT.log("empty graphData");
@@ -958,20 +958,20 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     }
 
     @Override
-    public void setConsumerServiceCallTrendData(Map<String, List<TimeSlotData>> dataRange) {
+    public void setConsumerServiceCallTrendData(Map<String, List<TimeSlotData>> dataRange, String graphTitle) {
         if (dataRange != null) {
-            createLineChart(this.callVolumePanel, dataRange);
+            createColumnChart(this.callVolumePanel, dataRange,graphTitle);
         }
         else {
             GWT.log("empty graphData");
         }
     }
 
-    private void createLineChart(final SummaryPanel panel, final Map<String, List<TimeSlotData>> dataRange) {
+    private void createColumnChart(final SummaryPanel panel, final Map<String, List<TimeSlotData>> dataRange, final String graphTitle) {
         Runnable onLoadCallback = new Runnable() {
             public void run() {
                 final Visualization barChart = new ColumnChart(createChartDataTable(dataRange),
-                                createColumnChartOptions());
+                                createColumnChartOptions(graphTitle));
                 panel.addChart(barChart);
             }
         };
@@ -982,14 +982,16 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         VisualizationUtils.loadVisualizationApi(onLoadCallback, "corechart");
     }
 
-    protected com.google.gwt.visualization.client.visualizations.ColumnChart.Options createColumnChartOptions() {
+    protected com.google.gwt.visualization.client.visualizations.ColumnChart.Options createColumnChartOptions(String graphTitle) {
         com.google.gwt.visualization.client.visualizations.ColumnChart.Options options = com.google.gwt.visualization.client.visualizations.ColumnChart.Options
                         .create();
-        options.setWidth(640);
+        //options.setWidth(800);
         options.setHeight(230);
         options.setEnableTooltip(true);
         options.setShowCategories(true);
         options.set("fontSize", 10d);
+        options.setTitle(graphTitle);
+        options.setTitleFontSize(12d);
         return options;
     }
 
@@ -1006,6 +1008,7 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
             consumerName = keys.next();
 
             TimeSlotData firstDateRange = dataRange.get(consumerName).get(0);
+            GWT.log("firstDateRange for consumer = "+consumerName+". "+firstDateRange.getReturnData().get(0).getValue());
             TimeSlotData secondDateRange = dataRange.get(consumerName).get(1);
             if (firstDateRange.getReturnData() != null && secondDateRange.getReturnData() != null) {
 
@@ -1031,13 +1034,33 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
                     data.addColumn(ColumnType.STRING, "x");
                     data.addColumn(ColumnType.NUMBER, "");
                     data.addColumn(ColumnType.NUMBER, "");
-                    data.addRows(rowSize);
+                    
                 }
             }
 
         }
 
         return data;
+    }
+
+    @Override
+    public void setConsumerServicePerformanceTrendData(Map<String, List<TimeSlotData>> graphData, String graphTitle) {
+        if (graphData != null) {
+            createColumnChart(this.performancePanel, graphData,graphTitle);
+        }
+        else {
+            GWT.log("empty graphData");
+        }
+    }
+
+    @Override
+    public void setConsumerErrorCountTrendData(Map<String, List<TimeSlotData>> graphData, String graphTitle) {
+        if (graphData != null) {
+            createColumnChart(this.errorsPanel, graphData, graphTitle);
+        }
+        else {
+            GWT.log("empty graphData");
+        }
     }
 
 }

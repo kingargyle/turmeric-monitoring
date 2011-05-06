@@ -1,11 +1,12 @@
 package org.ebayopensource.turmeric.monitoring.client.util.callback;
 
+import org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfo;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class ParallelCallback<T> implements AsyncCallback<T>{
-    
+public class ParallelCallback<T> implements AsyncCallback<T> {
     private String id;
-    
+
     private T data;
     private ParallelCallbackQueue<T> queue;
 
@@ -23,8 +24,8 @@ public class ParallelCallback<T> implements AsyncCallback<T>{
     public T getData() {
         return data;
     }
-    
-    void setQueue(ParallelCallbackQueue<T> queue){
+
+    void setQueue(ParallelCallbackQueue<T> queue) {
         this.queue = queue;
     }
 
@@ -35,5 +36,5 @@ public class ParallelCallback<T> implements AsyncCallback<T>{
     public String getId() {
         return id;
     }
-   
+
 }

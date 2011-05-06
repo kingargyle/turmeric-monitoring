@@ -106,8 +106,9 @@ h1 {
 	
 
 .turmeric .gwt-TabLayoutPanel .gwt-TabLayoutPanelTab {
-  margin-left: 6px;
-  padding: 3px 6px 3px 6px;
+/*   margin-left: 6px; */
+/*   padding: 3px 6px 3px 6px; */
+
   cursor: pointer;
   cursor: hand;
   color: #ffffff;
@@ -119,6 +120,7 @@ h1 {
   border-left: 2px outset #34941;
   border-right:  2px outset #34941;
   border-collapse: collapse;
+  background-position: 50%;
 }
 
 .turmeric .gwt-TabLayoutPanel .gwt-TabLayoutPanelTab .gwt-Label { 
@@ -267,8 +269,8 @@ h1 {
 }
 
 .turmeric .gwt-Tree {
-	margin-left: 10px;
-	margin-top: 10px;
+/* 	margin-left: 10px; */
+/* 	margin-top: 10px; */
 }
 
 .turmeric .gwt-TreeItem .gwt-Label {
@@ -276,7 +278,7 @@ h1 {
   cursor: hand;
   font-weight: bold;
   font-size: 1em;
-  padding: 3px;
+/*   padding: 3px; */
   color: #434941;
   /* background: #fb9605 url(images/o-grad.png) left top repeat; */
 }
@@ -284,6 +286,7 @@ h1 {
 .turmeric .gwt-TreeItem .gwt-Label:active {
   border: 2px inset #c64a0d;
   color: #fb9605;
+  font: bold;
 }
 
 .turmeric .gwt-TreeItem .gwt-Label:hover {

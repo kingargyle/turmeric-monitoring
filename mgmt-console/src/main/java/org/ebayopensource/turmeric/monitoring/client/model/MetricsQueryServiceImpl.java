@@ -99,6 +99,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                     final AsyncCallback<MetricData> callback) {
 
         final String url = URL.encode(MetricsDataRequest.getRestURL(criteria, resourceCriteria));
+        GWT.log("calling the getMetricsData ="+url);
         RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
         final MetricData data = new MetricData();
         data.setRestUrl(url);
@@ -289,7 +290,6 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
         final String url = MetricsMetaDataRequest.getJSONUrl();
         final String json = MetricsMetaDataRequest.getJSON("Service", serviceMap.keySet(), "Operation");
-        GWT.log(json);
         RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, URL.encode(url));
         try {
             builder.sendRequest(json, new RequestCallback() {
@@ -383,7 +383,6 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                         callback.onFailure(getErrorAsThrowable(response));
                     }
                     else {
-                        GWT.log("Response for ErrorMetrics: " + response.getText());
                         ErrorMetricsDataResponse metricsResponse = ErrorMetricsDataResponse.fromJSON(response.getText());
                         if (metricsResponse == null) {
                             GWT.log("Errored request: " + url + " Response=" + response.getText());
@@ -540,14 +539,13 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
     private void getMetricValueForDate(MetricValue mv, final AsyncCallback<TimeSlotData> callback) throws RequestException {
 
-            GWT.log("timestamp:"+mv.getStartTime());
             final TimeSlotData data = new TimeSlotData();
             data.setReturnData(new ArrayList<TimeSlotValue>(0));
             
             final String url = URL.encode(MetricValueRequest.getRestURL(mv));
             RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
             builder.setTimeoutMillis(60000);
-            //GWT.log("getServiceCallTrend url ->" + url);
+            GWT.log("getServiceCallTrend url ->" + url);
             builder.sendRequest(null, new RequestCallback() {
                 public void onError(Request request, Throwable err) {
                     GWT.log("Error calling the SQMS",err);
@@ -649,7 +647,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
     public void getServiceConsumers(final String serviceName,
                     final AsyncCallback<Set<String>> callback) {
 
-        Set serviceNames = new HashSet();
+        Set<String> serviceNames = new HashSet<String>();
         serviceNames.add(serviceName);
         final String url = MetricsMetaDataRequest.getRestURL("Service", serviceNames, "Consumer");
         RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));

@@ -4,25 +4,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfo;
-import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
 import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
-import org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display;
 
-public class ConsumerCallCountTrendCallbackQueue extends ConsumerTabCallbackQueue {
-
-    public ConsumerCallCountTrendCallbackQueue(String serviceName, String operationName, int hourSpan, Display view) {
-        super(serviceName, operationName, hourSpan, view);
-    }
+public class ConsumerResponseTimeCallbackQueue extends ConsumerTabCallbackQueue {
 
     @Override
     protected void setGraphData(Map<String, List<TimeSlotData>> graphData) {
         String graphTitle = "";
-        graphTitle = "Call Count for " + serviceName;
+        graphTitle = "Response Time for " + serviceName;
         if (getOperationName() != null) {
             graphTitle += "." + operationName;
         }
         graphTitle += " over a " + hourSpan + " hr period";
-
-        view.setConsumerServiceCallTrendData(graphData, graphTitle);
+        view.setConsumerServicePerformanceTrendData(graphData, graphTitle);
     }
+
 }

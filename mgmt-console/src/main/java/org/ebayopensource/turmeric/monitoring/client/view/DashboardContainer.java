@@ -50,7 +50,7 @@ public class DashboardContainer extends ResizeComposite implements HasWidgets, D
 	 * @return the tab layout panel
 	 */
 	public TabLayoutPanel configureContent() {
-		contentPanel = new TabLayoutPanel(2.5, Unit.EM);
+		contentPanel = new TabLayoutPanel(2, Unit.EM);
 		return contentPanel;
 	}
 	

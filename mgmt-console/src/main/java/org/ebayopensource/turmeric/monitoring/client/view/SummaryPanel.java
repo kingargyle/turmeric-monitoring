@@ -51,7 +51,7 @@ public class SummaryPanel extends Composite {
      */
     public SummaryPanel () {
         //the panel where the table and graphs go
-        contentGrid = new Grid(1,2);
+        contentGrid = new Grid(2,1);
         contentGrid.setWidth("100%");
         contentGrid.setHeight("100%");
         contentGrid.setCellPadding(0);
@@ -65,7 +65,7 @@ public class SummaryPanel extends Composite {
         verticalGrid.setCellSpacing(0);
         verticalGrid.getCellFormatter().setVerticalAlignment(1, 0, HasVerticalAlignment.ALIGN_TOP);
         
-        contentGrid.setWidget(0, 0, verticalGrid);
+        contentGrid.setWidget(1, 0, verticalGrid);
         
         panel = new HorizontalPanel();
         panel.addStyleName("summary-panel-item"); 
@@ -135,7 +135,7 @@ public class SummaryPanel extends Composite {
     }
     
     private void setDataTableButtonGrid(Grid buttonGrid){
-        ((Grid)contentGrid.getWidget(0, 0)).setWidget(0, 0, buttonGrid);
+        ((Grid)contentGrid.getWidget(1, 0)).setWidget(0, 0, buttonGrid);
     }
 
     /**
@@ -153,7 +153,7 @@ public class SummaryPanel extends Composite {
      * @param widget the new contents
      */
     public void setContents (Widget widget) {
-        ((Grid)contentGrid.getWidget(0, 0)).setWidget(1, 0, widget);
+        ((Grid)contentGrid.getWidget(1, 0)).setWidget(1, 0, widget);
     }
     
     /**
@@ -216,8 +216,8 @@ public class SummaryPanel extends Composite {
      * @param lineChart the line chart
      */
     public void addChart(Visualization lineChart){
-        scroller.setHeight("260px");
-        contentGrid.setWidget(0, 1, lineChart);
+        scroller.setHeight("400px");
+        contentGrid.setWidget(0, 0, lineChart);
     }
     
     /**
@@ -226,7 +226,7 @@ public class SummaryPanel extends Composite {
      * @return the chart
      */
     public LineChart getChart(){
-        return (LineChart) contentGrid.getWidget(0, 1);
+        return (LineChart) contentGrid.getWidget(0, 0);
     }
     
 }
