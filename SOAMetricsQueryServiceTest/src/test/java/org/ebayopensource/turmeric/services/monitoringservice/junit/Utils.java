@@ -8,7 +8,6 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.services.monitoringservice.junit;
 
-import java.io.File;
 import java.io.InputStream;
 
 import javax.xml.bind.JAXB;
@@ -29,7 +28,6 @@ public class Utils {
 		try {
 			consumer = new SOAMetricsQueryServiceImpl();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			System.out.println(e);
 			e.printStackTrace();
 		}

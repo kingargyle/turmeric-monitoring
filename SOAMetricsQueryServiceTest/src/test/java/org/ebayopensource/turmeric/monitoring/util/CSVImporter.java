@@ -51,10 +51,8 @@ public class CSVImporter {
      * @param args the arguments
      * @throws Exception the exception
      */
-    public static void main(String[] args) throws Exception {
+    public static void importCSV() throws Exception {
         String resourceName = "META-INF/metrics/data/dbexport/OpenSourceCSVData.zip";
-        if (args.length == 1)
-            resourceName = args[0];
 
         EntityManagerFactory factory = PersistenceContext.createEntityManagerFactory("metrics");
         EntityManagerContext.open(factory);

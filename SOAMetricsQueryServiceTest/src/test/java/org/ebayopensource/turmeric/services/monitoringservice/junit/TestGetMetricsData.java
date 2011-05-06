@@ -1,7 +1,6 @@
 package org.ebayopensource.turmeric.services.monitoringservice.junit;
 
-import junit.framework.TestCase;
-
+import org.ebayopensource.turmeric.monitoring.util.CSVImporter;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -12,7 +11,7 @@ import org.junit.Test;
  * @author Udayasankar Natarajan
  */
 
-public class TestGetMetricsData extends TestCase {
+public class TestGetMetricsData  {
 	private static String basePath = "META-INF/data/testcases/GetMetricsData";
 
 	/**
@@ -20,6 +19,7 @@ public class TestGetMetricsData extends TestCase {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		CSVImporter.importCSV();
 	}
 
 	/**
