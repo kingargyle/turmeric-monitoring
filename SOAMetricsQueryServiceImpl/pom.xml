@@ -106,13 +106,13 @@
 
         <dependency>
         	<groupId>org.ebayopensource.turmeric.monitoring</groupId>
-        	<artifactId>turmeric-monitoring-provider</artifactId>
+        	<artifactId>turmeric-monitoring-dao-provider</artifactId>
         	<version>${project.version}</version>
         </dependency>
         <dependency>
         	<groupId>org.ebayopensource.turmeric.errorlib</groupId>
         	<artifactId>MonitoringErrorLibrary</artifactId>
-        	<version>1.0.0.2-SNAPSHOT</version>
+        	<version>${project.version}</version>
         </dependency>
     </dependencies>
 

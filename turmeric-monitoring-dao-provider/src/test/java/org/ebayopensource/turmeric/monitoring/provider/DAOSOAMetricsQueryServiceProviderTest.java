@@ -37,7 +37,6 @@ import org.ebayopensource.turmeric.monitoring.v1.services.MetricGroupData;
 import org.ebayopensource.turmeric.monitoring.v1.services.MetricResourceCriteria;
 import org.ebayopensource.turmeric.monitoring.v1.services.ResourceEntity;
 import org.ebayopensource.turmeric.monitoring.v1.services.ResourceEntityRequest;
-import org.ebayopensource.turmeric.monitoring.v1.services.SortOrderType;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.MonitoringSystem;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.SystemMetricDefs;
 import org.ebayopensource.turmeric.runtime.error.model.ErrorValue;
@@ -47,9 +46,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
 
 /**
  * The Class DAOSOAMetricsQueryServiceProviderTest.

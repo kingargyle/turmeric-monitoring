@@ -1,6 +1,7 @@
-/target
+target
 .project
 .classpath
 .settings
 *.swp
 *.log
+

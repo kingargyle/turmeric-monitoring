@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<getMetricsMetadataRequest xmlns:ns2="http://www.ebayopensource.org/turmeric/monitoring/v1/services" xmlns:ns3="http://www.ebayopensource.org/turmeric/common/v1/types">
+    <ns2:resourceEntityType>Service</ns2:resourceEntityType>
+    <ns2:resourceEntityName>BulkDataExchangeService</ns2:resourceEntityName>
+    <ns2:resourceEntityName>MetadataDependencyService</ns2:resourceEntityName>
+    <ns2:resourceEntityName>PolicyService</ns2:resourceEntityName>
+    <ns2:resourceEntityName>ShippingCalculatorService</ns2:resourceEntityName>
+    <ns2:resourceEntityResponseType>Pool</ns2:resourceEntityResponseType>
+</getMetricsMetadataRequest>

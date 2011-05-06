@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<getMetricsRequest xmlns:ns2="http://www.ebayopensource.org/turmeric/monitoring/v1/services" xmlns:ns3="http://www.ebayopensource.org/turmeric/common/v1/types">
+    <ns2:metricCriteria>
+        <ns2:firstStartTime>1256234400</ns2:firstStartTime>
+        <ns2:secondStartTime>1256191200</ns2:secondStartTime>
+        <ns2:duration>86401</ns2:duration>
+        <ns2:aggregationPeriod>60</ns2:aggregationPeriod>
+        <ns2:sortOrder></ns2:sortOrder>
+        <ns2:numRows>3</ns2:numRows>
+        <ns2:metricName>ResponseTime</ns2:metricName>
+        <ns2:roleType>server</ns2:roleType>
+        <ns2:autoDelay>false</ns2:autoDelay>
+    </ns2:metricCriteria>
+    <ns2:metricResourceCriteria>
+        <ns2:resourceEntityResponseType>Service</ns2:resourceEntityResponseType>
+        <ns2:resourceEntityResponseName></ns2:resourceEntityResponseName>
+        <ns2:resourceRequestEntities>
+            <ns2:resourceEntityType>Consumer</ns2:resourceEntityType>
+            <ns2:resourceEntityName>p:v3besm2mcore</ns2:resourceEntityName>
+        </ns2:resourceRequestEntities>
+    </ns2:metricResourceCriteria>
+</getMetricsRequest>
