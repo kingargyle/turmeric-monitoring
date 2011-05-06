@@ -1,5 +1,6 @@
 package org.ebayopensource.turmeric.services.monitoringservice.junit;
 
+import org.custommonkey.xmlunit.XMLUnit;
 import org.ebayopensource.turmeric.monitoring.util.CSVImporter;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -19,7 +20,8 @@ public class TestGetMetricValue {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		CSVImporter.importCSV();
+//		CSVImporter.importCSV();
+		XMLUnit.setIgnoreWhitespace(true);
 	}
 
 	/**
