@@ -6,7 +6,7 @@
  *
  *    http://www.apache.org/licenses/LICENSE-2.0
  *******************************************************************************/
-package org.ebayopensource.turmeric.services.monitoringservice.junit;
+package org.ebayopensource.turmeric.monitoring.util;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -15,7 +15,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 
+/**
+ * The Class Generator.
+ */
 public class Generator {
+	
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 */
 	public static void main(String[] args) {
 		final String basePath = "data/testcases/";
 		//String srcPath = TestCaseGenerator.class.getResource(".").getPath();
@@ -101,11 +110,9 @@ public class Generator {
 						bw.write("}\n");
 						bw.close();
 					} catch (FileNotFoundException e) {
-						// TODO Auto-generated catch block
 						System.out.println(e);
 						e.printStackTrace();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						System.out.println(e);
 						e.printStackTrace();
 					}
