@@ -46,13 +46,6 @@ public interface Filterable {
     public int getHour1 ();
     
     /**
-     * Gets the hour2.
-     *
-     * @return the hour2
-     */
-    public int getHour2 ();
-    
-    /**
      * Gets the duration.
      *
      * @return the duration
@@ -116,25 +109,11 @@ public interface Filterable {
     public void setHour1 (int hour);
     
     /**
-     * Sets the hour2.
-     *
-     * @param hour the new hour2
-     */
-    public void setHour2 (int hour);
-    
-    /**
      * Sets the hours1.
      *
      * @param hours the new hours1
      */
     public void setHours1 (int[] hours);
-    
-    /**
-     * Sets the hours2.
-     *
-     * @param hours the new hours2
-     */
-    public void setHours2 (int[] hours);
     
     /**
      * Sets the metric names.

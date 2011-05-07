@@ -1,7 +1,5 @@
 package org.ebayopensource.turmeric.monitoring.client.util.callback;
 
-import org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfo;
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class ParallelCallback<T> implements AsyncCallback<T> {

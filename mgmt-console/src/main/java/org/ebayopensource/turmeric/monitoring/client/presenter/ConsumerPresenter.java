@@ -218,6 +218,8 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         public void setConsumerServicePerformanceTrendData(Map<String, List<TimeSlotData>> graphData, String graphTitle);
 
         public void setConsumerErrorCountTrendData(Map<String, List<TimeSlotData>> graphData, String graphTitle);
+
+        public void claerConsumerServiceCallTrendGraph();
     }
 
     /**
@@ -275,8 +277,6 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         view.getFilter().setHour1(new Date(selectedDate1).getHours());
         view.getFilter().setDate1(new Date(selectedDate1));
 
-        view.getFilter().setHours2(Util.getAvailableHours(selectedDate2));
-        view.getFilter().setHour2(new Date(selectedDate2).getHours());
         view.getFilter().setDate2(new Date(selectedDate2));
 
         // duration
@@ -359,8 +359,6 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
                 view.getFilter().setHour1(new Date(selectedDate1).getHours());
                 view.getFilter().setDate1(new Date(selectedDate1));
 
-                view.getFilter().setHours2(Util.getAvailableHours(selectedDate2));
-                view.getFilter().setHour2(new Date(selectedDate2).getHours());
                 view.getFilter().setDate2(new Date(selectedDate2));
                 view.getFilter().setDuration(selectedDuration);
             }
@@ -373,16 +371,6 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
                 Date date = event.getValue();
                 int[] hrs = Util.getAvailableHours(date);
                 ConsumerPresenter.this.view.getFilter().setHours1(hrs);
-            }
-        });
-
-        // listen for user selection of date2
-        this.view.getFilter().getDate2().addValueChangeHandler(new ValueChangeHandler<Date>() {
-
-            public void onValueChange(ValueChangeEvent<Date> event) {
-                Date date = event.getValue();
-                int[] hrs = Util.getAvailableHours(date);
-                ConsumerPresenter.this.view.getFilter().setHours2(hrs);
             }
         });
 
@@ -399,7 +387,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
 
                 // Get the hour component
                 int hour1 = ConsumerPresenter.this.view.getFilter().getHour1();
-                int hour2 = ConsumerPresenter.this.view.getFilter().getHour2();
+                int hour2 = ConsumerPresenter.this.view.getFilter().getHour1();
                 selectedDate1 += (Util.HRS_1_MS * hour1);
                 selectedDate2 += (Util.HRS_1_MS * hour2);
 
@@ -459,7 +447,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
 
                 // Get the hour component
                 int hour1 = ConsumerPresenter.this.view.getFilter().getHour1();
-                int hour2 = ConsumerPresenter.this.view.getFilter().getHour2();
+                int hour2 = ConsumerPresenter.this.view.getFilter().getHour1();
                 selectedDate1 += (Util.HRS_1_MS * hour1);
                 selectedDate2 += (Util.HRS_1_MS * hour2);
 
@@ -636,8 +624,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
                 for (MetricGroupData mgd : result.getReturnData()) {
                     consumerNames.add(mgd.getCriteriaInfo().getConsumerName());
                 }
-                
-                
+
                 switch (m) {
                     case CallVolume:
                         // here I need to call the getMetricsValue for each consumer name I get. Also I need the 2 dates
@@ -656,7 +643,6 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
                         getConsumerServiceErrorTrends(sc.getSelection(ObjectType.ServiceName),
                                         sc.getSelection(ObjectType.OperationName), date1, date2, durationHrs,
                                         consumerNames);
-                        
 
                         break;
                     }
@@ -717,7 +703,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
                          * break; }
                          */
                 }
-                
+
                 List<HasClickHandlers> clickHandlers = ConsumerPresenter.this.view.getTableColumn(m, 1, 0);
                 if (clickHandlers != null) {
                     for (HasClickHandlers h : clickHandlers) {
@@ -732,8 +718,8 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
 
                                     view.reset();
                                     fetchMetrics(ONE_CONSUMER_METRICS, tmpCtx, date1, date2, durationHrs);
-                                    insertHistory(ConsumerPresenter.CONSUMER_ID, tmpCtx, date1, date2,
-                                                    durationHrs, false);
+                                    insertHistory(ConsumerPresenter.CONSUMER_ID, tmpCtx, date1, date2, durationHrs,
+                                                    false);
                                 }
                             }
                         });
@@ -746,8 +732,8 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
 
     protected void getConsumerServiceErrorTrends(final String serviceName, final String operationName,
                     final long date1, final long date2, final int durationHrs, List<String> consumerNames) {
-        ConsumerTabCallbackQueue queue = new ConsumerErrorCountCallbackQueue();
-        queue.setView(ConsumerPresenter.this.view);
+        ConsumerTabCallbackQueue queue = new ConsumerErrorCountCallbackQueue(serviceName, operationName, durationHrs,
+                        ConsumerPresenter.this.view);
         final Iterator<String> consuemrIterator = consumerNames.iterator();
         String consumerName = null;
         while (consuemrIterator.hasNext()) {
@@ -769,8 +755,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
             criteriaInfo.setRoleType("server");
 
             MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, 3600l * durationHrs, 3600, "false");
-            MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, 3600l * durationHrs, 3600,
-                            "false");
+            MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, 3600l * durationHrs, 3600, "false");
             queryService.getMetricValueTrend(firstDateValue, secondDateValue, cllbck);
 
         }
@@ -778,8 +763,8 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
 
     protected void getConsumerServicePerformanceTrends(final String serviceName, final String operationName,
                     final long date1, final long date2, final int durationHrs, List<String> consumerNames) {
-        ConsumerTabCallbackQueue queue = new ConsumerResponseTimeCallbackQueue();
-        queue.setView(ConsumerPresenter.this.view);
+        ConsumerTabCallbackQueue queue = new ConsumerResponseTimeCallbackQueue(serviceName, operationName, durationHrs,
+                        ConsumerPresenter.this.view);
         final Iterator<String> consuemrIterator = consumerNames.iterator();
         String consumerName = null;
         while (consuemrIterator.hasNext()) {
@@ -804,8 +789,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
             // Date secondDate = Util.resetTo12am(date2);
 
             MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, 3600l * durationHrs, 3600, "false");
-            MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, 3600l * durationHrs, 3600,
-                            "false");
+            MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, 3600l * durationHrs, 3600, "false");
             queryService.getMetricValueTrend(firstDateValue, secondDateValue, cllbck);
 
         }
@@ -825,8 +809,10 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         Date firstDate = Util.resetTo12am(date1);
         Date secondDate = Util.resetTo12am(date2);
 
-        MetricValue firstDateValue = new MetricValue(criteriaInfo, firstDate.getTime(), 3600l*durationHrs, 3600, "false");
-        MetricValue secondDateValue = new MetricValue(criteriaInfo, secondDate.getTime(),3600l*durationHrs, 3600, "false");
+        MetricValue firstDateValue = new MetricValue(criteriaInfo, firstDate.getTime(), 3600l * durationHrs, 3600,
+                        "false");
+        MetricValue secondDateValue = new MetricValue(criteriaInfo, secondDate.getTime(), 3600l * durationHrs, 3600,
+                        "false");
 
         queryService.getMetricValueTrend(firstDateValue, secondDateValue, new AsyncCallback<List<TimeSlotData>>() {
 
@@ -894,32 +880,38 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
     protected void getConsumerServiceTrends(final String serviceName, final String operationName, final long date1,
                     final long date2, final int durationHrs, List<String> consumerNames) {
 
-        ConsumerTabCallbackQueue queue = new ConsumerCallCountTrendCallbackQueue(serviceName, operationName, durationHrs,ConsumerPresenter.this.view );
-        final Iterator<String> consuemrIterator = consumerNames.iterator();
-        String consumerName = null;
-        while (consuemrIterator.hasNext()) {
-            consumerName = consuemrIterator.next();
-            GWT.log("consumerName = " + consumerName);
-            
-            // now I call the SQMS with the data for this consumer
-            CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
-            criteriaInfo.setMetricName("CallCount");
-            criteriaInfo.setConsumerName(consumerName);
-            criteriaInfo.setServiceName(serviceName);
-            if (operationName != null) {
-                criteriaInfo.setOperationName(operationName);
-            }
-            criteriaInfo.setRoleType("server");
-            
-            //now I create the parallel callback object
-            ParallelCallback<List<TimeSlotData>> cllbck = new ParallelCallback<List<TimeSlotData>>();
-            cllbck.setId(consumerName);
-            queue.add(cllbck);
-            
-            MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, 3600l*durationHrs, 3600, "false");
-            MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, 3600l*durationHrs, 3600, "false");
-            queryService.getMetricValueTrend(firstDateValue, secondDateValue, cllbck);
+        if (consumerNames != null && consumerNames.size() > 0) {
+            ConsumerTabCallbackQueue queue = new ConsumerCallCountTrendCallbackQueue(serviceName, operationName,
+                            durationHrs, ConsumerPresenter.this.view);
+            final Iterator<String> consuemrIterator = consumerNames.iterator();
+            String consumerName = null;
+            while (consuemrIterator.hasNext()) {
+                consumerName = consuemrIterator.next();
+                GWT.log("consumerName = " + consumerName);
 
+                // now I call the SQMS with the data for this consumer
+                CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
+                criteriaInfo.setMetricName("CallCount");
+                criteriaInfo.setConsumerName(consumerName);
+                criteriaInfo.setServiceName(serviceName);
+                if (operationName != null) {
+                    criteriaInfo.setOperationName(operationName);
+                }
+                criteriaInfo.setRoleType("server");
+
+                // now I create the parallel callback object
+                ParallelCallback<List<TimeSlotData>> cllbck = new ParallelCallback<List<TimeSlotData>>();
+                cllbck.setId(consumerName);
+                queue.add(cllbck);
+
+                MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, 3600l * durationHrs, 3600, "false");
+                MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, 3600l * durationHrs, 3600, "false");
+                queryService.getMetricValueTrend(firstDateValue, secondDateValue, cllbck);
+
+            }
+        }
+        else {
+            ConsumerPresenter.this.view.claerConsumerServiceCallTrendGraph();
         }
     }
 
@@ -937,8 +929,8 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         // Date firstDate = Util.resetTo12am(date1);
         // Date secondDate = Util.resetTo12am(date2);
 
-        MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, 3600l*durationHrs, 3600, "false");
-        MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, 3600l*durationHrs, 3600, "false");
+        MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, 3600l * durationHrs, 3600, "false");
+        MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, 3600l * durationHrs, 3600, "false");
         queryService.getMetricValueTrend(firstDateValue, secondDateValue, new AsyncCallback<List<TimeSlotData>>() {
 
             @Override

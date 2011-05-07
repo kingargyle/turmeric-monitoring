@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfo;
 import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
+import org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display;
 
 import com.google.gwt.core.client.GWT;
 
@@ -19,6 +20,10 @@ public class ConsumerErrorCountCallbackQueue extends ConsumerTabCallbackQueue {
         }
         graphTitle += " over a " + hourSpan + " hr period";
         view.setConsumerErrorCountTrendData(graphData, graphTitle);
+    }
+
+    public ConsumerErrorCountCallbackQueue(String serviceName, String operationName, int hourSpan, Display view) {
+        super(serviceName, operationName, hourSpan, view);
     }
 
 }

@@ -10,6 +10,7 @@ package org.ebayopensource.turmeric.monitoring.client.view;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricData;
 import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Entity;
+import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue;
 import org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter;
 
 import com.google.gwt.core.client.GWT;
@@ -1006,7 +1008,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         data.addRows(rowSize);
         while (keys.hasNext()) {
             consumerName = keys.next();
-
+            if(dataRange.get(consumerName)== null || dataRange.get(consumerName).size()== 0){
+                continue;
+            }
             TimeSlotData firstDateRange = dataRange.get(consumerName).get(0);
             GWT.log("firstDateRange for consumer = "+consumerName+". "+firstDateRange.getReturnData().get(0).getValue());
             TimeSlotData secondDateRange = dataRange.get(consumerName).get(1);
@@ -1026,8 +1030,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
                     }
 
                     data.setValue(i, 0, consumerName);
-                    data.setValue(i, 1, firstDateRange.getReturnData().get(0).getValue());
-                    data.setValue(i, 2, secondDateRange.getReturnData().get(0).getValue());
+                    ;
+                    data.setValue(i, 1, calculateTotalValue(firstDateRange.getReturnData()));
+                    data.setValue(i, 2, calculateTotalValue(secondDateRange.getReturnData()));
                     i++;
                 }
                 else {
@@ -1041,6 +1046,14 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         }
 
         return data;
+    }
+
+    private double calculateTotalValue(List<TimeSlotValue> returnData) {
+        double result = 0.0;
+        for (TimeSlotValue timeSlotValue : returnData) {
+            result += timeSlotValue.getValue();
+        }
+        return result;
     }
 
     @Override
@@ -1061,6 +1074,13 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         else {
             GWT.log("empty graphData");
         }
+    }
+
+    @Override
+    public void claerConsumerServiceCallTrendGraph() {
+        Map emptyData = new HashMap<String, List<TimeSlotData>>();
+        emptyData.put("", new ArrayList<TimeSlotData>());
+        createColumnChart(this.callVolumePanel, emptyData,"");
     }
 
 }

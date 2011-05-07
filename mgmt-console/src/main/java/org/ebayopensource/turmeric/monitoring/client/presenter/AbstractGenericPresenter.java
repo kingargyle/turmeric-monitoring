@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
  */
 public abstract class AbstractGenericPresenter implements Presenter {
 
+	
 	/* (non-Javadoc)
 	 * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#go(com.google.gwt.user.client.ui.HasWidgets, org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
 	 */

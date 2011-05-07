@@ -241,8 +241,6 @@ public class ErrorPresenter implements TabPresenter {
         view.getFilter().setHour1(new Date(selectedDate1).getHours());
         view.getFilter().setDate1(new Date(selectedDate1));
 
-        view.getFilter().setHours2(Util.getAvailableHours(selectedDate2)); 
-        view.getFilter().setHour2(new Date(selectedDate2).getHours());
         view.getFilter().setDate2(new Date(selectedDate2));
         
         //duration 
@@ -354,8 +352,6 @@ public class ErrorPresenter implements TabPresenter {
                 view.getFilter().setHour1(new Date(selectedDate1).getHours());
                 view.getFilter().setDate1(new Date(selectedDate1));
 
-                view.getFilter().setHours2(Util.getAvailableHours(selectedDate2)); 
-                view.getFilter().setHour2(new Date(selectedDate2).getHours());
                 view.getFilter().setDate2(new Date(selectedDate2));
                 view.getFilter().setDuration(selectedDurationHrs);
             }
@@ -377,7 +373,7 @@ public class ErrorPresenter implements TabPresenter {
             public void onValueChange(ValueChangeEvent<Date> event) {
                 Date date = event.getValue();
                 int[] hrs = Util.getAvailableHours(date);
-                view.getFilter().setHours2(hrs);
+                
             }
         });
 
@@ -394,7 +390,7 @@ public class ErrorPresenter implements TabPresenter {
 
                 //Get the hour component
                 int hour1 = view.getFilter().getHour1();
-                int hour2 = view.getFilter().getHour2();
+                int hour2 = view.getFilter().getHour1();
                 selectedDate1 += (Util.HRS_1_MS * hour1);
                 selectedDate2 += (Util.HRS_1_MS * hour2);
 
@@ -467,7 +463,7 @@ public class ErrorPresenter implements TabPresenter {
 
                 //Get the hour component
                 int hour1 = view.getFilter().getHour1();
-                int hour2 = view.getFilter().getHour2();
+                int hour2 = view.getFilter().getHour1();
                 selectedDate1 += (Util.HRS_1_MS * hour1);
                 selectedDate2 += (Util.HRS_1_MS * hour2);
 

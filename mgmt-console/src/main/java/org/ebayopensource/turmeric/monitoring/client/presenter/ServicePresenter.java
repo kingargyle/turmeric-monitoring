@@ -272,8 +272,6 @@ public class ServicePresenter implements Presenter.TabPresenter {
         ServicePresenter.this.view.getFilter().setHour1(asDate1.getHours());
         ServicePresenter.this.view.getFilter().setDate1(asDate1);
 
-        ServicePresenter.this.view.getFilter().setHours2(Util.getAvailableHours(selectedDate2)); 
-        ServicePresenter.this.view.getFilter().setHour2(asDate2.getHours());
         ServicePresenter.this.view.getFilter().setDate2(asDate2);
         
         int oldInterval = selectedDurationHrs;
@@ -334,15 +332,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
             }
 	    });
 
-	    //listen for changes to date2 from other tabs
-	    this.view.getFilter().getDate2().addValueChangeHandler(new ValueChangeHandler<Date> () {
-
-	        public void onValueChange(ValueChangeEvent<Date> event) {
-	            Date date = event.getValue();
-	            int[] hrs = Util.getAvailableHours(date);
-	            ServicePresenter.this.view.getFilter().setHours2(hrs);
-	        }
-	    });
+	    
 
 	    //handle user selection of some new dates and intervals to see metrics for
 	    this.view.getFilter().getApplyButton().addClickHandler(new ClickHandler() {
@@ -358,7 +348,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
 
 	                //Get the hour component
 	                int hour1 = ServicePresenter.this.view.getFilter().getHour1();
-	                int hour2 = ServicePresenter.this.view.getFilter().getHour2();
+	                int hour2 = ServicePresenter.this.view.getFilter().getHour1();
 	                selectedDate1 += (Util.HRS_1_MS * hour1);
 	                selectedDate2 += (Util.HRS_1_MS * hour2);             
 
@@ -420,7 +410,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
 
 				//Get the hour component
 				int hour1 = ServicePresenter.this.view.getFilter().getHour1();
-				int hour2 = ServicePresenter.this.view.getFilter().getHour2();
+				int hour2 = ServicePresenter.this.view.getFilter().getHour1();
 				selectedDate1 += (Util.HRS_1_MS * hour1);
 				selectedDate2 += (Util.HRS_1_MS * hour2);
 				
@@ -563,7 +553,7 @@ private void getServicePerformanceTrend(final SelectionContext selectionContext,
                 if (selectionContext.getSelection(ObjectType.OperationName) != null) {
                     graphTitle += "."+selectionContext.getSelection(ObjectType.OperationName);
                 }
-                graphTitle += " over a "+hourSpan+" hrs period";
+                graphTitle += " over a "+hourSpan+" hr period";
                 ServicePresenter.this.view.activate();
                 ServicePresenter.this.view.setServicePerformanceTrendData(dataRanges, graphTitle);
             }
@@ -595,7 +585,7 @@ private void getServiceErrorTrend(final SelectionContext selectionContext, long 
             if (selectionContext.getSelection(ObjectType.OperationName) != null) {
                 graphTitle += "."+selectionContext.getSelection(ObjectType.OperationName);
             }
-            graphTitle += " over a "+hourSpan+" hrs period";
+            graphTitle += " over a "+hourSpan+" hr period";
             ServicePresenter.this.view.activate();
             ServicePresenter.this.view.setServiceErrorTrendData(dataRanges, graphTitle);
         }
