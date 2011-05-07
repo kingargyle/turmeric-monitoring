@@ -99,6 +99,9 @@ public class ServicePresenter implements Presenter.TabPresenter {
 	/** The selected metrics. */
 	protected List<ServiceMetric> selectedMetrics = new ArrayList<ServiceMetric>(Arrays.asList(ServiceMetric.values()));
 	
+	/** The min aggregation period. */
+    protected long minAggregationPeriod = MetricCriteria.minAggregationPeriod;
+	
 	/**
 	 * The Interface Display.
 	 */
@@ -509,7 +512,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
         criteriaInfo.setRoleType("server");
 
         
-        queryService.getMetricValueTrend(new MetricValue(criteriaInfo, date1, 3600l*hourSpan, 3600, ""), new MetricValue(criteriaInfo, date2, 3600l*hourSpan, 3600, ""), new AsyncCallback<List<TimeSlotData>>() {
+        queryService.getMetricValueTrend(new MetricValue(criteriaInfo, date1, minAggregationPeriod * hourSpan, (int) minAggregationPeriod, ""), new MetricValue(criteriaInfo, date2, minAggregationPeriod * hourSpan, (int) minAggregationPeriod, ""), new AsyncCallback<List<TimeSlotData>>() {
             
             @Override
             public void onSuccess(List<TimeSlotData> dataRanges) {
@@ -530,11 +533,6 @@ public class ServicePresenter implements Presenter.TabPresenter {
     }
     
 private void getServicePerformanceTrend(final SelectionContext selectionContext, long date1, long date2, final int hourSpan) {
-        int aggregationPeriod = 3600;
-//        if(hourSpan==1){
-//            //hourSpan = 60;//take it to minutes
-//            aggregationPeriod = 900;
-//        }
         CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
         criteriaInfo.setMetricName("ResponseTime");
         criteriaInfo.setServiceName(selectionContext.getSelection(ObjectType.ServiceName));
@@ -542,10 +540,8 @@ private void getServicePerformanceTrend(final SelectionContext selectionContext,
             criteriaInfo.setOperationName(selectionContext.getSelection(ObjectType.OperationName));
         }
         criteriaInfo.setRoleType("server");
-//        Date firstDate = Util.resetTo12am(date1);
-//        Date secondDate = Util.resetTo12am(date2);
         
-        queryService.getMetricValueTrend(new MetricValue(criteriaInfo, date1, 3600l*hourSpan, aggregationPeriod, ""), new MetricValue(criteriaInfo, date2, 3600l*hourSpan, aggregationPeriod, ""), new AsyncCallback<List<TimeSlotData>>() {
+        queryService.getMetricValueTrend(new MetricValue(criteriaInfo, date1, minAggregationPeriod * hourSpan, (int) minAggregationPeriod, ""), new MetricValue(criteriaInfo, date2, minAggregationPeriod * hourSpan, (int) minAggregationPeriod, ""), new AsyncCallback<List<TimeSlotData>>() {
             
             @Override
             public void onSuccess(List<TimeSlotData> dataRanges) {
@@ -577,7 +573,7 @@ private void getServiceErrorTrend(final SelectionContext selectionContext, long 
 //    Date firstDate = Util.resetTo12am(date1);
 //    Date secondDate = Util.resetTo12am(date2);
     
-    queryService.getMetricValueTrend(new MetricValue(criteriaInfo, date1, 3600l*hourSpan, 3600, ""), new MetricValue(criteriaInfo, date2, 3600l*hourSpan, 3600, ""), new AsyncCallback<List<TimeSlotData>>() {
+    queryService.getMetricValueTrend(new MetricValue(criteriaInfo, date1, minAggregationPeriod * hourSpan, (int) minAggregationPeriod, ""), new MetricValue(criteriaInfo, date2, minAggregationPeriod * hourSpan, (int) minAggregationPeriod, ""), new AsyncCallback<List<TimeSlotData>>() {
         
         @Override
         public void onSuccess(List<TimeSlotData> dataRanges) {

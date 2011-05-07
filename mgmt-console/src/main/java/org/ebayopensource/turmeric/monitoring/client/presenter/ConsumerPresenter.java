@@ -111,6 +111,9 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
 
     /** The selected metrics. */
     protected List<ConsumerMetric> selectedMetrics;
+    
+    /** The min aggregation period. */
+    protected long minAggregationPeriod = MetricCriteria.minAggregationPeriod;
 
     /**
      * The Interface Display.
@@ -209,16 +212,47 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
          */
         void setConsumerCallTrendData(List<TimeSlotData> graphData);
 
+        /**
+         * Sets the consumer performance trend data.
+         *
+         * @param dataRanges the new consumer performance trend data
+         */
         public void setConsumerPerformanceTrendData(List<TimeSlotData> dataRanges);
 
+        /**
+         * Sets the consumer error trend data.
+         *
+         * @param dataRanges the new consumer error trend data
+         */
         public void setConsumerErrorTrendData(List<TimeSlotData> dataRanges);
 
+        /**
+         * Sets the consumer service call trend data.
+         *
+         * @param graphData the graph data
+         * @param graphTitle the graph title
+         */
         public void setConsumerServiceCallTrendData(Map<String, List<TimeSlotData>> graphData, String graphTitle);
 
+        /**
+         * Sets the consumer service performance trend data.
+         *
+         * @param graphData the graph data
+         * @param graphTitle the graph title
+         */
         public void setConsumerServicePerformanceTrendData(Map<String, List<TimeSlotData>> graphData, String graphTitle);
 
+        /**
+         * Sets the consumer error count trend data.
+         *
+         * @param graphData the graph data
+         * @param graphTitle the graph title
+         */
         public void setConsumerErrorCountTrendData(Map<String, List<TimeSlotData>> graphData, String graphTitle);
 
+        /**
+         * Claer consumer service call trend graph.
+         */
         public void claerConsumerServiceCallTrendGraph();
     }
 
@@ -662,6 +696,10 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
                         if (clickHandlers != null) {
                             for (HasClickHandlers h : clickHandlers) {
                                 h.addClickHandler(new ClickHandler() {
+                                    
+                                    /* (non-Javadoc)
+                                     * @see com.google.gwt.event.dom.client.ClickHandler#onClick(com.google.gwt.event.dom.client.ClickEvent)
+                                     */
                                     public void onClick(ClickEvent event) {
                                         Object o = event.getSource();
                                         if (o instanceof HasText) {
@@ -730,6 +768,17 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         });
     }
 
+    /**
+     * Gets the consumer service error trends.
+     *
+     * @param serviceName the service name
+     * @param operationName the operation name
+     * @param date1 the date1
+     * @param date2 the date2
+     * @param durationHrs the duration hrs
+     * @param consumerNames the consumer names
+     * @return the consumer service error trends
+     */
     protected void getConsumerServiceErrorTrends(final String serviceName, final String operationName,
                     final long date1, final long date2, final int durationHrs, List<String> consumerNames) {
         ConsumerTabCallbackQueue queue = new ConsumerErrorCountCallbackQueue(serviceName, operationName, durationHrs,
@@ -754,13 +803,24 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
             }
             criteriaInfo.setRoleType("server");
 
-            MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, 3600l * durationHrs, 3600, "false");
-            MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, 3600l * durationHrs, 3600, "false");
+            MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, minAggregationPeriod * durationHrs, (int) minAggregationPeriod, "false");
+            MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, minAggregationPeriod * durationHrs, (int) minAggregationPeriod, "false");
             queryService.getMetricValueTrend(firstDateValue, secondDateValue, cllbck);
 
         }
     }
 
+    /**
+     * Gets the consumer service performance trends.
+     *
+     * @param serviceName the service name
+     * @param operationName the operation name
+     * @param date1 the date1
+     * @param date2 the date2
+     * @param durationHrs the duration hrs
+     * @param consumerNames the consumer names
+     * @return the consumer service performance trends
+     */
     protected void getConsumerServicePerformanceTrends(final String serviceName, final String operationName,
                     final long date1, final long date2, final int durationHrs, List<String> consumerNames) {
         ConsumerTabCallbackQueue queue = new ConsumerResponseTimeCallbackQueue(serviceName, operationName, durationHrs,
@@ -788,13 +848,24 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
             // Date firstDate = Util.resetTo12am(date1);
             // Date secondDate = Util.resetTo12am(date2);
 
-            MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, 3600l * durationHrs, 3600, "false");
-            MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, 3600l * durationHrs, 3600, "false");
+            MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, minAggregationPeriod * durationHrs, (int) minAggregationPeriod, "false");
+            MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, minAggregationPeriod * durationHrs, (int) minAggregationPeriod, "false");
             queryService.getMetricValueTrend(firstDateValue, secondDateValue, cllbck);
 
         }
     }
 
+    /**
+     * Gets the consumer performance trend.
+     *
+     * @param serviceName the service name
+     * @param consumerName the consumer name
+     * @param operationName the operation name
+     * @param date1 the date1
+     * @param date2 the date2
+     * @param durationHrs the duration hrs
+     * @return the consumer performance trend
+     */
     protected void getConsumerPerformanceTrend(String serviceName, String consumerName, String operationName,
                     long date1, long date2, final int durationHrs) {
         // now I call the SQMS with the data for this consumer
@@ -809,9 +880,9 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         Date firstDate = Util.resetTo12am(date1);
         Date secondDate = Util.resetTo12am(date2);
 
-        MetricValue firstDateValue = new MetricValue(criteriaInfo, firstDate.getTime(), 3600l * durationHrs, 3600,
+        MetricValue firstDateValue = new MetricValue(criteriaInfo, firstDate.getTime(), minAggregationPeriod * durationHrs, (int) minAggregationPeriod,
                         "false");
-        MetricValue secondDateValue = new MetricValue(criteriaInfo, secondDate.getTime(), 3600l * durationHrs, 3600,
+        MetricValue secondDateValue = new MetricValue(criteriaInfo, secondDate.getTime(), minAggregationPeriod * durationHrs, (int) minAggregationPeriod,
                         "false");
 
         queryService.getMetricValueTrend(firstDateValue, secondDateValue, new AsyncCallback<List<TimeSlotData>>() {
@@ -829,6 +900,17 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         });
     }
 
+    /**
+     * Gets the consumer error trend.
+     *
+     * @param serviceName the service name
+     * @param consumerName the consumer name
+     * @param operationName the operation name
+     * @param date1 the date1
+     * @param date2 the date2
+     * @param durationHrs the duration hrs
+     * @return the consumer error trend
+     */
     protected void getConsumerErrorTrend(String serviceName, String consumerName, String operationName, long date1,
                     long date2, final int durationHrs) {
         // now I call the SQMS with the data for this consumer
@@ -843,8 +925,8 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         // Date firstDate = Util.resetTo12am(date1);
         // Date secondDate = Util.resetTo12am(date2);
 
-        MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, 3600l * durationHrs, 3600, "false");
-        MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, 3600l * durationHrs, 3600, "false");
+        MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, minAggregationPeriod * durationHrs, (int) minAggregationPeriod, "false");
+        MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, minAggregationPeriod * durationHrs, (int) minAggregationPeriod, "false");
 
         queryService.getMetricValueTrend(firstDateValue, secondDateValue, new AsyncCallback<List<TimeSlotData>>() {
 
@@ -863,23 +945,17 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
 
     /**
      * Gets the consumer service trends.
-     * 
-     * @param serviceName
-     *            the service name
-     * @param date1
-     *            the date1
-     * @param date2
-     *            the date2
-     * @param list
-     * @param returnData
-     *            the return data
-     * @param initialIndex
-     *            the initial index
+     *
+     * @param serviceName the service name
+     * @param operationName the operation name
+     * @param date1 the date1
+     * @param date2 the date2
+     * @param durationHrs the duration hrs
+     * @param consumerNames the consumer names
      * @return the consumer service trends
      */
     protected void getConsumerServiceTrends(final String serviceName, final String operationName, final long date1,
                     final long date2, final int durationHrs, List<String> consumerNames) {
-
         if (consumerNames != null && consumerNames.size() > 0) {
             ConsumerTabCallbackQueue queue = new ConsumerCallCountTrendCallbackQueue(serviceName, operationName,
                             durationHrs, ConsumerPresenter.this.view);
@@ -904,8 +980,8 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
                 cllbck.setId(consumerName);
                 queue.add(cllbck);
 
-                MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, 3600l * durationHrs, 3600, "false");
-                MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, 3600l * durationHrs, 3600, "false");
+                MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, minAggregationPeriod * durationHrs, (int) minAggregationPeriod, "false");
+                MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, minAggregationPeriod * durationHrs, (int) minAggregationPeriod, "false");
                 queryService.getMetricValueTrend(firstDateValue, secondDateValue, cllbck);
 
             }
@@ -915,6 +991,17 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         }
     }
 
+    /**
+     * Gets the consumer call trend.
+     *
+     * @param serviceName the service name
+     * @param consumerName the consumer name
+     * @param operationName the operation name
+     * @param date1 the date1
+     * @param date2 the date2
+     * @param durationHrs the duration hrs
+     * @return the consumer call trend
+     */
     protected void getConsumerCallTrend(final String serviceName, final String consumerName,
                     final String operationName, final long date1, final long date2, final int durationHrs) {
         // now I call the SQMS with the data for this consumer
@@ -929,8 +1016,8 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         // Date firstDate = Util.resetTo12am(date1);
         // Date secondDate = Util.resetTo12am(date2);
 
-        MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, 3600l * durationHrs, 3600, "false");
-        MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, 3600l * durationHrs, 3600, "false");
+        MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, minAggregationPeriod * durationHrs, (int) minAggregationPeriod, "false");
+        MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, minAggregationPeriod * durationHrs, (int) minAggregationPeriod, "false");
         queryService.getMetricValueTrend(firstDateValue, secondDateValue, new AsyncCallback<List<TimeSlotData>>() {
 
             @Override
