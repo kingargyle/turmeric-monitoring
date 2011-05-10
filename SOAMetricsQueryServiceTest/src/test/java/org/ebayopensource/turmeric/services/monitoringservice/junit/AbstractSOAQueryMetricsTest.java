@@ -16,7 +16,6 @@ import javax.xml.bind.JAXB;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.custommonkey.xmlunit.Diff;
-import org.custommonkey.xmlunit.XMLAssert;
 import org.ebayopensource.turmeric.monitoring.impl.SOAMetricsQueryServiceImpl;
 import org.ebayopensource.turmeric.monitoring.util.IgnoreMachineName;
 import org.ebayopensource.turmeric.monitoring.v1.services.GetMetricValueRequest;
@@ -91,7 +90,6 @@ public abstract class AbstractSOAQueryMetricsTest {
 		JAXB.marshal(resp, xmlResp);
 		StringReader str = new StringReader(xmlResp.toString());
 		System.out.println(xmlResp.toString());
-		//XMLAssert.assertXMLEqual("Responses do not match. ", responseis, str);
 		assertXMLEqual(responseis, str);
 	}
 
@@ -127,10 +125,7 @@ public abstract class AbstractSOAQueryMetricsTest {
 		JAXB.marshal(resp, xmlResp);
 		StringReader str = new StringReader(xmlResp.toString());
 		System.out.println(xmlResp.toString());
-//		XMLAssert.assertXMLEqual("Responses do not match. ", responseis, str);
 		assertXMLEqual(responseis, str);
-
-
 	}
 
 	/**
@@ -159,8 +154,6 @@ public abstract class AbstractSOAQueryMetricsTest {
 		JAXB.marshal(resp, xmlResp);
 		StringReader str = new StringReader(xmlResp.toString());
 		System.out.println(xmlResp.toString());
-//		XMLAssert.assertXMLEqual("Responses do not match. ", responseis, str);
 		assertXMLEqual(responseis, str);
-		
 	}
 }
