@@ -5,7 +5,7 @@
             <ns2:metricName>SoaFwk.Op.Time.Total</ns2:metricName>
             <ns2:serviceName>SellerLimitsService</ns2:serviceName>
             <ns2:operationName>null</ns2:operationName>
-            <ns2:machineName>carver-intalio</ns2:machineName>
+            <ns2:machineName>ph-0147.eva.ebay.com</ns2:machineName>
             <ns2:roleType>server</ns2:roleType>
         </ns2:criteriaInfo>
         <ns2:diff>198.42</ns2:diff>
@@ -18,7 +18,7 @@
             <ns2:metricName>SoaFwk.Op.Time.Total</ns2:metricName>
             <ns2:serviceName>SellerLimitsService</ns2:serviceName>
             <ns2:operationName>getAllSellerLimits</ns2:operationName>
-            <ns2:machineName>carver-intalio</ns2:machineName>
+            <ns2:machineName>ph-0147.eva.ebay.com</ns2:machineName>
             <ns2:roleType>server</ns2:roleType>
         </ns2:criteriaInfo>
         <ns2:diff>198.43</ns2:diff>
@@ -31,7 +31,7 @@
             <ns2:metricName>SoaFwk.Op.Time.Total</ns2:metricName>
             <ns2:serviceName>SellerLimitsService</ns2:serviceName>
             <ns2:operationName>getCurrentSellerLimits</ns2:operationName>
-            <ns2:machineName>carver-intalio</ns2:machineName>
+            <ns2:machineName>ph-0147.eva.ebay.com</ns2:machineName>
             <ns2:roleType>server</ns2:roleType>
         </ns2:criteriaInfo>
         <ns2:diff>75.44</ns2:diff>

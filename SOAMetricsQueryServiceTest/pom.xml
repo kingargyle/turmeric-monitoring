@@ -28,7 +28,7 @@
 					<testFailureIgnore>true</testFailureIgnore>
 					<excludes>
 						<exclude>**/AllTests.java</exclude>
-						<exclude>**/TestGetMetricsDataError.java</exclude>
+						<exclude>**/TestGetMetricsDataErrorCount.java</exclude>
 						<exclude>**/TestGetMetricsMetadata.java</exclude>
 						<exclude>**/TestGetMetricValue.java</exclude>
 					</excludes>
