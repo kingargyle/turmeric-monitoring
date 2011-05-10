@@ -1,6 +1,7 @@
 package org.ebayopensource.turmeric.services.monitoringservice.junit;
 
 import org.custommonkey.xmlunit.XMLUnit;
+import org.ebayopensource.turmeric.monitoring.util.CSVImporter;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

@@ -127,7 +127,7 @@ public class CSVImporter {
 
                             // Only save operation metrics, since service metrics are not used
                             // by the current implementation of SOAMetricsQueryService
-                            if (!"null".equals(operationName)) {
+//                            if (!"null".equals(operationName)) {
                                 // EBay's implementation was removing the "Op." from the metric
                                 // Here we restore it if the metric has an operation name associated
                                 if (!metricName.startsWith("SoaFwk.Op."))
@@ -149,7 +149,7 @@ public class CSVImporter {
                                     Metric metric = new Metric(serviceName, operationName, metricDef);
                                     result.put(id, metric);
                                 }
-                            }
+                            //}
                         }
                     }
                     break;

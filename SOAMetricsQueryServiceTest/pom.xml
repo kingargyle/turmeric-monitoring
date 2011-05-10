@@ -27,13 +27,45 @@
 				<configuration>
 					<testFailureIgnore>true</testFailureIgnore>
 					<excludes>
-						<excludes>**/AllTests.java</excludes>
+						<exclude>**/AllTests.java</exclude>
+						<exclude>**/TestGetMetricsDataError.java</exclude>
+						<exclude>**/TestGetMetricsMetadata.java</exclude>
+						<exclude>**/TestGetMetricValue.java</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.ebayopensource.turmeric.runtime</groupId>
+				<artifactId>soa-server</artifactId>
+				<version>1.0.0.2-SNAPSHOT</version>
+				<exclusions>
+				  <exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-simple</artifactId>
+				  </exclusion>
+				</exclusions>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	
 	<dependencies>
+		<!-- slf4j-log4j -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.slf4j</groupId> -->
+<!-- 			<artifactId>slf4j-log4j12</artifactId> -->
+<!-- 			<version>1.6.1</version> -->
+<!-- 			<scope>test</scope> -->
+<!-- 		</dependency>		 -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>log4j</groupId> -->
+<!-- 			<artifactId>log4j</artifactId> -->
+<!-- 			<version>1.2.16</version> -->
+<!-- 			<scope>test</scope> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
@@ -82,10 +114,28 @@
 			<version>${turmeric-runtime-version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>xmlunit</groupId>
-		    <artifactId>xmlunit</artifactId>
-		    <version>1.3</version>
-		    <scope>test</scope>
+			<groupId>xmlunit</groupId>
+			<artifactId>xmlunit</artifactId>
+			<version>1.3</version>
+			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.jolbox</groupId>
+			<artifactId>bonecp</artifactId>
+			<version>0.7.0</version>
+			<scope>test</scope>		
+		</dependency>
+		<dependency>
+			<groupId>com.jolbox</groupId>
+			<artifactId>bonecp-provider</artifactId>
+			<version>0.7.0</version>
+			<scope>test</scope>		
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.13</version>
+			<scope>test</scope>
+		</dependency>		
 	</dependencies>
 </project>
