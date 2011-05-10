@@ -121,6 +121,8 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                         callback.onFailure(getErrorAsThrowable(response));
                     }
                     else {
+                        String responseText = response.getText();
+                        GWT.log("getMetricData. responseText ="+responseText);
                         MetricsDataResponse metricsResponse = MetricsDataResponse.fromJSON(response.getText());
                         if (metricsResponse == null) {
                             GWT.log("bad response: " + response.getText());

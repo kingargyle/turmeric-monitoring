@@ -651,8 +651,8 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
     protected void setTabularData(FlexTable table, String[] cols, List<String[]> rows, String[] rowStyles) {
         table.removeAllRows();
         table.setText(0, 0, cols[0]);
-        table.setText(0, 1, cols[1]);
-        table.setText(0, 2, cols[2]);
+        table.setText(0, 1, cols[2]);//flip flop dates!!!
+        table.setText(0, 2, cols[1]);//flip flop dates!!!
         table.setText(0, 3, cols[3]);
         table.getRowFormatter().addStyleName(0, "tbl-header1");
 
@@ -667,13 +667,13 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
                     l.addStyleName(rowStyles[0]);
 
                 l = new Label(NumberFormat.getDecimalFormat().format(new Double(row[1])));
-                table.setWidget(i, 1, l);
+                table.setWidget(i, 2, l);
                 table.getCellFormatter().setWidth(i, 1, "25%");
                 if (rowStyles != null && 1 < rowStyles.length && rowStyles[1] != null)
                     l.addStyleName(rowStyles[1]);
 
                 l = new Label(NumberFormat.getDecimalFormat().format(new Double(row[2])));
-                table.setWidget(i, 2, l);
+                table.setWidget(i, 1, l);
                 table.getCellFormatter().setWidth(i, 2, "25%");
                 if (rowStyles != null && 2 < rowStyles.length && rowStyles[2] != null)
                     l.addStyleName(rowStyles[2]);

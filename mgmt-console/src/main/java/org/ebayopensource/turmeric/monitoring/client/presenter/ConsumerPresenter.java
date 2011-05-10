@@ -638,7 +638,8 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
             subject.add(consumerName);
         }
 
-        MetricCriteria mc = MetricCriteria.newMetricCriteria(m.toMetricName(), date1, date2, durationHrs,
+        //TODO: alert date flip flop!!
+        MetricCriteria mc = MetricCriteria.newMetricCriteria(m.toMetricName(), date2, date1, durationHrs,
                         Ordering.Descending, 10, Perspective.Server, false);
         MetricResourceCriteria rmc = MetricResourceCriteria.newMetricResourceCriteria(subject, returnType);
         String url = queryService.getMetricDataDownloadUrl(mc, rmc);

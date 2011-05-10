@@ -414,9 +414,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
             case CallVolume: {
                 String[] columns = {
                         ConsoleUtil.constants.consumers(),
-                        (result == null ? ConsoleUtil.constants.count() : date1Header + " "
-                                        + ConsoleUtil.constants.count()),
                         (result == null ? ConsoleUtil.constants.count() : date2Header + " "
+                                        + ConsoleUtil.constants.count()),
+                        (result == null ? ConsoleUtil.constants.count() : date1Header + " "
                                         + ConsoleUtil.constants.count()), "% " + ConsoleUtil.constants.change() };
 
                 List<Widget[]> rows = new ArrayList<Widget[]>();
@@ -426,9 +426,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
                         Widget[] rowData = new Widget[4];
                         rowData[0] = new Label(rd.getCriteriaInfo().getConsumerName());
                         rowData[1] = new Label(NumberFormat.getDecimalFormat().format(
-                                        Double.parseDouble(rd.getCount1())));
-                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
                                         Double.parseDouble(rd.getCount2())));
+                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount1())));
                         rowData[3] = new Label(rd.getDiff());
                         rows.add(rowData);
                     }
@@ -445,9 +445,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
             case Performance: {
                 String[] columns = {
                         ConsoleUtil.constants.consumers(),
-                        (result == null ? ConsoleUtil.constants.average() : date1Header + " "
-                                        + ConsoleUtil.constants.average() + " \u00B5s"),
                         (result == null ? ConsoleUtil.constants.average() : date2Header + " "
+                                        + ConsoleUtil.constants.average() + " \u00B5s"),
+                        (result == null ? ConsoleUtil.constants.average() : date1Header + " "
                                         + ConsoleUtil.constants.average() + " \u00B5s"),
                         "% " + ConsoleUtil.constants.change() };
                 List<Widget[]> rows = new ArrayList<Widget[]>();
@@ -457,9 +457,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
                         Widget[] rowData = new Widget[4];
                         rowData[0] = new Label(rd.getCriteriaInfo().getConsumerName());
                         rowData[1] = new Label(NumberFormat.getDecimalFormat().format(
-                                        Double.parseDouble(rd.getCount1())));
-                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
                                         Double.parseDouble(rd.getCount2())));
+                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount1())));
                         rowData[3] = new Label(rd.getDiff());
                         rows.add(rowData);
                     }
@@ -476,9 +476,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
             case Errors: {
                 String[] columns = {
                         ConsoleUtil.constants.consumers(),
-                        (result == null ? ConsoleUtil.constants.count() : date1Header + " "
-                                        + ConsoleUtil.constants.count()),
                         (result == null ? ConsoleUtil.constants.count() : date2Header + " "
+                                        + ConsoleUtil.constants.count()),
+                        (result == null ? ConsoleUtil.constants.count() : date1Header + " "
                                         + ConsoleUtil.constants.count()), "% " + ConsoleUtil.constants.change() };
 
                 List<Widget[]> rows = new ArrayList<Widget[]>();
@@ -488,9 +488,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
                         Widget[] rowData = new Widget[4];
                         rowData[0] = new Label(rd.getCriteriaInfo().getConsumerName());
                         rowData[1] = new Label(NumberFormat.getDecimalFormat().format(
-                                        Double.parseDouble(rd.getCount1())));
-                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
                                         Double.parseDouble(rd.getCount2())));
+                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount1())));
                         rowData[3] = new Label(rd.getDiff());
                         rows.add(rowData);
                     }
@@ -515,9 +515,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
                     col0 = ConsoleUtil.constants.operations();
                 String[] columns = {
                         col0,
-                        (result == null ? ConsoleUtil.constants.count() : date1Header + " "
-                                        + ConsoleUtil.constants.count()),
                         (result == null ? ConsoleUtil.constants.count() : date2Header + " "
+                                        + ConsoleUtil.constants.count()),
+                        (result == null ? ConsoleUtil.constants.count() : date1Header + " "
                                         + ConsoleUtil.constants.count()), "% " + ConsoleUtil.constants.change() };
 
                 List<Widget[]> rows = new ArrayList<Widget[]>();
@@ -531,9 +531,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
                             rowData[0] = new Label(rd.getCriteriaInfo().getOperationName());
 
                         rowData[1] = new Label(NumberFormat.getDecimalFormat().format(
-                                        Double.parseDouble(rd.getCount1())));
-                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
                                         Double.parseDouble(rd.getCount2())));
+                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount1())));
                         rowData[3] = new Label(rd.getDiff());
                         rows.add(rowData);
                     }
@@ -557,9 +557,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
                     col0 = ConsoleUtil.constants.operations();
                 String[] columns = {
                         col0,
-                        (result == null ? ConsoleUtil.constants.average() : date1Header + " "
-                                        + ConsoleUtil.constants.average() + " \u00B5s"),
                         (result == null ? ConsoleUtil.constants.average() : date2Header + " "
+                                        + ConsoleUtil.constants.average() + " \u00B5s"),
+                        (result == null ? ConsoleUtil.constants.average() : date1Header + " "
                                         + ConsoleUtil.constants.average() + " \u00B5s"),
                         "% " + ConsoleUtil.constants.change() };
                 List<Widget[]> rows = new ArrayList<Widget[]>();
@@ -573,9 +573,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
                             rowData[0] = new Label(rd.getCriteriaInfo().getOperationName());
 
                         rowData[1] = new Label(NumberFormat.getDecimalFormat().format(
-                                        Double.parseDouble(rd.getCount1())));
-                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
                                         Double.parseDouble(rd.getCount2())));
+                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount1())));
                         rowData[3] = new Label(rd.getDiff());
                         rows.add(rowData);
                     }
@@ -622,9 +622,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
                             rowData[0] = new Label(rd.getCriteriaInfo().getServiceName());
                         rowData[1] = new Label(rd.getCriteriaInfo().getMetricName());
                         rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
-                                        Double.parseDouble(rd.getCount1())));
-                        rowData[3] = new Label(NumberFormat.getDecimalFormat().format(
                                         Double.parseDouble(rd.getCount2())));
+                        rowData[3] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount1())));
                         rowData[4] = new Label(rd.getDiff());
                         rows.add(rowData);
                     }
@@ -642,9 +642,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
             case TopConsumerErrors: {
                 String[] columns = {
                         ConsoleUtil.constants.errors(),
-                        (result == null ? ConsoleUtil.constants.count() : date1Header + " "
-                                        + ConsoleUtil.constants.count()),
                         (result == null ? ConsoleUtil.constants.count() : date2Header + " "
+                                        + ConsoleUtil.constants.count()),
+                        (result == null ? ConsoleUtil.constants.count() : date1Header + " "
                                         + ConsoleUtil.constants.count()), "% " + ConsoleUtil.constants.change() };
 
                 List<Widget[]> rows = new ArrayList<Widget[]>();
@@ -655,9 +655,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
                         Widget[] rowData = new Widget[4];
                         rowData[0] = new Label(rd.getCriteriaInfo().getMetricName());
                         rowData[1] = new Label(NumberFormat.getDecimalFormat().format(
-                                        Double.parseDouble(rd.getCount1())));
-                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
                                         Double.parseDouble(rd.getCount2())));
+                        rowData[2] = new Label(NumberFormat.getDecimalFormat().format(
+                                        Double.parseDouble(rd.getCount1())));
                         rowData[3] = new Label(rd.getDiff());
                         rows.add(rowData);
                     }
