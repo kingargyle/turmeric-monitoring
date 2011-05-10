@@ -777,6 +777,8 @@ public class ErrorPresenter implements TabPresenter {
 
             public void onSuccess(ErrorMetricData data) {
                 view.setErrorMetricData(m, data);
+                String downloadUrl = queryService.getErrorDataDownloadUrl(ec, mc);
+                view.setDownloadUrl(m, downloadUrl);
                 //depending on which metric table it is, we want to hook up click listeners so we can navigate to other tabs
                 switch (m) {
                     case TopApplicationErrors:
