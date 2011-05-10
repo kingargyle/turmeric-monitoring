@@ -40,11 +40,17 @@ public class TestGetMetricsData extends AbstractSOAQueryMetricsTest {
 	}
 	
 	@Test
-	public void testCallCount() throws Exception {
+	public void testCallCountOperation() throws Exception {
 		String requestXmlPath = basePath + "/turmeric/callcountRequest.xml";
 		String respXmlPath = basePath + "/turmeric/callcountResponse.xml";
 		testGetMetricsData(requestXmlPath, respXmlPath);
 	}
 
+	@Test
+	public void testCallCountService() throws Exception {
+		String requestXmlPath = basePath + "/turmeric/callcountRequestService.xml";
+		String respXmlPath = basePath + "/turmeric/callcountResponseService.xml";
+		testGetMetricsData(requestXmlPath, respXmlPath);
+	}
 
 }

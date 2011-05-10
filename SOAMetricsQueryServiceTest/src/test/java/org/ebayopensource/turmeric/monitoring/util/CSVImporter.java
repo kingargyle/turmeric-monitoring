@@ -95,6 +95,7 @@ public class CSVImporter {
                             result.put(id, name);
                         }
                     }
+                    lineReader.close();
                     break;
                 }
             }
@@ -152,6 +153,7 @@ public class CSVImporter {
                             //}
                         }
                     }
+                    lineReader.close();
                     break;
                 }
             }
@@ -252,6 +254,7 @@ public class CSVImporter {
                             result.add(metricValue);
                         }
                     }
+                    lineReader.close();
                     break;
                 }
             }
