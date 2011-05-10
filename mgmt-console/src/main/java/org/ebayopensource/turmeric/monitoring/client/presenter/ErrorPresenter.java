@@ -29,6 +29,7 @@ import org.ebayopensource.turmeric.monitoring.client.event.ObjectSelectionEventH
 import org.ebayopensource.turmeric.monitoring.client.model.ErrorCriteria;
 import org.ebayopensource.turmeric.monitoring.client.model.ErrorDetail;
 import org.ebayopensource.turmeric.monitoring.client.model.ErrorMetric;
+import org.ebayopensource.turmeric.monitoring.client.model.ErrorTimeSlotData;
 import org.ebayopensource.turmeric.monitoring.client.model.FilterContext;
 import org.ebayopensource.turmeric.monitoring.client.model.Filterable;
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
@@ -37,13 +38,16 @@ import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService;
 import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
 import org.ebayopensource.turmeric.monitoring.client.model.SelectionContext;
 import org.ebayopensource.turmeric.monitoring.client.model.ErrorMetricData;
+import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorCategory;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorSeverity;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorType;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Ordering;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Perspective;
 import org.ebayopensource.turmeric.monitoring.client.presenter.Presenter.TabPresenter;
+import org.ebayopensource.turmeric.monitoring.client.util.GraphUtil;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -63,6 +67,9 @@ import com.google.gwt.user.client.ui.TreeItem;
  * The Class ErrorPresenter.
  */
 public class ErrorPresenter implements TabPresenter {
+    
+    /** The min aggregation period. */
+    protected long minAggregationPeriod = MetricCriteria.minAggregationPeriod;
 
     /** The Constant ERROR_ID. */
     public final static String ERROR_ID = "Error";
@@ -187,6 +194,12 @@ public class ErrorPresenter implements TabPresenter {
          * @param url the url
          */
         public void setDownloadUrl(ErrorMetric metric, String url);
+
+        public void setServiceSystemErrorTrendData(List<ErrorTimeSlotData> dataRanges, String graphTitle);
+
+        public void setServiceApplicationErrorTrendData(List<ErrorTimeSlotData> dataRanges, String graphTitle);
+
+        public void setServiceRequestErrorTrendData(List<ErrorTimeSlotData> dataRanges, String graphTitle);
     }
     
     /**
@@ -558,6 +571,11 @@ public class ErrorPresenter implements TabPresenter {
     protected void fetchMetrics(final List<ErrorMetric> metrics, SelectionContext sc, long date1, long date2, int durationHrs) {
         if (metrics == null)
             return;
+        
+        boolean callSystemErrorCountGraph = false;
+        boolean callApplicationErrorGraph = false;
+        boolean callRequestErrorGraph = false;
+        
         List<String> serviceNames = new ArrayList<String>(1);
         List<String> operationNames = new ArrayList<String>(1);
         List<String> consumerNames = new ArrayList<String>(1);
@@ -602,14 +620,17 @@ public class ErrorPresenter implements TabPresenter {
             switch (m) {
                 /* category related metrics */
                 case TopApplicationErrors: {
+                    callApplicationErrorGraph = true;
                     ec = ErrorCriteria.newErrorCriteria(ErrorType.Category, serviceNames, operationNames, consumerNames, null, false, ErrorCategory.Application, null);
                     break;
                 }
                 case TopRequestErrors: {
+                    callRequestErrorGraph = true;
                     ec = ErrorCriteria.newErrorCriteria(ErrorType.Category, serviceNames, operationNames, consumerNames, null, false, ErrorCategory.Request, null);
                     break;
                 }
                 case TopSystemErrors: {
+                    callSystemErrorCountGraph = true;
                     ec = ErrorCriteria.newErrorCriteria(ErrorType.Category, serviceNames, operationNames, consumerNames, null, false, ErrorCategory.System, null);
                     break;
                 }
@@ -651,10 +672,94 @@ public class ErrorPresenter implements TabPresenter {
                 }
             }
             fetchMetric(m, ec, mc);
+            
+            if (callSystemErrorCountGraph)
+                getServiceSystemErrorTrend(selectionContext, date1, date2, durationHrs);
+            if (callApplicationErrorGraph)
+                getServiceApplicationErrorTrend(selectionContext, date1, date2, durationHrs);
+            if (callRequestErrorGraph)
+                getServiceRequestErrorTrend(selectionContext, date1, date2, durationHrs);
         }
     }
     
+    private void getSimpleErrorGraphData(ErrorType errorType, ErrorCategory errorCategory,  ErrorSeverity severity, String roleType, long aggregationPeriod,
+                    final SelectionContext selectionContext, long date1, long date2, final int hourSpan,
+                    AsyncCallback<List<ErrorTimeSlotData>> callback) {
+        GraphUtil.getSimpleErrorGraphData(queryService, errorType, errorCategory, severity, roleType, aggregationPeriod, selectionContext, date1, date2, hourSpan, callback);
+    }
     
+    private void getServiceSystemErrorTrend(final SelectionContext selectionContext2, final long date1, final long date2, final int durationHrs) {
+        AsyncCallback<List<ErrorTimeSlotData>> callback = new AsyncCallback<List<ErrorTimeSlotData>>() {
+            @Override
+            public void onSuccess(List<ErrorTimeSlotData> dataRanges) {
+                String serviceOpName = selectionContext.getSelection(ObjectType.ServiceName);
+                if (selectionContext.getSelection(ObjectType.OperationName) != null) {
+                    serviceOpName += "." + selectionContext.getSelection(ObjectType.OperationName);
+                }
+                String graphTitle = ConsoleUtil.messages.graphTitle("System Errors", serviceOpName, durationHrs);
+                ErrorPresenter.this.view.activate();
+                ErrorPresenter.this.view.setServiceSystemErrorTrendData(dataRanges, graphTitle);
+            }
+
+            @Override
+            public void onFailure(Throwable exception) {
+                GWT.log(exception.getMessage());
+            }
+        };
+        
+        this.getSimpleErrorGraphData(ErrorType.Category, ErrorCategory.System, null, "server", minAggregationPeriod, selectionContext, date1, date2, durationHrs,
+                        callback);
+    }
+
+
+    private void getServiceApplicationErrorTrend(SelectionContext selectionContext2, long date1, long date2, final int durationHrs) {
+        AsyncCallback<List<ErrorTimeSlotData>> callback = new AsyncCallback<List<ErrorTimeSlotData>>() {
+            @Override
+            public void onSuccess(List<ErrorTimeSlotData> dataRanges) {
+                String serviceOpName = selectionContext.getSelection(ObjectType.ServiceName);
+                if (selectionContext.getSelection(ObjectType.OperationName) != null) {
+                    serviceOpName += "." + selectionContext.getSelection(ObjectType.OperationName);
+                }
+                String graphTitle = ConsoleUtil.messages.graphTitle("Application Errors", serviceOpName, durationHrs);
+                ErrorPresenter.this.view.activate();
+                ErrorPresenter.this.view.setServiceApplicationErrorTrendData(dataRanges, graphTitle);
+            }
+
+            @Override
+            public void onFailure(Throwable exception) {
+                GWT.log(exception.getMessage());
+            }
+        };
+        
+        this.getSimpleErrorGraphData(ErrorType.Category, ErrorCategory.Application, null, "server", minAggregationPeriod, selectionContext, date1, date2, durationHrs,
+                        callback);
+    }
+
+
+    private void getServiceRequestErrorTrend(SelectionContext selectionContext2, long date1, long date2, final int durationHrs) {
+        AsyncCallback<List<ErrorTimeSlotData>> callback = new AsyncCallback<List<ErrorTimeSlotData>>() {
+            @Override
+            public void onSuccess(List<ErrorTimeSlotData> dataRanges) {
+                String serviceOpName = selectionContext.getSelection(ObjectType.ServiceName);
+                if (selectionContext.getSelection(ObjectType.OperationName) != null) {
+                    serviceOpName += "." + selectionContext.getSelection(ObjectType.OperationName);
+                }
+                String graphTitle = ConsoleUtil.messages.graphTitle("Request Errors", serviceOpName, durationHrs);
+                ErrorPresenter.this.view.activate();
+                ErrorPresenter.this.view.setServiceRequestErrorTrendData(dataRanges, graphTitle);
+            }
+
+            @Override
+            public void onFailure(Throwable exception) {
+                GWT.log(exception.getMessage());
+            }
+        };
+        
+        this.getSimpleErrorGraphData(ErrorType.Category, ErrorCategory.Request, null, "server", minAggregationPeriod, selectionContext, date1, date2, durationHrs,
+                        callback);
+    }
+
+
     /**
      * Fetch metric.
      *

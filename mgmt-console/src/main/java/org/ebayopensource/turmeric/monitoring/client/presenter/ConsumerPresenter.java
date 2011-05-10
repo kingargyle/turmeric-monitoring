@@ -210,21 +210,21 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
          * @param graphData
          *            the new consumer call trend data
          */
-        void setConsumerCallTrendData(List<TimeSlotData> graphData);
+        void setConsumerCallTrendData(List<TimeSlotData> graphData, String graphTile);
 
         /**
          * Sets the consumer performance trend data.
          *
          * @param dataRanges the new consumer performance trend data
          */
-        public void setConsumerPerformanceTrendData(List<TimeSlotData> dataRanges);
+        public void setConsumerPerformanceTrendData(List<TimeSlotData> dataRanges, String graphTile);
 
         /**
          * Sets the consumer error trend data.
          *
          * @param dataRanges the new consumer error trend data
          */
-        public void setConsumerErrorTrendData(List<TimeSlotData> dataRanges);
+        public void setConsumerErrorTrendData(List<TimeSlotData> dataRanges, String graphTile);
 
         /**
          * Sets the consumer service call trend data.
@@ -254,6 +254,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
          * Claer consumer service call trend graph.
          */
         public void claerConsumerServiceCallTrendGraph();
+
     }
 
     /**
@@ -866,7 +867,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param durationHrs the duration hrs
      * @return the consumer performance trend
      */
-    protected void getConsumerPerformanceTrend(String serviceName, String consumerName, String operationName,
+    protected void getConsumerPerformanceTrend(final String serviceName, String consumerName, final String operationName,
                     long date1, long date2, final int durationHrs) {
         // now I call the SQMS with the data for this consumer
         CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
@@ -889,8 +890,14 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
 
             @Override
             public void onSuccess(List<TimeSlotData> dataRanges) {
+                String graphTitle = "";
+                graphTitle = "Response Time for " + serviceName;
+                if (operationName != null) {
+                    graphTitle += "." + operationName;
+                }
+                graphTitle += " over a " + durationHrs + " hr period";
                 ConsumerPresenter.this.view.activate();
-                ConsumerPresenter.this.view.setConsumerPerformanceTrendData(dataRanges);
+                ConsumerPresenter.this.view.setConsumerPerformanceTrendData(dataRanges, graphTitle);
             }
 
             @Override
@@ -911,7 +918,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param durationHrs the duration hrs
      * @return the consumer error trend
      */
-    protected void getConsumerErrorTrend(String serviceName, String consumerName, String operationName, long date1,
+    protected void getConsumerErrorTrend(final String serviceName, String consumerName, final String operationName, long date1,
                     long date2, final int durationHrs) {
         // now I call the SQMS with the data for this consumer
         CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
@@ -932,8 +939,14 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
 
             @Override
             public void onSuccess(List<TimeSlotData> dataRanges) {
+                String graphTitle = "";
+                graphTitle = "Error Count for " + serviceName;
+                if (operationName != null) {
+                    graphTitle += "." + operationName;
+                }
+                graphTitle += " over a " + durationHrs + " hr period";
                 ConsumerPresenter.this.view.activate();
-                ConsumerPresenter.this.view.setConsumerErrorTrendData(dataRanges);
+                ConsumerPresenter.this.view.setConsumerErrorTrendData(dataRanges, graphTitle);
             }
 
             @Override
@@ -1022,8 +1035,14 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
 
             @Override
             public void onSuccess(List<TimeSlotData> dataRanges) {
+                String graphTitle = "";
+                graphTitle = "Call Count for " + serviceName;
+                if (operationName != null) {
+                    graphTitle += "." + operationName;
+                }
+                graphTitle += " over a " + durationHrs + " hr period";
                 ConsumerPresenter.this.view.activate();
-                ConsumerPresenter.this.view.setConsumerCallTrendData(dataRanges);
+                ConsumerPresenter.this.view.setConsumerCallTrendData(dataRanges, graphTitle);
             }
 
             @Override

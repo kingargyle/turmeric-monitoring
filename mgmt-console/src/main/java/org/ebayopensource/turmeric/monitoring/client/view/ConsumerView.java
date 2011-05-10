@@ -865,19 +865,19 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
      * .util.List)
      */
     @Override
-    public void setConsumerCallTrendData(List<TimeSlotData> graphData) {
+    public void setConsumerCallTrendData(List<TimeSlotData> graphData, String graphTitle) {
         if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
-            createLineChart(topVolumePanel, graphData);
+            createLineChart(topVolumePanel, graphData, graphTitle);
         }
         else {
             GWT.log("empty graphData");
         }
     }
 
-    private void createLineChart(final SummaryPanel panel, final List<TimeSlotData> timeData) {
+    private void createLineChart(final SummaryPanel panel, final List<TimeSlotData> timeData, final String graphTitle) {
         Runnable onLoadCallback = new Runnable() {
             public void run() {
-                final LineChart lineChart = new LineChart(createChartDataTable(timeData), createOptions());
+                final LineChart lineChart = new LineChart(createChartDataTable(timeData), createOptions(graphTitle));
                 panel.addChart(lineChart);
             }
         };
@@ -926,7 +926,7 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         return data;
     }
 
-    private Options createOptions() {
+    private Options createOptions(String graphTitle) {
         Options options = Options.create();
         //options.setWidth(620);
         options.setHeight(230);
@@ -936,13 +936,15 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         options.setSmoothLine(true);
         options.setPointSize(3);
         options.setLineSize(3);
+        options.setTitle(graphTitle);
+        options.setTitleFontSize(12d);
         return options;
     }
 
     @Override
-    public void setConsumerPerformanceTrendData(List<TimeSlotData> dataRanges) {
+    public void setConsumerPerformanceTrendData(List<TimeSlotData> dataRanges, String graphTitle) {
         if (dataRanges.get(0).getReturnData() != null && dataRanges.get(1).getReturnData() != null) {
-            createLineChart(this.leastPerformancePanel, dataRanges);
+            createLineChart(this.leastPerformancePanel, dataRanges, graphTitle);
         }
         else {
             GWT.log("empty graphData");
@@ -950,9 +952,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     }
 
     @Override
-    public void setConsumerErrorTrendData(List<TimeSlotData> dataRanges) {
+    public void setConsumerErrorTrendData(List<TimeSlotData> dataRanges, String graphTitle) {
         if (dataRanges.get(0).getReturnData() != null && dataRanges.get(1).getReturnData() != null) {
-            createLineChart(this.topServiceErrorsPanel, dataRanges);
+            createLineChart(this.topServiceErrorsPanel, dataRanges, graphTitle);
         }
         else {
             GWT.log("empty graphData");

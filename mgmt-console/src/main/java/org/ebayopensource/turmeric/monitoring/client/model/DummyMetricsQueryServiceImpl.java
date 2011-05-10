@@ -736,4 +736,11 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
         
     }
 
+    @Override
+    public void getErrorTrend(ErrorCriteria ec, MetricCriteria firstDate, MetricCriteria secondDate,
+                    AsyncCallback<List<ErrorTimeSlotData>> callback) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

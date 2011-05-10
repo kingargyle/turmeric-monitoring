@@ -81,6 +81,19 @@ public class MetricCriteria {
         return mc;
     }
     
+    public MetricCriteria(String metricName,
+                    long date1,int durationHrs,int aggregationPeriod){
+        this.date1 = date1;
+        this.date2 = -1l;
+        this.metricName = metricName;
+        this.aggregationPeriod = aggregationPeriod;
+        this.durationSec = (durationHrs * 60 * 60);
+        this.autoDelay = "false";
+        this.sortOrder = Ordering.Ascending;
+        this.rows = 0;
+        this.roleType = Perspective.Server.toString().toLowerCase();
+    }
+    
     private MetricCriteria (String metricName,
                             long date1,
                             long date2,

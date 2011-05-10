@@ -31,7 +31,9 @@
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>
   <source path='shared'/>
+  <extend-property name="locale" values="en"/>
   <extend-property name="locale" values="it"/>
+  <extend-property name="locale" values="es"/>
   
 
 

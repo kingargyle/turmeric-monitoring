@@ -230,5 +230,10 @@ Warning};
      * @return the service consumers
      */
     public void getServiceConsumers(final String serviceName, final AsyncCallback<Set<String>> callback);
+
+
+
+    public void getErrorTrend(final ErrorCriteria ec, final MetricCriteria firstDate, final MetricCriteria secondDate,
+                    final AsyncCallback<List<ErrorTimeSlotData>> callback);
     
 }

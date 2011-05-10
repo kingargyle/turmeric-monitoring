@@ -11,7 +11,6 @@ package org.ebayopensource.turmeric.monitoring.client;
 import java.util.Map;
 
 import com.google.gwt.i18n.client.Constants;
-import com.google.gwt.i18n.client.Constants.DefaultStringValue;
 
 /**
  * The Interface ConsoleConstants.
@@ -287,7 +286,7 @@ public interface ConsoleConstants extends Constants {
 	 *
 	 * @return the string
 	 */
-	@DefaultStringValue("First date")
+	@DefaultStringValue("From")
 	public String firstDate();
 
 	/**
@@ -295,7 +294,7 @@ public interface ConsoleConstants extends Constants {
 	 *
 	 * @return the string
 	 */
-	@DefaultStringValue("Second date")
+	@DefaultStringValue("To")
 	public String secondDate();
 
 	/**

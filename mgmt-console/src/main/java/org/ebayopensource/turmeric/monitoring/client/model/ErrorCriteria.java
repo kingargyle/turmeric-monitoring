@@ -108,14 +108,14 @@ public class ErrorCriteria {
             }
         }
         
-        if (operationNames != null) {
+        if (operationNames != null && !operationNames.isEmpty()) {
             int i=0;
             for (String s:operationNames) {
                 url += "&ns:operationName("+(i++)+")="+s;
             }
         }
         
-        if (consumerNames != null ) {
+        if (consumerNames != null && !consumerNames.isEmpty()) {
             int i=0;
             for (String s:consumerNames) {
                 url += "&ns:consumerName("+(i++)+")="+s;

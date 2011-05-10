@@ -44,8 +44,8 @@ public class ErrorMetricsGraphResponse extends JavaScriptObject {
      * @return the return data
      */
     public final native JsArray<MetricGraphDataJS> getReturnData () /*-{
-        if (!this.getErrorMetricsGraphResponse)
+        if (!this.getErrorGraphResponse)
             return null;
-        return this.getErrorMetricsGraphResponse.returnData;
+        return this.getErrorGraphResponse.returnData;
     }-*/;
 }

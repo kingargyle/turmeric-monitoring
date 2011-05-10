@@ -23,7 +23,6 @@ public interface ConsoleMessageConstants extends Messages
      * @param err the err
      * @return the string
      */
-    @DefaultMessage("A server error occurred: {0}")
     public String serverError (String err);
     
     /**
@@ -31,7 +30,6 @@ public interface ConsoleMessageConstants extends Messages
      *
      * @return the string
      */
-    @DefaultMessage("Select a server.")
     public String selectServer ();
     
     /**
@@ -39,7 +37,6 @@ public interface ConsoleMessageConstants extends Messages
      *
      * @return the string
      */
-    @DefaultMessage("Bad or missing response data.")
     public String badOrMissingResponseData();
     
     /**
@@ -47,7 +44,6 @@ public interface ConsoleMessageConstants extends Messages
      *
      * @return the string
      */
-    @DefaultMessage("Bad request data.")
     public String badRequestData();
     
     /**
@@ -55,7 +51,6 @@ public interface ConsoleMessageConstants extends Messages
      *
      * @return the string
      */
-    @DefaultMessage("Invalid credentials")
     public String loginFailed();
     
     /**
@@ -63,7 +58,17 @@ public interface ConsoleMessageConstants extends Messages
      *
      * @return the string
      */
-    @DefaultMessage("You have been logged out successfully")
     public String logoutSuccessful();
+    
+    
+    /**
+     * Graph title.
+     *
+     * @param metricName the metric name
+     * @param serviceName the service name
+     * @param hourSpan the hour span
+     * @return the string
+     */
+    public String graphTitle(String metricName, String serviceName, int hourSpan);
     
 }

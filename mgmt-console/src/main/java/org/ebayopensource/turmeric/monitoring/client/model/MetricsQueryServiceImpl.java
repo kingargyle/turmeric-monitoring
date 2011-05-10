@@ -496,6 +496,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
         data.setRestUrl(url);
         data.setErrorCriteria(ec);
         data.setMetricCriteria(mc);
+        GWT.log("getErrorTimeSlotData.url ="+url);
         try {
             builder.sendRequest(null, new RequestCallback() {
 
@@ -511,6 +512,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                         callback.onFailure(new Throwable(ConsoleUtil.messages.badRequestData()));
                     }
                     else {
+                        String responseText = response.getText();
                         ErrorMetricsGraphResponse graphResponse = ErrorMetricsGraphResponse.fromJSON(response.getText());
                         if (graphResponse == null) {
                             callback.onFailure(new Throwable(ConsoleUtil.messages.badOrMissingResponseData()));
@@ -640,6 +642,48 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
         catch (RequestException x) {
             callback.onFailure(x);
         }
+
+    }
+    
+    @Override
+    public void getErrorTrend(final ErrorCriteria ec, final MetricCriteria firstDate, final MetricCriteria secondDate,
+                     final AsyncCallback<List<ErrorTimeSlotData>> callback) {
+        final ErrorTimeSlotData firstDateRange = new ErrorTimeSlotData();
+        final ErrorTimeSlotData secondDateRange = new ErrorTimeSlotData();
+        //GWT.log("getErrorTrend.firstDate ="+firstDate.date1);
+        this.getErrorTimeSlotData(ec, firstDate, new AsyncCallback<ErrorTimeSlotData>(){
+
+            @Override
+            public void onFailure(Throwable arg0) {
+                Window.alert("Error: "+arg0.getMessage());
+            }
+
+            @Override
+            public void onSuccess(ErrorTimeSlotData arg0) {
+                firstDateRange.setReturnData(arg0.getReturnData());
+                getErrorTimeSlotData(ec, secondDate , new AsyncCallback<ErrorTimeSlotData>(){
+
+                    @Override
+                    public void onFailure(Throwable arg0) {
+                        Window.alert("Error: "+arg0.getMessage());
+                    }
+
+                    @Override
+                    public void onSuccess(ErrorTimeSlotData arg0) {
+                        secondDateRange.setReturnData(arg0.getReturnData());
+                        List<ErrorTimeSlotData> results =  new ArrayList<ErrorTimeSlotData>();
+                        results.add(firstDateRange);
+                        results.add(secondDateRange);
+                        if(firstDateRange != null && secondDateRange != null){
+                            callback.onSuccess(results);
+                        }else{
+                            callback.onFailure(new Exception("Error getting the graphs"));
+                        }
+                    }
+                    
+                });
+            }
+        });     
 
     }
     
