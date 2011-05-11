@@ -29,7 +29,6 @@
 					<excludes>
 						<exclude>**/AllTests.java</exclude>
 						<exclude>**/TestGetMetricsDataErrorCount.java</exclude>
-						<exclude>**/TestGetMetricValue.java</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

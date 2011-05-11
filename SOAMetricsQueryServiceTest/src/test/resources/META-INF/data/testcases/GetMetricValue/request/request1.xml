@@ -3,15 +3,14 @@
     <ns2:criteriaInfo>
 		<ns2:serviceConsumerType></ns2:serviceConsumerType>
 		<ns2:machineName></ns2:machineName>
-		<ns2:roleType>server</ns2:roleType>
-        <ns2:metricName>RequestCount</ns2:metricName>
+<!-- 		<ns2:roleType>s</ns2:roleType> -->
+        <ns2:metricName>CallCount</ns2:metricName>
         <ns2:serviceName>AnonymizerService</ns2:serviceName>
-        <ns2:operationName></ns2:operationName>
-        <ns2:consumerName></ns2:consumerName>
-        <ns2:poolName>v3soa1core</ns2:poolName>
+<!--         <ns2:operationName></ns2:operationName> -->
+<!--         <ns2:consumerName></ns2:consumerName> -->
+<!--         <ns2:poolName>v3soa1core</ns2:poolName> -->
     </ns2:criteriaInfo>
-    <ns2:startTime>1256684400</ns2:startTime>
-    <ns2:duration>86401</ns2:duration>
+    <ns2:startTime>1257058800000</ns2:startTime>
+    <ns2:duration>86400</ns2:duration>
     <ns2:aggregationPeriod>60</ns2:aggregationPeriod>
-	<ns2:autoDelay></ns2:autoDelay>
 </getMetricValueRequest>
