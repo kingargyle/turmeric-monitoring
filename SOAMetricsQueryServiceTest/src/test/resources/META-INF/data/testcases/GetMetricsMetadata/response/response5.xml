@@ -1,41 +1,41 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <getMetricsMetadataResponse xmlns:ns2="http://www.ebayopensource.org/turmeric/monitoring/v1/services" xmlns:ns3="http://www.ebayopensource.org/turmeric/common/v1/types">
-            
-            <ns2:resourceEntityResponseNames>BulkDataExchangeService.abortJob</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>BulkDataExchangeService.abortRecurringJobExecution</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>BulkDataExchangeService.activateRecurringJob</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>BulkDataExchangeService.createRecurringJob</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>BulkDataExchangeService.createUploadJob</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>BulkDataExchangeService.deleteRecurringJob</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>BulkDataExchangeService.getJobStatus</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>BulkDataExchangeService.getJobs</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>BulkDataExchangeService.getRecurringJobExecutionHistory</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>BulkDataExchangeService.getRecurringJobExecutionStatus</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>BulkDataExchangeService.getRecurringJobs</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>BulkDataExchangeService.getVersion</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>BulkDataExchangeService.startDownloadJob</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>BulkDataExchangeService.startUploadJob</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>BulkDataExchangeService.suspendRecurringJob</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>MetadataDependencyService.discoverRelationship</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>MetadataDependencyService.getFields</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>MetadataDependencyService.getMetadataVersion</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>MetadataDependencyService.navigateRelationship</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>MetadataDependencyService.validateRelationship</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>PolicyService.createPolicy</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>PolicyService.deletePolicy</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>PolicyService.findExternalSubjects</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>PolicyService.findPolicies</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>PolicyService.findSubjectGroups</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>PolicyService.getAuthenticationPolicy</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>PolicyService.getAuthorizationPolicy</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>PolicyService.getOperations</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>PolicyService.getPolicy</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>PolicyService.getRateLimitingPolicy</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>PolicyService.getResources</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>PolicyService.updatePolicy</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>ShippingCalculatorService.calculateBatchRates</ns2:resourceEntityResponseNames>
-            <ns2:resourceEntityResponseNames>ShippingCalculatorService.calculateRates</ns2:resourceEntityResponseNames>
-        
-        
-        </getMetricsMetadataResponse>
-
+    <ns2:resourceEntityResponseNames>ShippingCalculatorService.null</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>ShippingCalculatorService.calculateBatchRates</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>ShippingCalculatorService.calculateRates</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>PolicyService.getAuthenticationPolicy</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>PolicyService.null</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>BulkDataExchangeService.startUploadJob</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>BulkDataExchangeService.null</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>BulkDataExchangeService.getJobs</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>BulkDataExchangeService.startDownloadJob</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>BulkDataExchangeService.createUploadJob</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>BulkDataExchangeService.getJobStatus</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>BulkDataExchangeService.abortJob</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>BulkDataExchangeService.getRecurringJobExecutionHistory</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>BulkDataExchangeService.getRecurringJobs</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>BulkDataExchangeService.getRecurringJobExecutionStatus</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>BulkDataExchangeService.createRecurringJob</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>BulkDataExchangeService.deleteRecurringJob</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>BulkDataExchangeService.activateRecurringJob</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>BulkDataExchangeService.suspendRecurringJob</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>BulkDataExchangeService.abortRecurringJobExecution</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>PolicyService.getAuthorizationPolicy</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>PolicyService.getRateLimitingPolicy</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>PolicyService.getPolicy</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>PolicyService.findPolicies</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>PolicyService.updatePolicy</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>PolicyService.getResources</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>PolicyService.createPolicy</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>PolicyService.findExternalSubjects</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>PolicyService.findSubjectGroups</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>PolicyService.getOperations</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>MetadataDependencyService.null</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>MetadataDependencyService.navigateRelationship</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>PolicyService.deletePolicy</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>MetadataDependencyService.validateRelationship</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>MetadataDependencyService.discoverRelationship</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>MetadataDependencyService.getMetadataVersion</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>MetadataDependencyService.getFields</ns2:resourceEntityResponseNames>
+    <ns2:resourceEntityResponseNames>BulkDataExchangeService.getVersion</ns2:resourceEntityResponseNames>
+</getMetricsMetadataResponse>
