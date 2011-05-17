@@ -605,9 +605,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
                 String[] columns = {
                         col0,
                         ConsoleUtil.constants.errors(),
-                        (result == null ? ConsoleUtil.constants.count() : date1Header + " "
-                                        + ConsoleUtil.constants.count()),
                         (result == null ? ConsoleUtil.constants.count() : date2Header + " "
+                                        + ConsoleUtil.constants.count()),
+                        (result == null ? ConsoleUtil.constants.count() : date1Header + " "
                                         + ConsoleUtil.constants.count()), "% " + ConsoleUtil.constants.change() };
                 List<Widget[]> rows = new ArrayList<Widget[]>();
                 if (result != null) {
@@ -1079,7 +1079,7 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     }
 
     @Override
-    public void claerConsumerServiceCallTrendGraph() {
+    public void clearConsumerServiceCallTrendGraph() {
         Map emptyData = new HashMap<String, List<TimeSlotData>>();
         emptyData.put("", new ArrayList<TimeSlotData>());
         createColumnChart(this.callVolumePanel, emptyData,"");

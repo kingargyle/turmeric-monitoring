@@ -253,7 +253,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         /**
          * Claer consumer service call trend graph.
          */
-        public void claerConsumerServiceCallTrendGraph();
+        public void clearConsumerServiceCallTrendGraph();
 
     }
 
@@ -879,12 +879,12 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
             criteriaInfo.setOperationName(operationName);
         }
         criteriaInfo.setRoleType("server");
-        Date firstDate = Util.resetTo12am(date1);
-        Date secondDate = Util.resetTo12am(date2);
+//        Date firstDate = Util.resetTo12am(date1);
+//        Date secondDate = Util.resetTo12am(date2);
 
-        MetricValue firstDateValue = new MetricValue(criteriaInfo, firstDate.getTime(), minAggregationPeriod * durationHrs, (int) minAggregationPeriod,
+        MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, minAggregationPeriod * durationHrs, (int) minAggregationPeriod,
                         "false");
-        MetricValue secondDateValue = new MetricValue(criteriaInfo, secondDate.getTime(), minAggregationPeriod * durationHrs, (int) minAggregationPeriod,
+        MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, minAggregationPeriod * durationHrs, (int) minAggregationPeriod,
                         "false");
 
         queryService.getMetricValueTrend(firstDateValue, secondDateValue, new AsyncCallback<List<TimeSlotData>>() {
@@ -1001,7 +1001,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
             }
         }
         else {
-            ConsumerPresenter.this.view.claerConsumerServiceCallTrendGraph();
+            ConsumerPresenter.this.view.clearConsumerServiceCallTrendGraph();
         }
     }
 

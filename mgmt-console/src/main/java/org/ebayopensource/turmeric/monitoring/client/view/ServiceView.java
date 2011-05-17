@@ -305,7 +305,7 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
                         rowData[0] = getEntityName(metric, data.getMetricResourceCriteria().resourceEntityResponseType,
                                         rd);
                         double d1 = Double.parseDouble(rd.getCount1()) / 1000.0;
-                        double d2 = Double.parseDouble(rd.getCount1()) / 1000.0;
+                        double d2 = Double.parseDouble(rd.getCount2()) / 1000.0;
                         rowData[1] = String.valueOf(d1);
                         rowData[2] = String.valueOf(d2);
                         rowData[3] = rd.getDiff();
