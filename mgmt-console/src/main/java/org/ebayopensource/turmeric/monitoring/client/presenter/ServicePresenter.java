@@ -209,7 +209,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
          * @param dataRanges
          *            the new service call trend data
          */
-        public void setServiceCallTrendData(List<TimeSlotData> dataRanges, String graphTitle);
+        public void setServiceCallTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan, String graphTitle);
 
         /**
          * Sets the service performance trend data.
@@ -217,7 +217,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
          * @param dataRanges
          *            the new service performance trend data
          */
-        public void setServicePerformanceTrendData(List<TimeSlotData> dataRanges, String graphTitle);
+        public void setServicePerformanceTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan, String graphTitle);
 
         /**
          * Sets the service error trend data.
@@ -225,7 +225,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
          * @param dataRanges
          *            the new service error trend data
          */
-        public void setServiceErrorTrendData(List<TimeSlotData> dataRanges, String graphTitle);
+        public void setServiceErrorTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan, String graphTitle);
     }
 
     /**
@@ -542,7 +542,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
                 }
                 String graphTitle = ConsoleUtil.messages.graphTitle("Call Count", serviceOpName, hourSpan);
                 ServicePresenter.this.view.activate();
-                ServicePresenter.this.view.setServiceCallTrendData(dataRanges, graphTitle);
+                ServicePresenter.this.view.setServiceCallTrendData(dataRanges, minAggregationPeriod, hourSpan, graphTitle);
             }
 
             @Override
@@ -566,7 +566,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
                 }
                 String graphTitle = ConsoleUtil.messages.graphTitle("Response Time", serviceOpName, hourSpan);
                 ServicePresenter.this.view.activate();
-                ServicePresenter.this.view.setServicePerformanceTrendData(dataRanges, graphTitle);
+                ServicePresenter.this.view.setServicePerformanceTrendData(dataRanges, minAggregationPeriod, hourSpan, graphTitle);
             }
 
             @Override
@@ -593,7 +593,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
                 }
                 String graphTitle = ConsoleUtil.messages.graphTitle("Error Count", serviceOpName, hourSpan);
                 ServicePresenter.this.view.activate();
-                ServicePresenter.this.view.setServiceErrorTrendData(dataRanges, graphTitle);
+                ServicePresenter.this.view.setServiceErrorTrendData(dataRanges, minAggregationPeriod, hourSpan, graphTitle);
             }
 
             @Override
@@ -625,7 +625,6 @@ public class ServicePresenter implements Presenter.TabPresenter {
      */
     protected void fetchMetric(final ServiceMetric m, final SelectionContext selectionContext, Entity returnType,
                     final long date1, final long date2, final int intervalHrs) {
-        // Window.alert("fetchMetric");
         List<EntityName> subject = new ArrayList<EntityName>();
         if (selectionContext.getSelection(ObjectType.ServiceName) != null) {
             EntityName serviceName = new EntityName();

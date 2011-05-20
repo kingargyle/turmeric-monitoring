@@ -10,8 +10,8 @@ import org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter
 
 public class ConsumerCallCountTrendCallbackQueue extends ConsumerTabCallbackQueue {
 
-    public ConsumerCallCountTrendCallbackQueue(String serviceName, String operationName, int hourSpan, Display view) {
-        super(serviceName, operationName, hourSpan, view);
+    public ConsumerCallCountTrendCallbackQueue(String serviceName, String operationName, long aggregationPeriod, int hourSpan, Display view) {
+        super(serviceName, operationName, hourSpan, aggregationPeriod, view);
     }
 
     @Override
@@ -23,6 +23,6 @@ public class ConsumerCallCountTrendCallbackQueue extends ConsumerTabCallbackQueu
         }
         graphTitle += " over a " + hourSpan + " hr period";
 
-        view.setConsumerServiceCallTrendData(graphData, graphTitle);
+        view.setConsumerServiceCallTrendData(graphData, this.getAggregationPeriod(), this.getHourSpan(), graphTitle);
     }
 }

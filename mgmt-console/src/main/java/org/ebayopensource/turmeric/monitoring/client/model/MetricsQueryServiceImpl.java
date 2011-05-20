@@ -515,7 +515,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                     }
                     else {
                         String responseText = response.getText();
-                        ErrorMetricsGraphResponse graphResponse = ErrorMetricsGraphResponse.fromJSON(response.getText());
+                        ErrorMetricsGraphResponse graphResponse = ErrorMetricsGraphResponse.fromJSON(responseText);
                         if (graphResponse == null) {
                             callback.onFailure(new Throwable(ConsoleUtil.messages.badOrMissingResponseData()));
                         }

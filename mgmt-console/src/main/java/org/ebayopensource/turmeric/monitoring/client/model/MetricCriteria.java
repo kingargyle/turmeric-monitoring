@@ -119,11 +119,11 @@ public class MetricCriteria {
     }
     
     private static int calculateAggregationPeriod (int durationSec) {
-        if (durationSec > maxAggregationPeriod)  //if duration is over 1 day, use 24hr tables
-            return maxAggregationPeriod;
-        else if (durationSec > 7200)//if duration is more than 2 hrs, use hourly tables
-            return medAggregationPeriod;
-        else
+//        if (durationSec > maxAggregationPeriod)  //if duration is over 1 day, use 24hr tables
+//            return maxAggregationPeriod;
+//        else if (durationSec > 7200)//if duration is more than 2 hrs, use hourly tables
+//            return medAggregationPeriod;
+//        else
             return minAggregationPeriod; //if duration is <=2hrs use the minute tables (see GlobalServiceConfig.xml
     }
     

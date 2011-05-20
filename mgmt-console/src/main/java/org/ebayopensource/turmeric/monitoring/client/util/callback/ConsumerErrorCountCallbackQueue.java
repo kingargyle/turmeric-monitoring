@@ -19,11 +19,11 @@ public class ConsumerErrorCountCallbackQueue extends ConsumerTabCallbackQueue {
             graphTitle += "." + getOperationName();
         }
         graphTitle += " over a " + hourSpan + " hr period";
-        view.setConsumerErrorCountTrendData(graphData, graphTitle);
+        view.setConsumerErrorCountTrendData(graphData, this.getAggregationPeriod(), this.getHourSpan(), graphTitle);
     }
 
-    public ConsumerErrorCountCallbackQueue(String serviceName, String operationName, int hourSpan, Display view) {
-        super(serviceName, operationName, hourSpan, view);
+    public ConsumerErrorCountCallbackQueue(String serviceName, String operationName, long aggregationPeriod, int hourSpan, Display view) {
+        super(serviceName, operationName, hourSpan, aggregationPeriod, view);
     }
 
 }

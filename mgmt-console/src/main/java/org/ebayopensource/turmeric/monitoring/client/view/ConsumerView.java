@@ -28,6 +28,7 @@ import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Entity;
 import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue;
 import org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter;
+import org.ebayopensource.turmeric.monitoring.client.util.GraphUtil;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -865,9 +866,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
      * .util.List)
      */
     @Override
-    public void setConsumerCallTrendData(List<TimeSlotData> graphData, String graphTitle) {
+    public void setConsumerCallTrendData(List<TimeSlotData> graphData, long aggregationPeriod, int hourSpan, String graphTitle) {
         if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
-            createLineChart(topVolumePanel, graphData, graphTitle);
+            GraphUtil.createLineChart(topVolumePanel, graphData, aggregationPeriod, hourSpan, graphTitle);
         }
         else {
             GWT.log("empty graphData");
@@ -942,9 +943,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     }
 
     @Override
-    public void setConsumerPerformanceTrendData(List<TimeSlotData> dataRanges, String graphTitle) {
+    public void setConsumerPerformanceTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan,String graphTitle) {
         if (dataRanges.get(0).getReturnData() != null && dataRanges.get(1).getReturnData() != null) {
-            createLineChart(this.leastPerformancePanel, dataRanges, graphTitle);
+            GraphUtil.createLineChart(this.leastPerformancePanel, dataRanges, aggregationPeriod, hourSpan, graphTitle);
         }
         else {
             GWT.log("empty graphData");
@@ -952,9 +953,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     }
 
     @Override
-    public void setConsumerErrorTrendData(List<TimeSlotData> dataRanges, String graphTitle) {
+    public void setConsumerErrorTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan, String graphTitle) {
         if (dataRanges.get(0).getReturnData() != null && dataRanges.get(1).getReturnData() != null) {
-            createLineChart(this.topServiceErrorsPanel, dataRanges, graphTitle);
+            GraphUtil.createLineChart(this.topServiceErrorsPanel, dataRanges, aggregationPeriod, hourSpan, graphTitle);
         }
         else {
             GWT.log("empty graphData");
@@ -962,7 +963,7 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     }
 
     @Override
-    public void setConsumerServiceCallTrendData(Map<String, List<TimeSlotData>> dataRange, String graphTitle) {
+    public void setConsumerServiceCallTrendData(Map<String, List<TimeSlotData>> dataRange, long aggregationPeriod, int hourSpan,  String graphTitle) {
         if (dataRange != null) {
             createColumnChart(this.callVolumePanel, dataRange,graphTitle);
         }
@@ -1059,7 +1060,7 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     }
 
     @Override
-    public void setConsumerServicePerformanceTrendData(Map<String, List<TimeSlotData>> graphData, String graphTitle) {
+    public void setConsumerServicePerformanceTrendData(Map<String, List<TimeSlotData>> graphData, long aggregationPeriod, int hourSpan,  String graphTitle) {
         if (graphData != null) {
             createColumnChart(this.performancePanel, graphData,graphTitle);
         }
@@ -1069,7 +1070,7 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     }
 
     @Override
-    public void setConsumerErrorCountTrendData(Map<String, List<TimeSlotData>> graphData, String graphTitle) {
+    public void setConsumerErrorCountTrendData(Map<String, List<TimeSlotData>> graphData, long aggregationPeriod, int hourSpan,  String graphTitle) {
         if (graphData != null) {
             createColumnChart(this.errorsPanel, graphData, graphTitle);
         }

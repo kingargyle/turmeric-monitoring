@@ -17,13 +17,16 @@ import java.util.Set;
 import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 import org.ebayopensource.turmeric.monitoring.client.Dashboard;
 import org.ebayopensource.turmeric.monitoring.client.model.Filterable;
+import org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricData;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Entity;
 import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
 import org.ebayopensource.turmeric.monitoring.client.model.ServiceMetric;
 import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
+import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue;
 import org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter;
+import org.ebayopensource.turmeric.monitoring.client.util.GraphUtil;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -83,8 +86,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
 
     /**
      * Instantiates a new service view.
-     *
-     * @param dashboard the dashboard
+     * 
+     * @param dashboard
+     *            the dashboard
      */
     public ServiceView(Dashboard dashboard) {
         // make the panel
@@ -182,7 +186,8 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         this.dashboard.addView(this, ConsoleUtil.constants.services());
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see com.google.gwt.user.client.ui.Widget#asWidget()
      */
     public Widget asWidget() {
@@ -191,21 +196,23 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
 
     /**
      * View about to be shown, do any clean up necessary.
-     *
+     * 
      * @see org.ebayopensource.turmeric.monitoring.client.Display#activate()
      */
     public void activate() {
         dashboard.activate(this);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see org.ebayopensource.turmeric.monitoring.client.Display#setAssociatedId(java.lang.String)
      */
     public void setAssociatedId(String id) {
         this.id = id;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see org.ebayopensource.turmeric.monitoring.client.Display#getAssociatedId()
      */
     public String getAssociatedId() {
@@ -214,8 +221,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
 
     /**
      * Hide.
-     *
-     * @param o the o
+     * 
+     * @param o
+     *            the o
      */
     public void hide(UIObject o) {
         o.setVisible(false);
@@ -223,8 +231,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
 
     /**
      * Show.
-     *
-     * @param o the o
+     * 
+     * @param o
+     *            the o
      */
     public void show(UIObject o) {
         o.setVisible(true);
@@ -244,15 +253,20 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         filterWidget.enable();
     }
 
-    /* (non-Javadoc)
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setServicesMap(java.util.Map)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setServicesMap(java.util.Map)
      */
     public void setServicesMap(Map<String, Set<String>> map) {
         serviceListWidget.setServicesMap(map);
     }
 
-    /* (non-Javadoc)
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setMetric(org.ebayopensource.turmeric.monitoring.client.model.ServiceMetric, org.ebayopensource.turmeric.monitoring.client.model.MetricData)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setMetric(org.ebayopensource
+     * .turmeric.monitoring.client.model.ServiceMetric, org.ebayopensource.turmeric.monitoring.client.model.MetricData)
      */
     public void setMetric(ServiceMetric metric, MetricData data) {
         SummaryPanel panel = null;
@@ -304,8 +318,8 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
                         String[] rowData = new String[4];
                         rowData[0] = getEntityName(metric, data.getMetricResourceCriteria().resourceEntityResponseType,
                                         rd);
-                        double d1 = Double.parseDouble(rd.getCount1()) / 1000.0;
-                        double d2 = Double.parseDouble(rd.getCount2()) / 1000.0;
+                        double d1 = Double.parseDouble(rd.getCount1()) ;/// 1000.0;
+                        double d2 = Double.parseDouble(rd.getCount2()) ;/// 1000.0;
                         rowData[1] = String.valueOf(d1);
                         rowData[2] = String.valueOf(d2);
                         rowData[3] = rd.getDiff();
@@ -403,28 +417,32 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         }
     }
 
-    private void createLineChart(final SummaryPanel panel, final List<TimeSlotData> timeData, final String graphTitle) {
-        Runnable onLoadCallback = new Runnable() {
-            public void run() {
-                final LineChart lineChart = new LineChart(createChartDataTable(timeData), createOptions(graphTitle));
-                panel.addChart(lineChart);
-            }
-        };
+//    private void createLineChart(final SummaryPanel panel, final List<TimeSlotData> timeData,
+//                    final long aggregationPeriod, final int hourSpan, final String graphTitle) {
+//        Runnable onLoadCallback = new Runnable() {
+//            public void run() {
+//                final LineChart lineChart = new LineChart(createChartDataTable(timeData, aggregationPeriod, hourSpan),
+//                                createOptions(graphTitle));
+//                panel.addChart(lineChart);
+//            }
+//        };
+//
+//        // Load the visualization api, passing the onLoadCallback to be called when loading is done.
+//        // The gwt param "corechart" tells gwt to use the new charts
+//
+//        VisualizationUtils.loadVisualizationApi(onLoadCallback, "corechart");
+//    }
 
-        //Load the visualization api, passing the onLoadCallback to be called when loading is done.
-        //The gwt param "corechart" tells gwt to use the new charts
-        
-        VisualizationUtils.loadVisualizationApi(onLoadCallback, "corechart");
-    }
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#getFilter()
      */
     public Filterable getFilter() {
         return filterWidget;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setSelection(java.util.Map)
      */
     public void setSelection(Map<ObjectType, String> selection) {
@@ -447,14 +465,16 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         enable();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#getSelector()
      */
     public HasSelectionHandlers<TreeItem> getSelector() {
         return serviceListWidget.getServiceTree();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#error(java.lang.String)
      */
     public void error(String msg) {
@@ -464,7 +484,8 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         popup.show();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#reset()
      */
     public void reset() {
@@ -476,8 +497,11 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         hide(consumerTrafficPanel);
     }
 
-    /* (non-Javadoc)
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setDownloadUrl(org.ebayopensource.turmeric.monitoring.client.model.ServiceMetric, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setDownloadUrl(org.ebayopensource
+     * .turmeric.monitoring.client.model.ServiceMetric, java.lang.String)
      */
     public void setDownloadUrl(ServiceMetric m, String url) {
         SummaryPanel panel = null;
@@ -507,8 +531,11 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
             panel.setDownloadUrl(url);
     }
 
-    /* (non-Javadoc)
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#getTableColumn(org.ebayopensource.turmeric.monitoring.client.model.ServiceMetric, int, int)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#getTableColumn(org.ebayopensource
+     * .turmeric.monitoring.client.model.ServiceMetric, int, int)
      */
     public List<HasClickHandlers> getTableColumn(ServiceMetric metric, int startRow, int col) {
         FlexTable table = getTable(metric);
@@ -523,8 +550,11 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         return list;
     }
 
-    /* (non-Javadoc)
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#getTableRow(org.ebayopensource.turmeric.monitoring.client.model.ServiceMetric, int, int)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#getTableRow(org.ebayopensource
+     * .turmeric.monitoring.client.model.ServiceMetric, int, int)
      */
     public List<HasClickHandlers> getTableRow(ServiceMetric metric, int row, int startCol) {
         FlexTable table = getTable(metric);
@@ -541,8 +571,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
 
     /**
      * Gets the table.
-     *
-     * @param m the m
+     * 
+     * @param m
+     *            the m
      * @return the table
      */
     protected FlexTable getTable(ServiceMetric m) {
@@ -591,7 +622,7 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         topVolumePanel.setHeading(ConsoleUtil.constants.topVolume());
         topVolumeTable = makeSummaryTable();
         topVolumePanel.setContents(topVolumeTable);
-        //topVolumePanel.setHeight("360px");
+        // topVolumePanel.setHeight("360px");
         setMetric(ServiceMetric.TopVolume, null);
     }
 
@@ -630,7 +661,7 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
 
     /**
      * Make summary table.
-     *
+     * 
      * @return the flex table
      */
     protected FlexTable makeSummaryTable() {
@@ -642,17 +673,21 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
 
     /**
      * Sets the tabular data.
-     *
-     * @param table the table
-     * @param cols the cols
-     * @param rows the rows
-     * @param rowStyles the row styles
+     * 
+     * @param table
+     *            the table
+     * @param cols
+     *            the cols
+     * @param rows
+     *            the rows
+     * @param rowStyles
+     *            the row styles
      */
     protected void setTabularData(FlexTable table, String[] cols, List<String[]> rows, String[] rowStyles) {
         table.removeAllRows();
         table.setText(0, 0, cols[0]);
-        table.setText(0, 1, cols[2]);//flip flop dates!!!
-        table.setText(0, 2, cols[1]);//flip flop dates!!!
+        table.setText(0, 1, cols[2]);// flip flop dates - this is needed to fix the % change sign error!!!
+        table.setText(0, 2, cols[1]);// flip flop dates - this is needed to fix the % change sign error!!!
         table.setText(0, 3, cols[3]);
         table.getRowFormatter().addStyleName(0, "tbl-header1");
 
@@ -689,10 +724,13 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
 
     /**
      * Gets the entity name.
-     *
-     * @param metric the metric
-     * @param responseEntityType the response entity type
-     * @param rd the rd
+     * 
+     * @param metric
+     *            the metric
+     * @param responseEntityType
+     *            the response entity type
+     * @param rd
+     *            the rd
      * @return the entity name
      */
     protected String getEntityName(ServiceMetric metric, Entity responseEntityType, MetricGroupData rd) {
@@ -742,103 +780,158 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         filterDialog.show();
     }
 
-    /* (non-Javadoc)
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setFilterLabel(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setFilterLabel(java.lang.String)
      */
     public void setFilterLabel(String s) {
         filterButton.setText(s);
     }
 
-    private Options createOptions(String graphTitle) {
-        Options options = Options.create();
-        //options.setWidth(600);
-        options.setHeight(230);
-        options.setEnableTooltip(true);
-        options.setShowCategories(true);
-        options.set("fontSize", 10d);
-        options.setSmoothLine(true);
-        options.setPointSize(3);
-        options.setLineSize(3);
-        options.setTitle(graphTitle);
-        options.setTitleFontSize(12d);
-        return options;
-    }
+//    private Options createOptions(String graphTitle) {
+//        Options options = Options.create();
+//        // options.setWidth(600);
+//        options.setHeight(230);
+//        options.setEnableTooltip(true);
+//        options.setShowCategories(true);
+//        options.set("fontSize", 10d);
+//        options.setSmoothLine(true);
+//        options.setPointSize(3);
+//        options.setLineSize(3);
+//        options.setTitle(graphTitle);
+//        options.setTitleFontSize(12d);
+//        return options;
+//    }
 
-    private AbstractDataTable createChartDataTable(List<TimeSlotData> timeDataRange) {
+//    private AbstractDataTable createChartDataTable(List<TimeSlotData> timeDataRange, long aggregationPeriod,
+//                    int hourSpan) {
+//        int plotPointsPerHour = 1;
+//        if (aggregationPeriod < 3600) {// then, each point represents X minutes. e.g: minAggregationPeriod = 60, then we
+//                                       // would get 60 points to plot per hour
+//            plotPointsPerHour = (int) (3600 / aggregationPeriod);
+//        }
+//        DataTable data = DataTable.create();
+//        TimeSlotData firstDateRange = timeDataRange.get(0);
+//        TimeSlotData secondDateRange = timeDataRange.get(1);
+//        if (firstDateRange.getReturnData() != null && secondDateRange.getReturnData() != null) {
+//            int rowSize = hourSpan;
+//            double[] firstDateRangeArray = calculatePlotPointsPerTimeUnit(firstDateRange.getReturnData(),
+//                            plotPointsPerHour, hourSpan);
+//            double[] secondDateRangeArray = calculatePlotPointsPerTimeUnit(secondDateRange.getReturnData(),
+//                            plotPointsPerHour, hourSpan);
+//            String[] labelArray = calculateDateTimeLabelPerTimeUnit(firstDateRange.getReturnData(), plotPointsPerHour, hourSpan);
+//            if (rowSize > 0) {
+//                data.addColumn(ColumnType.STRING, "x");
+//                data.addColumn(ColumnType.NUMBER,
+//                                ConsoleUtil.shotTimeFormat.format(new Date(firstDateRange.getReturnData().get(0)
+//                                                .getTimeSlot())));
+//
+//                data.addColumn(ColumnType.NUMBER,
+//                                ConsoleUtil.shotTimeFormat.format(new Date(secondDateRange.getReturnData().get(0)
+//                                                .getTimeSlot())));
+//                data.addRows(rowSize);
+//                for (int i = 0; i < rowSize; i++) {
+//                    // GWT.log("getValue = "+timeData.getReturnData().get(i).getValue());
+//                    data.setValue(i,
+//                                    0,
+//                                    labelArray[i]);
+//                    data.setValue(i, 1, firstDateRangeArray[i]);
+//                    data.setValue(i, 2, secondDateRangeArray[i]);
+//                }
+//            }
+//            else {
+//                data.addColumn(ColumnType.STRING, "x");
+//                data.addColumn(ColumnType.NUMBER, "");
+//                data.addColumn(ColumnType.NUMBER, "");
+//                data.addRows(rowSize);
+//            }
+//        }
+//        return data;
+//    }
 
-        DataTable data = DataTable.create();
-        TimeSlotData firstDateRange = timeDataRange.get(0);
-        TimeSlotData secondDateRange = timeDataRange.get(1);
-        if (firstDateRange.getReturnData() != null && secondDateRange.getReturnData() != null) {
-            int rowSize = firstDateRange.getReturnData() != null ? firstDateRange.getReturnData().size() : 0;
+//    private String[] calculateDateTimeLabelPerTimeUnit(List<TimeSlotValue> returnData, int plotPointsPerTimeUnit,
+//                    int span) {
+//        String[] result = new String[span];
+//        int arrayIndex = 0;
+//        int counter = 0;
+//        for (int i = 0; i < returnData.size(); i++) {
+//            if (result[arrayIndex] == null) {
+//                result[arrayIndex] = ConsoleUtil.onlyTimeFormat.format(new Date(returnData.get(i).getTimeSlot()));
+//            }
+//            counter++;
+//            if (counter == plotPointsPerTimeUnit) {
+//                counter = 0;
+//                arrayIndex++;
+//            }
+//        }
+//        return result;
+//    }
 
-            if (rowSize > 0) {
-                data.addColumn(ColumnType.STRING, "x");
-                data.addColumn(ColumnType.NUMBER,
-                                ConsoleUtil.shotTimeFormat.format(new Date(firstDateRange.getReturnData().get(0)
-                                                .getTimeSlot())));
+//    private double[] calculatePlotPointsPerTimeUnit(List<TimeSlotValue> returnData, int plotPointsPerTimeUnit, int span) {
+//        double[] result = new double[span];
+//        int arrayIndex = 0;
+//        int counter = 0;
+//        for (int i = 0; i < returnData.size(); i++) {
+//            result[arrayIndex] += returnData.get(i).getValue();
+//            counter++;
+//            if (counter == plotPointsPerTimeUnit) {
+//                counter = 0;
+//                arrayIndex++;
+//            }
+//        }
+//        return result;
+//    }
 
-                data.addColumn(ColumnType.NUMBER,
-                                ConsoleUtil.shotTimeFormat.format(new Date(secondDateRange.getReturnData().get(0)
-                                                .getTimeSlot())));
-                data.addRows(rowSize);
-                for (int i = 0; i < rowSize; i++) {
-                    // GWT.log("getValue = "+timeData.getReturnData().get(i).getValue());
-                    data.setValue(i,
-                                    0,
-                                    ConsoleUtil.onlyTimeFormat.format(new Date(firstDateRange.getReturnData().get(i)
-                                                    .getTimeSlot())));
-                    data.setValue(i, 1, firstDateRange.getReturnData().get(i).getValue());
-                    data.setValue(i, 2, secondDateRange.getReturnData().get(i).getValue());
-                }
-            }
-            else {
-                data.addColumn(ColumnType.STRING, "x");
-                data.addColumn(ColumnType.NUMBER, "");
-                data.addColumn(ColumnType.NUMBER, "");
-                data.addRows(rowSize);
-            }
-        }
-        return data;
-    }
-
-    /* (non-Javadoc)
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setServiceCallTrendData(java.util.List)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setServiceCallTrendData(java
+     * .util.List)
      */
     @Override
-    public void setServiceCallTrendData(List<TimeSlotData> graphData, String graphTitle) {
+    public void setServiceCallTrendData(List<TimeSlotData> graphData, long aggregationPeriod, int hourSpan,
+                    String graphTitle) {
         if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
-            createLineChart(topVolumePanel, graphData, graphTitle);
+            GraphUtil.createLineChart(topVolumePanel, graphData, aggregationPeriod, hourSpan, graphTitle);
         }
         else {
             GWT.log("empty graphData");
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setServicePerformanceTrendData(java.util.List)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setServicePerformanceTrendData
+     * (java.util.List)
      */
     @Override
-    public void setServicePerformanceTrendData(List<TimeSlotData> graphData, String graphTitle) {
+    public void setServicePerformanceTrendData(List<TimeSlotData> graphData, long aggregationPeriod, int hourSpan,
+                    String graphTitle) {
         if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
-            createLineChart(this.leastPerformancePanel, graphData, graphTitle);
+            GraphUtil.createLineChart(this.leastPerformancePanel, graphData, aggregationPeriod, hourSpan, graphTitle);
         }
         else {
             GWT.log("empty graphData");
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setServiceErrorTrendData(java.util.List)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setServiceErrorTrendData(java
+     * .util.List)
      */
     @Override
-    public void setServiceErrorTrendData(List<TimeSlotData> graphData, String graphTitle) {
+    public void setServiceErrorTrendData(List<TimeSlotData> graphData, long aggregationPeriod, int hourSpan,
+                    String graphTitle) {
         if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
-            createLineChart(this.topErrorsPanel, graphData, graphTitle);
+            GraphUtil.createLineChart(this.topErrorsPanel, graphData, aggregationPeriod, hourSpan, graphTitle);
         }
         else {
             GWT.log("empty graphData");
         }
     }
-    
+
 }
