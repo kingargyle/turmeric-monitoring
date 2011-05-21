@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 
@@ -45,7 +47,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * 
  */
 public class MetricsQueryServiceImpl extends AbstractConsoleService implements MetricsQueryService {
-
+    private static Logger errorLogger = Logger.getLogger("errorLogger");
     /**
      * Instantiates a new metrics query service impl.
      */
@@ -176,17 +178,18 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
             builder.sendRequest(null, new RequestCallback() {
 
                 public void onError(Request request, Throwable err) {
+                    errorLogger.log(Level.SEVERE, "Error in getServices call", err);
                     callback.onFailure(err);
                 }
 
                 public void onResponseReceived(Request request, Response response) {
                     if (response.getStatusCode() != Response.SC_OK) {
-                        GWT.log("Errored request: " + url + " response code=" + response.getStatusCode() + " response="
+                        errorLogger.log(Level.SEVERE, "Errored request in getServices call: " + url + " response code=" + response.getStatusCode() + " response="
                                         + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
                     else if (response.getHeader(ERROR_HEADER) != null) {
-                        GWT.log("Errored request: " + url + " response code=" + response.getStatusCode() + " response="
+                        errorLogger.log(Level.SEVERE, "Errored request in getServices call: " + url + " response code=" + response.getStatusCode() + " response="
                                         + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
@@ -211,6 +214,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
             });
         }
         catch (RequestException x) {
+            errorLogger.log(Level.SEVERE, "Error in getServices call", x);
             callback.onFailure(x);
         }
     }
@@ -231,17 +235,18 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
             builder.sendRequest(null, new RequestCallback() {
 
                 public void onError(Request request, Throwable err) {
+                    errorLogger.log(Level.SEVERE, "Error in getServiceOperations call", err);
                     callback.onFailure(err);
                 }
 
                 public void onResponseReceived(final Request request, final Response response) {
                     if (response.getStatusCode() != Response.SC_OK) {
-                        GWT.log("Errored request: " + url + " response code=" + response.getStatusCode() + " response="
+                        errorLogger.log(Level.SEVERE, "Errored request in getServiceOperations call: " + url + " response code=" + response.getStatusCode() + " response="
                                         + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
                     else if (response.getHeader(ERROR_HEADER) != null) {
-                        GWT.log("Errored request: " + url + " response code=" + response.getStatusCode() + " response="
+                        errorLogger.log(Level.SEVERE, "Errored request in getServiceOperations call: " + url + " response code=" + response.getStatusCode() + " response="
                                         + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
@@ -276,6 +281,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
             });
         }
         catch (RequestException x) {
+            errorLogger.log(Level.SEVERE, "Error in getServiceOperations call", x);
             callback.onFailure(x);
         }
     }
@@ -302,12 +308,12 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
                 public void onResponseReceived(final Request request, final Response response) {
                     if (response.getStatusCode() != Response.SC_OK) {
-                        GWT.log("Errored request: " + url + " response code=" + response.getStatusCode() + " response="
+                        errorLogger.log(Level.SEVERE, "Errored request in getServiceOperationsJSON call: " + url + " response code=" + response.getStatusCode() + " response="
                                         + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
                     else if (response.getHeader(ERROR_HEADER) != null) {
-                        GWT.log("Errored request: " + url + " Response=" + response.getText());
+                        errorLogger.log(Level.SEVERE, "Errored request in getServiceOperationsJSON call: " + url + " Response=" + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
                     else {
@@ -341,6 +347,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
             });
         }
         catch (RequestException x) {
+            errorLogger.log(Level.SEVERE, "Error in getServiceOperationsJSON call", x);
             callback.onFailure(x);
         }
     }
@@ -376,18 +383,18 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
                 public void onResponseReceived(Request request, Response response) {
                     if (response.getStatusCode() != Response.SC_OK) {
-                        GWT.log("Errored request: " + url + " response code=" + response.getStatusCode() + " response="
+                        errorLogger.log(Level.SEVERE, "Errored request in getErrorData call: " + url + " response code=" + response.getStatusCode() + " response="
                                         + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
                     else if (response.getHeader(ERROR_HEADER) != null) {
-                        GWT.log("Errored request: " + url + " Response=" + response.getText());
+                        errorLogger.log(Level.SEVERE, "Errored request in getErrorData call: " + url + " Response=" + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
                     else {
                         ErrorMetricsDataResponse metricsResponse = ErrorMetricsDataResponse.fromJSON(response.getText());
                         if (metricsResponse == null) {
-                            GWT.log("Errored request: " + url + " Response=" + response.getText());
+                            errorLogger.log(Level.SEVERE, "Errored request in getErrorData call: " + url + " Response=" + response.getText());
                             callback.onFailure(new Throwable(ConsoleUtil.messages.badOrMissingResponseData()));
                         }
                         else {
@@ -407,6 +414,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
             });
         }
         catch (RequestException x) {
+            errorLogger.log(Level.SEVERE,"error in getErrorData call", x);
             callback.onFailure(x);
             GWT.log("Exception in server call: " + x.toString());
         }
@@ -595,7 +603,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getServiceMetricValueTrend(org.ebayopensource.turmeric.monitoring.client.model.MetricValue, org.ebayopensource.turmeric.monitoring.client.model.MetricValue, com.google.gwt.user.client.rpc.AsyncCallback)
      */
     @Override
-    public void getMetricValueTrend(MetricValue firstDate, final MetricValue secondDate,
+    public void getMetricValueTrend(final MetricValue firstDate, final MetricValue secondDate,
                      final AsyncCallback<List<TimeSlotData>> callback) {
         try {
             final TimeSlotData firstDateRange = new TimeSlotData();
@@ -604,6 +612,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
                 @Override
                 public void onFailure(Throwable arg0) {
+                    errorLogger.log(Level.SEVERE, "Error in getMetricValueTrend for the date:"+firstDate.getStartTime(), arg0);
                     Window.alert("Error: "+arg0.getMessage());
                 }
 
@@ -615,6 +624,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
                             @Override
                             public void onFailure(Throwable arg0) {
+                                errorLogger.log(Level.SEVERE, "Error in getMetricValueTrend for the date:"+secondDate.getStartTime(), arg0);
                                 Window.alert("Error: "+arg0.getMessage());
                             }
 

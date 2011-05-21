@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 import org.ebayopensource.turmeric.monitoring.client.Dashboard;
@@ -53,6 +55,7 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.logging.client.HasWidgetsLogHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -64,7 +67,9 @@ import com.google.gwt.user.client.ui.TreeItem;
  * The Class ServicePresenter.
  */
 public class ServicePresenter implements Presenter.TabPresenter {
+    private static Logger errorLogger = Logger.getLogger("errorLogger");
 
+    
     /** The Constant DEFAULT_SERVICE. */
     public final static String DEFAULT_SERVICE = "FindingService";
 
@@ -226,6 +231,8 @@ public class ServicePresenter implements Presenter.TabPresenter {
          *            the new service error trend data
          */
         public void setServiceErrorTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan, String graphTitle);
+
+        public HasWidgets getErrorWidget();
     }
 
     /**
@@ -547,7 +554,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
 
             @Override
             public void onFailure(Throwable exception) {
-                GWT.log(exception.getMessage());
+                errorLogger.log(Level.SEVERE, "error in getServiceCallTrend", exception);
             }
         };
         this.getSimpleGraphData("CallCount", "server", minAggregationPeriod, selectionContext, date1, date2, hourSpan,
@@ -571,7 +578,8 @@ public class ServicePresenter implements Presenter.TabPresenter {
 
             @Override
             public void onFailure(Throwable exception) {
-                GWT.log(exception.getMessage());
+                errorLogger.log(Level.SEVERE, "error in getServicePerformanceTrend", exception);
+                
             }
         };
         
@@ -710,6 +718,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
         queryService.getServices(new AsyncCallback<Map<String, Set<String>>>() {
 
             public void onFailure(Throwable error) {
+                //here
                 ServicePresenter.this.view.error(ConsoleUtil.messages.serverError(error.getLocalizedMessage()));
             }
 

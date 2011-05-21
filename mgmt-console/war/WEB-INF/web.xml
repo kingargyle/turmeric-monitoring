@@ -24,6 +24,18 @@
       <url-pattern>/console/smqs/*</url-pattern>
   </servlet-mapping>
   
+  
+  <servlet>
+    <servlet-name>remoteLoggingServlet</servlet-name>
+    <servlet-class>com.google.gwt.logging.server.RemoteLoggingServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>remoteLoggingServlet</servlet-name>
+    <url-pattern>console/remote_logging</url-pattern>
+  </servlet-mapping>
+  
+  
   <servlet>
       <servlet-name>DownloadServlet</servlet-name>
       <servlet-class>org.ebayopensource.turmeric.monitoring.server.DownloadServlet</servlet-class>

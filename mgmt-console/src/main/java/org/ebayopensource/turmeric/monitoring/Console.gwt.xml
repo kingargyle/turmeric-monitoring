@@ -13,6 +13,12 @@
   <inherits name="com.google.gwt.i18n.I18N"/>
   <inherits name="com.google.gwt.http.HTTP" />
   <inherits name='com.google.gwt.visualization.Visualization'/>
+  <inherits name="com.google.gwt.logging.Logging"/>
+  <!-- Disable the firebug handler as an example -->
+  <set-property name="gwt.logging.firebugHandler" value="DISABLED" />
+  <set-property name="gwt.logging.popupHandler" value="DISABLED" />
+  <set-property name="gwt.logging.consoleHandler" value="ENABLED"/>
+  <set-property name="gwt.logging.simpleRemoteHandler" value="ENABLED" />
 
   
   <!-- Inherit the default GWT style sheet.  You can change       -->

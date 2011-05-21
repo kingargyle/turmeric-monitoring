@@ -42,6 +42,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ResizeComposite;
@@ -49,6 +50,7 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.UIObject;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
@@ -83,6 +85,8 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
     private Dashboard dashboard;
     private FilterWidget filterWidget;
     private DialogBox filterDialog;
+    private VerticalPanel customLogArea;
+
 
     /**
      * Instantiates a new service view.
@@ -91,6 +95,8 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
      *            the dashboard
      */
     public ServiceView(Dashboard dashboard) {
+        customLogArea = new VerticalPanel();
+        
         // make the panel
         DockLayoutPanel contentPanel = new DockLayoutPanel(Unit.EM);
         initWidget(contentPanel);
@@ -932,6 +938,11 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         else {
             GWT.log("empty graphData");
         }
+    }
+
+    @Override
+    public HasWidgets getErrorWidget() {
+        return customLogArea;
     }
 
 }
