@@ -1,3 +1,11 @@
+/*******************************************************************************
+ *   Copyright (c) 2006-2011 eBay Inc. All Rights Reserved.
+ *   Licensed under the Apache License, Version 2.0 (the "License"); 
+ *   you may not use this file except in compliance with the License. 
+ *   You may obtain a copy of the License at 
+ *  
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.client.util.callback;
 
 import java.util.ArrayList;
@@ -6,23 +14,38 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+/**
+ * The Class ParallelCallbackQueue.
+ *
+ * @param <T> the generic type
+ */
 public abstract class ParallelCallbackQueue<T> implements AsyncCallback<T>{
     
     
     private int finishedCallbacks = 0;
     
+    /** The callbacks. */
     protected List<ParallelCallback<T>> callbacks; 
 
+    /* (non-Javadoc)
+     * @see com.google.gwt.user.client.rpc.AsyncCallback#onFailure(java.lang.Throwable)
+     */
     @Override
     public void onFailure(Throwable excp) {
         GWT.log("onFailure", excp);
     }
 
+    /* (non-Javadoc)
+     * @see com.google.gwt.user.client.rpc.AsyncCallback#onSuccess(java.lang.Object)
+     */
     @Override
     public void onSuccess(T receivedData) {
         GWT.log("onSuccess = "+receivedData);
     }
 
+    /**
+     * Process next in queue.
+     */
     public synchronized void processNextInQueue() {
         finishedCallbacks++;
         GWT.log("calling processNextInQueue. finishedCallbacks = "+finishedCallbacks);
@@ -38,8 +61,19 @@ public abstract class ParallelCallbackQueue<T> implements AsyncCallback<T>{
      */
     protected abstract void success();
 
+    /**
+     * Stop on error.
+     *
+     * @param exp the exp
+     * @param callbackInQueue the callback in queue
+     */
     protected abstract void stopOnError(Throwable exp, ParallelCallback<T> callbackInQueue);
     
+    /**
+     * Adds the.
+     *
+     * @param callback the callback
+     */
     public void add(ParallelCallback<T> callback){
         if(callbacks == null){
             callbacks = new ArrayList<ParallelCallback<T>>();
@@ -48,6 +82,13 @@ public abstract class ParallelCallbackQueue<T> implements AsyncCallback<T>{
         callback.setQueue(this);
     }
     
+    /**
+     * Gets the callback data.
+     *
+     * @param <T> the generic type
+     * @param index the index
+     * @return the callback data
+     */
     protected <T extends Object> T getCallbackData(int index) {
         if (index < 0 || index >= callbacks.size()) {
             throw new RuntimeException("Invalid callback index");

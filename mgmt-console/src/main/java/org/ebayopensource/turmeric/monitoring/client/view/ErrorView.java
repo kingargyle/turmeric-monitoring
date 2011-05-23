@@ -26,6 +26,7 @@ import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
 import org.ebayopensource.turmeric.monitoring.client.model.ErrorMetricData;
 import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
 import org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter;
+import org.ebayopensource.turmeric.monitoring.client.util.GraphUtil;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -768,46 +769,55 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
         return str;
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#setServiceSystemErrorTrendData(java.util.List, long, int, java.lang.String)
+     */
     @Override
-    public void setServiceSystemErrorTrendData(List<ErrorTimeSlotData> dataRanges, String graphTitle) {
+    public void setServiceSystemErrorTrendData(List<ErrorTimeSlotData> dataRanges, long aggregationPeriod, int hourSpan,  String graphTitle) {
         if (dataRanges.get(0).getReturnData() != null && dataRanges.get(1).getReturnData() != null) {
-            createLineChart(this.topSystemErrorsPanel, dataRanges, graphTitle);
+            GraphUtil.createErrorLineChart(this.topSystemErrorsPanel, dataRanges, aggregationPeriod,  hourSpan,  graphTitle);
         }
         else {
             GWT.log("empty graphData");
         }
     }
 
-    private void createLineChart(final SummaryPanel panel, final List<ErrorTimeSlotData> dataRanges, final String graphTitle) {
-        Runnable onLoadCallback = new Runnable() {
-            public void run() {
-                final LineChart lineChart = new LineChart(createChartDataTable(dataRanges), createOptions(graphTitle));
-                panel.addChart(lineChart);
-            }
-        };
+//    private void createLineChart(final SummaryPanel panel, final List<ErrorTimeSlotData> dataRanges, final String graphTitle) {
+//        Runnable onLoadCallback = new Runnable() {
+//            public void run() {
+//                final LineChart lineChart = new LineChart(createChartDataTable(dataRanges), createOptions(graphTitle));
+//                panel.addChart(lineChart);
+//            }
+//        };
+//
+//        //Load the visualization api, passing the onLoadCallback to be called when loading is done.
+//        //The gwt param "corechart" tells gwt to use the new charts
+//        
+//        VisualizationUtils.loadVisualizationApi(onLoadCallback, "corechart");
+//    }
 
-        //Load the visualization api, passing the onLoadCallback to be called when loading is done.
-        //The gwt param "corechart" tells gwt to use the new charts
-        
-        VisualizationUtils.loadVisualizationApi(onLoadCallback, "corechart");
-    }
+//    protected Options createOptions(String graphTitle) {
+//        Options options = Options.create();
+//        //options.setWidth(600);
+//        options.setHeight(230);
+//        options.setEnableTooltip(true);
+//        options.setShowCategories(true);
+//        options.set("fontSize", 10d);
+//        options.setSmoothLine(true);
+//        options.setPointSize(3);
+//        options.setLineSize(3);
+//        options.setTitle(graphTitle);
+//        options.setTitleFontSize(12d);
+//        return options;
+//    }
 
-    protected Options createOptions(String graphTitle) {
-        Options options = Options.create();
-        //options.setWidth(600);
-        options.setHeight(230);
-        options.setEnableTooltip(true);
-        options.setShowCategories(true);
-        options.set("fontSize", 10d);
-        options.setSmoothLine(true);
-        options.setPointSize(3);
-        options.setLineSize(3);
-        options.setTitle(graphTitle);
-        options.setTitleFontSize(12d);
-        return options;
-    }
-
-    protected AbstractDataTable createChartDataTable(List<ErrorTimeSlotData> dataRanges) {
+    /**
+ * Creates the chart data table.
+ *
+ * @param dataRanges the data ranges
+ * @return the abstract data table
+ */
+protected AbstractDataTable createChartDataTable(List<ErrorTimeSlotData> dataRanges) {
         DataTable data = DataTable.create();
         ErrorTimeSlotData firstDateRange = dataRanges.get(0);
         ErrorTimeSlotData secondDateRange = dataRanges.get(1);
@@ -844,20 +854,26 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
         return data;
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#setServiceApplicationErrorTrendData(java.util.List, long, int, java.lang.String)
+     */
     @Override
-    public void setServiceApplicationErrorTrendData(List<ErrorTimeSlotData> dataRanges, String graphTitle) {
+    public void setServiceApplicationErrorTrendData(List<ErrorTimeSlotData> dataRanges, long aggregationPeriod, int hourSpan,  String graphTitle) {
         if (dataRanges.get(0).getReturnData() != null && dataRanges.get(1).getReturnData() != null) {
-            createLineChart(this.topApplicationErrorsPanel, dataRanges, graphTitle);
+            GraphUtil.createErrorLineChart(this.topApplicationErrorsPanel, dataRanges,aggregationPeriod, hourSpan,   graphTitle);
         }
         else {
             GWT.log("empty graphData");
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#setServiceRequestErrorTrendData(java.util.List, long, int, java.lang.String)
+     */
     @Override
-    public void setServiceRequestErrorTrendData(List<ErrorTimeSlotData> dataRanges, String graphTitle) {
+    public void setServiceRequestErrorTrendData(List<ErrorTimeSlotData> dataRanges, long aggregationPeriod, int hourSpan,   String graphTitle) {
         if (dataRanges.get(0).getReturnData() != null && dataRanges.get(1).getReturnData() != null) {
-            createLineChart(this.topRequestErrorsPanel, dataRanges, graphTitle);
+            GraphUtil.createErrorLineChart(this.topRequestErrorsPanel, dataRanges,  aggregationPeriod,  hourSpan,  graphTitle);
         }
         else {
             GWT.log("empty graphData");

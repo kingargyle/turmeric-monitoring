@@ -453,14 +453,19 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
             builder.sendRequest(null, new RequestCallback() {
 
                 public void onError(Request request, Throwable err) {
+                    errorLogger.log(Level.SEVERE,"Error in getErrorDetail call:", err);
                     callback.onFailure(err);
                 }
 
                 public void onResponseReceived(Request request, Response response) {
                     if (response.getStatusCode() != Response.SC_OK) {
+                        errorLogger.log(Level.SEVERE, "Errored request in getErrorDetail call: " + url + " response code=" + response.getStatusCode() + " response="
+                                        + response.getText());
                         callback.onFailure(new Throwable("Error " + response.getStatusCode()));
                     }
                     else if (response.getHeader(ERROR_HEADER) != null) {
+                        errorLogger.log(Level.SEVERE, "Errored request in getErrorDetail call: " + url + " response code=" + response.getStatusCode() + " response="
+                                        + response.getText());
                         callback.onFailure(new Throwable(ConsoleUtil.messages.badRequestData()));
                     }
                     else {
@@ -482,6 +487,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
             });
         }
         catch (RequestException x) {
+            errorLogger.log(Level.SEVERE,"Error in getErrorDetail call", x);
             callback.onFailure(x);
         }
     }
@@ -657,6 +663,9 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
     }
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getErrorTrend(org.ebayopensource.turmeric.monitoring.client.model.ErrorCriteria, org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria, org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria, com.google.gwt.user.client.rpc.AsyncCallback)
+     */
     @Override
     public void getErrorTrend(final ErrorCriteria ec, final MetricCriteria firstDate, final MetricCriteria secondDate,
                      final AsyncCallback<List<ErrorTimeSlotData>> callback) {
@@ -700,6 +709,9 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
     }
     
     
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getServiceConsumers(java.lang.String, com.google.gwt.user.client.rpc.AsyncCallback)
+     */
     public void getServiceConsumers(final String serviceName,
                     final AsyncCallback<Set<String>> callback) {
 

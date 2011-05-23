@@ -940,6 +940,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#getErrorWidget()
+     */
     @Override
     public HasWidgets getErrorWidget() {
         return customLogArea;

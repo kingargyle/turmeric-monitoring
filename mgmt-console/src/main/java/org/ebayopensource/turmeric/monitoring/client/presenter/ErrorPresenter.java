@@ -195,11 +195,35 @@ public class ErrorPresenter implements TabPresenter {
          */
         public void setDownloadUrl(ErrorMetric metric, String url);
 
-        public void setServiceSystemErrorTrendData(List<ErrorTimeSlotData> dataRanges, String graphTitle);
+        /**
+         * Sets the service system error trend data.
+         *
+         * @param dataRanges the data ranges
+         * @param aggregationPeriod the aggregation period
+         * @param hourSpan the hour span
+         * @param graphTitle the graph title
+         */
+        public void setServiceSystemErrorTrendData(List<ErrorTimeSlotData> dataRanges, long aggregationPeriod, int hourSpan, String graphTitle);
 
-        public void setServiceApplicationErrorTrendData(List<ErrorTimeSlotData> dataRanges, String graphTitle);
+        /**
+         * Sets the service application error trend data.
+         *
+         * @param dataRanges the data ranges
+         * @param aggregationPeriod the aggregation period
+         * @param hourSpan the hour span
+         * @param graphTitle the graph title
+         */
+        public void setServiceApplicationErrorTrendData(List<ErrorTimeSlotData> dataRanges, long aggregationPeriod, int hourSpan, String graphTitle);
 
-        public void setServiceRequestErrorTrendData(List<ErrorTimeSlotData> dataRanges, String graphTitle);
+        /**
+         * Sets the service request error trend data.
+         *
+         * @param dataRanges the data ranges
+         * @param aggregationPeriod the aggregation period
+         * @param hourSpan the hour span
+         * @param graphTitle the graph title
+         */
+        public void setServiceRequestErrorTrendData(List<ErrorTimeSlotData> dataRanges, long aggregationPeriod, int hourSpan, String graphTitle);
     }
     
     /**
@@ -698,7 +722,7 @@ public class ErrorPresenter implements TabPresenter {
                 }
                 String graphTitle = ConsoleUtil.messages.graphTitle("System Errors", serviceOpName, durationHrs);
                 ErrorPresenter.this.view.activate();
-                ErrorPresenter.this.view.setServiceSystemErrorTrendData(dataRanges, graphTitle);
+                ErrorPresenter.this.view.setServiceSystemErrorTrendData(dataRanges, minAggregationPeriod, durationHrs, graphTitle);
             }
 
             @Override
@@ -722,7 +746,7 @@ public class ErrorPresenter implements TabPresenter {
                 }
                 String graphTitle = ConsoleUtil.messages.graphTitle("Application Errors", serviceOpName, durationHrs);
                 ErrorPresenter.this.view.activate();
-                ErrorPresenter.this.view.setServiceApplicationErrorTrendData(dataRanges, graphTitle);
+                ErrorPresenter.this.view.setServiceApplicationErrorTrendData(dataRanges, minAggregationPeriod, durationHrs,  graphTitle);
             }
 
             @Override
@@ -746,7 +770,7 @@ public class ErrorPresenter implements TabPresenter {
                 }
                 String graphTitle = ConsoleUtil.messages.graphTitle("Request Errors", serviceOpName, durationHrs);
                 ErrorPresenter.this.view.activate();
-                ErrorPresenter.this.view.setServiceRequestErrorTrendData(dataRanges, graphTitle);
+                ErrorPresenter.this.view.setServiceRequestErrorTrendData(dataRanges, minAggregationPeriod, durationHrs, graphTitle);
             }
 
             @Override

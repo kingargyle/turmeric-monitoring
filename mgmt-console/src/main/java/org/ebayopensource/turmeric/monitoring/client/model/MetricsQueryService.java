@@ -233,6 +233,15 @@ Warning};
 
 
 
+    /**
+     * Gets the error trend.
+     *
+     * @param ec the ec
+     * @param firstDate the first date
+     * @param secondDate the second date
+     * @param callback the callback
+     * @return the error trend
+     */
     public void getErrorTrend(final ErrorCriteria ec, final MetricCriteria firstDate, final MetricCriteria secondDate,
                     final AsyncCallback<List<ErrorTimeSlotData>> callback);
     

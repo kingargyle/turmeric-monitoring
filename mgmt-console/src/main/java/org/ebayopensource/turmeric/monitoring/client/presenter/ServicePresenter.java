@@ -210,28 +210,39 @@ public class ServicePresenter implements Presenter.TabPresenter {
 
         /**
          * Sets the service call trend data.
-         * 
-         * @param dataRanges
-         *            the new service call trend data
+         *
+         * @param dataRanges the new service call trend data
+         * @param aggregationPeriod the aggregation period
+         * @param hourSpan the hour span
+         * @param graphTitle the graph title
          */
         public void setServiceCallTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan, String graphTitle);
 
         /**
          * Sets the service performance trend data.
-         * 
-         * @param dataRanges
-         *            the new service performance trend data
+         *
+         * @param dataRanges the new service performance trend data
+         * @param aggregationPeriod the aggregation period
+         * @param hourSpan the hour span
+         * @param graphTitle the graph title
          */
         public void setServicePerformanceTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan, String graphTitle);
 
         /**
          * Sets the service error trend data.
-         * 
-         * @param dataRanges
-         *            the new service error trend data
+         *
+         * @param dataRanges the new service error trend data
+         * @param aggregationPeriod the aggregation period
+         * @param hourSpan the hour span
+         * @param graphTitle the graph title
          */
         public void setServiceErrorTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan, String graphTitle);
 
+        /**
+         * Gets the error widget.
+         *
+         * @return the error widget
+         */
         public HasWidgets getErrorWidget();
     }
 

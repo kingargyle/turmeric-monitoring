@@ -206,9 +206,11 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
 
         /**
          * Sets the consumer call trend data.
-         * 
-         * @param graphData
-         *            the new consumer call trend data
+         *
+         * @param graphData the new consumer call trend data
+         * @param aggregationPeriod the aggregation period
+         * @param hourSpan the hour span
+         * @param graphTile the graph tile
          */
         void setConsumerCallTrendData(List<TimeSlotData> graphData, long aggregationPeriod, int hourSpan, String graphTile);
 
@@ -216,6 +218,9 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
          * Sets the consumer performance trend data.
          *
          * @param dataRanges the new consumer performance trend data
+         * @param aggregationPeriod the aggregation period
+         * @param hourSpan the hour span
+         * @param graphTile the graph tile
          */
         public void setConsumerPerformanceTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan, String graphTile);
 
@@ -223,6 +228,9 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
          * Sets the consumer error trend data.
          *
          * @param dataRanges the new consumer error trend data
+         * @param aggregationPeriod the aggregation period
+         * @param hourSpan the hour span
+         * @param graphTile the graph tile
          */
         public void setConsumerErrorTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan, String graphTile);
 
@@ -230,6 +238,8 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
          * Sets the consumer service call trend data.
          *
          * @param graphData the graph data
+         * @param aggregationPeriod the aggregation period
+         * @param hourSpan the hour span
          * @param graphTitle the graph title
          */
         public void setConsumerServiceCallTrendData(Map<String, List<TimeSlotData>> graphData, long aggregationPeriod, int hourSpan, String graphTitle);
@@ -238,6 +248,8 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
          * Sets the consumer service performance trend data.
          *
          * @param graphData the graph data
+         * @param aggregationPeriod the aggregation period
+         * @param hourSpan the hour span
          * @param graphTitle the graph title
          */
         public void setConsumerServicePerformanceTrendData(Map<String, List<TimeSlotData>> graphData, long aggregationPeriod, int hourSpan, String graphTitle);
@@ -246,6 +258,8 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
          * Sets the consumer error count trend data.
          *
          * @param graphData the graph data
+         * @param aggregationPeriod the aggregation period
+         * @param hourSpan the hour span
          * @param graphTitle the graph title
          */
         public void setConsumerErrorCountTrendData(Map<String, List<TimeSlotData>> graphData, long aggregationPeriod, int hourSpan, String graphTitle);

@@ -30,7 +30,25 @@ import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.visualizations.LineChart;
 import com.google.gwt.visualization.client.visualizations.LineChart.Options;
 
+/**
+ * The Class GraphUtil.
+ */
 public class GraphUtil {
+    
+    /**
+     * Gets the simple graph data.
+     *
+     * @param queryService the query service
+     * @param metricName the metric name
+     * @param roleType the role type
+     * @param aggregationPeriod the aggregation period
+     * @param selectionContext the selection context
+     * @param date1 the date1
+     * @param date2 the date2
+     * @param hourSpan the hour span
+     * @param callback the callback
+     * @return the simple graph data
+     */
     public static void getSimpleGraphData(MetricsQueryService queryService, String metricName, String roleType, long aggregationPeriod,
                     final SelectionContext selectionContext, long date1, long date2, final int hourSpan,
                     AsyncCallback<List<TimeSlotData>> callback) {
@@ -42,7 +60,6 @@ public class GraphUtil {
             criteriaInfo.setOperationName(selectionContext.getSelection(ObjectType.OperationName));
         }
         criteriaInfo.setRoleType(roleType);
-        //if
         if(aggregationPeriod >= 3600){
             hourToSecondsMultiplier = aggregationPeriod;
         }
@@ -51,6 +68,22 @@ public class GraphUtil {
                                         hourToSecondsMultiplier * hourSpan, (int) aggregationPeriod, ""), callback);
     }
     
+    /**
+     * Gets the simple error graph data.
+     *
+     * @param queryService the query service
+     * @param errorType the error type
+     * @param errorCategory the error category
+     * @param severity the severity
+     * @param roleType the role type
+     * @param aggregationPeriod the aggregation period
+     * @param selectionContext the selection context
+     * @param date1 the date1
+     * @param date2 the date2
+     * @param hourSpan the hour span
+     * @param callback the callback
+     * @return the simple error graph data
+     */
     public static void getSimpleErrorGraphData(MetricsQueryService queryService, ErrorType errorType, ErrorCategory errorCategory,  ErrorSeverity severity, String roleType, long aggregationPeriod,
                     final SelectionContext selectionContext, long date1, long date2, final int hourSpan,
                     AsyncCallback<List<ErrorTimeSlotData>> callback) {
@@ -79,7 +112,16 @@ public class GraphUtil {
         
     }
     
-    public static void createLineChart(final SummaryPanel panel, final List<TimeSlotData> timeData,
+    /**
+     * Creates the line chart.
+     *
+     * @param panel the panel
+     * @param timeData the time data
+     * @param aggregationPeriod the aggregation period
+     * @param hourSpan the hour span
+     * @param graphTitle the graph title
+     */
+    public static void createLineChart(final SummaryPanel panel, final List<? extends TimeSlotData> timeData,
                     final long aggregationPeriod, final int hourSpan, final String graphTitle) {
         Runnable onLoadCallback = new Runnable() {
             public void run() {
@@ -95,7 +137,7 @@ public class GraphUtil {
         VisualizationUtils.loadVisualizationApi(onLoadCallback, "corechart");
     }
     
-    private static AbstractDataTable createChartDataTable(List<TimeSlotData> timeDataRange, long aggregationPeriod,
+    private static AbstractDataTable createChartDataTable(List<? extends TimeSlotData> timeDataRange, long aggregationPeriod,
                     int hourSpan) {
         int plotPointsPerHour = 1;
         if (aggregationPeriod < 3600) {// then, each point represents X minutes. e.g: minAggregationPeriod = 60, then we
@@ -187,6 +229,20 @@ public class GraphUtil {
             }
         }
         return result;
+    }
+
+    /**
+     * Creates the error line chart.
+     *
+     * @param panel the panel
+     * @param dataRanges the data ranges
+     * @param aggregationPeriod the aggregation period
+     * @param hourSpan the hour span
+     * @param graphTitle the graph title
+     */
+    public static void createErrorLineChart(SummaryPanel panel, List<ErrorTimeSlotData> dataRanges,
+                    long aggregationPeriod, int hourSpan, String graphTitle) {
+        createLineChart(panel, dataRanges, aggregationPeriod, hourSpan, graphTitle);
     }
     
 }

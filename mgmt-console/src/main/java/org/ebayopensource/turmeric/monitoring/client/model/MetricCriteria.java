@@ -81,6 +81,14 @@ public class MetricCriteria {
         return mc;
     }
     
+    /**
+     * Instantiates a new metric criteria.
+     *
+     * @param metricName the metric name
+     * @param date1 the date1
+     * @param durationHrs the duration hrs
+     * @param aggregationPeriod the aggregation period
+     */
     public MetricCriteria(String metricName,
                     long date1,int durationHrs,int aggregationPeriod){
         this.date1 = date1;

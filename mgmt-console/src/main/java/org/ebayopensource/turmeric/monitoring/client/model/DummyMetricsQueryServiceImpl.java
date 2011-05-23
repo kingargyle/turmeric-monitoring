@@ -730,12 +730,18 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
         
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getServiceConsumers(java.lang.String, com.google.gwt.user.client.rpc.AsyncCallback)
+     */
     @Override
     public void getServiceConsumers(String serviceName, AsyncCallback<Set<String>> callback) {
         // TODO Auto-generated method stub
         
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getErrorTrend(org.ebayopensource.turmeric.monitoring.client.model.ErrorCriteria, org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria, org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria, com.google.gwt.user.client.rpc.AsyncCallback)
+     */
     @Override
     public void getErrorTrend(ErrorCriteria ec, MetricCriteria firstDate, MetricCriteria secondDate,
                     AsyncCallback<List<ErrorTimeSlotData>> callback) {

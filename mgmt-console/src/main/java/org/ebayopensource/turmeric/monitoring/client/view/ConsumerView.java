@@ -942,6 +942,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         return options;
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setConsumerPerformanceTrendData(java.util.List, long, int, java.lang.String)
+     */
     @Override
     public void setConsumerPerformanceTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan,String graphTitle) {
         if (dataRanges.get(0).getReturnData() != null && dataRanges.get(1).getReturnData() != null) {
@@ -952,6 +955,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setConsumerErrorTrendData(java.util.List, long, int, java.lang.String)
+     */
     @Override
     public void setConsumerErrorTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan, String graphTitle) {
         if (dataRanges.get(0).getReturnData() != null && dataRanges.get(1).getReturnData() != null) {
@@ -962,6 +968,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setConsumerServiceCallTrendData(java.util.Map, long, int, java.lang.String)
+     */
     @Override
     public void setConsumerServiceCallTrendData(Map<String, List<TimeSlotData>> dataRange, long aggregationPeriod, int hourSpan,  String graphTitle) {
         if (dataRange != null) {
@@ -987,6 +996,12 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         VisualizationUtils.loadVisualizationApi(onLoadCallback, "corechart");
     }
 
+    /**
+     * Creates the column chart options.
+     *
+     * @param graphTitle the graph title
+     * @return the com.google.gwt.visualization.client.visualizations. column chart. options
+     */
     protected com.google.gwt.visualization.client.visualizations.ColumnChart.Options createColumnChartOptions(String graphTitle) {
         com.google.gwt.visualization.client.visualizations.ColumnChart.Options options = com.google.gwt.visualization.client.visualizations.ColumnChart.Options
                         .create();
@@ -1000,6 +1015,12 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         return options;
     }
 
+    /**
+     * Creates the chart data table.
+     *
+     * @param dataRange the data range
+     * @return the abstract data table
+     */
     protected AbstractDataTable createChartDataTable(Map<String, List<TimeSlotData>> dataRange) {
 
         DataTable data = DataTable.create();
@@ -1059,6 +1080,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setConsumerServicePerformanceTrendData(java.util.Map, long, int, java.lang.String)
+     */
     @Override
     public void setConsumerServicePerformanceTrendData(Map<String, List<TimeSlotData>> graphData, long aggregationPeriod, int hourSpan,  String graphTitle) {
         if (graphData != null) {
@@ -1069,6 +1093,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setConsumerErrorCountTrendData(java.util.Map, long, int, java.lang.String)
+     */
     @Override
     public void setConsumerErrorCountTrendData(Map<String, List<TimeSlotData>> graphData, long aggregationPeriod, int hourSpan,  String graphTitle) {
         if (graphData != null) {
@@ -1079,6 +1106,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#clearConsumerServiceCallTrendGraph()
+     */
     @Override
     public void clearConsumerServiceCallTrendGraph() {
         Map emptyData = new HashMap<String, List<TimeSlotData>>();
