@@ -31,6 +31,8 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
     
     /** The error details by id. */
     Map<String, ErrorDetail> errorDetailsById = new HashMap<String, ErrorDetail>();
+
+    private Map<String, Set<String>> serviceData;
     
     
     /**
@@ -357,6 +359,11 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
         errorDetailsByName.put("Err2", ed2);
         errorDetailsById.put("102", ed2);
         
+        serviceData = new HashMap<String, Set<String>>();
+        for (int i=0; i< 20; i++) {
+            serviceData.put("Service"+i, new HashSet<String>(Arrays.asList(new String[]{"opA", "opB", "opC"})));
+        }
+        
     }
     
     /* (non-Javadoc)
@@ -605,15 +612,7 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
 	 */
 	public void getServices(AsyncCallback<Map<String, Set<String>>> callback) {
 		
-		HashMap<String, Set<String>> testData = new HashMap<String, Set<String>>();
-		testData.put("FindingService", new HashSet<String>(Arrays.asList(new String[]{"opA", "opB", "opC"})));
-		testData.put("SomeOtherService", new HashSet<String>(Arrays.asList(new String[]{"opA", "opB"})));
-		testData.put("YetAnotherService", new HashSet<String>(Arrays.asList(new String[]{"opA", "opB"})));;
-		for (int i=0; i< 20; i++) {
-			testData.put("Service"+i, new HashSet<String>(Arrays.asList(new String[]{"opA", "opB", "opC"})));
-		}
-		
-		callback.onSuccess(testData);
+		callback.onSuccess(this.serviceData);
 	}
 
      /* (non-Javadoc)
@@ -747,6 +746,10 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
                     AsyncCallback<List<ErrorTimeSlotData>> callback) {
         // TODO Auto-generated method stub
         
+    }
+    
+    public Map<String, Set<String>> getServiceData(){
+        return this.serviceData;
     }
 
 }

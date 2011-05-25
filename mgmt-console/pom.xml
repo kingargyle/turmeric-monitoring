@@ -100,9 +100,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
-				<version>2.1.0-1</version>
 				<configuration>
-					<logLevel>TRACE</logLevel>
 					<module>org.ebayopensource.turmeric.monitoring.Console</module>
 					<runTarget>/</runTarget>
 					<style>detailed</style>
@@ -111,6 +109,7 @@
 					<buildOutputDirectory>${basedir}/war/WEB-INF/classes</buildOutputDirectory>
 					<warSourceDirectory>${basedir}/war</warSourceDirectory>
 					<hostedWebapp>${basedir}/war</hostedWebapp>
+					<module>org.ebayopensource.turmeric.monitoring.Console</module>
 				</configuration>
 				<executions>
 					<execution>
@@ -121,6 +120,57 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<additionalClasspathElements>
+						<additionalClasspathElement>${project.build.sourceDirectory}</additionalClasspathElement>
+						<additionalClasspathElement>${project.build.testSourceDirectory}</additionalClasspathElement>
+					</additionalClasspathElements>
+					<useManifestOnlyJar>false</useManifestOnlyJar>
+					<forkMode>always</forkMode>
+
+					<!-- Folder for generated testing stuff -->
+					<systemProperties>
+						<property>
+							<name>gwt.args</name>
+							<value>-out target/www -web</value>
+						</property>
+					</systemProperties>
+				</configuration>
+			</plugin>
+			<!-- Copy static web files before executing gwt:run -->
+	      <plugin>
+	        <artifactId>maven-resources-plugin</artifactId>
+	        <executions>
+	          <execution>
+	            <phase>compile</phase>
+	            <goals>
+	              <goal>copy-resources</goal>
+	            </goals>
+	            <configuration>
+	              <outputDirectory>target/www</outputDirectory>
+	              <resources>
+	                <resource>
+	                  <directory>war</directory>
+	                </resource>
+	              </resources>
+	            </configuration>
+	          </execution>
+	        </executions>
+	      </plugin>
+	       <!-- Delete gwt generated stuff -->
+	      <plugin>
+	        <artifactId>maven-clean-plugin</artifactId>
+	        <configuration>
+	          <filesets>
+	            <fileset><directory>war/</directory></fileset>
+	            <fileset><directory>war/WEB-INF/classes</directory></fileset>
+	            <fileset><directory>www-test</directory></fileset>
+	            <fileset><directory>.gwt-tmp</directory></fileset>
+	          </filesets>
+	        </configuration>
+	      </plugin>
 		</plugins>
 	</build>
 	<dependencies>
@@ -160,6 +210,7 @@
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-servlet</artifactId>
 			<version>${gwt.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.gwt</groupId>
@@ -171,7 +222,7 @@
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-dev</artifactId>
 			<version>${gwt.version}</version>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.gwt</groupId>

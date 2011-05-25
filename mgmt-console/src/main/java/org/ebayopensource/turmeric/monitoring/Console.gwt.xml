@@ -40,6 +40,8 @@
   <extend-property name="locale" values="en"/>
   <extend-property name="locale" values="it"/>
   <extend-property name="locale" values="es"/>
+  <inherits name="com.google.gwt.junit.JUnit"/>
+  <inherits name="com.google.gwt.junit.JUnit"/>
   
 
 
