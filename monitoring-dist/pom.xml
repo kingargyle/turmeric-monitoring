@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>org.ebayopensource.turmeric.monitoring</groupId>
 		<artifactId>turmeric-monitoring-parent</artifactId>
-		<version>1.0.0.3-SNAPSHOT</version>
+		<version>1.0.0-Beta-RC2</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
