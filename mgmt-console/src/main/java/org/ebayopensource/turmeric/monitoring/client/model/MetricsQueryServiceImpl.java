@@ -119,7 +119,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                     if (response.getStatusCode() != Response.SC_OK) {
                         callback.onFailure(getErrorAsThrowable(response));
                     }
-                    else if (response.getHeader(ERROR_HEADER) != null) {
+                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length()>0) {
                         callback.onFailure(getErrorAsThrowable(response));
                     }
                     else {
@@ -188,7 +188,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                                         + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
-                    else if (response.getHeader(ERROR_HEADER) != null) {
+                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length()>0) {
                         errorLogger.log(Level.SEVERE, "Errored request in getServices call: " + url + " response code=" + response.getStatusCode() + " response="
                                         + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
@@ -245,7 +245,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                                         + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
-                    else if (response.getHeader(ERROR_HEADER) != null) {
+                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length()>0) {
                         errorLogger.log(Level.SEVERE, "Errored request in getServiceOperations call: " + url + " response code=" + response.getStatusCode() + " response="
                                         + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
@@ -312,7 +312,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                                         + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
-                    else if (response.getHeader(ERROR_HEADER) != null) {
+                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length()>0) {
                         errorLogger.log(Level.SEVERE, "Errored request in getServiceOperationsJSON call: " + url + " Response=" + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
@@ -387,7 +387,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                                         + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
-                    else if (response.getHeader(ERROR_HEADER) != null) {
+                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length()>0) {
                         errorLogger.log(Level.SEVERE, "Errored request in getErrorData call: " + url + " Response=" + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
@@ -463,7 +463,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                                         + response.getText());
                         callback.onFailure(new Throwable("Error " + response.getStatusCode()));
                     }
-                    else if (response.getHeader(ERROR_HEADER) != null) {
+                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length()>0) {
                         errorLogger.log(Level.SEVERE, "Errored request in getErrorDetail call: " + url + " response code=" + response.getStatusCode() + " response="
                                         + response.getText());
                         callback.onFailure(new Throwable(ConsoleUtil.messages.badRequestData()));
@@ -524,7 +524,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                     if (response.getStatusCode() != Response.SC_OK) {
                         callback.onFailure(new Throwable("Error " + response.getStatusCode()));
                     }
-                    else if (response.getHeader(ERROR_HEADER) != null) {
+                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length()>0) {
                         callback.onFailure(new Throwable(ConsoleUtil.messages.badRequestData()));
                     }
                     else {
@@ -575,7 +575,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                         GWT.log("Response status code: "+response.getStatusCode());
                         callback.onFailure(new RequestException("Response status code: "+response.getStatusCode()));
                     }
-                    else if (response.getHeader(ERROR_HEADER) != null) {
+                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length()>0) {
                         GWT.log("Error. Response headers : "+response.getHeadersAsString());
                         callback.onFailure(new RequestException("Error. Response headers : "+response.getHeadersAsString()));
                     }
@@ -732,7 +732,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                                         + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
-                    else if (response.getHeader(ERROR_HEADER) != null) {
+                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length()>0) {
                         GWT.log("Errored request: " + url + " response code=" + response.getStatusCode() + " response="
                                         + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
