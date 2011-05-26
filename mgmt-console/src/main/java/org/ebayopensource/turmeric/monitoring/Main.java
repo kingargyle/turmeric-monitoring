@@ -49,7 +49,15 @@ public class Main {
      */
     public static class SimpleHandler extends AbstractHandler {
 
-        /* (non-Javadoc)
+        /**
+         * Handle.
+         *
+         * @param target the target
+         * @param baseRequest the base request
+         * @param request the request
+         * @param response the response
+         * @throws IOException Signals that an I/O exception has occurred.
+         * @throws ServletException the servlet exception
          * @see org.eclipse.jetty.server.Handler#handle(java.lang.String, org.eclipse.jetty.server.Request, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
          */
         public void handle(String target,

@@ -22,21 +22,30 @@ public class MetricGroupDataJS extends JavaScriptObject implements MetricGroupDa
     protected MetricGroupDataJS () {
     }
      
-    /* (non-Javadoc)
+    /**
+     * Gets the diff.
+     *
+     * @return the diff
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData#getDiff()
      */
     public final native String getDiff ()   /*-{
         return this.diff;
     }-*/;
 
-    /* (non-Javadoc)
+    /**
+     * Gets the count1.
+     *
+     * @return the count1
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData#getCount1()
      */
     public final native String getCount1 () /*-{
         return this.count1;
     }-*/; 
     
-    /* (non-Javadoc)
+    /**
+     * Gets the count2.
+     *
+     * @return the count2
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData#getCount2()
      */
     public final native String getCount2 () /*-{

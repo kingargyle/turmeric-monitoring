@@ -82,7 +82,11 @@ public class MenuController implements Presenter, Controller {
         bind();
     }
 
-    /* (non-Javadoc)
+    /**
+     * Go.
+     *
+     * @param container the container
+     * @param token the token
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#go(com.google.gwt.user.client.ui.HasWidgets, org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
      */
     public void go(HasWidgets container, HistoryToken token) {
@@ -109,7 +113,10 @@ public class MenuController implements Presenter, Controller {
 
     }
 
-    /* (non-Javadoc)
+    /**
+     * Gets the id.
+     *
+     * @return the id
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#getId()
      */
     public String getId() {
@@ -122,21 +129,32 @@ public class MenuController implements Presenter, Controller {
     public void bind() {
     }
 
-    /* (non-Javadoc)
+    /**
+     * Adds the presenter.
+     *
+     * @param id the id
+     * @param p the p
      * @see org.ebayopensource.turmeric.monitoring.client.Controller#addPresenter(java.lang.String, org.ebayopensource.turmeric.monitoring.client.presenter.Presenter)
      */
     public void addPresenter(String id, Presenter p) {
         presenters.put(id, p);
     }
 
-    /* (non-Javadoc)
+    /**
+     * Gets the presenter.
+     *
+     * @param id the id
+     * @return the presenter
      * @see org.ebayopensource.turmeric.monitoring.client.Controller#getPresenter(java.lang.String)
      */
     public Presenter getPresenter(String id) {
         return presenters.get(id);
     }
 
-    /* (non-Javadoc)
+    /**
+     * Select presenter.
+     *
+     * @param token the token
      * @see org.ebayopensource.turmeric.monitoring.client.Controller#selectPresenter(org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
      */
     public void selectPresenter(HistoryToken token) {

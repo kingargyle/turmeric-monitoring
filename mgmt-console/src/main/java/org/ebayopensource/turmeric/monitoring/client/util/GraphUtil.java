@@ -47,7 +47,6 @@ public class GraphUtil {
      * @param date2 the date2
      * @param hourSpan the hour span
      * @param callback the callback
-     * @return the simple graph data
      */
     public static void getSimpleGraphData(MetricsQueryService queryService, String metricName, String roleType, long aggregationPeriod,
                     final SelectionContext selectionContext, long date1, long date2, final int hourSpan,
@@ -82,7 +81,6 @@ public class GraphUtil {
      * @param date2 the date2
      * @param hourSpan the hour span
      * @param callback the callback
-     * @return the simple error graph data
      */
     public static void getSimpleErrorGraphData(MetricsQueryService queryService, ErrorType errorType, ErrorCategory errorCategory,  ErrorSeverity severity, String roleType, long aggregationPeriod,
                     final SelectionContext selectionContext, long date1, long date2, final int hourSpan,

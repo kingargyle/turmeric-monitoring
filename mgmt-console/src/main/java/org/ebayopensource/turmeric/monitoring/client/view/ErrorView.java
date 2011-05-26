@@ -248,7 +248,10 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
         this.dashboard.addView(this, ConsoleUtil.constants.errors());
     }
 
-    /* (non-Javadoc)
+    /**
+     * As widget.
+     *
+     * @return the widget
      * @see com.google.gwt.user.client.ui.Widget#asWidget()
      */
     public Widget asWidget() {
@@ -282,14 +285,20 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
         dashboard.activate(this);
     }
 
-    /* (non-Javadoc)
+    /**
+     * Sets the filter label.
+     *
+     * @param filterString the new filter label
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#setFilterLabel(java.lang.String)
      */
     public void setFilterLabel (String filterString) {
         filterButton.setText(filterString);
     }
 
-    /* (non-Javadoc)
+    /**
+     * Sets the associated id.
+     *
+     * @param id the new associated id
      * @see org.ebayopensource.turmeric.monitoring.client.Display#setAssociatedId(java.lang.String)
      */
     public void setAssociatedId (String id) {
@@ -297,21 +306,30 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
     }
 
 
-    /* (non-Javadoc)
+    /**
+     * Gets the associated id.
+     *
+     * @return the associated id
      * @see org.ebayopensource.turmeric.monitoring.client.Display#getAssociatedId()
      */
     public String getAssociatedId() {
         return this.id;
     }
 
-    /* (non-Javadoc)
+    /**
+     * Gets the filter.
+     *
+     * @return the filter
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#getFilter()
      */
     public Filterable getFilter () {
         return this.filterWidget;
     }
    
-    /* (non-Javadoc)
+    /**
+     * Error.
+     *
+     * @param msg the msg
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#error(java.lang.String)
      */
     public void error (String msg) {
@@ -321,14 +339,19 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
         dialog.show();
      }
     
-    /* (non-Javadoc)
+    /**
+     * Gets the selector.
+     *
+     * @return the selector
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#getSelector()
      */
     public HasSelectionHandlers<TreeItem> getSelector() {
         return serviceListWidget.getServiceTree();
     }
 
-    /* (non-Javadoc)
+    /**
+     * Reset.
+     *
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#reset()
      */
     public void reset() {
@@ -337,7 +360,10 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
             hide(itor.next());
     }
 
-    /* (non-Javadoc)
+    /**
+     * Sets the services map.
+     *
+     * @param map the map
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#setServicesMap(java.util.Map)
      */
     public void setServicesMap(Map<String, Set<String>> map) {
@@ -345,7 +371,11 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
     }
 
 
-    /* (non-Javadoc)
+    /**
+     * Sets the error metric data.
+     *
+     * @param m the m
+     * @param errorData the error data
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#setErrorMetricData(org.ebayopensource.turmeric.monitoring.client.model.ErrorMetric, org.ebayopensource.turmeric.monitoring.client.model.ErrorMetricData)
      */
     public void setErrorMetricData (ErrorMetric m, ErrorMetricData errorData) {
@@ -532,7 +562,10 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
         }
     }
 
-    /* (non-Javadoc)
+    /**
+     * Sets the error detail.
+     *
+     * @param ed the new error detail
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#setErrorDetail(org.ebayopensource.turmeric.monitoring.client.model.ErrorDetail)
      */
     public void setErrorDetail (ErrorDetail ed) {
@@ -559,7 +592,10 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
     
  
 
-    /* (non-Javadoc)
+    /**
+     * Sets the selection.
+     *
+     * @param selections the selections
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#setSelection(java.util.Map)
      */
     public void setSelection(Map<ObjectType,String> selections) {
@@ -605,7 +641,12 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
   
  
 
-    /* (non-Javadoc)
+    /**
+     * Gets the table column.
+     *
+     * @param m the m
+     * @param col the col
+     * @return the table column
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#getTableColumn(org.ebayopensource.turmeric.monitoring.client.model.ErrorMetric, int)
      */
     public List<HasClickHandlers> getTableColumn(ErrorMetric m, int col) {
@@ -621,7 +662,11 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
         return list;
     }
     
-    /* (non-Javadoc)
+    /**
+     * Sets the download url.
+     *
+     * @param m the m
+     * @param url the url
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#setDownloadUrl(org.ebayopensource.turmeric.monitoring.client.model.ErrorMetric, java.lang.String)
      */
     public void setDownloadUrl (ErrorMetric m, String url) {
@@ -769,7 +814,13 @@ public class ErrorView extends Composite implements ErrorPresenter.Display {
         return str;
     }
 
-    /* (non-Javadoc)
+    /**
+     * Sets the service system error trend data.
+     *
+     * @param dataRanges the data ranges
+     * @param aggregationPeriod the aggregation period
+     * @param hourSpan the hour span
+     * @param graphTitle the graph title
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#setServiceSystemErrorTrendData(java.util.List, long, int, java.lang.String)
      */
     @Override
@@ -854,7 +905,13 @@ protected AbstractDataTable createChartDataTable(List<ErrorTimeSlotData> dataRan
         return data;
     }
 
-    /* (non-Javadoc)
+    /**
+     * Sets the service application error trend data.
+     *
+     * @param dataRanges the data ranges
+     * @param aggregationPeriod the aggregation period
+     * @param hourSpan the hour span
+     * @param graphTitle the graph title
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#setServiceApplicationErrorTrendData(java.util.List, long, int, java.lang.String)
      */
     @Override
@@ -867,7 +924,13 @@ protected AbstractDataTable createChartDataTable(List<ErrorTimeSlotData> dataRan
         }
     }
 
-    /* (non-Javadoc)
+    /**
+     * Sets the service request error trend data.
+     *
+     * @param dataRanges the data ranges
+     * @param aggregationPeriod the aggregation period
+     * @param hourSpan the hour span
+     * @param graphTitle the graph title
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter.Display#setServiceRequestErrorTrendData(java.util.List, long, int, java.lang.String)
      */
     @Override

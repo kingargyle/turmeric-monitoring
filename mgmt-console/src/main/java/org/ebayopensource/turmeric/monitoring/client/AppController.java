@@ -66,7 +66,10 @@ public class AppController implements Controller, ValueChangeHandler<String>{
 		selectPresenter(token);
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * On value change.
+	 *
+	 * @param event the event
 	 * @see com.google.gwt.event.logical.shared.ValueChangeHandler#onValueChange(com.google.gwt.event.logical.shared.ValueChangeEvent)
 	 */
 	public void onValueChange(ValueChangeEvent<String> event) {
@@ -97,14 +100,21 @@ public class AppController implements Controller, ValueChangeHandler<String>{
         this.presenters.put(id, p);
     }
 
-    /* (non-Javadoc)
+    /**
+     * Gets the presenter.
+     *
+     * @param id the id
+     * @return the presenter
      * @see org.ebayopensource.turmeric.monitoring.client.Controller#getPresenter(java.lang.String)
      */
     public Presenter getPresenter(String id) {
         return this.presenters.get(id);
     }
 
-    /* (non-Javadoc)
+    /**
+     * Select presenter.
+     *
+     * @param token the token
      * @see org.ebayopensource.turmeric.monitoring.client.Controller#selectPresenter(org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
      */
     public void selectPresenter(HistoryToken token) {

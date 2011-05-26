@@ -178,7 +178,10 @@ public class HistoryToken {
 	    addValue(key, strbuff.toString());
 	}
 	
-	/* (non-Javadoc)
+	/**
+	 * To string.
+	 *
+	 * @return the string
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString () {

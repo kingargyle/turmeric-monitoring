@@ -1,13 +1,19 @@
+/*******************************************************************************
+ *   Copyright (c) 2006-2011 eBay Inc. All Rights Reserved.
+ *   Licensed under the Apache License, Version 2.0 (the "License"); 
+ *   you may not use this file except in compliance with the License. 
+ *   You may obtain a copy of the License at 
+ *  
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.client;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.ebayopensource.turmeric.monitoring.client.event.ObjectSelectionEvent;
 import org.ebayopensource.turmeric.monitoring.client.model.DummyMetricsQueryServiceImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
-import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService;
 import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
 import org.ebayopensource.turmeric.monitoring.client.presenter.MenuController;
 import org.ebayopensource.turmeric.monitoring.client.presenter.Presenter;
@@ -15,7 +21,6 @@ import org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter;
 import org.ebayopensource.turmeric.monitoring.client.view.DashboardContainer;
 import org.ebayopensource.turmeric.monitoring.client.view.ServiceView;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.ui.Tree;
@@ -23,14 +28,26 @@ import com.google.gwt.user.client.ui.TreeItem;
 
 
 
+/**
+ * The Class UITest.
+ */
 public class UITest extends GWTTestCase{
 
+    /**
+     * Gets the module name.
+     *
+     * @return the module name
+     * @see com.google.gwt.junit.client.GWTTestCase#getModuleName()
+     */
     @Override
     public String getModuleName() {
         // TODO Auto-generated method stub
         return "org.ebayopensource.turmeric.monitoring.ConsoleJunit";
     }
 
+    /**
+     * Test list services.
+     */
     public void testListServices(){
         final HistoryToken token = HistoryToken.newHistoryToken(MenuController.PRESENTER_ID);
         final HandlerManager eventBus = new HandlerManager(null);

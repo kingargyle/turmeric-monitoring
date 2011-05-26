@@ -264,8 +264,10 @@ public class ServicePresenter implements Presenter.TabPresenter {
         bind();
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Gets the id.
+     *
+     * @return the id
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#getId()
      */
     public String getId() {
@@ -798,8 +800,10 @@ public class ServicePresenter implements Presenter.TabPresenter {
         History.newItem(token.toString(), fire);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Gets the state as history token.
+     *
+     * @return the state as history token
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter.TabPresenter#getStateAsHistoryToken()
      */
     public HistoryToken getStateAsHistoryToken() {

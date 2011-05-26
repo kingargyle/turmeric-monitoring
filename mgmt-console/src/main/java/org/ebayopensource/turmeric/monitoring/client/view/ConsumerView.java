@@ -63,7 +63,7 @@ import com.google.gwt.visualization.client.visualizations.LineChart.Options;
 import com.google.gwt.visualization.client.visualizations.Visualization;
 
 /**
- * ConsumerView
+ * ConsumerView.
  * 
  * Depends on the context that the tab is accessed with:
  * 
@@ -79,10 +79,6 @@ import com.google.gwt.visualization.client.visualizations.Visualization;
  * <li>Initial view:  (graphs) Call Volume, Least(?) Performance, Errors (Consumer Errors or Top Errors?)
  * <li>Drilldown view (requires selection of a consumer): (tables) same as Service tab, but oriented to single consumer
  * </ol>.
- */
-/**
- * ConsumerView
- * 
  */
 public class ConsumerView extends Composite implements ConsumerPresenter.Display {
 
@@ -231,8 +227,10 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         this.dashboard.addView(this, ConsoleUtil.constants.consumers());
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * As widget.
+     *
+     * @return the widget
      * @see com.google.gwt.user.client.ui.Widget#asWidget()
      */
     public Widget asWidget() {
@@ -248,26 +246,31 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         dashboard.activate(this);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Sets the associated id.
+     *
+     * @param id the new associated id
      * @see org.ebayopensource.turmeric.monitoring.client.Display#setAssociatedId(java.lang.String)
      */
     public void setAssociatedId(String id) {
         this.id = id;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Gets the associated id.
+     *
+     * @return the associated id
      * @see org.ebayopensource.turmeric.monitoring.client.Display#getAssociatedId()
      */
     public String getAssociatedId() {
         return this.id;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setSelection(java.util.Map)
+    /**
+     * Sets the selection.
+     *
+     * @param selections the selections
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setSelection(java.util.Map)
      */
     public void setSelection(Map<ObjectType, String> selections) {
         String s = "";
@@ -290,25 +293,30 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         summaryHeading.setText(s);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Gets the selector.
+     *
+     * @return the selector
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#getSelector()
      */
     public HasSelectionHandlers<TreeItem> getSelector() {
         return serviceListWidget.getServiceTree();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setServicesMap(java.util.Map)
+    /**
+     * Sets the services map.
+     *
+     * @param map the map
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setServicesMap(java.util.Map)
      */
     public void setServicesMap(Map<String, Set<String>> map) {
         serviceListWidget.setServicesMap(map);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Error.
+     *
+     * @param msg the msg
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#error(java.lang.String)
      */
     public void error(String msg) {
@@ -338,19 +346,22 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         o.setVisible(true);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Gets the filter.
+     *
+     * @return the filter
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#getFilter()
      */
     public Filterable getFilter() {
         return filterWidget;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setDownloadUrl(org.ebayopensource
-     * .turmeric.monitoring.client.model.ConsumerMetric, java.lang.String)
+    /**
+     * Sets the download url.
+     *
+     * @param m the m
+     * @param url the url
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setDownloadUrl(org.ebayopensource.turmeric.monitoring.client.model.ConsumerMetric, java.lang.String)
      */
     public void setDownloadUrl(ConsumerMetric m, String url) {
         SummaryPanel panel = null;
@@ -388,11 +399,12 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
             panel.setDownloadUrl(url);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setMetric(org.ebayopensource
-     * .turmeric.monitoring.client.model.ConsumerMetric, org.ebayopensource.turmeric.monitoring.client.model.MetricData)
+    /**
+     * Sets the metric.
+     *
+     * @param m the m
+     * @param result the result
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setMetric(org.ebayopensource.turmeric.monitoring.client.model.ConsumerMetric, org.ebayopensource.turmeric.monitoring.client.model.MetricData)
      */
     public void setMetric(ConsumerMetric m, MetricData result) {
 
@@ -687,8 +699,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         }
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Reset.
+     *
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#reset()
      */
     public void reset() {
@@ -701,11 +714,14 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         hide(topConsumerErrorsPanel);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#getTableColumn(org.ebayopensource
-     * .turmeric.monitoring.client.model.ConsumerMetric, int, int)
+    /**
+     * Gets the table column.
+     *
+     * @param metric the metric
+     * @param startRow the start row
+     * @param col the col
+     * @return the table column
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#getTableColumn(org.ebayopensource.turmeric.monitoring.client.model.ConsumerMetric, int, int)
      */
     public List<HasClickHandlers> getTableColumn(ConsumerMetric metric, int startRow, int col) {
         FlexTable table = getTable(metric);
@@ -837,11 +853,11 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setFilterLabel(java.lang.String
-     * )
+    /**
+     * Sets the filter label.
+     *
+     * @param str the new filter label
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setFilterLabel(java.lang.String)
      */
     public void setFilterLabel(String str) {
         filterButton.setText(str);
@@ -859,11 +875,14 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         filterDialog.show();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setConsumerCallTrendData(java
-     * .util.List)
+    /**
+     * Sets the consumer call trend data.
+     *
+     * @param graphData the graph data
+     * @param aggregationPeriod the aggregation period
+     * @param hourSpan the hour span
+     * @param graphTitle the graph title
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setConsumerCallTrendData(java.util.List, long, int, java.lang.String)
      */
     @Override
     public void setConsumerCallTrendData(List<TimeSlotData> graphData, long aggregationPeriod, int hourSpan, String graphTitle) {
@@ -942,7 +961,13 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         return options;
     }
 
-    /* (non-Javadoc)
+    /**
+     * Sets the consumer performance trend data.
+     *
+     * @param dataRanges the data ranges
+     * @param aggregationPeriod the aggregation period
+     * @param hourSpan the hour span
+     * @param graphTitle the graph title
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setConsumerPerformanceTrendData(java.util.List, long, int, java.lang.String)
      */
     @Override
@@ -955,7 +980,13 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         }
     }
 
-    /* (non-Javadoc)
+    /**
+     * Sets the consumer error trend data.
+     *
+     * @param dataRanges the data ranges
+     * @param aggregationPeriod the aggregation period
+     * @param hourSpan the hour span
+     * @param graphTitle the graph title
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setConsumerErrorTrendData(java.util.List, long, int, java.lang.String)
      */
     @Override
@@ -968,7 +999,13 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         }
     }
 
-    /* (non-Javadoc)
+    /**
+     * Sets the consumer service call trend data.
+     *
+     * @param dataRange the data range
+     * @param aggregationPeriod the aggregation period
+     * @param hourSpan the hour span
+     * @param graphTitle the graph title
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setConsumerServiceCallTrendData(java.util.Map, long, int, java.lang.String)
      */
     @Override
@@ -1080,7 +1117,13 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         return result;
     }
 
-    /* (non-Javadoc)
+    /**
+     * Sets the consumer service performance trend data.
+     *
+     * @param graphData the graph data
+     * @param aggregationPeriod the aggregation period
+     * @param hourSpan the hour span
+     * @param graphTitle the graph title
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setConsumerServicePerformanceTrendData(java.util.Map, long, int, java.lang.String)
      */
     @Override
@@ -1093,7 +1136,13 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         }
     }
 
-    /* (non-Javadoc)
+    /**
+     * Sets the consumer error count trend data.
+     *
+     * @param graphData the graph data
+     * @param aggregationPeriod the aggregation period
+     * @param hourSpan the hour span
+     * @param graphTitle the graph title
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#setConsumerErrorCountTrendData(java.util.Map, long, int, java.lang.String)
      */
     @Override
@@ -1106,7 +1155,9 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         }
     }
 
-    /* (non-Javadoc)
+    /**
+     * Clear consumer service call trend graph.
+     *
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter.Display#clearConsumerServiceCallTrendGraph()
      */
     @Override

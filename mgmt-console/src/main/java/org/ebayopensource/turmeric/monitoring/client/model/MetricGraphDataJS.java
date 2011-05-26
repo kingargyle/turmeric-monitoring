@@ -22,7 +22,10 @@ public class MetricGraphDataJS extends JavaScriptObject implements TimeSlotValue
     protected MetricGraphDataJS () {
     }
     
-    /* (non-Javadoc)
+    /**
+     * Gets the criteria.
+     *
+     * @return the criteria
      * @see org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue#getCriteria()
      */
     public final native String getCriteria() /*-{
@@ -47,7 +50,10 @@ public class MetricGraphDataJS extends JavaScriptObject implements TimeSlotValue
         return this.count;
     }-*/;
 
-    /* (non-Javadoc)
+    /**
+     * Gets the value.
+     *
+     * @return the value
      * @see org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue#getValue()
      */
     public final Double getValue() {
@@ -59,7 +65,10 @@ public class MetricGraphDataJS extends JavaScriptObject implements TimeSlotValue
         }
     }
     
-    /* (non-Javadoc)
+    /**
+     * Gets the time slot.
+     *
+     * @return the time slot
      * @see org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue#getTimeSlot()
      */
     public final Long getTimeSlot() {

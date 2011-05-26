@@ -130,7 +130,6 @@ Warning};
 	 * Get the list of services.
 	 *
 	 * @param callback when the data is ready the callback is invoked
-	 * @return the services
 	 */
 	public void getServices(AsyncCallback<Map<String,Set<String>>> callback);
 	
@@ -142,15 +141,10 @@ Warning};
 	 * @param mc the metric criteria to use eg start times, duration etc
 	 * @param mrc the resource metric criteria to use eg selected entities and return entity type
 	 * @param callback the callback
-	 * @return the metric data
 	 */
 	public void getMetricData(MetricCriteria mc,
 	                          MetricResourceCriteria mrc,
 	                          AsyncCallback<MetricData> callback);
-	
-	/* 
-	 * public void getMetricTimeSlotData (MetricCriteria mc, MetricResourceCriteria mrc (?), AsyncCallback<MetricTimeSlotData>);
-	 */
 	
 	/**
 	 * Get a REST url to request metrics.
@@ -170,7 +164,6 @@ Warning};
      * @param ec the ec
      * @param mc the mc
      * @param callback the callback
-     * @return the error data
      */
     public void getErrorData(ErrorCriteria ec,
                              MetricCriteria mc,
@@ -182,7 +175,6 @@ Warning};
      * @param ec the ec
      * @param mc the mc
      * @param callback the callback
-     * @return the error time slot data
      */
     public void getErrorTimeSlotData (ErrorCriteria ec,
                                       MetricCriteria mc,
@@ -207,7 +199,6 @@ Warning};
      * @param errorName the error name
      * @param service the service
      * @param callback the callback
-     * @return the error detail
      */
     public void getErrorDetail(String errorId, String errorName, String service, AsyncCallback<ErrorDetail>callback);
     
@@ -217,7 +208,6 @@ Warning};
      * @param firstDate the first date
      * @param secondDate the second date
      * @param callback the callback
-     * @return the service metric value trend
      */
     public void getMetricValueTrend(MetricValue firstDate, MetricValue secondDate, AsyncCallback<List<TimeSlotData>> callback);
     
@@ -227,7 +217,6 @@ Warning};
      *
      * @param serviceName The serviceadminname
      * @param callback the callback
-     * @return the service consumers
      */
     public void getServiceConsumers(final String serviceName, final AsyncCallback<Set<String>> callback);
 
@@ -240,7 +229,6 @@ Warning};
      * @param firstDate the first date
      * @param secondDate the second date
      * @param callback the callback
-     * @return the error trend
      */
     public void getErrorTrend(final ErrorCriteria ec, final MetricCriteria firstDate, final MetricCriteria secondDate,
                     final AsyncCallback<List<ErrorTimeSlotData>> callback);

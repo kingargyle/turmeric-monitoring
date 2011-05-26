@@ -242,7 +242,10 @@ public class ErrorPresenter implements TabPresenter {
     }
     
     
-    /* (non-Javadoc)
+    /**
+     * Gets the id.
+     *
+     * @return the id
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#getId()
      */
     public String getId() {
@@ -250,7 +253,11 @@ public class ErrorPresenter implements TabPresenter {
     }
     
 
-    /* (non-Javadoc)
+    /**
+     * Go.
+     *
+     * @param container the container
+     * @param token the token
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#go(com.google.gwt.user.client.ui.HasWidgets, org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
      */
     public void go(HasWidgets container, HistoryToken token) {
@@ -527,7 +534,10 @@ public class ErrorPresenter implements TabPresenter {
     }
 
 
-    /* (non-Javadoc)
+    /**
+     * Gets the state as history token.
+     *
+     * @return the state as history token
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter.TabPresenter#getStateAsHistoryToken()
      */
     public HistoryToken getStateAsHistoryToken() {

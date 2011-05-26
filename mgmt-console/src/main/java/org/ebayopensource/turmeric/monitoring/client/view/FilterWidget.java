@@ -237,9 +237,8 @@ public class FilterWidget extends Composite implements Filterable {
 
     /**
      * Sets the date format.
-     * 
-     * @param format
-     *            the new date format
+     *
+     * @param format the new date format
      */
     public void setDateFormat(String format) {
         dateFormat = new DateBox.DefaultFormat(DateTimeFormat.getFormat(format));
@@ -249,9 +248,8 @@ public class FilterWidget extends Composite implements Filterable {
 
     /**
      * Sets the date1 label.
-     * 
-     * @param text
-     *            the new date1 label
+     *
+     * @param text the new date1 label
      */
     public void setDate1Label(String text) {
         date1Label.setText(text);
@@ -259,64 +257,83 @@ public class FilterWidget extends Composite implements Filterable {
 
     /**
      * Sets the date2 label.
-     * 
-     * @param text
-     *            the new date2 label
+     *
+     * @param text the new date2 label
      */
     public void setDate2Label(String text) {
         date2Label.setText(text);
     }
 
-    /*
-     * (non-Javadoc)
+    
+    /**
+     * Gets the apply button.
+     *
+     * @return the apply button
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#getApplyButton()
      */
     public HasClickHandlers getApplyButton() {
         return applyButton;
     }
 
-    /*
-     * (non-Javadoc)
+    
+    /**
+     * Gets the cancel button.
+     *
+     * @return the cancel button
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#getCancelButton()
      */
     public HasClickHandlers getCancelButton() {
         return cancelButton;
     }
 
-    /*
-     * (non-Javadoc)
+    
+    /**
+     * Gets the date1.
+     *
+     * @return the date1
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#getDate1()
      */
     public HasValue<Date> getDate1() {
         return date1Input;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Gets the date2.
+     *
+     * @return the date2
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#getDate2()
      */
     public HasValue<Date> getDate2() {
         return date2Input;
     }
 
-    /*
-     * (non-Javadoc)
+    
+    /**
+     * Sets the date1.
+     *
+     * @param d the new date1
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#setDate1(java.util.Date)
      */
     public void setDate1(Date d) {
         date1Input.setValue(d);
     }
 
-    /*
-     * (non-Javadoc)
+    
+    /**
+     * Sets the date2.
+     *
+     * @param d the new date2
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#setDate2(java.util.Date)
      */
     public void setDate2(Date d) {
         date2Input.setValue(d);
     }
 
-    /*
-     * (non-Javadoc)
+    
+    /**
+     * Sets the hour1.
+     *
+     * @param hour the new hour1
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#setHour1(int)
      */
     public void setHour1(int hour) {
@@ -324,24 +341,33 @@ public class FilterWidget extends Composite implements Filterable {
             hourInput1.setItemSelected(hour, true);
     }
 
-    /*
-     * (non-Javadoc)
+    
+    /**
+     * Gets the hour1.
+     *
+     * @return the hour1
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#getHour1()
      */
     public int getHour1() {
         return hourInput1.getSelectedIndex();
     }
 
-    /*
-     * (non-Javadoc)
+    
+    /**
+     * Gets the duration.
+     *
+     * @return the duration
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#getDuration()
      */
     public int getDuration() {
         return durationInput.getSelectedIndex() + 1;
     }
 
-    /*
-     * (non-Javadoc)
+    
+    /**
+     * Sets the duration.
+     *
+     * @param duration the new duration
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#setDuration(int)
      */
     public void setDuration(int duration) {
@@ -349,8 +375,11 @@ public class FilterWidget extends Composite implements Filterable {
             durationInput.setItemSelected(duration - 1, true);
     }
 
-    /*
-     * (non-Javadoc)
+    
+    /**
+     * Sets the hours1.
+     *
+     * @param hours the new hours1
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#setHours1(int[])
      */
     public void setHours1(int[] hours) {
@@ -360,8 +389,11 @@ public class FilterWidget extends Composite implements Filterable {
         }
     }
 
-    /*
-     * (non-Javadoc)
+   
+    /**
+     * Sets the durations.
+     *
+     * @param durations the new durations
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#setDurations(int[])
      */
     public void setDurations(int[] durations) {
@@ -371,8 +403,11 @@ public class FilterWidget extends Composite implements Filterable {
         }
     }
 
-    /*
-     * (non-Javadoc)
+    
+    /**
+     * Sets the metric names.
+     *
+     * @param names the new metric names
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#setMetricNames(java.util.List)
      */
     public void setMetricNames(List<String> names) {
@@ -387,8 +422,11 @@ public class FilterWidget extends Composite implements Filterable {
         }
     }
 
-    /*
-     * (non-Javadoc)
+    
+    /**
+     * Gets the selected metric names.
+     *
+     * @return the selected metric names
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#getSelectedMetricNames()
      */
     public List<String> getSelectedMetricNames() {
@@ -403,8 +441,11 @@ public class FilterWidget extends Composite implements Filterable {
         return names;
     }
 
-    /*
-     * (non-Javadoc)
+    
+    /**
+     * Sets the selected metric names.
+     *
+     * @param names the new selected metric names
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable#setSelectedMetricNames(java.util.List)
      */
     public void setSelectedMetricNames(List<String> names) {

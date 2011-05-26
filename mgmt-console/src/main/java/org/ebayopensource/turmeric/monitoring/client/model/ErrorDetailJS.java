@@ -21,42 +21,60 @@ public class ErrorDetailJS extends JavaScriptObject implements ErrorDetail {
     protected ErrorDetailJS () {
     }
     
-    /* (non-Javadoc)
+    /**
+     * Gets the id.
+     *
+     * @return the id
      * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorDetail#getId()
      */
     public final native String getId() /*-{
         return this.id;
     }-*/;
     
-    /* (non-Javadoc)
+    /**
+     * Gets the name.
+     *
+     * @return the name
      * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorDetail#getName()
      */
     public final native String getName() /*-{
         return this.name;
     }-*/;
     
-    /* (non-Javadoc)
+    /**
+     * Gets the category.
+     *
+     * @return the category
      * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorDetail#getCategory()
      */
     public final native String getCategory() /*-{
         return this.category;
     }-*/;
 
-    /* (non-Javadoc)
+    /**
+     * Gets the severity.
+     *
+     * @return the severity
      * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorDetail#getSeverity()
      */
     public final native String getSeverity() /*-{
         return this.severity;
     }-*/;
 
-    /* (non-Javadoc)
+    /**
+     * Gets the domain.
+     *
+     * @return the domain
      * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorDetail#getDomain()
      */
     public final native String getDomain() /*-{
         return this.domain;
     }-*/;
     
-    /* (non-Javadoc)
+    /**
+     * Gets the sub domain.
+     *
+     * @return the sub domain
      * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorDetail#getSubDomain()
      */
     public final native String getSubDomain() /*-{

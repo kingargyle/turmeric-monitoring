@@ -37,7 +37,10 @@ public class DashboardContainer extends ResizeComposite implements HasWidgets, D
 	    initWidget(contentPanel);
 	}
 	
-	/* (non-Javadoc)
+	/**
+	 * Gets the tab selector.
+	 *
+	 * @return the tab selector
 	 * @see org.ebayopensource.turmeric.monitoring.client.Dashboard#getTabSelector()
 	 */
 	public HasSelectionHandlers<Integer> getTabSelector () {
@@ -55,7 +58,12 @@ public class DashboardContainer extends ResizeComposite implements HasWidgets, D
 	}
 	
 	
-	/* (non-Javadoc)
+	/**
+	 * Adds the view.
+	 *
+	 * @param view the view
+	 * @param name the name
+	 * @return the int
 	 * @see org.ebayopensource.turmeric.monitoring.client.Dashboard#addView(org.ebayopensource.turmeric.monitoring.client.Display, java.lang.String)
 	 */
 	public int addView (Display view, String name) {
@@ -64,28 +72,42 @@ public class DashboardContainer extends ResizeComposite implements HasWidgets, D
 	}
 	
 	
-	/* (non-Javadoc)
+	/**
+	 * Activate.
+	 *
+	 * @param view the view
 	 * @see org.ebayopensource.turmeric.monitoring.client.Dashboard#activate(org.ebayopensource.turmeric.monitoring.client.Display)
 	 */
 	public void activate(Display view) {
 		this.contentPanel.selectTab(view.asWidget(), false);	
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * Gets the index.
+	 *
+	 * @param view the view
+	 * @return the index
 	 * @see org.ebayopensource.turmeric.monitoring.client.Dashboard#getIndex(org.ebayopensource.turmeric.monitoring.client.Display)
 	 */
 	public int getIndex(Display view) {
 		return this.contentPanel.getWidgetIndex(view.asWidget());
 	}
 	
-	/* (non-Javadoc)
+	/**
+	 * Gets the view.
+	 *
+	 * @param index the index
+	 * @return the view
 	 * @see org.ebayopensource.turmeric.monitoring.client.Dashboard#getView(java.lang.Integer)
 	 */
 	public Display getView (Integer index) {
 	    return (Display)this.contentPanel.getWidget(index.intValue());
 	}
 	
-	/* (non-Javadoc)
+	/**
+	 * As widget.
+	 *
+	 * @return the widget
 	 * @see com.google.gwt.user.client.ui.Widget#asWidget()
 	 */
 	public Widget asWidget() {
@@ -102,21 +124,29 @@ public class DashboardContainer extends ResizeComposite implements HasWidgets, D
 		return this.contentPanel;
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * Adds the.
+	 *
+	 * @param arg0 the arg0
 	 * @see com.google.gwt.user.client.ui.HasWidgets#add(com.google.gwt.user.client.ui.Widget)
 	 */
 	public void add(Widget arg0) {
 	  //this.mainPanel.add(arg0);
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * Clear.
+	 *
 	 * @see com.google.gwt.user.client.ui.HasWidgets#clear()
 	 */
 	public void clear() {
 		//this.mainPanel.clear();
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * Iterator.
+	 *
+	 * @return the iterator
 	 * @see com.google.gwt.user.client.ui.HasWidgets#iterator()
 	 */
 	public Iterator<Widget> iterator() {
@@ -124,7 +154,11 @@ public class DashboardContainer extends ResizeComposite implements HasWidgets, D
 	    return null;
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * Removes the widget.
+	 *
+	 * @param arg0 the arg0
+	 * @return true, if successful
 	 * @see com.google.gwt.user.client.ui.HasWidgets#remove(com.google.gwt.user.client.ui.Widget)
 	 */
 	public boolean remove(Widget arg0) {

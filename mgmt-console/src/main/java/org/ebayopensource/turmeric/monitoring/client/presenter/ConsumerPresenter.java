@@ -289,19 +289,23 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         bind();
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Gets the id.
+     *
+     * @return the id
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#getId()
      */
     public String getId() {
         return CONSUMER_ID;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#go(com.google.gwt.user.client.ui.HasWidgets,
-     * org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
+    
+    /**
+     * Go.
+     *
+     * @param container the container
+     * @param token the token
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#go(com.google.gwt.user.client.ui.HasWidgets, org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
      */
     public void go(HasWidgets container, HistoryToken token) {
         // find out which entities have been selected in context
@@ -517,8 +521,11 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         });
     }
 
-    /*
-     * (non-Javadoc)
+    
+    /**
+     * Gets the state as history token.
+     *
+     * @return the state as history token
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter.TabPresenter#getStateAsHistoryToken()
      */
     public HistoryToken getStateAsHistoryToken() {
@@ -713,7 +720,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
                             for (HasClickHandlers h : clickHandlers) {
                                 h.addClickHandler(new ClickHandler() {
                                     
-                                    /* (non-Javadoc)
+                                    /* *
                                      * @see com.google.gwt.event.dom.client.ClickHandler#onClick(com.google.gwt.event.dom.client.ClickEvent)
                                      */
                                     public void onClick(ClickEvent event) {
@@ -793,7 +800,6 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param date2 the date2
      * @param durationHrs the duration hrs
      * @param consumerNames the consumer names
-     * @return the consumer service error trends
      */
     protected void getConsumerServiceErrorTrends(final String serviceName, final String operationName,
                     final long date1, final long date2, final int durationHrs, List<String> consumerNames) {
@@ -839,7 +845,6 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param date2 the date2
      * @param durationHrs the duration hrs
      * @param consumerNames the consumer names
-     * @return the consumer service performance trends
      */
     protected void getConsumerServicePerformanceTrends(final String serviceName, final String operationName,
                     final long date1, final long date2, final int durationHrs, List<String> consumerNames) {
@@ -888,7 +893,6 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param date1 the date1
      * @param date2 the date2
      * @param durationHrs the duration hrs
-     * @return the consumer performance trend
      */
     protected void getConsumerPerformanceTrend(final String serviceName, String consumerName, final String operationName,
                     long date1, long date2, final int durationHrs) {
@@ -943,7 +947,6 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param date1 the date1
      * @param date2 the date2
      * @param durationHrs the duration hrs
-     * @return the consumer error trend
      */
     protected void getConsumerErrorTrend(final String serviceName, String consumerName, final String operationName, long date1,
                     long date2, final int durationHrs) {
@@ -996,7 +999,6 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param date2 the date2
      * @param durationHrs the duration hrs
      * @param consumerNames the consumer names
-     * @return the consumer service trends
      */
     protected void getConsumerServiceTrends(final String serviceName, final String operationName, final long date1,
                     final long date2, final int durationHrs, List<String> consumerNames) {
@@ -1048,7 +1050,6 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param date1 the date1
      * @param date2 the date2
      * @param durationHrs the duration hrs
-     * @return the consumer call trend
      */
     protected void getConsumerCallTrend(final String serviceName, final String consumerName,
                     final String operationName, final long date1, final long date2, final int durationHrs) {

@@ -37,7 +37,10 @@ public class CriteriaInfoImpl implements CriteriaInfo {
     /** The role type. */
     protected String roleType;
 
-    /* (non-Javadoc)
+    /**
+     * Gets the service consumer type.
+     *
+     * @return the service consumer type
      * @see org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfo#getServiceConsumerType()
      */
     public String getServiceConsumerType() {
@@ -53,7 +56,10 @@ public class CriteriaInfoImpl implements CriteriaInfo {
         this.serviceConsumerType = serviceConsumerType;
     }
 
-    /* (non-Javadoc)
+    /**
+     * Gets the service name.
+     *
+     * @return the service name
      * @see org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfo#getServiceName()
      */
     public String getServiceName() {
@@ -69,7 +75,10 @@ public class CriteriaInfoImpl implements CriteriaInfo {
         this.serviceName = serviceName;
     }
 
-    /* (non-Javadoc)
+    /**
+     * Gets the operation name.
+     *
+     * @return the operation name
      * @see org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfo#getOperationName()
      */
     public String getOperationName() {
@@ -85,7 +94,10 @@ public class CriteriaInfoImpl implements CriteriaInfo {
         this.operationName = operationName;
     }
 
-    /* (non-Javadoc)
+    /**
+     * Gets the consumer name.
+     *
+     * @return the consumer name
      * @see org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfo#getConsumerName()
      */
     public String getConsumerName() {
@@ -101,7 +113,10 @@ public class CriteriaInfoImpl implements CriteriaInfo {
         this.consumerName = consumerName;
     }
 
-    /* (non-Javadoc)
+    /**
+     * Gets the machine name.
+     *
+     * @return the machine name
      * @see org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfo#getMachineName()
      */
     public String getMachineName() {
@@ -117,7 +132,10 @@ public class CriteriaInfoImpl implements CriteriaInfo {
         this.machineName = machineName;
     }
 
-    /* (non-Javadoc)
+    /**
+     * Gets the pool name.
+     *
+     * @return the pool name
      * @see org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfo#getPoolName()
      */
     public String getPoolName() {
@@ -133,7 +151,10 @@ public class CriteriaInfoImpl implements CriteriaInfo {
         this.poolName = poolName;
     }
 
-    /* (non-Javadoc)
+    /**
+     * Gets the metric name.
+     *
+     * @return the metric name
      * @see org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfo#getMetricName()
      */
     public String getMetricName() {
@@ -149,7 +170,10 @@ public class CriteriaInfoImpl implements CriteriaInfo {
         this.metricName = metricName;
     }
 
-    /* (non-Javadoc)
+    /**
+     * Gets the role type.
+     *
+     * @return the role type
      * @see org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfo#getRoleType()
      */
     public String getRoleType() {
@@ -165,7 +189,10 @@ public class CriteriaInfoImpl implements CriteriaInfo {
         this.roleType = roleType;
     }
 
-    /* (non-Javadoc)
+    /**
+     * As rest url.
+     *
+     * @return the string
      * @see org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfo#asRestUrl()
      */
     @Override

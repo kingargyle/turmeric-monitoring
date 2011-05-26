@@ -192,8 +192,10 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         this.dashboard.addView(this, ConsoleUtil.constants.services());
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * As widget.
+     *
+     * @return the widget
      * @see com.google.gwt.user.client.ui.Widget#asWidget()
      */
     public Widget asWidget() {
@@ -209,16 +211,20 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         dashboard.activate(this);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Sets the associated id.
+     *
+     * @param id the new associated id
      * @see org.ebayopensource.turmeric.monitoring.client.Display#setAssociatedId(java.lang.String)
      */
     public void setAssociatedId(String id) {
         this.id = id;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Gets the associated id.
+     *
+     * @return the associated id
      * @see org.ebayopensource.turmeric.monitoring.client.Display#getAssociatedId()
      */
     public String getAssociatedId() {
@@ -259,8 +265,10 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         filterWidget.enable();
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Sets the services map.
+     *
+     * @param map the map
      * @see
      * org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setServicesMap(java.util.Map)
      */
@@ -268,8 +276,11 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         serviceListWidget.setServicesMap(map);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Sets the metric.
+     *
+     * @param metric the metric
+     * @param data the data
      * @see
      * org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setMetric(org.ebayopensource
      * .turmeric.monitoring.client.model.ServiceMetric, org.ebayopensource.turmeric.monitoring.client.model.MetricData)
@@ -423,32 +434,20 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         }
     }
 
-//    private void createLineChart(final SummaryPanel panel, final List<TimeSlotData> timeData,
-//                    final long aggregationPeriod, final int hourSpan, final String graphTitle) {
-//        Runnable onLoadCallback = new Runnable() {
-//            public void run() {
-//                final LineChart lineChart = new LineChart(createChartDataTable(timeData, aggregationPeriod, hourSpan),
-//                                createOptions(graphTitle));
-//                panel.addChart(lineChart);
-//            }
-//        };
-//
-//        // Load the visualization api, passing the onLoadCallback to be called when loading is done.
-//        // The gwt param "corechart" tells gwt to use the new charts
-//
-//        VisualizationUtils.loadVisualizationApi(onLoadCallback, "corechart");
-//    }
-
-    /*
-     * (non-Javadoc)
+    /**
+     * Gets the filter.
+     *
+     * @return the filter
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#getFilter()
      */
     public Filterable getFilter() {
         return filterWidget;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Sets the selection.
+     *
+     * @param selection the selection
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setSelection(java.util.Map)
      */
     public void setSelection(Map<ObjectType, String> selection) {
@@ -471,16 +470,20 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         enable();
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Gets the selector.
+     *
+     * @return the selector
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#getSelector()
      */
     public HasSelectionHandlers<TreeItem> getSelector() {
         return serviceListWidget.getServiceTree();
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Error.
+     *
+     * @param msg the msg
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#error(java.lang.String)
      */
     public void error(String msg) {
@@ -490,8 +493,9 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         popup.show();
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Reset.
+     *
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#reset()
      */
     public void reset() {
@@ -503,8 +507,11 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         hide(consumerTrafficPanel);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Sets the download url.
+     *
+     * @param m the m
+     * @param url the url
      * @see
      * org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setDownloadUrl(org.ebayopensource
      * .turmeric.monitoring.client.model.ServiceMetric, java.lang.String)
@@ -537,8 +544,13 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
             panel.setDownloadUrl(url);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Gets the table column.
+     *
+     * @param metric the metric
+     * @param startRow the start row
+     * @param col the col
+     * @return the table column
      * @see
      * org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#getTableColumn(org.ebayopensource
      * .turmeric.monitoring.client.model.ServiceMetric, int, int)
@@ -556,8 +568,13 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         return list;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Gets the table row.
+     *
+     * @param metric the metric
+     * @param row the row
+     * @param startCol the start col
+     * @return the table row
      * @see
      * org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#getTableRow(org.ebayopensource
      * .turmeric.monitoring.client.model.ServiceMetric, int, int)
@@ -786,8 +803,10 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         filterDialog.show();
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Sets the filter label.
+     *
+     * @param s the new filter label
      * @see
      * org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setFilterLabel(java.lang.String)
      */
@@ -795,102 +814,13 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
         filterButton.setText(s);
     }
 
-//    private Options createOptions(String graphTitle) {
-//        Options options = Options.create();
-//        // options.setWidth(600);
-//        options.setHeight(230);
-//        options.setEnableTooltip(true);
-//        options.setShowCategories(true);
-//        options.set("fontSize", 10d);
-//        options.setSmoothLine(true);
-//        options.setPointSize(3);
-//        options.setLineSize(3);
-//        options.setTitle(graphTitle);
-//        options.setTitleFontSize(12d);
-//        return options;
-//    }
-
-//    private AbstractDataTable createChartDataTable(List<TimeSlotData> timeDataRange, long aggregationPeriod,
-//                    int hourSpan) {
-//        int plotPointsPerHour = 1;
-//        if (aggregationPeriod < 3600) {// then, each point represents X minutes. e.g: minAggregationPeriod = 60, then we
-//                                       // would get 60 points to plot per hour
-//            plotPointsPerHour = (int) (3600 / aggregationPeriod);
-//        }
-//        DataTable data = DataTable.create();
-//        TimeSlotData firstDateRange = timeDataRange.get(0);
-//        TimeSlotData secondDateRange = timeDataRange.get(1);
-//        if (firstDateRange.getReturnData() != null && secondDateRange.getReturnData() != null) {
-//            int rowSize = hourSpan;
-//            double[] firstDateRangeArray = calculatePlotPointsPerTimeUnit(firstDateRange.getReturnData(),
-//                            plotPointsPerHour, hourSpan);
-//            double[] secondDateRangeArray = calculatePlotPointsPerTimeUnit(secondDateRange.getReturnData(),
-//                            plotPointsPerHour, hourSpan);
-//            String[] labelArray = calculateDateTimeLabelPerTimeUnit(firstDateRange.getReturnData(), plotPointsPerHour, hourSpan);
-//            if (rowSize > 0) {
-//                data.addColumn(ColumnType.STRING, "x");
-//                data.addColumn(ColumnType.NUMBER,
-//                                ConsoleUtil.shotTimeFormat.format(new Date(firstDateRange.getReturnData().get(0)
-//                                                .getTimeSlot())));
-//
-//                data.addColumn(ColumnType.NUMBER,
-//                                ConsoleUtil.shotTimeFormat.format(new Date(secondDateRange.getReturnData().get(0)
-//                                                .getTimeSlot())));
-//                data.addRows(rowSize);
-//                for (int i = 0; i < rowSize; i++) {
-//                    // GWT.log("getValue = "+timeData.getReturnData().get(i).getValue());
-//                    data.setValue(i,
-//                                    0,
-//                                    labelArray[i]);
-//                    data.setValue(i, 1, firstDateRangeArray[i]);
-//                    data.setValue(i, 2, secondDateRangeArray[i]);
-//                }
-//            }
-//            else {
-//                data.addColumn(ColumnType.STRING, "x");
-//                data.addColumn(ColumnType.NUMBER, "");
-//                data.addColumn(ColumnType.NUMBER, "");
-//                data.addRows(rowSize);
-//            }
-//        }
-//        return data;
-//    }
-
-//    private String[] calculateDateTimeLabelPerTimeUnit(List<TimeSlotValue> returnData, int plotPointsPerTimeUnit,
-//                    int span) {
-//        String[] result = new String[span];
-//        int arrayIndex = 0;
-//        int counter = 0;
-//        for (int i = 0; i < returnData.size(); i++) {
-//            if (result[arrayIndex] == null) {
-//                result[arrayIndex] = ConsoleUtil.onlyTimeFormat.format(new Date(returnData.get(i).getTimeSlot()));
-//            }
-//            counter++;
-//            if (counter == plotPointsPerTimeUnit) {
-//                counter = 0;
-//                arrayIndex++;
-//            }
-//        }
-//        return result;
-//    }
-
-//    private double[] calculatePlotPointsPerTimeUnit(List<TimeSlotValue> returnData, int plotPointsPerTimeUnit, int span) {
-//        double[] result = new double[span];
-//        int arrayIndex = 0;
-//        int counter = 0;
-//        for (int i = 0; i < returnData.size(); i++) {
-//            result[arrayIndex] += returnData.get(i).getValue();
-//            counter++;
-//            if (counter == plotPointsPerTimeUnit) {
-//                counter = 0;
-//                arrayIndex++;
-//            }
-//        }
-//        return result;
-//    }
-
-    /*
-     * (non-Javadoc)
+    /**
+     * Sets the service call trend data.
+     *
+     * @param graphData the graph data
+     * @param aggregationPeriod the aggregation period
+     * @param hourSpan the hour span
+     * @param graphTitle the graph title
      * @see
      * org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display#setServiceCallTrendData(java
      * .util.List)

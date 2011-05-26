@@ -63,7 +63,9 @@ public class ErrorFilterWidget extends FilterWidget implements Filterable.ErrorF
         
     }
     
-    /* (non-Javadoc)
+    /**
+     * Creates the others.
+     *
      * @see org.ebayopensource.turmeric.monitoring.client.view.FilterWidget#createOthers()
      */
     public void createOthers () {
@@ -88,7 +90,9 @@ public class ErrorFilterWidget extends FilterWidget implements Filterable.ErrorF
         viewGrid.setWidget(0,1, severityGrid);
     }
     
-    /* (non-Javadoc)
+    /**
+     * Position.
+     *
      * @see org.ebayopensource.turmeric.monitoring.client.view.FilterWidget#position()
      */
     public void position () {
@@ -122,7 +126,9 @@ public class ErrorFilterWidget extends FilterWidget implements Filterable.ErrorF
         filterTable.getFlexCellFormatter().setColSpan(4, 0, 2);
     }
     
-    /* (non-Javadoc)
+    /**
+     * Creates the advanced panel.
+     *
      * @see org.ebayopensource.turmeric.monitoring.client.view.FilterWidget#createAdvancedPanel()
      */
     public void createAdvancedPanel () {
@@ -131,21 +137,30 @@ public class ErrorFilterWidget extends FilterWidget implements Filterable.ErrorF
        
     }
 
-    /* (non-Javadoc)
+    /**
+     * Sets the category view names.
+     *
+     * @param names the new category view names
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable.ErrorFilterable#setCategoryViewNames(java.util.List)
      */
     public void setCategoryViewNames (List<String> names) {
         setGridValues(categoriesGrid, names, ConsoleUtil.constants.metricNameMap(), severitiesGrid);
     }
 
-    /* (non-Javadoc)
+    /**
+     * Sets the selected category view names.
+     *
+     * @param names the new selected category view names
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable.ErrorFilterable#setSelectedCategoryViewNames(java.util.List)
      */
     public void setSelectedCategoryViewNames (List<String> names) {
         setSelectedGridValues(categoriesGrid, names, severitiesGrid);
     }
 
-    /* (non-Javadoc)
+    /**
+     * Gets the selected category view names.
+     *
+     * @return the selected category view names
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable.ErrorFilterable#getSelectedCategoryViewNames()
      */
     public List<String> getSelectedCategoryViewNames() {
@@ -153,21 +168,30 @@ public class ErrorFilterWidget extends FilterWidget implements Filterable.ErrorF
     }
 
     
-    /* (non-Javadoc)
+    /**
+     * Sets the severity view names.
+     *
+     * @param names the new severity view names
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable.ErrorFilterable#setSeverityViewNames(java.util.List)
      */
     public void setSeverityViewNames (List<String> names) {
         setGridValues(severitiesGrid, names, ConsoleUtil.constants.metricNameMap(), categoriesGrid);
     }
     
-    /* (non-Javadoc)
+    /**
+     * Sets the selected severity view names.
+     *
+     * @param names the new selected severity view names
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable.ErrorFilterable#setSelectedSeverityViewNames(java.util.List)
      */
     public void setSelectedSeverityViewNames (List<String> names) {
         setSelectedGridValues(severitiesGrid, names, categoriesGrid);
     }
     
-    /* (non-Javadoc)
+    /**
+     * Gets the selected severity view names.
+     *
+     * @return the selected severity view names
      * @see org.ebayopensource.turmeric.monitoring.client.model.Filterable.ErrorFilterable#getSelectedSeverityViewNames()
      */
     public List<String> getSelectedSeverityViewNames () {

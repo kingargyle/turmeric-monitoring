@@ -134,7 +134,11 @@ public class DownloadServlet extends HttpServlet {
     private HttpClient client;
    
     
-    /* (non-Javadoc)
+    /**
+     * Inits the servlet.
+     *
+     * @param config the config
+     * @throws ServletException the servlet exception
      * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
      */
     @Override
@@ -165,7 +169,13 @@ public class DownloadServlet extends HttpServlet {
 
     }
 
-    /* (non-Javadoc)
+    /**
+     * Service.
+     *
+     * @param req the req
+     * @param res the res
+     * @throws ServletException the servlet exception
+     * @throws IOException Signals that an I/O exception has occurred.
      * @see javax.servlet.http.HttpServlet#service(javax.servlet.ServletRequest, javax.servlet.ServletResponse)
      */
     public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {

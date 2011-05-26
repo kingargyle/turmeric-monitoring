@@ -23,7 +23,10 @@ public class ErrorViewDataJS extends JavaScriptObject implements ErrorViewData{
     }
     
 
-    /* (non-Javadoc)
+    /**
+     * Gets the ratio diff.
+     *
+     * @return the ratio diff
      * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getRatioDiff()
      */
     public final Double getRatioDiff () {
@@ -35,7 +38,10 @@ public class ErrorViewDataJS extends JavaScriptObject implements ErrorViewData{
         }
     }
     
-    /* (non-Javadoc)
+    /**
+     * Gets the error diff.
+     *
+     * @return the error diff
      * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorDiff()
      */
     public final Double getErrorDiff () {
@@ -47,7 +53,10 @@ public class ErrorViewDataJS extends JavaScriptObject implements ErrorViewData{
         }
     }
 
-    /* (non-Javadoc)
+    /**
+     * Gets the error call ratio1.
+     *
+     * @return the error call ratio1
      * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorCallRatio1()
      */
     public final Double getErrorCallRatio1 () {
@@ -59,7 +68,10 @@ public class ErrorViewDataJS extends JavaScriptObject implements ErrorViewData{
         }
     }
 
-    /* (non-Javadoc)
+    /**
+     * Gets the error call ratio2.
+     *
+     * @return the error call ratio2
      * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorCallRatio2()
      */
     public final Double getErrorCallRatio2 (){
@@ -71,7 +83,10 @@ public class ErrorViewDataJS extends JavaScriptObject implements ErrorViewData{
         }
     }
 
-    /* (non-Javadoc)
+    /**
+     * Gets the error count1.
+     *
+     * @return the error count1
      * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorCount1()
      */
     public final Long getErrorCount1() {
@@ -83,7 +98,10 @@ public class ErrorViewDataJS extends JavaScriptObject implements ErrorViewData{
         }
     }
 
-    /* (non-Javadoc)
+    /**
+     * Gets the error count2.
+     *
+     * @return the error count2
      * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorCount2()
      */
     public final Long getErrorCount2(){
@@ -95,14 +113,20 @@ public class ErrorViewDataJS extends JavaScriptObject implements ErrorViewData{
         }
     }
     
-    /* (non-Javadoc)
+    /**
+     * Gets the consumer.
+     *
+     * @return the consumer
      * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getConsumer()
      */
     public final native String getConsumer()   /*-{
         return this.consumer;
     }-*/;
     
-    /* (non-Javadoc)
+    /**
+     * Gets the error id.
+     *
+     * @return the error id
      * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorId()
      */
     public final native String getErrorId() /*-{
@@ -111,7 +135,10 @@ public class ErrorViewDataJS extends JavaScriptObject implements ErrorViewData{
         return null;
     }-*/;
     
-    /* (non-Javadoc)
+    /**
+     * Gets the error name.
+     *
+     * @return the error name
      * @see org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData#getErrorName()
      */
     public final native String getErrorName() /*-{

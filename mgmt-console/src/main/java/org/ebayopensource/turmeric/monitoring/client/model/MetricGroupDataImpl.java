@@ -25,7 +25,10 @@ public class MetricGroupDataImpl implements MetricGroupData {
     /** The criteria info. */
     protected CriteriaInfoImpl criteriaInfo;
     
-    /* (non-Javadoc)
+    /**
+     * Gets the diff.
+     *
+     * @return the diff
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData#getDiff()
      */
     public String getDiff() {
@@ -41,7 +44,10 @@ public class MetricGroupDataImpl implements MetricGroupData {
         this.diff = diff;
     }
     
-    /* (non-Javadoc)
+    /**
+     * Gets the count1.
+     *
+     * @return the count1
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData#getCount1()
      */
     public String getCount1() {
@@ -57,7 +63,10 @@ public class MetricGroupDataImpl implements MetricGroupData {
         this.count1 = count1;
     }
     
-    /* (non-Javadoc)
+    /**
+     * Gets the count2.
+     *
+     * @return the count2
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData#getCount2()
      */
     public String getCount2() {
@@ -73,7 +82,10 @@ public class MetricGroupDataImpl implements MetricGroupData {
         this.count2 = count2;
     }
     
-    /* (non-Javadoc)
+    /**
+     * Gets the criteria info.
+     *
+     * @return the criteria info
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData#getCriteriaInfo()
      */
     public CriteriaInfo getCriteriaInfo() {

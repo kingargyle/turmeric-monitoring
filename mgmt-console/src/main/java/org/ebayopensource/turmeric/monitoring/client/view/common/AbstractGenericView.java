@@ -21,21 +21,30 @@ public abstract class AbstractGenericView extends Composite implements Display {
 
 	private String associatedId;
 
-	/* (non-Javadoc)
+	/**
+	 * As widget.
+	 *
+	 * @return the widget
 	 * @see com.google.gwt.user.client.ui.Widget#asWidget()
 	 */
 	public Widget asWidget() {
 		return this;
 	}
 	
-	/* (non-Javadoc)
+	/**
+	 * Gets the associated id.
+	 *
+	 * @return the associated id
 	 * @see org.ebayopensource.turmeric.monitoring.client.Display#getAssociatedId()
 	 */
 	public String getAssociatedId() {
 		return associatedId;
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * Sets the associated id.
+	 *
+	 * @param id the new associated id
 	 * @see org.ebayopensource.turmeric.monitoring.client.Display#setAssociatedId(java.lang.String)
 	 */
 	public void setAssociatedId(String id) {
