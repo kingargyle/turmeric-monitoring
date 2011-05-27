@@ -41,7 +41,6 @@ public class UITest extends GWTTestCase{
      */
     @Override
     public String getModuleName() {
-        // TODO Auto-generated method stub
         return "org.ebayopensource.turmeric.monitoring.ConsoleJunit";
     }
 

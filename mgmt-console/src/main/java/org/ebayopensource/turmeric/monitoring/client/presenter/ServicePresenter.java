@@ -69,10 +69,6 @@ import com.google.gwt.user.client.ui.TreeItem;
 public class ServicePresenter implements Presenter.TabPresenter {
     private static Logger errorLogger = Logger.getLogger("errorLogger");
 
-    
-    /** The Constant DEFAULT_SERVICE. */
-    public final static String DEFAULT_SERVICE = "FindingService";
-
     /** The Constant SERVICE_ID. */
     public final static String SERVICE_ID = "Service";
 

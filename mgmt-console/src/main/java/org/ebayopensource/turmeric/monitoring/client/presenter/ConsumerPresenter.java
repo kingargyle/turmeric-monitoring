@@ -659,7 +659,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
             subject.add(consumerName);
         }
 
-        //TODO: alert date flip flop!!
+        //alert date flip flop!!
         MetricCriteria mc = MetricCriteria.newMetricCriteria(m.toMetricName(), date2, date1, durationHrs,
                         Ordering.Descending, 10, Perspective.Server, false);
         MetricResourceCriteria rmc = MetricResourceCriteria.newMetricResourceCriteria(subject, returnType);

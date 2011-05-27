@@ -145,7 +145,6 @@ public class MetricCriteria {
     public String asRestUrl () {
         String url = "";
 
-        //TODO: alert!!!!
         url +="&ns:metricCriteria.ns:firstStartTime="+date1;
         url +="&ns:metricCriteria.ns:secondStartTime="+date2;
         url +="&ns:metricCriteria.ns:duration="+durationSec;
