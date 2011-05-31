@@ -25,7 +25,6 @@ public class ApplicationMenuView extends ResizeComposite implements HasWidgets, 
 
 	private DockLayoutPanel mainPanel;
 	private HeaderWidget headerWidget;
-	//private FooterWidget footerWidget;
 	private Widget contentWidget;
 	
 	/**

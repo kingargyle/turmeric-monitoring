@@ -7,7 +7,8 @@
 <!-- -->
 <!-- http://www.apache.org/licenses/LICENSE-2.0 -->
 <!-- ================================================================== -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.ebayopensource.turmeric.monitoring</groupId>
@@ -108,7 +109,6 @@
 					<buildOutputDirectory>${basedir}/war/WEB-INF/classes</buildOutputDirectory>
 					<warSourceDirectory>${basedir}/war</warSourceDirectory>
 					<hostedWebapp>${basedir}/war</hostedWebapp>
-					<module>org.ebayopensource.turmeric.monitoring.Console</module>
 				</configuration>
 				<executions>
 					<execution>
@@ -122,6 +122,18 @@
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
+					<includes>
+						<!-- The gwt testuite must have all the gwt related tests to run -->
+						<include>**/*GWTTestSuite.java</include>
+						<!-- The download servlet test case -->
+						<include>**/*DownloadServletTest.java</include>
+						<!-- Util test case -->
+						<include>**/*UtilTest.java</include>
+					</includes>
+					<excludes>
+						<!-- The gwt tescases must be ran using the ConsoleGWTTestSuite -->
+						<exclude>**/*GWTTestCase.java</exclude>
+					</excludes>
 					<additionalClasspathElements>
 						<additionalClasspathElement>${project.build.sourceDirectory}</additionalClasspathElement>
 						<additionalClasspathElement>${project.build.testSourceDirectory}</additionalClasspathElement>
@@ -139,37 +151,45 @@
 				</configuration>
 			</plugin>
 			<!-- Copy static web files before executing gwt:run -->
-	      <plugin>
-	        <artifactId>maven-resources-plugin</artifactId>
-	        <executions>
-	          <execution>
-	            <phase>compile</phase>
-	            <goals>
-	              <goal>copy-resources</goal>
-	            </goals>
-	            <configuration>
-	              <outputDirectory>target/www</outputDirectory>
-	              <resources>
-	                <resource>
-	                  <directory>war</directory>
-	                </resource>
-	              </resources>
-	            </configuration>
-	          </execution>
-	        </executions>
-	      </plugin>
-	       <!-- Delete gwt generated stuff -->
-	      <plugin>
-	        <artifactId>maven-clean-plugin</artifactId>
-	        <configuration>
-	          <filesets>
-	            <fileset><directory>war/</directory></fileset>
-	            <fileset><directory>war/WEB-INF/classes</directory></fileset>
-	            <fileset><directory>www-test</directory></fileset>
-	            <fileset><directory>.gwt-tmp</directory></fileset>
-	          </filesets>
-	        </configuration>
-	      </plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/www</outputDirectory>
+							<resources>
+								<resource>
+									<directory>war</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Delete gwt generated stuff -->
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>war/</directory>
+						</fileset>
+						<fileset>
+							<directory>war/WEB-INF/classes</directory>
+						</fileset>
+						<fileset>
+							<directory>www-test</directory>
+						</fileset>
+						<fileset>
+							<directory>.gwt-tmp</directory>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
@@ -209,13 +229,13 @@
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-servlet</artifactId>
 			<version>${gwt.version}</version>
-			<scope>runtime</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
 			<version>${gwt.version}</version>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.gwt</groupId>

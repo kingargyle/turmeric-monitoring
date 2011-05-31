@@ -10,5 +10,5 @@
 <module>
   <inherits name='org.ebayopensource.turmeric.monitoring.Console'/>
   <inherits name="com.google.gwt.junit.JUnit"/>
-  
+  <source path='client'/>
 </module>

@@ -22,7 +22,6 @@ import org.ebayopensource.turmeric.monitoring.client.view.DashboardContainer;
 import org.ebayopensource.turmeric.monitoring.client.view.ServiceView;
 
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 
@@ -31,18 +30,7 @@ import com.google.gwt.user.client.ui.TreeItem;
 /**
  * The Class UITest.
  */
-public class UITest extends GWTTestCase{
-
-    /**
-     * Gets the module name.
-     *
-     * @return the module name
-     * @see com.google.gwt.junit.client.GWTTestCase#getModuleName()
-     */
-    @Override
-    public String getModuleName() {
-        return "org.ebayopensource.turmeric.monitoring.ConsoleJunit";
-    }
+public class UITest extends ConsoleGWTTestCase{
 
     /**
      * Test list services.
