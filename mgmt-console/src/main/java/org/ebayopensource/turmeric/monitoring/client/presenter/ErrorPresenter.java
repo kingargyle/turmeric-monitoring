@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,21 +28,20 @@ import org.ebayopensource.turmeric.monitoring.client.event.ObjectSelectionEventH
 import org.ebayopensource.turmeric.monitoring.client.model.ErrorCriteria;
 import org.ebayopensource.turmeric.monitoring.client.model.ErrorDetail;
 import org.ebayopensource.turmeric.monitoring.client.model.ErrorMetric;
+import org.ebayopensource.turmeric.monitoring.client.model.ErrorMetricData;
 import org.ebayopensource.turmeric.monitoring.client.model.ErrorTimeSlotData;
 import org.ebayopensource.turmeric.monitoring.client.model.FilterContext;
 import org.ebayopensource.turmeric.monitoring.client.model.Filterable;
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService;
-import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
-import org.ebayopensource.turmeric.monitoring.client.model.SelectionContext;
-import org.ebayopensource.turmeric.monitoring.client.model.ErrorMetricData;
-import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorCategory;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorSeverity;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorType;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Ordering;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Perspective;
+import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
+import org.ebayopensource.turmeric.monitoring.client.model.SelectionContext;
 import org.ebayopensource.turmeric.monitoring.client.presenter.Presenter.TabPresenter;
 import org.ebayopensource.turmeric.monitoring.client.util.GraphUtil;
 
@@ -227,7 +225,7 @@ public class ErrorPresenter implements TabPresenter {
     }
     
     /**
-     * Instantiates a new error presenter.
+     * Instantiates a new error servicePresenter.
      *
      * @param eventBus the event bus
      * @param view the view
@@ -918,7 +916,7 @@ public class ErrorPresenter implements TabPresenter {
     /**
      * Insert history.
      *
-     * @param presenterId the presenter id
+     * @param presenterId the servicePresenter id
      * @param sc the sc
      * @param d1 the d1
      * @param d2 the d2
@@ -944,5 +942,11 @@ public class ErrorPresenter implements TabPresenter {
         String filterString = d1s+" + "+(durationHrs)+" - ";
         filterString += d2s + " + "+(durationHrs)+" >>";
         return filterString;
+    }
+
+
+    @Override
+    public org.ebayopensource.turmeric.monitoring.client.Display getView() {
+        return this.view;
     }
 }

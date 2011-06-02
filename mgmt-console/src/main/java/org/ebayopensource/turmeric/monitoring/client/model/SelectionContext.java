@@ -124,7 +124,7 @@ public class SelectionContext {
     /**
      * To history token.
      *
-     * @param presenterId the presenter id
+     * @param presenterId the servicePresenter id
      * @param values the values
      * @return the history token
      */

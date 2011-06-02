@@ -8,6 +8,7 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.client.presenter;
 
+import org.ebayopensource.turmeric.monitoring.client.Display;
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
 
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -32,6 +33,7 @@ public interface Presenter {
 	 */
 	public String getId();
 	
+	
 	/**
 	 * The Interface TabPresenter.
 	 */
@@ -43,6 +45,15 @@ public interface Presenter {
     	 * @return the state as history token
     	 */
     	public HistoryToken getStateAsHistoryToken();
+    	
+    	
+    	/**
+	     * Gets the view.
+	     *
+	     * @return the view
+	     */
+	    public Display getView();
+    	
 	}
 
 }

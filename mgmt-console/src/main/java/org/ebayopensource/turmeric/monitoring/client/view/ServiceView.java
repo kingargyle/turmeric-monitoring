@@ -17,14 +17,12 @@ import java.util.Set;
 import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 import org.ebayopensource.turmeric.monitoring.client.Dashboard;
 import org.ebayopensource.turmeric.monitoring.client.model.Filterable;
-import org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricData;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Entity;
 import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
 import org.ebayopensource.turmeric.monitoring.client.model.ServiceMetric;
 import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
-import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue;
 import org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter;
 import org.ebayopensource.turmeric.monitoring.client.util.GraphUtil;
 
@@ -52,12 +50,6 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.visualization.client.AbstractDataTable;
-import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
-import com.google.gwt.visualization.client.DataTable;
-import com.google.gwt.visualization.client.VisualizationUtils;
-import com.google.gwt.visualization.client.visualizations.LineChart;
-import com.google.gwt.visualization.client.visualizations.LineChart.Options;
 
 /**
  * ServiceView
@@ -326,7 +318,7 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
                         "% " + ConsoleUtil.constants.change() };
 
                 // convert from nanosec to microsec
-                // consider moving this from the view to the presenter to do
+                // consider moving this from the view to the servicePresenter to do
                 List<String[]> rows = new ArrayList<String[]>();
 
                 if (data != null) {
@@ -599,7 +591,7 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
      *            the m
      * @return the table
      */
-    protected FlexTable getTable(ServiceMetric m) {
+    public FlexTable getTable(ServiceMetric m) {
         FlexTable table = null;
         switch (m) {
             case TopVolume: {
@@ -876,6 +868,21 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
     @Override
     public HasWidgets getErrorWidget() {
         return customLogArea;
+    }
+
+    @Override
+    public Widget getServiceCallCountTrendPanel() {
+        return this.topVolumePanel;
+    }
+
+    @Override
+    public Widget getServicePerformanceTrendPanel() {
+        return this.leastPerformancePanel;
+    }
+
+    @Override
+    public Widget getServiceErrorTrendPanel() {
+        return this.topErrorsPanel;
     }
 
 }

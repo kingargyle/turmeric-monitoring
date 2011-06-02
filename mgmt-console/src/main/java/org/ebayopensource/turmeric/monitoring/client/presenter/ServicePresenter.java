@@ -26,14 +26,12 @@ import org.ebayopensource.turmeric.monitoring.client.event.DateFilterSelectionEv
 import org.ebayopensource.turmeric.monitoring.client.event.GetServicesEvent;
 import org.ebayopensource.turmeric.monitoring.client.event.ObjectSelectionEvent;
 import org.ebayopensource.turmeric.monitoring.client.event.ObjectSelectionEventHandler;
-import org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfoImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.FilterContext;
 import org.ebayopensource.turmeric.monitoring.client.model.Filterable;
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricData;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricResourceCriteria;
-import org.ebayopensource.turmeric.monitoring.client.model.MetricValue;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Entity;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.EntityName;
@@ -55,13 +53,12 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.logging.client.HasWidgetsLogHandler;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * The Class ServicePresenter.
@@ -240,10 +237,33 @@ public class ServicePresenter implements Presenter.TabPresenter {
          * @return the error widget
          */
         public HasWidgets getErrorWidget();
+        
+        
+        /**
+         * Gets the service call cound trend panel.
+         *
+         * @return the service call cound trend panel
+         */
+        public Widget getServiceCallCountTrendPanel();
+        
+        
+        /**
+         * Gets the service performance trend panel.
+         *
+         * @return the service performance trend panel
+         */
+        public Widget getServicePerformanceTrendPanel();
+        
+        /**
+         * Gets the service error trend panel.
+         *
+         * @return the service error trend panel
+         */
+        public Widget getServiceErrorTrendPanel();
     }
 
     /**
-     * Instantiates a new service presenter.
+     * Instantiates a new service servicePresenter.
      * 
      * @param eventBus
      *            the event bus
@@ -773,7 +793,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
      * Insert history.
      * 
      * @param presenterId
-     *            the presenter id
+     *            the servicePresenter id
      * @param selectionContext
      *            the selection context
      * @param d1
@@ -861,6 +881,17 @@ public class ServicePresenter implements Presenter.TabPresenter {
         String filterString = d1s + " + " + (durationHrs) + " - ";
         filterString += d2s + " + " + (durationHrs) + " >>";
         return filterString;
+    }
+
+    /**
+     * Gets the view.
+     *
+     * @return the view
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter.TabPresenter#getView()
+     */
+    @Override
+    public org.ebayopensource.turmeric.monitoring.client.Display getView() {
+        return this.view;
     }
 
 }

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -413,9 +414,9 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
         errorDetailsByName.put("Err2", ed2);
         errorDetailsById.put("102", ed2);
         
-        serviceData = new HashMap<String, Set<String>>();
+        serviceData = new LinkedHashMap<String, Set<String>>();
         for (int i=0; i< 20; i++) {
-            serviceData.put("Service"+i, new HashSet<String>(Arrays.asList(new String[]{"opA", "opB", "opC"})));
+            serviceData.put("Service"+i, new HashSet<String>(Arrays.asList(new String[]{"op0", "op1", "op2", "op3", "op4", "op5", "op6", "op7", "op8", "op9"})));
         }
         
     }
@@ -446,7 +447,7 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
                               AsyncCallback<MetricData> callback) {
 
         MetricData result = new MetricData();
-        result.setRestUrl(URL.encode(MetricsDataRequest.getRestURL(criteria, resourceCriteria)));
+        //result.setRestUrl(URL.encode(MetricsDataRequest.getRestURL(criteria, resourceCriteria)));
         result.setMetricCriteria(criteria);
         result.setMetricResourceCriteria(resourceCriteria);       
         

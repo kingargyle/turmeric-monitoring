@@ -27,7 +27,6 @@ import org.ebayopensource.turmeric.monitoring.client.event.GetServicesEventHandl
 import org.ebayopensource.turmeric.monitoring.client.event.ObjectSelectionEvent;
 import org.ebayopensource.turmeric.monitoring.client.event.ObjectSelectionEventHandler;
 import org.ebayopensource.turmeric.monitoring.client.model.ConsumerMetric;
-import org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfo;
 import org.ebayopensource.turmeric.monitoring.client.model.CriteriaInfoImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.FilterContext;
 import org.ebayopensource.turmeric.monitoring.client.model.Filterable;
@@ -52,7 +51,6 @@ import org.ebayopensource.turmeric.monitoring.client.util.callback.ConsumerTabCa
 import org.ebayopensource.turmeric.monitoring.client.util.callback.ParallelCallback;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.HRElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -272,7 +270,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
     }
 
     /**
-     * Instantiates a new consumer presenter.
+     * Instantiates a new consumer servicePresenter.
      * 
      * @param eventBus
      *            the event bus
@@ -1159,6 +1157,11 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         String filterString = d1s + " + " + (durationHrs) + " - ";
         filterString += d2s + " + " + (durationHrs) + " >>";
         return filterString;
+    }
+
+    @Override
+    public org.ebayopensource.turmeric.monitoring.client.Display getView() {
+        return this.view;
     }
 
 }
