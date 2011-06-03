@@ -11,8 +11,8 @@ package org.ebayopensource.turmeric.monitoring.client.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -416,7 +416,7 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
         
         serviceData = new LinkedHashMap<String, Set<String>>();
         for (int i=0; i< 20; i++) {
-            serviceData.put("Service"+i, new HashSet<String>(Arrays.asList(new String[]{"op0", "op1", "op2", "op3", "op4", "op5", "op6", "op7", "op8", "op9"})));
+            serviceData.put("Service"+i, new LinkedHashSet<String>(Arrays.asList(new String[]{"Op0", "Op1", "Op2", "Op3", "Op4", "Op5", "Op6", "Op7", "Op8", "Op9"})));
         }
         
     }

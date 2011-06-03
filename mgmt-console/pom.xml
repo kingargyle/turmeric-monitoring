@@ -26,18 +26,18 @@
 		<jetty.version>7.2.1.v20101111</jetty.version>
 		<jetty.plugin.version>7.2.1.v20101111</jetty.plugin.version>
 	</properties>
-	<repositories>
-		<repository>
-			<id>snapshot-forge.octo.com</id>
-			<url>http://forge.octo.com/nexus/content/repositories/snapshots/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</repository>
-	</repositories>
+<!-- 	<repositories> -->
+<!-- 		<repository> -->
+<!-- 			<id>snapshot-forge.octo.com</id> -->
+<!-- 			<url>http://forge.octo.com/nexus/content/repositories/snapshots/</url> -->
+<!-- 			<snapshots> -->
+<!-- 				<enabled>true</enabled> -->
+<!-- 			</snapshots> -->
+<!-- 			<releases> -->
+<!-- 				<enabled>false</enabled> -->
+<!-- 			</releases> -->
+<!-- 		</repository> -->
+<!-- 	</repositories> -->
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<resources>
@@ -136,7 +136,7 @@
 				<configuration>
 					<includes>
 						<!-- The gwt testuite must have all the gwt related tests to run -->
-						<include>**/*GWTTestSuite.java</include>
+<!-- 						<include>**/*GWTTestSuite.java</include> -->
 						<!-- The download servlet test case -->
 						<include>**/*DownloadServletTest.java</include>
 						<!-- Util test case -->
@@ -146,6 +146,7 @@
 					<excludes>
 						<!-- The gwt tescases must be ran using the ConsoleGWTTestSuite -->
 						<exclude>**/*GWTTestCase.java</exclude>
+						<exclude>**/*UITest.java</exclude>
 					</excludes>
 					<additionalClasspathElements>
 						<additionalClasspathElement>${project.build.sourceDirectory}</additionalClasspathElement>
@@ -209,7 +210,7 @@
 		<dependency>
 			<groupId>com.octo.gwt.test</groupId>
 			<artifactId>gwt-test-utils</artifactId>
-			<version>0.28-SNAPSHOT</version>
+			<version>0.28</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

@@ -11,22 +11,20 @@ import org.ebayopensource.turmeric.monitoring.client.model.ErrorTimeSlotData;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricValue;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService;
-import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorCategory;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorSeverity;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorType;
-import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Ordering;
-import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Perspective;
 import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
 import org.ebayopensource.turmeric.monitoring.client.model.SelectionContext;
 import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
+import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue;
 import org.ebayopensource.turmeric.monitoring.client.view.SummaryPanel;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.visualization.client.AbstractDataTable;
+import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.VisualizationUtils;
-import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.visualizations.LineChart;
 import com.google.gwt.visualization.client.visualizations.LineChart.Options;
 
@@ -135,7 +133,7 @@ public class GraphUtil {
         VisualizationUtils.loadVisualizationApi(onLoadCallback, "corechart");
     }
     
-    private static AbstractDataTable createChartDataTable(List<? extends TimeSlotData> timeDataRange, long aggregationPeriod,
+    public static AbstractDataTable createChartDataTable(List<? extends TimeSlotData> timeDataRange, long aggregationPeriod,
                     int hourSpan) {
         int plotPointsPerHour = 1;
         if (aggregationPeriod < 3600) {// then, each point represents X minutes. e.g: minAggregationPeriod = 60, then we
@@ -196,7 +194,7 @@ public class GraphUtil {
         return result;
     }
     
-    private static Options createOptions(String graphTitle) {
+    public static Options createOptions(String graphTitle) {
         Options options = Options.create();
         // options.setWidth(600);
         options.setHeight(230);
