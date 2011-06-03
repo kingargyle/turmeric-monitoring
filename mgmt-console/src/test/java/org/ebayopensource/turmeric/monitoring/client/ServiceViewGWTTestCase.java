@@ -10,6 +10,7 @@ import org.ebayopensource.turmeric.monitoring.client.view.DashboardContainer;
 import org.ebayopensource.turmeric.monitoring.client.view.ServiceView;
 import org.junit.Test;
 
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.visualization.client.VisualizationUtils;
 
 /**
@@ -18,7 +19,7 @@ import com.google.gwt.visualization.client.VisualizationUtils;
 public class ServiceViewGWTTestCase extends ConsoleGWTTestCase {
 
     /** The Constant ASYNC_DELAY_MS. */
-    public static final int ASYNC_DELAY_MS = 15 * 1000;
+    public static final int ASYNC_DELAY_MS = 45 * 1000;
 
     private Dashboard dshbrd = null;
     private ServiceView view = null;
@@ -35,13 +36,13 @@ public class ServiceViewGWTTestCase extends ConsoleGWTTestCase {
 
         loadApi(new Runnable() {
             public void run() {
-                view.setServiceCallTrendData(graphData, 60l, 1, "Test Service Call Graph Title");
+                view.setServiceCallTrendData(graphData, 60l, 4, "Test Service Call Graph Title");
             }
         });
-        
+
     }
-    
-    @Test(expected=java.lang.NullPointerException.class)
+
+    @Test
     public void testErrorInSetServiceCallTrendData() {
         dshbrd = new DashboardContainer();
         view = new ServiceView(dshbrd);
@@ -49,9 +50,18 @@ public class ServiceViewGWTTestCase extends ConsoleGWTTestCase {
 
         loadApi(new Runnable() {
             public void run() {
-                view.setServiceCallTrendData(graphData, 60l, 1, "Test Service Call Graph Title");
+                boolean success = false;
+                try {
+                    view.setServiceCallTrendData(graphData, 60l, 4, "Test Service Call Graph Title");
+                }
+                catch (NullPointerException npe) {
+                    success = true;// I don't know why it itsn't picking up the expected=NullPointerException.class,
+                                   // but...
+                }
+                assertTrue(success);
             }
         });
+
     }
 
     /**
@@ -60,11 +70,11 @@ public class ServiceViewGWTTestCase extends ConsoleGWTTestCase {
     public void testSetServiceCallTrendDataInHourlyData() {
         dshbrd = new DashboardContainer();
         view = new ServiceView(dshbrd);
-        final List<TimeSlotData> graphData = createGraphData(1,4);
+        final List<TimeSlotData> graphData = createGraphData(1, 4);
 
         loadApi(new Runnable() {
             public void run() {
-                view.setServiceCallTrendData(graphData, 3600l, 1, "Test Service Call Graph Title");
+                view.setServiceCallTrendData(graphData, 3600l, 4, "Test Service Call Graph Title");
             }
         });
     }
@@ -79,7 +89,7 @@ public class ServiceViewGWTTestCase extends ConsoleGWTTestCase {
 
         loadApi(new Runnable() {
             public void run() {
-                view.setServicePerformanceTrendData(graphData, 60l, 1, "Test Service Call Graph Title");
+                view.setServicePerformanceTrendData(graphData, 60l, 4, "Test Service Call Graph Title");
             }
         });
     }
@@ -90,14 +100,14 @@ public class ServiceViewGWTTestCase extends ConsoleGWTTestCase {
     public void testSetServiceErrorTrendData() {
         dshbrd = new DashboardContainer();
         view = new ServiceView(dshbrd);
-        final List<TimeSlotData> graphData = createGraphData(60,4);
+        final List<TimeSlotData> graphData = createGraphData(60, 4);
 
         loadApi(new Runnable() {
             public void run() {
-                view.setServiceErrorTrendData(graphData, 60l, 1, "Test Service Call Graph Title");
+                view.setServiceErrorTrendData(graphData, 60l, 4, "Test Service Call Graph Title");
             }
         });
-        
+
     }
 
     private List<TimeSlotData> createGraphData(int dataPerHour, int hours) {
@@ -106,11 +116,11 @@ public class ServiceViewGWTTestCase extends ConsoleGWTTestCase {
         List<TimeSlotData> graphData = new ArrayList<TimeSlotData>();
         TimeSlotData dataItem = null;
         TimeSlotValue plotValue = null;
-        long timeToAdd = dataPerHour == 60? 1000 : 60000;
+        long timeToAdd = dataPerHour == 60 ? 1000 : 60000;
         for (int i = 0; i < 2; i++) {
             dataItem = new TimeSlotData();
             dataItem.setReturnData(new ArrayList<TimeSlotValue>());
-            for (int j = 0; j < dataPerHour*hours; j++) {
+            for (int j = 0; j < dataPerHour * hours; j++) {
                 plotValue = new DummyTimeSlotValue("", (double) j, now + (timeToAdd * j));
                 dataItem.getReturnData().add(plotValue);
             }
@@ -127,6 +137,27 @@ public class ServiceViewGWTTestCase extends ConsoleGWTTestCase {
      *            the test runnable
      */
     protected void loadApi(final Runnable testRunnable) {
+        Timer timer = new Timer() {
+            public void run() {
+                testRunnable.run();
+                finishTest();
+            }
+        };
+        delayTestFinish(ASYNC_DELAY_MS);
+        // Schedule the event and return control to the test system.
+        timer.schedule(100);
+    }
+
+    /**
+     * Gets the visualization package.
+     * 
+     * @return the visualization package
+     */
+    protected String getVisualizationPackage() {
+        return "corechart";
+    }
+
+    protected void loadApiAsync(final Runnable testRunnable) {
         if (loaded) {
             testRunnable.run();
         }
@@ -145,14 +176,5 @@ public class ServiceViewGWTTestCase extends ConsoleGWTTestCase {
             }, getVisualizationPackage());
             delayTestFinish(ASYNC_DELAY_MS);
         }
-    }
-
-    /**
-     * Gets the visualization package.
-     * 
-     * @return the visualization package
-     */
-    protected String getVisualizationPackage() {
-        return "corechart";
     }
 }
