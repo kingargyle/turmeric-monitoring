@@ -843,7 +843,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
     private void conditionalFireServiceFilterSelectionEvent(SelectionContext oldContext, SelectionContext newContext) {
         // Inform interested parties if either the service or operation changed
         if ((oldContext == null && newContext != null) || (oldContext != null && newContext != null)
-                        || !oldContext.equals(newContext)) {
+                        || (oldContext != null && !oldContext.equals(newContext))) {
             Map<ObjectType, String> selection = new HashMap<ObjectType, String>(2);
             selection.put(ObjectType.ServiceName, newContext.getSelection(ObjectType.ServiceName));
             selection.put(ObjectType.OperationName, newContext.getSelection(ObjectType.OperationName));

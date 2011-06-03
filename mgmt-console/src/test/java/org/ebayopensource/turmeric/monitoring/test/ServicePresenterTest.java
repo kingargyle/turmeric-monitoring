@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -30,6 +31,7 @@ import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.Widget;
+import com.octo.gwt.test.utils.events.Browser;
 
 public class ServicePresenterTest extends ConsoleGwtTestBase {
 
@@ -101,6 +103,28 @@ public class ServicePresenterTest extends ConsoleGwtTestBase {
             assertEquals(operationIterator.next(), childNodes.getItem(i).getNodeValue());
         }
 
+    }
+
+    @Test
+    public void testDateSelectionInFilter() {
+        assertNotNull(servicePresenter);
+        ServiceView view = (ServiceView) servicePresenter.getView();
+        assertNotNull(view);
+        Tree serviceTree = (Tree) view.getSelector();
+        assertNotNull(serviceTree);
+        assertNotNull(serviceTree.getItem(0));// first level of the services tree
+        assertNotNull(serviceTree.getItem(0).getChild(0));// first service in the list
+        TreeItem serviceToSelect = serviceTree.getItem(0).asTreeItem().getChild(0);
+        String html = serviceToSelect.asTreeItem().getHTML();
+        assertNotNull(html);
+        Map<String, Set<String>> serviceData = service.getServiceData();
+        String firstServiceName = serviceData.keySet().iterator().next();
+
+        assertTrue(html.contains(firstServiceName));
+        // now, I select the first service in the tree
+        serviceTree.setSelectedItem(serviceToSelect);
+        view.getFilter().setDate1(new Date());
+        Browser.click((Widget) view.getFilter().getApplyButton());
     }
 
 }

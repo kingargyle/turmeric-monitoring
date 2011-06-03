@@ -136,7 +136,7 @@
 				<configuration>
 					<includes>
 						<!-- The gwt testuite must have all the gwt related tests to run -->
-<!-- 						<include>**/*GWTTestSuite.java</include> -->
+						<include>**/*GWTTestSuite.java</include>
 						<!-- The download servlet test case -->
 						<include>**/*DownloadServletTest.java</include>
 						<!-- Util test case -->
