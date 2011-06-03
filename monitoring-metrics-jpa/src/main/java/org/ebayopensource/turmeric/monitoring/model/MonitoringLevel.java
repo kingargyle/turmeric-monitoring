@@ -8,8 +8,17 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.model;
 
+/**
+ * The Enum MonitoringLevel.
+ */
 public enum MonitoringLevel {
-    NORMAL("normal"), FINE("fine"), FINEST("finest");
+    
+    /** The NORMAL. */
+    NORMAL("normal"), 
+ /** The FINE. */
+ FINE("fine"), 
+ /** The FINEST. */
+ FINEST("finest");
 
     private final String value;
 
@@ -17,6 +26,12 @@ public enum MonitoringLevel {
         this.value = value;
     }
 
+    /**
+     * From.
+     *
+     * @param value the value
+     * @return the monitoring level
+     */
     public static MonitoringLevel from(String value) {
         for (MonitoringLevel level : values()) {
             if (level.value.equals(value))

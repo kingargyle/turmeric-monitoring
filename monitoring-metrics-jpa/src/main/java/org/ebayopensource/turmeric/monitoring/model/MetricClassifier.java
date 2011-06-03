@@ -12,29 +12,57 @@ import javax.persistence.Entity;
 
 import org.ebayopensource.turmeric.utils.jpa.model.Persistent;
 
+/**
+ * The Class MetricClassifier.
+ */
 @Entity
 public class MetricClassifier extends Persistent {
     private String consumerName;
     private String sourceDataCenter;
     private String targetDataCenter;
 
+    /**
+     * Instantiates a new metric classifier.
+     */
     protected MetricClassifier() {
     }
 
+    /**
+     * Instantiates a new metric classifier.
+     *
+     * @param consumerName the consumer name
+     * @param sourceDataCenter the source data center
+     * @param targetDataCenter the target data center
+     */
     public MetricClassifier(String consumerName, String sourceDataCenter, String targetDataCenter) {
         this.consumerName = consumerName;
         this.sourceDataCenter = sourceDataCenter;
         this.targetDataCenter = targetDataCenter;
     }
 
+    /**
+     * Gets the consumer name.
+     *
+     * @return the consumer name
+     */
     public String getConsumerName() {
         return consumerName;
     }
 
+    /**
+     * Gets the source data center.
+     *
+     * @return the source data center
+     */
     public String getSourceDataCenter() {
         return sourceDataCenter;
     }
 
+    /**
+     * Gets the target data center.
+     *
+     * @return the target data center
+     */
     public String getTargetDataCenter() {
         return targetDataCenter;
     }

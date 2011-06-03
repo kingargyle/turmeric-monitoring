@@ -15,6 +15,9 @@ import javax.persistence.ManyToOne;
 
 import org.ebayopensource.turmeric.utils.jpa.model.Persistent;
 
+/**
+ * The Class Machine.
+ */
 @Entity
 public class Machine extends Persistent {
     private String hostAddress;
@@ -22,27 +25,57 @@ public class Machine extends Persistent {
     @ManyToOne
     private MachineGroup machineGroup;
 
+    /**
+     * Instantiates a new machine.
+     */
     protected Machine() {
     }
 
+    /**
+     * Instantiates a new machine.
+     *
+     * @param hostAddress the host address
+     * @param canonicalHostName the canonical host name
+     * @param machineGroup the machine group
+     */
     public Machine(String hostAddress, String canonicalHostName, MachineGroup machineGroup) {
         this.hostAddress = hostAddress;
         this.canonicalHostName = canonicalHostName;
         this.machineGroup = machineGroup;
     }
 
+    /**
+     * Gets the host address.
+     *
+     * @return the host address
+     */
     public String getHostAddress() {
         return hostAddress;
     }
 
+    /**
+     * Gets the canonical host name.
+     *
+     * @return the canonical host name
+     */
     public String getCanonicalHostName() {
         return canonicalHostName;
     }
 
+    /**
+     * Gets the machine group.
+     *
+     * @return the machine group
+     */
     public MachineGroup getMachineGroup() {
         return machineGroup;
     }
 
+    /**
+     * New machine.
+     *
+     * @return the machine
+     */
     public static Machine newMachine() {
         try {
             InetAddress address = InetAddress.getLocalHost();

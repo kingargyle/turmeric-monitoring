@@ -13,6 +13,9 @@ import javax.persistence.ManyToOne;
 
 import org.ebayopensource.turmeric.utils.jpa.model.Persistent;
 
+/**
+ * The Class MetricComponentDef.
+ */
 @Entity
 public class MetricComponentDef extends Persistent {
     private String name;
@@ -20,26 +23,55 @@ public class MetricComponentDef extends Persistent {
     @ManyToOne
     private MetricDef metricDef;
 
+    /**
+     * Instantiates a new metric component def.
+     */
     protected MetricComponentDef() {
     }
 
+    /**
+     * Instantiates a new metric component def.
+     *
+     * @param name the name
+     * @param type the type
+     */
     public MetricComponentDef(String name, String type) {
         this.name = name;
         this.type = type;
     }
 
+    /**
+     * Gets the name.
+     *
+     * @return the name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Gets the type.
+     *
+     * @return the type
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * Gets the metric def.
+     *
+     * @return the metric def
+     */
     public MetricDef getMetricDef() {
         return metricDef;
     }
 
+    /**
+     * Sets the metric def.
+     *
+     * @param metricDef the new metric def
+     */
     protected void setMetricDef(MetricDef metricDef) {
         this.metricDef = metricDef;
     }

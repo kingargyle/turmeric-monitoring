@@ -12,10 +12,18 @@ import javax.persistence.Entity;
 
 import org.ebayopensource.turmeric.utils.jpa.model.Persistent;
 
+/**
+ * The Class MachineGroup.
+ */
 @Entity
 public class MachineGroup extends Persistent {
     private String name;
 
+    /**
+     * Gets the name.
+     *
+     * @return the name
+     */
     public String getName() {
         return name;
     }

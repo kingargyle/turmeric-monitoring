@@ -39,20 +39,35 @@ import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValueAg
 import org.ebayopensource.turmeric.utils.jpa.JPAAroundAdvice;
 import org.ebayopensource.turmeric.utils.jpa.PersistenceContext;
 
+/**
+ * The Class DAOMetricsStorageProvider.
+ */
 public class DAOMetricsStorageProvider implements MetricsStorageProvider
 {
     private volatile MetricsStorageProvider delegate;
     private EntityManagerFactory entityManagerFactory;
     private MetricsDAO metricsDAO;
 
+    /**
+     * Instantiates a new dAO metrics storage provider.
+     */
     public DAOMetricsStorageProvider() {
     }
 
+    /**
+     * Instantiates a new dAO metrics storage provider.
+     *
+     * @param entityManagerFactory the entity manager factory
+     * @param metricsDAO the metrics dao
+     */
     public DAOMetricsStorageProvider(EntityManagerFactory entityManagerFactory, MetricsDAO metricsDAO) {
         this.entityManagerFactory = entityManagerFactory;
         this.metricsDAO = metricsDAO;
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.runtime.common.monitoring.MetricsStorageProvider#init(java.util.Map, java.lang.String, java.lang.String, java.lang.Integer)
+     */
     @Override
     public void init(Map<String, String> options, String name, String collectionLocation, Integer snapshotInterval) {
         try {
@@ -81,6 +96,9 @@ public class DAOMetricsStorageProvider implements MetricsStorageProvider
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.runtime.common.monitoring.MetricsStorageProvider#saveMetricSnapshot(long, java.util.Collection)
+     */
     @Override
     public void saveMetricSnapshot(long timeSnapshot, Collection<MetricValueAggregator> snapshotCollection) throws ServiceException {
         delegate.saveMetricSnapshot(timeSnapshot, snapshotCollection);

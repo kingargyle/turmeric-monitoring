@@ -8,8 +8,17 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.model;
 
+/**
+ * The Enum MetricCategory.
+ */
 public enum MetricCategory {
-    TIMING("Timing"), ERROR("Error"), OTHER("Other");
+    
+    /** The TIMING. */
+    TIMING("Timing"), 
+ /** The ERROR. */
+ ERROR("Error"), 
+ /** The OTHER. */
+ OTHER("Other");
 
     private final String value;
 
@@ -17,6 +26,12 @@ public enum MetricCategory {
         this.value = value;
     }
 
+    /**
+     * From.
+     *
+     * @param value the value
+     * @return the metric category
+     */
     public static MetricCategory from(String value) {
         for (MetricCategory category : values()) {
             if (category.value.equals(value))

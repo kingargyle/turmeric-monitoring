@@ -19,6 +19,9 @@ import javax.persistence.OneToMany;
 
 import org.ebayopensource.turmeric.utils.jpa.model.Persistent;
 
+/**
+ * The Class MetricDef.
+ */
 @Entity
 public class MetricDef extends Persistent {
     private String name;
@@ -29,36 +32,77 @@ public class MetricDef extends Persistent {
     @OneToMany(mappedBy = "metricDef", cascade = CascadeType.ALL)
     private Set<MetricComponentDef> components = new HashSet<MetricComponentDef>();
 
+    /**
+     * Instantiates a new metric def.
+     */
     protected MetricDef() {
     }
 
+    /**
+     * Instantiates a new metric def.
+     *
+     * @param name the name
+     * @param category the category
+     * @param level the level
+     */
     public MetricDef(String name, MetricCategory category, MonitoringLevel level) {
         this.name = name;
         this.category = category;
         this.level = level;
     }
 
+    /**
+     * Gets the name.
+     *
+     * @return the name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Gets the metric category.
+     *
+     * @return the metric category
+     */
     public MetricCategory getMetricCategory() {
         return category;
     }
 
+    /**
+     * Gets the monitoring level.
+     *
+     * @return the monitoring level
+     */
     public MonitoringLevel getMonitoringLevel() {
         return level;
     }
 
+    /**
+     * Adds the metric component def.
+     *
+     * @param component the component
+     */
     public void addMetricComponentDef(MetricComponentDef component) {
         component.setMetricDef(this);
         components.add(component);
     }
 
+    /**
+     * Gets the metric component defs.
+     *
+     * @return the metric component defs
+     */
     public Set<MetricComponentDef> getMetricComponentDefs() {
         return Collections.unmodifiableSet(components);
     }
 
+    /**
+     * Find metric component def.
+     *
+     * @param componentName the component name
+     * @return the metric component def
+     */
     public MetricComponentDef findMetricComponentDef(String componentName) {
         for (MetricComponentDef component : components) {
             if (component.getName().equals(componentName)) {

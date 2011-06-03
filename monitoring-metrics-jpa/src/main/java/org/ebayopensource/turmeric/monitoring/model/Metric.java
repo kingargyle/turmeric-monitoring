@@ -13,6 +13,9 @@ import javax.persistence.ManyToOne;
 
 import org.ebayopensource.turmeric.utils.jpa.model.Persistent;
 
+/**
+ * The Class Metric.
+ */
 @Entity
 public class Metric extends Persistent {
     private String serviceAdminName;
@@ -20,23 +23,48 @@ public class Metric extends Persistent {
     @ManyToOne
     private MetricDef metricDef;
 
+    /**
+     * Instantiates a new metric.
+     */
     protected Metric() {
     }
 
+    /**
+     * Instantiates a new metric.
+     *
+     * @param serviceAdminName the service admin name
+     * @param operationName the operation name
+     * @param metricDef the metric def
+     */
     public Metric(String serviceAdminName, String operationName, MetricDef metricDef) {
         this.serviceAdminName = serviceAdminName;
         this.operationName = operationName;
         this.metricDef = metricDef;
     }
 
+    /**
+     * Gets the service admin name.
+     *
+     * @return the service admin name
+     */
     public String getServiceAdminName() {
         return serviceAdminName;
     }
 
+    /**
+     * Gets the operation name.
+     *
+     * @return the operation name
+     */
     public String getOperationName() {
         return operationName;
     }
 
+    /**
+     * Gets the metric def.
+     *
+     * @return the metric def
+     */
     public MetricDef getMetricDef() {
         return metricDef;
     }

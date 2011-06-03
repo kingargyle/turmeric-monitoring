@@ -27,7 +27,14 @@ import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.Syste
 import org.ebayopensource.turmeric.utils.jpa.AbstractDAO;
 import org.ebayopensource.turmeric.utils.jpa.EntityManagerContext;
 
+/**
+ * The Class MetricsDAOImpl.
+ */
 public class MetricsDAOImpl extends AbstractDAO implements MetricsDAO {
+    
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.MetricsDAO#findMetricDef(java.lang.String)
+     */
     @Override
     public MetricDef findMetricDef(String metricName) {
         StringBuilder jpql = new StringBuilder();
@@ -40,11 +47,17 @@ public class MetricsDAOImpl extends AbstractDAO implements MetricsDAO {
         return getSingleResultOrNull(query);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.MetricsDAO#persistMetricDef(org.ebayopensource.turmeric.monitoring.model.MetricDef)
+     */
     @Override
     public void persistMetricDef(MetricDef metricDef) {
         persistEntity(metricDef);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.MetricsDAO#findMetric(java.lang.String, java.lang.String, java.lang.String)
+     */
     @Override
     public Metric findMetric(String metricName, String serviceAdminName, String operationName) {
         StringBuilder jpql = new StringBuilder();
@@ -59,16 +72,25 @@ public class MetricsDAOImpl extends AbstractDAO implements MetricsDAO {
         return getSingleResultOrNull(query);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.MetricsDAO#persistMetric(org.ebayopensource.turmeric.monitoring.model.Metric)
+     */
     @Override
     public void persistMetric(Metric metric) {
         persistEntity(metric);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.MetricsDAO#persistMetricValues(java.util.List)
+     */
     @Override
     public void persistMetricValues(List<MetricValue> metricValues) {
         persistEntities(metricValues);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.MetricsDAO#findMetricClassifier(java.lang.String, java.lang.String, java.lang.String)
+     */
     @Override
     public MetricClassifier findMetricClassifier(String consumerName, String sourceDC, String targetDC) {
         StringBuilder jpql = new StringBuilder();
@@ -83,11 +105,17 @@ public class MetricsDAOImpl extends AbstractDAO implements MetricsDAO {
         return getSingleResultOrNull(query);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.MetricsDAO#persistMetricClassifier(org.ebayopensource.turmeric.monitoring.model.MetricClassifier)
+     */
     @Override
     public void persistMetricClassifier(MetricClassifier metricClassifier) {
         persistEntity(metricClassifier);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.MetricsDAO#findMetricValues(long, long, int)
+     */
     @Override
     public List<MetricValue> findMetricValues(long startTimeStamp, long endTimeStamp, int aggregation) {
         StringBuilder jpql = new StringBuilder();
@@ -103,6 +131,9 @@ public class MetricsDAOImpl extends AbstractDAO implements MetricsDAO {
         return query.getResultList();
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.MetricsDAO#findMetricComponentValuesByService(java.lang.String, long, long, boolean, int, java.util.Map)
+     */
     @Override
     public List<Map<String, Object>> findMetricComponentValuesByService(String metricName, long beginTime, long endTime, boolean serverSide, int aggregationPeriod, Map<String, List<String>> filters) {
         List<String> serviceAdminNames = filters.get("Service");
@@ -186,6 +217,9 @@ public class MetricsDAOImpl extends AbstractDAO implements MetricsDAO {
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.MetricsDAO#findMetricComponentValuesByOperation(java.lang.String, long, long, boolean, int, java.util.Map)
+     */
     @Override
     public List<Map<String, Object>> findMetricComponentValuesByOperation(String metricName, long beginTime, long endTime, boolean serverSide, int aggregationPeriod, Map<String, List<String>> filters) {
         List<String> serviceAdminNames = filters.get("Service");
@@ -266,6 +300,9 @@ public class MetricsDAOImpl extends AbstractDAO implements MetricsDAO {
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.MetricsDAO#findMetricComponentValuesByConsumer(java.lang.String, long, long, boolean, int, java.util.Map)
+     */
     @Override
     public List<Map<String, Object>> findMetricComponentValuesByConsumer(String metricName, long beginTime, long endTime, boolean serverSide, int aggregationPeriod, Map<String, List<String>> filters) {
         List<String> serviceAdminNames = filters.get("Service");
@@ -349,6 +386,9 @@ public class MetricsDAOImpl extends AbstractDAO implements MetricsDAO {
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.MetricsDAO#findMetricComponentValuesByMetric(java.lang.String, long, long, boolean, int, java.util.Map)
+     */
     @Override
     public List<Map<String, Object>> findMetricComponentValuesByMetric(String metricName, long beginTime, long endTime, boolean serverSide, int aggregationPeriod, Map<String, List<String>> filters) {
         List<String> serviceAdminNames = filters.get("Service");
@@ -437,6 +477,9 @@ public class MetricsDAOImpl extends AbstractDAO implements MetricsDAO {
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.MetricsDAO#findMetricComponentValuesByTimeStamp(java.lang.String, long, long, boolean, int, java.lang.String, java.lang.String, java.lang.String)
+     */
     @Override
     public List<Map<String, Object>> findMetricComponentValuesByTimeStamp(String metricName, long beginTime, long endTime, boolean serverSide, int aggregationPeriod, String serviceAdminName, String operationName, String consumerName) {
         StringBuilder jpql = new StringBuilder();
@@ -510,6 +553,9 @@ public class MetricsDAOImpl extends AbstractDAO implements MetricsDAO {
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.MetricsDAO#findMetricServiceAdminNames(java.util.List)
+     */
     @Override
     public List<String> findMetricServiceAdminNames(List<String> serviceAdminNames) {
         StringBuilder jpql = new StringBuilder();
@@ -526,6 +572,9 @@ public class MetricsDAOImpl extends AbstractDAO implements MetricsDAO {
         return query.getResultList();
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.MetricsDAO#findMetricOperationNames(java.util.List)
+     */
     @Override
     public List<String> findMetricOperationNames(List<String> serviceAdminNames) {
         StringBuilder jpql = new StringBuilder();
@@ -551,6 +600,9 @@ public class MetricsDAOImpl extends AbstractDAO implements MetricsDAO {
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.MetricsDAO#findMachine(java.lang.String)
+     */
     @Override
     public Machine findMachine(String hostAddress) {
         StringBuilder jpql = new StringBuilder();
@@ -563,11 +615,17 @@ public class MetricsDAOImpl extends AbstractDAO implements MetricsDAO {
         return getSingleResultOrNull(query);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.MetricsDAO#persistMachine(org.ebayopensource.turmeric.monitoring.model.Machine)
+     */
     @Override
     public void persistMachine(Machine machine) {
         persistEntity(machine);
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.MetricsDAO#findCallsCount(long, long, boolean, int)
+     */
     @Override
     public long findCallsCount(long beginTime, long endTime, boolean serverSide, int aggregationPeriod) {
         StringBuilder jpql = new StringBuilder();
@@ -591,6 +649,9 @@ public class MetricsDAOImpl extends AbstractDAO implements MetricsDAO {
         return result == null ? 0 : result.longValue();
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.MetricsDAO#findMetricConsumerNames(java.util.List)
+     */
     @Override
     public List<String> findMetricConsumerNames(List<String> serviceAdminNames) {
         //select distinct mv.metricClassifier.consumerName from MetricValue where
