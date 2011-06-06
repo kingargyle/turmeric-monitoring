@@ -18,6 +18,7 @@ import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
 import org.ebayopensource.turmeric.monitoring.client.presenter.MenuController;
 import org.ebayopensource.turmeric.monitoring.client.presenter.Presenter;
 import org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter;
+import org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter.Display;
 import org.ebayopensource.turmeric.monitoring.client.view.DashboardContainer;
 import org.ebayopensource.turmeric.monitoring.client.view.ServiceView;
 
@@ -39,7 +40,7 @@ public class UITest extends ConsoleGWTTestCase{
         final HandlerManager eventBus = new HandlerManager(null);
         DummyMetricsQueryServiceImpl service = new DummyMetricsQueryServiceImpl();
         Dashboard dshbrd = new DashboardContainer();
-        ServiceView view = new ServiceView(dshbrd);
+        Display view = new ServiceView(dshbrd);
         Presenter presenter = new ServicePresenter(eventBus, view, service);
         
         Map<ObjectType,String> selection = new HashMap<ObjectType, String>();

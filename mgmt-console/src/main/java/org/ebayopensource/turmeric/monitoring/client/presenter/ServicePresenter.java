@@ -55,6 +55,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.TreeItem;
@@ -124,7 +125,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
          * Sets the metric.
          * 
          * @param metric
-         *            the metric
+         *            the metricDisplay
          * @param m
          *            the m
          */
@@ -260,6 +261,37 @@ public class ServicePresenter implements Presenter.TabPresenter {
          * @return the service error trend panel
          */
         public Widget getServiceErrorTrendPanel();
+
+        
+        /**
+         * Gets the table.
+         *
+         * @param m the m
+         * @return the table
+         */
+        public abstract FlexTable getTable(ServiceMetric m);
+        
+        
+        /**
+         * Adds the value change handler for date1.
+         *
+         * @param listener the listener
+         */
+        public void addValueChangeHandlerForDate1(ValueChangeHandler<Date> listener);
+        
+        /**
+         * Adds the filter options apply click handler.
+         *
+         * @param handler the handler
+         */
+        public void addFilterOptionsApplyClickHandler(ClickHandler handler);
+        
+        /**
+         * Adds the tree element selection handler.
+         *
+         * @param handler the handler
+         */
+        public void addTreeElementSelectionHandler(SelectionHandler<TreeItem> handler);
     }
 
     /**
@@ -381,7 +413,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
             }
         });
         // listen for changes to date1 from other tabs
-        this.view.getFilter().getDate1().addValueChangeHandler(new ValueChangeHandler<Date>() {
+        this.view.addValueChangeHandlerForDate1(new ValueChangeHandler<Date>() {
 
             public void onValueChange(ValueChangeEvent<Date> event) {
                 Date date = event.getValue();
@@ -391,7 +423,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
         });
 
         // handle user selection of some new dates and intervals to see metrics for
-        this.view.getFilter().getApplyButton().addClickHandler(new ClickHandler() {
+        this.view.addFilterOptionsApplyClickHandler(new ClickHandler() {
 
             public void onClick(ClickEvent event) {
 
@@ -433,7 +465,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
         });
 
         // handle selection of service or operation from list
-        this.view.getSelector().addSelectionHandler(new SelectionHandler<TreeItem>() {
+        this.view.addTreeElementSelectionHandler(new SelectionHandler<TreeItem>() {
 
             public void onSelection(SelectionEvent<TreeItem> event) {
                 TreeItem selection = event.getSelectedItem();
@@ -660,7 +692,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
      * @param intervalHrs
      *            the interval hrs
      */
-    protected void fetchMetric(final ServiceMetric m, final SelectionContext selectionContext, Entity returnType,
+    public void fetchMetric(final ServiceMetric m, final SelectionContext selectionContext, Entity returnType,
                     final long date1, final long date2, final int intervalHrs) {
         List<EntityName> subject = new ArrayList<EntityName>();
         if (selectionContext.getSelection(ObjectType.ServiceName) != null) {

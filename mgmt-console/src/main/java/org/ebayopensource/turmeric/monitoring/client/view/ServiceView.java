@@ -32,6 +32,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.HasSelectionHandlers;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -591,6 +593,7 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
      *            the m
      * @return the table
      */
+    @Override
     public FlexTable getTable(ServiceMetric m) {
         FlexTable table = null;
         switch (m) {
@@ -883,6 +886,21 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
     @Override
     public Widget getServiceErrorTrendPanel() {
         return this.topErrorsPanel;
+    }
+
+    @Override
+    public void addValueChangeHandlerForDate1(ValueChangeHandler<Date> listener) {
+        getFilter().getDate1().addValueChangeHandler(listener);
+    }
+
+    @Override
+    public void addFilterOptionsApplyClickHandler(ClickHandler handler) {
+        getFilter().getApplyButton().addClickHandler(handler);
+    }
+
+    @Override
+    public void addTreeElementSelectionHandler(SelectionHandler<TreeItem> handler) {
+        getSelector().addSelectionHandler(handler);
     }
 
 }

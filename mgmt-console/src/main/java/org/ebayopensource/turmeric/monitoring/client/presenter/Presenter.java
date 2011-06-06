@@ -53,6 +53,7 @@ public interface Presenter {
 	     * @return the view
 	     */
 	    public Display getView();
+
     	
 	}
 

@@ -1163,5 +1163,5 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
     public org.ebayopensource.turmeric.monitoring.client.Display getView() {
         return this.view;
     }
-
+    
 }

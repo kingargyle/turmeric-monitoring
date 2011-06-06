@@ -133,6 +133,15 @@ public class GraphUtil {
         VisualizationUtils.loadVisualizationApi(onLoadCallback, "corechart");
     }
     
+    
+    /**
+     * Creates the chart data table.
+     *
+     * @param timeDataRange the time data range
+     * @param aggregationPeriod the aggregation period
+     * @param hourSpan the hour span
+     * @return the abstract data table
+     */
     public static AbstractDataTable createChartDataTable(List<? extends TimeSlotData> timeDataRange, long aggregationPeriod,
                     int hourSpan) {
         int plotPointsPerHour = 1;
@@ -194,6 +203,13 @@ public class GraphUtil {
         return result;
     }
     
+    
+    /**
+     * Creates the options.
+     *
+     * @param graphTitle the graph title
+     * @return the options
+     */
     public static Options createOptions(String graphTitle) {
         Options options = Options.create();
         // options.setWidth(600);

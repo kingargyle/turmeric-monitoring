@@ -949,4 +949,5 @@ public class ErrorPresenter implements TabPresenter {
     public org.ebayopensource.turmeric.monitoring.client.Display getView() {
         return this.view;
     }
+
 }

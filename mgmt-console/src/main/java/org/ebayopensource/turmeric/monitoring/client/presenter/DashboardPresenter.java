@@ -16,6 +16,7 @@ import org.ebayopensource.turmeric.monitoring.client.Dashboard;
 import org.ebayopensource.turmeric.monitoring.client.Display;
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService;
+import org.ebayopensource.turmeric.monitoring.client.presenter.Presenter.TabPresenter;
 import org.ebayopensource.turmeric.monitoring.client.view.ConsumerView;
 import org.ebayopensource.turmeric.monitoring.client.view.ErrorView;
 import org.ebayopensource.turmeric.monitoring.client.view.ServiceView;
@@ -196,7 +197,7 @@ public class DashboardPresenter implements Presenter, Controller {
     }
 
     private void initTabPresenters () {
-        ServicePresenter servicePresenter = new ServicePresenter(this.eventBus, new ServiceView(this.view), queryService);
+        TabPresenter servicePresenter = new ServicePresenter(this.eventBus, new ServiceView(this.view), queryService);
         this.defaultPresenter = servicePresenter;
         this.presenters.put(servicePresenter.getId(), servicePresenter);
         
