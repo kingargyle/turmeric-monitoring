@@ -151,7 +151,7 @@ public class Util {
                 E e = Enum.valueOf(clazz ,new String(chars));
                 list.add(e);
             } catch (IllegalArgumentException e) {
-                //Ignore as it might be metric names that aren't relevant for this servicePresenter
+                //Ignore as it might be metric names that aren't relevant for this consumerPresenter
             } catch (NullPointerException e) {
                 //Ignore
             }

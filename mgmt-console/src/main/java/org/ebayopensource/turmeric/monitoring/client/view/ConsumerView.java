@@ -20,12 +20,12 @@ import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 import org.ebayopensource.turmeric.monitoring.client.Dashboard;
 import org.ebayopensource.turmeric.monitoring.client.model.ConsumerMetric;
 import org.ebayopensource.turmeric.monitoring.client.model.Filterable;
+import org.ebayopensource.turmeric.monitoring.client.model.MetricData;
+import org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData;
+import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Entity;
 import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
 import org.ebayopensource.turmeric.monitoring.client.model.ResourceEntityRequest;
-import org.ebayopensource.turmeric.monitoring.client.model.MetricGroupData;
-import org.ebayopensource.turmeric.monitoring.client.model.MetricData;
 import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
-import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Entity;
 import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue;
 import org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter;
 import org.ebayopensource.turmeric.monitoring.client.util.GraphUtil;
@@ -36,6 +36,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.HasSelectionHandlers;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -53,10 +55,9 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.AbstractDataTable;
+import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.VisualizationUtils;
-import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
-import com.google.gwt.visualization.client.visualizations.BarChart;
 import com.google.gwt.visualization.client.visualizations.ColumnChart;
 import com.google.gwt.visualization.client.visualizations.LineChart;
 import com.google.gwt.visualization.client.visualizations.LineChart.Options;
@@ -1165,6 +1166,21 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
         Map emptyData = new HashMap<String, List<TimeSlotData>>();
         emptyData.put("", new ArrayList<TimeSlotData>());
         createColumnChart(this.callVolumePanel, emptyData,"");
+    }
+
+    @Override
+    public void addValueChangeHandlerForDate1(ValueChangeHandler<Date> listener) {
+        getFilter().getDate1().addValueChangeHandler(listener);
+    }
+
+    @Override
+    public void addFilterOptionsApplyClickHandler(ClickHandler handler) {
+        getFilter().getApplyButton().addClickHandler(handler);
+    }
+
+    @Override
+    public void addTreeElementSelectionHandler(SelectionHandler<TreeItem> handler) {
+        getSelector().addSelectionHandler(handler);
     }
 
 }

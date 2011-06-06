@@ -91,7 +91,7 @@ public class AppController implements Controller, ValueChangeHandler<String>{
 	}
 
 	/**
-	 * Adds the servicePresenter.
+	 * Adds the consumerPresenter.
 	 *
 	 * @param id The Presenter id
 	 * @param p the Presenter object to be added to {@link #presenters}
@@ -101,10 +101,10 @@ public class AppController implements Controller, ValueChangeHandler<String>{
     }
 
     /**
-     * Gets the servicePresenter.
+     * Gets the consumerPresenter.
      *
      * @param id the id
-     * @return the servicePresenter
+     * @return the consumerPresenter
      * @see org.ebayopensource.turmeric.monitoring.client.Controller#getPresenter(java.lang.String)
      */
     public Presenter getPresenter(String id) {
@@ -112,7 +112,7 @@ public class AppController implements Controller, ValueChangeHandler<String>{
     }
 
     /**
-     * Select servicePresenter.
+     * Select consumerPresenter.
      *
      * @param token the token
      * @see org.ebayopensource.turmeric.monitoring.client.Controller#selectPresenter(org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)

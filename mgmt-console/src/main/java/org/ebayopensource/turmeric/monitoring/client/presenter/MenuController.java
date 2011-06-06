@@ -25,7 +25,7 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.HasWidgets;
 
 /**
- * This servicePresenter contains top level menu of the application. 
+ * This presenter contains top level menu of the application. 
  * 
  * @author nuy
  * 
@@ -130,7 +130,7 @@ public class MenuController implements Presenter, Controller {
     }
 
     /**
-     * Adds the servicePresenter.
+     * Adds the presenter.
      *
      * @param id the id
      * @param p the p
@@ -141,10 +141,10 @@ public class MenuController implements Presenter, Controller {
     }
 
     /**
-     * Gets the servicePresenter.
+     * Gets the presenter.
      *
      * @param id the id
-     * @return the servicePresenter
+     * @return the presenter
      * @see org.ebayopensource.turmeric.monitoring.client.Controller#getPresenter(java.lang.String)
      */
     public Presenter getPresenter(String id) {
@@ -152,7 +152,7 @@ public class MenuController implements Presenter, Controller {
     }
 
     /**
-     * Select servicePresenter.
+     * Select presenter.
      *
      * @param token the token
      * @see org.ebayopensource.turmeric.monitoring.client.Controller#selectPresenter(org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
@@ -162,7 +162,7 @@ public class MenuController implements Presenter, Controller {
 
         Presenter presenter = presenters.get(presenterId);
         if (presenter != null) {
-            // Pass in this view so that all servicePresenter/view pairs are children
+            // Pass in this view so that all presenter/view pairs are children
             // of the MenuController's view (get constant header/footer wrapping)
             presenter.go(view, token);
         }

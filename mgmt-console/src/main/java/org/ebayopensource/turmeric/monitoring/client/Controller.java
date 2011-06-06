@@ -17,7 +17,7 @@ import org.ebayopensource.turmeric.monitoring.client.presenter.Presenter;
 public interface Controller {
 
     /**
-     * Adds the servicePresenter.
+     * Adds the presenter.
      *
      * @param id the id
      * @param p the p
@@ -25,15 +25,15 @@ public interface Controller {
     public void addPresenter(String id, Presenter p);
     
     /**
-     * Gets the servicePresenter.
+     * Gets the presenter.
      *
      * @param id the id
-     * @return the servicePresenter
+     * @return the presenter
      */
     public Presenter getPresenter(String id);
     
     /**
-     * Select servicePresenter.
+     * Select presenter.
      *
      * @param token the token
      */

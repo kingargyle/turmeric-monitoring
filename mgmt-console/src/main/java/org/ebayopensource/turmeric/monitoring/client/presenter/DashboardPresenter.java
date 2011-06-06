@@ -47,7 +47,7 @@ public class DashboardPresenter implements Presenter, Controller {
     /** The query service. */
     protected MetricsQueryService queryService;
     
-    /** The default servicePresenter. */
+    /** The default presenter. */
     protected TabPresenter defaultPresenter;
     
     /** The presenters. */
@@ -61,7 +61,7 @@ public class DashboardPresenter implements Presenter, Controller {
   
     
     /**
-     * Instantiates a new dashboard servicePresenter.
+     * Instantiates a new dashboard presenter.
      *
      * @param eventBus the event bus
      * @param view the view
@@ -144,7 +144,7 @@ public class DashboardPresenter implements Presenter, Controller {
     }
 
     /**
-     * Adds the servicePresenter.
+     * Adds the presenter.
      *
      * @param id the id
      * @param p the p
@@ -155,10 +155,10 @@ public class DashboardPresenter implements Presenter, Controller {
     }
 
     /**
-     * Gets the servicePresenter.
+     * Gets the presenter.
      *
      * @param id the id
-     * @return the servicePresenter
+     * @return the presenter
      * @see org.ebayopensource.turmeric.monitoring.client.Controller#getPresenter(java.lang.String)
      */
     public Presenter getPresenter(String id) {
@@ -166,23 +166,23 @@ public class DashboardPresenter implements Presenter, Controller {
     }
     
     /**
-     * Gets the tab servicePresenter.
+     * Gets the tab presenter.
      *
      * @param id the id
-     * @return the tab servicePresenter
+     * @return the tab presenter
      */
     public TabPresenter getTabPresenter(String id) {
         return presenters.get(id);
     }
 
     /**
-     * Select servicePresenter.
+     * Select the presenter.
      *
      * @param token the token
      * @see org.ebayopensource.turmeric.monitoring.client.Controller#selectPresenter(org.ebayopensource.turmeric.monitoring.client.model.HistoryToken)
      */
     public void selectPresenter(HistoryToken token) {
-        //we want to select the current tab servicePresenter based on the history token
+        //we want to select the current tab presenter based on the history token
         if (token != null) {
             String id = HistoryToken.getValue(token, TAB);
            

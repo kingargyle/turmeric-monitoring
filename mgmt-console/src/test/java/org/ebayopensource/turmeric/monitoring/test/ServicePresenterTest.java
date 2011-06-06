@@ -3,11 +3,6 @@ package org.ebayopensource.turmeric.monitoring.test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import java.util.Map;
-
-import org.ebayopensource.turmeric.monitoring.client.AppController;
-import org.ebayopensource.turmeric.monitoring.client.SupportedService;
-import org.ebayopensource.turmeric.monitoring.client.model.ConsoleService;
 import org.ebayopensource.turmeric.monitoring.client.model.DummyMetricsQueryServiceImpl;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricData;
 import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.Entity;
@@ -15,7 +10,6 @@ import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
 import org.ebayopensource.turmeric.monitoring.client.model.SelectionContext;
 import org.ebayopensource.turmeric.monitoring.client.model.ServiceMetric;
 import org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter;
-import org.ebayopensource.turmeric.monitoring.client.view.DashboardContainer;
 import org.ebayopensource.turmeric.monitoring.client.view.ServiceView;
 import org.junit.After;
 import org.junit.Before;
@@ -29,23 +23,18 @@ public class ServicePresenterTest extends ConsoleGwtTestBase {
     ServicePresenter servicePresenter = null;
     HandlerManager eventBus = null;
     DummyMetricsQueryServiceImpl service = null;
-    AppController appController = null;
-    Map<SupportedService, ConsoleService> serviceMap = null;
-    private DashboardContainer dashboardContainer;
     ServiceView view = null;
 
     @Before
     public void setUp() {
         eventBus = new HandlerManager(null);
         service = new DummyMetricsQueryServiceImpl();
-        dashboardContainer = new DashboardContainer();
         view = mock(ServiceView.class);
         view.addValueChangeHandlerForDate1(null);
         view.addFilterOptionsApplyClickHandler(null);
         view.addTreeElementSelectionHandler(null);
         servicePresenter = new ServicePresenter(this.eventBus, view, service);
-        // view = new MockServiceView(dashboardContainer);
-        // servicePresenter = new ServicePresenter(this.eventBus, view, service);
+        
     }
 
     @After
@@ -106,5 +95,32 @@ public class ServicePresenterTest extends ConsoleGwtTestBase {
         verify(view).activate();
         verify(view).setMetric(Matchers.eq(ServiceMetric.LeastPerformance), Matchers.any(MetricData.class));
     }
+    
+    @Test
+    public void testFetchConsumerErrorsMetricsForServiceSelection() {
+        long now = System.currentTimeMillis();
+        long oneHourLater = now + 3600 * 1000;
+        int hoursInterval = 1;
+        SelectionContext ctx = new SelectionContext();
+        String serviceName = "MyService";
+        ctx.select(ObjectType.ServiceName, serviceName);
+        servicePresenter.fetchMetric(ServiceMetric.ConsumerErrors, ctx, Entity.Operation, now, oneHourLater, hoursInterval);
+        verify(view).activate();
+        verify(view).setMetric(Matchers.eq(ServiceMetric.ConsumerErrors), Matchers.any(MetricData.class));
+    }
+
+    @Test
+    public void testFetchConsumerErrorsMetricsForOperationSelection() {
+        long now = System.currentTimeMillis();
+        long oneHourLater = now + 3600 * 1000;
+        int hoursInterval = 1;
+        SelectionContext ctx = new SelectionContext();
+        String operationName = "MyServiceOperation";
+        ctx.select(ObjectType.OperationName, operationName);
+        servicePresenter.fetchMetric(ServiceMetric.ConsumerErrors, ctx, Entity.Operation, now, oneHourLater, hoursInterval);
+        verify(view).activate();
+        verify(view).setMetric(Matchers.eq(ServiceMetric.ConsumerErrors), Matchers.any(MetricData.class));
+    }
+    
 
 }

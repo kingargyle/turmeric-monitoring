@@ -30,7 +30,7 @@ public class PresenterUtil {
 	}
 	
 	/**
-	 * Force redirect to servicePresenter.
+	 * Force redirect to presenter.
 	 *
 	 * @param token the token
 	 * @param presenter the presenter
@@ -43,10 +43,10 @@ public class PresenterUtil {
 	}
 	
 	/**
-	 * Gets the servicePresenter id.
+	 * Gets the presenter id.
 	 *
 	 * @param action the action
-	 * @return the servicePresenter id
+	 * @return the presenter id
 	 */
 	public static String getPresenterId(UserAction action) {
 		return ACTION_PRESENTERID_MAPPER.get(action);

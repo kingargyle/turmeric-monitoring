@@ -266,11 +266,33 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
          * Claer consumer service call trend graph.
          */
         public void clearConsumerServiceCallTrendGraph();
+        
+        
+        /**
+         * Adds the value change handler for date1.
+         *
+         * @param listener the listener
+         */
+        public void addValueChangeHandlerForDate1(ValueChangeHandler<Date> listener);
+        
+        /**
+         * Adds the filter options apply click handler.
+         *
+         * @param handler the handler
+         */
+        public void addFilterOptionsApplyClickHandler(ClickHandler handler);
+        
+        /**
+         * Adds the tree element selection handler.
+         *
+         * @param handler the handler
+         */
+        public void addTreeElementSelectionHandler(SelectionHandler<TreeItem> handler);
 
     }
 
     /**
-     * Instantiates a new consumer servicePresenter.
+     * Instantiates a new consumer consumerPresenter.
      * 
      * @param eventBus
      *            the event bus
@@ -416,7 +438,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         });
 
         // listen for user selection of date1
-        this.view.getFilter().getDate1().addValueChangeHandler(new ValueChangeHandler<Date>() {
+        this.view.addValueChangeHandlerForDate1(new ValueChangeHandler<Date>() {
 
             public void onValueChange(ValueChangeEvent<Date> event) {
                 Date date = event.getValue();
@@ -427,7 +449,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
 
         // handle user selection of some new dates and intervals to see metrics for
 
-        this.view.getFilter().getApplyButton().addClickHandler(new ClickHandler() {
+        this.view.addFilterOptionsApplyClickHandler(new ClickHandler() {
 
             public void onClick(ClickEvent event) {
                 // Get the date component
@@ -468,7 +490,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         });
 
         // handle selection of service or operation from list
-        this.view.getSelector().addSelectionHandler(new SelectionHandler<TreeItem>() {
+        this.view.addTreeElementSelectionHandler(new SelectionHandler<TreeItem>() {
 
             public void onSelection(SelectionEvent<TreeItem> event) {
                 TreeItem selection = event.getSelectedItem();
@@ -631,7 +653,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param durationHrs
      *            the duration hrs
      */
-    protected void fetchMetric(final ConsumerMetric m, final SelectionContext sc, final Entity returnType,
+    public void fetchMetric(final ConsumerMetric m, final SelectionContext sc, final Entity returnType,
                     final long date1, final long date2, final int durationHrs) {
 
         List<EntityName> subject = new ArrayList<EntityName>();
@@ -798,6 +820,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param date2 the date2
      * @param durationHrs the duration hrs
      * @param consumerNames the consumer names
+     * @return the consumer service error trends
      */
     protected void getConsumerServiceErrorTrends(final String serviceName, final String operationName,
                     final long date1, final long date2, final int durationHrs, List<String> consumerNames) {
@@ -843,6 +866,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param date2 the date2
      * @param durationHrs the duration hrs
      * @param consumerNames the consumer names
+     * @return the consumer service performance trends
      */
     protected void getConsumerServicePerformanceTrends(final String serviceName, final String operationName,
                     final long date1, final long date2, final int durationHrs, List<String> consumerNames) {
@@ -891,6 +915,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param date1 the date1
      * @param date2 the date2
      * @param durationHrs the duration hrs
+     * @return the consumer performance trend
      */
     protected void getConsumerPerformanceTrend(final String serviceName, String consumerName, final String operationName,
                     long date1, long date2, final int durationHrs) {
@@ -945,6 +970,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param date1 the date1
      * @param date2 the date2
      * @param durationHrs the duration hrs
+     * @return the consumer error trend
      */
     protected void getConsumerErrorTrend(final String serviceName, String consumerName, final String operationName, long date1,
                     long date2, final int durationHrs) {
@@ -997,6 +1023,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param date2 the date2
      * @param durationHrs the duration hrs
      * @param consumerNames the consumer names
+     * @return the consumer service trends
      */
     protected void getConsumerServiceTrends(final String serviceName, final String operationName, final long date1,
                     final long date2, final int durationHrs, List<String> consumerNames) {
@@ -1048,6 +1075,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param date1 the date1
      * @param date2 the date2
      * @param durationHrs the duration hrs
+     * @return the consumer call trend
      */
     protected void getConsumerCallTrend(final String serviceName, final String consumerName,
                     final String operationName, final long date1, final long date2, final int durationHrs) {
@@ -1159,6 +1187,9 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         return filterString;
     }
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter.TabPresenter#getView()
+     */
     @Override
     public org.ebayopensource.turmeric.monitoring.client.Display getView() {
         return this.view;

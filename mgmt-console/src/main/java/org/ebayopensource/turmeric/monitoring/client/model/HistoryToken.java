@@ -19,7 +19,7 @@ import com.google.gwt.user.client.History;
 /**
  * HistoryToken
  * 
- * servicePresenter-id:[name=value]*n.
+ * presenter-id:[name=value]*n.
  */
 public class HistoryToken {
     
@@ -129,9 +129,9 @@ public class HistoryToken {
 	}
 
 	/**
-	 * Gets the servicePresenter id.
+	 * Gets the presenter id.
 	 *
-	 * @return the servicePresenter id
+	 * @return the presenter id
 	 */
 	public String getPresenterId () {
 		return this.presenterId;
@@ -229,7 +229,7 @@ public class HistoryToken {
 	/**
 	 * New history token.
 	 *
-	 * @param presenterId the servicePresenter id
+	 * @param presenterId the presenter id
 	 * @param map the map
 	 * @return the history token
 	 */
