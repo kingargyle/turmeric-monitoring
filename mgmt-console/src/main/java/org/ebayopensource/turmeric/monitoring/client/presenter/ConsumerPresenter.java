@@ -820,7 +820,6 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param date2 the date2
      * @param durationHrs the duration hrs
      * @param consumerNames the consumer names
-     * @return the consumer service error trends
      */
     protected void getConsumerServiceErrorTrends(final String serviceName, final String operationName,
                     final long date1, final long date2, final int durationHrs, List<String> consumerNames) {
@@ -866,7 +865,6 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param date2 the date2
      * @param durationHrs the duration hrs
      * @param consumerNames the consumer names
-     * @return the consumer service performance trends
      */
     protected void getConsumerServicePerformanceTrends(final String serviceName, final String operationName,
                     final long date1, final long date2, final int durationHrs, List<String> consumerNames) {
@@ -915,7 +913,6 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param date1 the date1
      * @param date2 the date2
      * @param durationHrs the duration hrs
-     * @return the consumer performance trend
      */
     protected void getConsumerPerformanceTrend(final String serviceName, String consumerName, final String operationName,
                     long date1, long date2, final int durationHrs) {
@@ -970,7 +967,6 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param date1 the date1
      * @param date2 the date2
      * @param durationHrs the duration hrs
-     * @return the consumer error trend
      */
     protected void getConsumerErrorTrend(final String serviceName, String consumerName, final String operationName, long date1,
                     long date2, final int durationHrs) {
@@ -1023,7 +1019,6 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param date2 the date2
      * @param durationHrs the duration hrs
      * @param consumerNames the consumer names
-     * @return the consumer service trends
      */
     protected void getConsumerServiceTrends(final String serviceName, final String operationName, final long date1,
                     final long date2, final int durationHrs, List<String> consumerNames) {
@@ -1075,7 +1070,6 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      * @param date1 the date1
      * @param date2 the date2
      * @param durationHrs the duration hrs
-     * @return the consumer call trend
      */
     protected void getConsumerCallTrend(final String serviceName, final String consumerName,
                     final String operationName, final long date1, final long date2, final int durationHrs) {

@@ -9,7 +9,7 @@ import com.octo.gwt.test.patchers.PatchMethod;
 public class RamdomPatcher extends AutomaticPatcher{
     @PatchMethod
     public static int nextInt(int upperBound) {
-        return new Integer((int) Math.random());
+        return 1;
     }
     
     @PatchMethod
