@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -694,7 +693,7 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
      public void getErrorData(ErrorCriteria ec, MetricCriteria mc,
                              AsyncCallback<ErrorMetricData> callback) {
         ErrorMetricData result = new ErrorMetricData();
-        result.setRestUrl(URL.encode(ErrorMetricsDataRequest.getRestURL(ec, mc)));
+        //result.setRestUrl(URL.encode(ErrorMetricsDataRequest.getRestURL(ec, mc)));
         result.setErrorCriteria(ec);
         result.setMetricCriteria(mc);
 

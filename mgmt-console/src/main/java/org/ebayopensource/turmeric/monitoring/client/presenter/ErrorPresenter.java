@@ -126,7 +126,7 @@ public class ErrorPresenter implements TabPresenter {
          */
         public void error(String s);
         
-        /**
+        /**Display
          * Gets the filter.
          *
          * @return the filter
@@ -222,6 +222,38 @@ public class ErrorPresenter implements TabPresenter {
          * @param graphTitle the graph title
          */
         public void setServiceRequestErrorTrendData(List<ErrorTimeSlotData> dataRanges, long aggregationPeriod, int hourSpan, String graphTitle);
+        
+        
+        /**
+         * Adds the value change handler for date1.
+         *
+         * @param valueChangeHandler the value change handler
+         */
+        public void addValueChangeHandlerForDate1(ValueChangeHandler<Date> valueChangeHandler);
+        
+        
+        /**
+         * Adds the value change handler for date2.
+         *
+         * @param valueChangeHandler the value change handler
+         */
+        public void addValueChangeHandlerForDate2(ValueChangeHandler<Date> valueChangeHandler);
+        
+        
+        /**
+         * Adds the filter options apply click handler.
+         *
+         * @param handler the handler
+         */
+        public void addFilterOptionsApplyClickHandler(ClickHandler handler);
+
+        
+        /**
+         * Adds the tree element selection handler.
+         *
+         * @param selectionHandler the selection handler
+         */
+        public void addTreeElementSelectionHandler(SelectionHandler<TreeItem> selectionHandler);
     }
     
     /**
@@ -400,7 +432,7 @@ public class ErrorPresenter implements TabPresenter {
         });
 
         //listen for user selection of date1
-        this.view.getFilter().getDate1().addValueChangeHandler(new ValueChangeHandler<Date> () {
+        this.view.addValueChangeHandlerForDate1(new ValueChangeHandler<Date> () {
 
             public void onValueChange(ValueChangeEvent<Date> event) {
                 Date date = event.getValue();
@@ -410,7 +442,7 @@ public class ErrorPresenter implements TabPresenter {
         });
 
         //listen for user selection of date2
-        this.view.getFilter().getDate2().addValueChangeHandler(new ValueChangeHandler<Date> () {
+        this.view.addValueChangeHandlerForDate2(new ValueChangeHandler<Date> () {
 
             public void onValueChange(ValueChangeEvent<Date> event) {
                 Date date = event.getValue();
@@ -421,7 +453,7 @@ public class ErrorPresenter implements TabPresenter {
 
         //handle user selection of some new dates and intervals to see metrics for
       
-        this.view.getFilter().getApplyButton().addClickHandler(new ClickHandler() {
+        this.view.addFilterOptionsApplyClickHandler(new ClickHandler() {
 
             public void onClick(ClickEvent event) {
                 //Get the date component
@@ -472,7 +504,7 @@ public class ErrorPresenter implements TabPresenter {
 
 
         //handle selection of service or operation from list
-        this.view.getSelector().addSelectionHandler(new SelectionHandler<TreeItem> () {
+        this.view.addTreeElementSelectionHandler(new SelectionHandler<TreeItem> () {
 
             public void onSelection(SelectionEvent<TreeItem> event) {
                 TreeItem selection = event.getSelectedItem();
@@ -799,7 +831,7 @@ public class ErrorPresenter implements TabPresenter {
      * @param ec the ec
      * @param mc the mc
      */
-    protected void fetchMetric (final ErrorMetric m, final ErrorCriteria ec, final MetricCriteria mc) {
+    public void fetchMetric (final ErrorMetric m, final ErrorCriteria ec, final MetricCriteria mc) {
 
         queryService.getErrorData(ec, mc, new AsyncCallback<ErrorMetricData>() {
 
@@ -945,6 +977,9 @@ public class ErrorPresenter implements TabPresenter {
     }
 
 
+    /* (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter.TabPresenter#getView()
+     */
     @Override
     public org.ebayopensource.turmeric.monitoring.client.Display getView() {
         return this.view;

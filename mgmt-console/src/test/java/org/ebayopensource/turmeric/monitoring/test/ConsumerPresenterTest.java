@@ -182,7 +182,7 @@ public class ConsumerPresenterTest extends ConsoleGwtTestBase {
         String serviceName = "MyService";
         ctx.select(ObjectType.ServiceName, serviceName);
         consumerPresenter.fetchMetric(ConsumerMetric.Errors, ctx, Entity.Operation, now, oneHourLater, hoursInterval);
-        verify(view).setMetric(Matchers.eq(ConsumerMetric.TopServiceErrors), Matchers.any(MetricData.class));
+        verify(view).setMetric(Matchers.eq(ConsumerMetric.Errors), Matchers.any(MetricData.class));
     }
     
     @Test
@@ -194,6 +194,6 @@ public class ConsumerPresenterTest extends ConsoleGwtTestBase {
         String serviceName = "MyServiceOperation";
         ctx.select(ObjectType.OperationName, serviceName);
         consumerPresenter.fetchMetric(ConsumerMetric.Errors, ctx, Entity.Operation, now, oneHourLater, hoursInterval);
-        verify(view).setMetric(Matchers.eq(ConsumerMetric.TopServiceErrors), Matchers.any(MetricData.class));
+        verify(view).setMetric(Matchers.eq(ConsumerMetric.Errors), Matchers.any(MetricData.class));
     }
 }

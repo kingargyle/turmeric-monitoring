@@ -11,4 +11,9 @@ public class RamdomPatcher extends AutomaticPatcher{
     public static int nextInt(int upperBound) {
         return new Integer((int) Math.random());
     }
+    
+    @PatchMethod
+    public static double nextDouble(){
+        return Math.random();
+    }
 }

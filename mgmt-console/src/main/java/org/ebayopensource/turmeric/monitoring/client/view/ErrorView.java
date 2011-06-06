@@ -19,12 +19,11 @@ import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
 import org.ebayopensource.turmeric.monitoring.client.Dashboard;
 import org.ebayopensource.turmeric.monitoring.client.model.ErrorDetail;
 import org.ebayopensource.turmeric.monitoring.client.model.ErrorMetric;
+import org.ebayopensource.turmeric.monitoring.client.model.ErrorMetricData;
 import org.ebayopensource.turmeric.monitoring.client.model.ErrorTimeSlotData;
 import org.ebayopensource.turmeric.monitoring.client.model.ErrorViewData;
 import org.ebayopensource.turmeric.monitoring.client.model.Filterable;
 import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
-import org.ebayopensource.turmeric.monitoring.client.model.ErrorMetricData;
-import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
 import org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter;
 import org.ebayopensource.turmeric.monitoring.client.util.GraphUtil;
 
@@ -34,6 +33,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.HasSelectionHandlers;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -42,10 +43,8 @@ import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
@@ -53,11 +52,8 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.AbstractDataTable;
-import com.google.gwt.visualization.client.DataTable;
-import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
-import com.google.gwt.visualization.client.visualizations.LineChart;
-import com.google.gwt.visualization.client.visualizations.LineChart.Options;
+import com.google.gwt.visualization.client.DataTable;
 
 
 
@@ -941,6 +937,26 @@ protected AbstractDataTable createChartDataTable(List<ErrorTimeSlotData> dataRan
         else {
             GWT.log("empty graphData");
         }
+    }
+
+    @Override
+    public void addValueChangeHandlerForDate1(ValueChangeHandler<Date> valueChangeHandler) {
+        getFilter().getDate1().addValueChangeHandler(valueChangeHandler);
+    }
+
+    @Override
+    public void addValueChangeHandlerForDate2(ValueChangeHandler<Date> valueChangeHandler) {
+        getFilter().getDate2().addValueChangeHandler(valueChangeHandler);
+    }
+
+    @Override
+    public void addFilterOptionsApplyClickHandler(ClickHandler handler) {
+        getFilter().getApplyButton().addClickHandler(handler) ;
+    }
+
+    @Override
+    public void addTreeElementSelectionHandler(SelectionHandler<TreeItem> selectionHandler) {
+        getSelector().addSelectionHandler(selectionHandler);
     }
 
 }
