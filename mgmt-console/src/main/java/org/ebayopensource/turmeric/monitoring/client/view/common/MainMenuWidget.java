@@ -14,7 +14,6 @@ import java.util.Map;
 import org.ebayopensource.turmeric.monitoring.client.model.UserAction;
 import org.ebayopensource.turmeric.monitoring.client.view.common.TemplateDisplay.MenuDisplay;
 
-import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -37,8 +36,6 @@ public class MainMenuWidget extends AbstractGenericView implements MenuDisplay {
 	
 	private SimplePanel mainPanel;
 	private FlexTable menuTable;
-	
-	private Map<UserAction, Label> menuAccessMap;
 	
 	/**
 	 * Instantiates a new main menu widget.
@@ -91,16 +88,6 @@ public class MainMenuWidget extends AbstractGenericView implements MenuDisplay {
 	 */
 	public void changeSelection(UserAction action) {
 		// do nothing
-	}
-
-	/**
-	 * Gets the component for access.
-	 *
-	 * @param action the action
-	 * @return the component for access
-	 */
-	public HasClickHandlers getComponentForAccess(UserAction action) {
-		return menuAccessMap.get(action);
 	}
 
 	/**

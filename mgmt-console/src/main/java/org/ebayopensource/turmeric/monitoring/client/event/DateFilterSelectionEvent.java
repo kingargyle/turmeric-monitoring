@@ -8,17 +8,12 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.client.event;
 
-import java.util.Date;
-
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
  * The Class DateFilterSelectionEvent.
  */
 public class DateFilterSelectionEvent extends GwtEvent<DateFilterSelectionHandler> {
-    
-    /** The consumer. */
-    String consumer;
     
     /** The date1. */
     long date1;

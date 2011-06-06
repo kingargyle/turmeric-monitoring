@@ -353,7 +353,6 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         view.getFilter().setDate2(new Date(selectedDate2));
 
         // duration
-        String tmp = HistoryToken.getValue(token, HistoryToken.SELECTED_DURATION_TOKEN);
         selectedDuration = (filter.getDurationHrs() == 0 ? MetricsQueryService.DEFAULT_DURATION_HRS : filter
                         .getDurationHrs());
         int[] intervals = new int[24];

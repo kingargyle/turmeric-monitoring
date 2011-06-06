@@ -3,6 +3,7 @@ package org.ebayopensource.turmeric.monitoring.test.util;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 
 import junit.framework.Assert;
 
@@ -12,7 +13,7 @@ import junit.framework.Assert;
  * @author manuelchinea
  *
  */
-public class UtilFileReader {
+public class UtilFileReader implements Serializable{
 
     /**
      * Reads the response file stored in src/test/resources/metricName/response<index>.txt.

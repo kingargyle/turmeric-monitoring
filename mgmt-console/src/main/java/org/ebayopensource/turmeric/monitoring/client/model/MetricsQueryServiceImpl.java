@@ -643,11 +643,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                                 List<TimeSlotData> results =  new ArrayList<TimeSlotData>();
                                 results.add(firstDateRange);
                                 results.add(secondDateRange);
-                                if(firstDateRange != null && secondDateRange != null){
-                                    callback.onSuccess(results);
-                                }else{
-                                    callback.onFailure(new Exception("Error getting the graphs"));
-                                }
+                                callback.onSuccess(results);
                             }
                             
                         });
@@ -704,11 +700,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                         List<ErrorTimeSlotData> results =  new ArrayList<ErrorTimeSlotData>();
                         results.add(firstDateRange);
                         results.add(secondDateRange);
-                        if(firstDateRange != null && secondDateRange != null){
-                            callback.onSuccess(results);
-                        }else{
-                            callback.onFailure(new Exception("Error getting the graphs"));
-                        }
+                        callback.onSuccess(results);
                     }
                     
                 });

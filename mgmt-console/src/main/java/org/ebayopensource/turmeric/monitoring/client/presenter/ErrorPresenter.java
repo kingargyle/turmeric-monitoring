@@ -441,16 +441,6 @@ public class ErrorPresenter implements TabPresenter {
             }
         });
 
-        //listen for user selection of date2
-        this.view.addValueChangeHandlerForDate2(new ValueChangeHandler<Date> () {
-
-            public void onValueChange(ValueChangeEvent<Date> event) {
-                Date date = event.getValue();
-                int[] hrs = Util.getAvailableHours(date);
-                
-            }
-        });
-
         //handle user selection of some new dates and intervals to see metrics for
       
         this.view.addFilterOptionsApplyClickHandler(new ClickHandler() {

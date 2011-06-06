@@ -41,8 +41,7 @@ public class ServicePresenterITCase extends ConsoleGwtTestBase {
     HandlerManager eventBus = null;
     DummyMetricsQueryServiceImpl service = null;
     AppController appController = null;
-    Map<SupportedService, ConsoleService> serviceMap = null;
-
+    
     @Before
     public void setUp() {
         service = new DummyMetricsQueryServiceImpl();

@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.ebayopensource.turmeric.monitoring.client.ConsoleUtil;
+
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.Response;
 
 /**
@@ -54,30 +54,30 @@ JSON,
      * @param format the format
      * @return the partial url
      */
-    public String getPartialUrl(String operation, Map<String,String> namespaces, RequestFormat format) {
-        String url = "";
-
-        url += serviceNameHeaderValue;
-        url += "&"+OPERATION_NAME_HEADER+"="+operation;
-        url += "&"+USECASE_HEADER_VALUE;
-        switch (format) {
-            case JSON:
-                url += "&"+JSON_DATA_FORMAT_HEADER_VALUE;
-                break;
-            case NV:
-                url += "&"+NV_DATA_FORMAT_HEADER_VALUE;
-                break;
-        }
-       
-        url += "&"+JSON_RESPONSE_FORMAT_HEADER_VALUE;
-
-        if (namespaces != null && RequestFormat.NV == format) {
-            for (String s:namespaces.keySet()) {
-                url += "&nvns:"+s+"="+namespaces.get(s);
-            }
-        }
-        return url;
-    }
+//    public String getPartialUrl(String operation, Map<String,String> namespaces, RequestFormat format) {
+//        String url = "";
+//
+//        url += serviceNameHeaderValue;
+//        url += "&"+OPERATION_NAME_HEADER+"="+operation;
+//        url += "&"+USECASE_HEADER_VALUE;
+//        switch (format) {
+//            case JSON:
+//                url += "&"+JSON_DATA_FORMAT_HEADER_VALUE;
+//                break;
+//            case NV:
+//                url += "&"+NV_DATA_FORMAT_HEADER_VALUE;
+//                break;
+//        }
+//       
+//        url += "&"+JSON_RESPONSE_FORMAT_HEADER_VALUE;
+//
+//        if (namespaces != null && RequestFormat.NV == format) {
+//            for (String s:namespaces.keySet()) {
+//                url += "&nvns:"+s+"="+namespaces.get(s);
+//            }
+//        }
+//        return url;
+//    }
     
 
     /**
@@ -85,9 +85,9 @@ JSON,
      *
      * @param requestBuilder the new security headers
      */
-    public void setSecurityHeaders (RequestBuilder requestBuilder) {
-       
-    }
+//    public void setSecurityHeaders (RequestBuilder requestBuilder) {
+//       
+//    }
     
     
     
@@ -98,28 +98,28 @@ JSON,
      * @param response the response
      * @return the error as throwable
      */
-    public Throwable getErrorAsThrowable (String responseName, Response response) {
-        if (response == null)
-            return null;
-        
-        //try parsing the json as an errorMessage
-        ErrorResponse errorResponse = ErrorResponse.fromJSON(response.getText());
-        JsArray<RemoteError> errors = errorResponse.getErrors();
-        if (errors == null || errors.length()==0)
-            errors = errorResponse.getServiceErrors(responseName);
-
-        if (errors == null)
-            return new Throwable(ConsoleUtil.constants.error()+" "+response.getStatusCode());
-        String s = "";
-        for (int i=0;i<errors.length();i++) {
-            RemoteError re = errors.get(i);
-            s += re.getCategory()+":"+re.getSeverity()+":"+re.getMessage()+" ";
-        }
-
-        if (!"".equals(s))
-            return new Throwable(s);
-        return new Throwable(ConsoleUtil.messages.badRequestData());
-    }
+//    public Throwable getErrorAsThrowable (String responseName, Response response) {
+//        if (response == null)
+//            return null;
+//        
+//        //try parsing the json as an errorMessage
+//        ErrorResponse errorResponse = ErrorResponse.fromJSON(response.getText());
+//        JsArray<RemoteError> errors = errorResponse.getErrors();
+//        if (errors == null || errors.length()==0)
+//            errors = errorResponse.getServiceErrors(responseName);
+//
+//        if (errors == null)
+//            return new Throwable(ConsoleUtil.constants.error()+" "+response.getStatusCode());
+//        String s = "";
+//        for (int i=0;i<errors.length();i++) {
+//            RemoteError re = errors.get(i);
+//            s += re.getCategory()+":"+re.getSeverity()+":"+re.getMessage()+" ";
+//        }
+//
+//        if (!"".equals(s))
+//            return new Throwable(s);
+//        return new Throwable(ConsoleUtil.messages.badRequestData());
+//    }
     
     /**
      * Gets the error as throwable.

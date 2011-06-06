@@ -188,7 +188,7 @@ public class SelectBoxesWidget extends Composite {
         
         for (int i=0;i<count;i++)
             if (from.isItemSelected(i))
-                selections.put(new Integer(i), from.getItemText(i));
+                selections.put(Integer.valueOf(i), from.getItemText(i));
         
         for (Map.Entry<Integer, String> entry:selections.entrySet()) {
             to.addItem(entry.getValue());
