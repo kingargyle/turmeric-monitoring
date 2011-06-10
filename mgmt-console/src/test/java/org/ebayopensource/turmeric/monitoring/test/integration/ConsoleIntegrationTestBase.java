@@ -12,6 +12,7 @@ import org.ebayopensource.turmeric.monitoring.client.model.DummyMetricsQueryServ
 import org.ebayopensource.turmeric.monitoring.client.model.HistoryToken;
 import org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter;
 import org.ebayopensource.turmeric.monitoring.client.presenter.DashboardPresenter;
+import org.ebayopensource.turmeric.monitoring.client.presenter.ErrorPresenter;
 import org.ebayopensource.turmeric.monitoring.client.presenter.MenuController;
 import org.ebayopensource.turmeric.monitoring.client.presenter.Presenter.TabPresenter;
 import org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter;
@@ -24,8 +25,9 @@ import com.google.gwt.user.client.ui.RootLayoutPanel;
 
 public class ConsoleIntegrationTestBase extends ConsoleGwtTestBase {
 
-    TabPresenter consumerPresenter = null;
+    protected TabPresenter consumerPresenter = null;
     protected TabPresenter servicePresenter = null;
+    protected TabPresenter errorPresenter = null;
     HandlerManager eventBus = null;
     protected DummyMetricsQueryServiceImpl service = null;
     AppController appController = null;
@@ -50,6 +52,7 @@ public class ConsoleIntegrationTestBase extends ConsoleGwtTestBase {
         assertNotNull(dshbrdPresenter);
         servicePresenter = (TabPresenter) dshbrdPresenter.getPresenter(ServicePresenter.SERVICE_ID);
         consumerPresenter = (TabPresenter) dshbrdPresenter.getPresenter(ConsumerPresenter.CONSUMER_ID);
+        errorPresenter = (TabPresenter) dshbrdPresenter.getPresenter(ErrorPresenter.ERROR_ID);
     }
 
     @After
@@ -59,6 +62,7 @@ public class ConsoleIntegrationTestBase extends ConsoleGwtTestBase {
         servicePresenter = null;
         appController = null;
         consumerPresenter = null;
+        errorPresenter = null;
     }
 
     protected void selectServiceForTab(String tabName, String serviceName) {
