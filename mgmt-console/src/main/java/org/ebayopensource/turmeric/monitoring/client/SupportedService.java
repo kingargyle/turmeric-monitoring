@@ -12,13 +12,8 @@ package org.ebayopensource.turmeric.monitoring.client;
  * The Enum SupportedService.
  */
 public enum SupportedService {
-	
-	/** The METRIC s_ quer y_ service. */
-	METRICS_QUERY_SERVICE,
-	
-	/** The POLIC y_ quer y_ service. */
-	POLICY_QUERY_SERVICE,
-	
-	/** The POLIC y_ enforcemen t_ service. */
-	POLICY_ENFORCEMENT_SERVICE
+
+    /** The METRIC s_ quer y_ service. */
+    METRICS_QUERY_SERVICE,
+
 }

@@ -204,92 +204,107 @@ public class ServicePresenter implements Presenter.TabPresenter {
 
         /**
          * Sets the service call trend data.
-         *
-         * @param dataRanges the new service call trend data
-         * @param aggregationPeriod the aggregation period
-         * @param hourSpan the hour span
-         * @param graphTitle the graph title
+         * 
+         * @param dataRanges
+         *            the new service call trend data
+         * @param aggregationPeriod
+         *            the aggregation period
+         * @param hourSpan
+         *            the hour span
+         * @param graphTitle
+         *            the graph title
          */
-        public void setServiceCallTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan, String graphTitle);
+        public void setServiceCallTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan,
+                        String graphTitle);
 
         /**
          * Sets the service performance trend data.
-         *
-         * @param dataRanges the new service performance trend data
-         * @param aggregationPeriod the aggregation period
-         * @param hourSpan the hour span
-         * @param graphTitle the graph title
+         * 
+         * @param dataRanges
+         *            the new service performance trend data
+         * @param aggregationPeriod
+         *            the aggregation period
+         * @param hourSpan
+         *            the hour span
+         * @param graphTitle
+         *            the graph title
          */
-        public void setServicePerformanceTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan, String graphTitle);
+        public void setServicePerformanceTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan,
+                        String graphTitle);
 
         /**
          * Sets the service error trend data.
-         *
-         * @param dataRanges the new service error trend data
-         * @param aggregationPeriod the aggregation period
-         * @param hourSpan the hour span
-         * @param graphTitle the graph title
+         * 
+         * @param dataRanges
+         *            the new service error trend data
+         * @param aggregationPeriod
+         *            the aggregation period
+         * @param hourSpan
+         *            the hour span
+         * @param graphTitle
+         *            the graph title
          */
-        public void setServiceErrorTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan, String graphTitle);
+        public void setServiceErrorTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan,
+                        String graphTitle);
 
         /**
          * Gets the error widget.
-         *
+         * 
          * @return the error widget
          */
         public HasWidgets getErrorWidget();
-        
-        
+
         /**
          * Gets the service call cound trend panel.
-         *
+         * 
          * @return the service call cound trend panel
          */
         public Widget getServiceCallCountTrendPanel();
-        
-        
+
         /**
          * Gets the service performance trend panel.
-         *
+         * 
          * @return the service performance trend panel
          */
         public Widget getServicePerformanceTrendPanel();
-        
+
         /**
          * Gets the service error trend panel.
-         *
+         * 
          * @return the service error trend panel
          */
         public Widget getServiceErrorTrendPanel();
 
-        
         /**
          * Gets the table.
-         *
-         * @param m the m
+         * 
+         * @param m
+         *            the m
          * @return the table
          */
         public abstract FlexTable getTable(ServiceMetric m);
-        
-        
+
         /**
          * Adds the value change handler for date1.
-         *
-         * @param listener the listener
+         * 
+         * @param listener
+         *            the listener
          */
         public void addValueChangeHandlerForDate1(ValueChangeHandler<Date> listener);
-        
+
         /**
          * Adds the filter options apply click handler.
-         *
-         * @param handler the handler
+         * 
+         * @param handler
+         *            the handler
          */
         public void addFilterOptionsApplyClickHandler(ClickHandler handler);
-        
+
         /**
          * Adds the tree element selection handler.
-         *
-         * @param handler the handler
+         * 
+         * @param handler
+         *            the handler
          */
         public void addTreeElementSelectionHandler(SelectionHandler<TreeItem> handler);
     }
@@ -314,7 +329,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
 
     /**
      * Gets the id.
-     *
+     * 
      * @return the id
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter#getId()
      */
@@ -342,7 +357,8 @@ public class ServicePresenter implements Presenter.TabPresenter {
         if (servicesList == null)
             fetchServices();
 
-        // if no dates have been selected, then by default compare the last fully complete
+        // if no dates have been selected, then by default compare the last
+        // fully complete
         // hour of today with yesterday
         FilterContext filter = FilterContext.fromHistoryToken(token);
         Date now = new Date();
@@ -401,7 +417,8 @@ public class ServicePresenter implements Presenter.TabPresenter {
      * Bind.
      */
     public void bind() {
-        // listen for any changes from other tabs to the currently selected service or operation
+        // listen for any changes from other tabs to the currently selected
+        // service or operation
         this.eventBus.addHandler(ObjectSelectionEvent.TYPE, new ObjectSelectionEventHandler() {
 
             public void onSelection(ObjectSelectionEvent event) {
@@ -422,7 +439,8 @@ public class ServicePresenter implements Presenter.TabPresenter {
             }
         });
 
-        // handle user selection of some new dates and intervals to see metrics for
+        // handle user selection of some new dates and intervals to see metrics
+        // for
         this.view.addFilterOptionsApplyClickHandler(new ClickHandler() {
 
             public void onClick(ClickEvent event) {
@@ -455,7 +473,8 @@ public class ServicePresenter implements Presenter.TabPresenter {
 
                     view.reset();
                     // Window.alert("getApplyButton().addClickHandler. Before fetchMetrics");
-                    // Make a history event so the back/forward buttons work but don't fire it as we don't
+                    // Make a history event so the back/forward buttons work but
+                    // don't fire it as we don't
                     // want to change pages
                     fetchMetrics(selectedMetrics, selectionContext, selectedDate1, selectedDate2, selectedDurationHrs);
                     insertHistory(selectionContext, selectedDate1, selectedDate2, selectedDurationHrs, selectedMetrics,
@@ -469,7 +488,8 @@ public class ServicePresenter implements Presenter.TabPresenter {
 
             public void onSelection(SelectionEvent<TreeItem> event) {
                 TreeItem selection = event.getSelectedItem();
-                // get service and or operation name corresponding to this selection
+                // get service and or operation name corresponding to
+                // this selection
                 selectionContext = new SelectionContext();
 
                 // If its the root, then no service is selected
@@ -491,7 +511,8 @@ public class ServicePresenter implements Presenter.TabPresenter {
                 }
 
                 view.setSelection(selectionContext.getSelections());
-                // tell any interested parties the user has selected a service or operation
+                // tell any interested parties the user has selected a
+                // service or operation
                 fireObjectSelectionEvent(selectionContext);
 
                 // Get the date component
@@ -516,11 +537,13 @@ public class ServicePresenter implements Presenter.TabPresenter {
 
                 view.reset();
 
-                // If at least a service was selected, get the metrics for the currently selected date
+                // If at least a service was selected, get the metrics
+                // for the currently selected date
                 if (selectionContext.isSelected(ObjectType.ServiceName))
                     fetchMetrics(selectedMetrics, selectionContext, selectedDate1, selectedDate2, selectedDurationHrs);
 
-                // Make a history event so the back/forward buttons work but don't fire it as we don't
+                // Make a history event so the back/forward buttons work
+                // but don't fire it as we don't
                 // want to change pages
                 insertHistory(selectionContext, selectedDate1, selectedDate2, selectedDurationHrs, selectedMetrics,
                                 false);
@@ -596,7 +619,8 @@ public class ServicePresenter implements Presenter.TabPresenter {
     private void getSimpleGraphData(String metricName, String roleType, long aggregationPeriod,
                     final SelectionContext selectionContext, long date1, long date2, final int hourSpan,
                     AsyncCallback<List<TimeSlotData>> callback) {
-        GraphUtil.getSimpleGraphData(queryService, metricName, roleType, aggregationPeriod, selectionContext, date1, date2, hourSpan, callback);
+        GraphUtil.getSimpleGraphData(queryService, metricName, roleType, aggregationPeriod, selectionContext, date1,
+                        date2, hourSpan, callback);
     }
 
     private void getServiceCallTrend(final SelectionContext selectionContext, long date1, long date2, final int hourSpan) {
@@ -610,7 +634,8 @@ public class ServicePresenter implements Presenter.TabPresenter {
                 }
                 String graphTitle = ConsoleUtil.messages.graphTitle("Call Count", serviceOpName, hourSpan);
                 ServicePresenter.this.view.activate();
-                ServicePresenter.this.view.setServiceCallTrendData(dataRanges, minAggregationPeriod, hourSpan, graphTitle);
+                ServicePresenter.this.view.setServiceCallTrendData(dataRanges, minAggregationPeriod, hourSpan,
+                                graphTitle);
             }
 
             @Override
@@ -634,19 +659,20 @@ public class ServicePresenter implements Presenter.TabPresenter {
                 }
                 String graphTitle = ConsoleUtil.messages.graphTitle("Response Time", serviceOpName, hourSpan);
                 ServicePresenter.this.view.activate();
-                ServicePresenter.this.view.setServicePerformanceTrendData(dataRanges, minAggregationPeriod, hourSpan, graphTitle);
+                ServicePresenter.this.view.setServicePerformanceTrendData(dataRanges, minAggregationPeriod, hourSpan,
+                                graphTitle);
             }
 
             @Override
             public void onFailure(Throwable exception) {
                 errorLogger.log(Level.SEVERE, "error in getServicePerformanceTrend", exception);
-                
+
             }
         };
-        
-        this.getSimpleGraphData("ResponseTime", "server", minAggregationPeriod, selectionContext, date1, date2, hourSpan,
-                        callback);
-        
+
+        this.getSimpleGraphData("ResponseTime", "server", minAggregationPeriod, selectionContext, date1, date2,
+                        hourSpan, callback);
+
     }
 
     private void getServiceErrorTrend(final SelectionContext selectionContext, long date1, long date2,
@@ -662,7 +688,8 @@ public class ServicePresenter implements Presenter.TabPresenter {
                 }
                 String graphTitle = ConsoleUtil.messages.graphTitle("Error Count", serviceOpName, hourSpan);
                 ServicePresenter.this.view.activate();
-                ServicePresenter.this.view.setServiceErrorTrendData(dataRanges, minAggregationPeriod, hourSpan, graphTitle);
+                ServicePresenter.this.view.setServiceErrorTrendData(dataRanges, minAggregationPeriod, hourSpan,
+                                graphTitle);
             }
 
             @Override
@@ -670,10 +697,10 @@ public class ServicePresenter implements Presenter.TabPresenter {
                 GWT.log(exception.getMessage());
             }
         };
-        
+
         this.getSimpleGraphData("ErrorCount", "server", minAggregationPeriod, selectionContext, date1, date2, hourSpan,
                         callback);
-        
+
     }
 
     /**
@@ -779,7 +806,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
         queryService.getServices(new AsyncCallback<Map<String, Set<String>>>() {
 
             public void onFailure(Throwable error) {
-                //here
+                // here
                 ServicePresenter.this.view.error(ConsoleUtil.messages.serverError(error.getLocalizedMessage()));
             }
 
@@ -850,7 +877,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
 
     /**
      * Gets the state as history token.
-     *
+     * 
      * @return the state as history token
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter.TabPresenter#getStateAsHistoryToken()
      */
@@ -917,7 +944,7 @@ public class ServicePresenter implements Presenter.TabPresenter {
 
     /**
      * Gets the view.
-     *
+     * 
      * @return the view
      * @see org.ebayopensource.turmeric.monitoring.client.presenter.Presenter.TabPresenter#getView()
      */
