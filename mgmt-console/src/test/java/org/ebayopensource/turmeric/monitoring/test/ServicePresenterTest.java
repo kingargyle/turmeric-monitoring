@@ -34,7 +34,7 @@ public class ServicePresenterTest extends ConsoleGwtTestBase {
         view.addFilterOptionsApplyClickHandler(null);
         view.addTreeElementSelectionHandler(null);
         servicePresenter = new ServicePresenter(this.eventBus, view, service);
-        
+
     }
 
     @After
@@ -69,7 +69,7 @@ public class ServicePresenterTest extends ConsoleGwtTestBase {
         verify(view).activate();
         verify(view).setMetric(Matchers.eq(ServiceMetric.TopVolume), Matchers.any(MetricData.class));
     }
-    
+
     @Test
     public void testFetchLeastPerformanceMetricsForServiceSelection() {
         long now = System.currentTimeMillis();
@@ -78,7 +78,8 @@ public class ServicePresenterTest extends ConsoleGwtTestBase {
         SelectionContext ctx = new SelectionContext();
         String serviceName = "MyService";
         ctx.select(ObjectType.ServiceName, serviceName);
-        servicePresenter.fetchMetric(ServiceMetric.LeastPerformance, ctx, Entity.Operation, now, oneHourLater, hoursInterval);
+        servicePresenter.fetchMetric(ServiceMetric.LeastPerformance, ctx, Entity.Operation, now, oneHourLater,
+                        hoursInterval);
         verify(view).activate();
         verify(view).setMetric(Matchers.eq(ServiceMetric.LeastPerformance), Matchers.any(MetricData.class));
     }
@@ -91,11 +92,12 @@ public class ServicePresenterTest extends ConsoleGwtTestBase {
         SelectionContext ctx = new SelectionContext();
         String operationName = "MyServiceOperation";
         ctx.select(ObjectType.OperationName, operationName);
-        servicePresenter.fetchMetric(ServiceMetric.LeastPerformance, ctx, Entity.Operation, now, oneHourLater, hoursInterval);
+        servicePresenter.fetchMetric(ServiceMetric.LeastPerformance, ctx, Entity.Operation, now, oneHourLater,
+                        hoursInterval);
         verify(view).activate();
         verify(view).setMetric(Matchers.eq(ServiceMetric.LeastPerformance), Matchers.any(MetricData.class));
     }
-    
+
     @Test
     public void testFetchConsumerErrorsMetricsForServiceSelection() {
         long now = System.currentTimeMillis();
@@ -104,7 +106,8 @@ public class ServicePresenterTest extends ConsoleGwtTestBase {
         SelectionContext ctx = new SelectionContext();
         String serviceName = "MyService";
         ctx.select(ObjectType.ServiceName, serviceName);
-        servicePresenter.fetchMetric(ServiceMetric.ConsumerErrors, ctx, Entity.Operation, now, oneHourLater, hoursInterval);
+        servicePresenter.fetchMetric(ServiceMetric.ConsumerErrors, ctx, Entity.Operation, now, oneHourLater,
+                        hoursInterval);
         verify(view).activate();
         verify(view).setMetric(Matchers.eq(ServiceMetric.ConsumerErrors), Matchers.any(MetricData.class));
     }
@@ -115,12 +118,12 @@ public class ServicePresenterTest extends ConsoleGwtTestBase {
         long oneHourLater = now + 3600 * 1000;
         int hoursInterval = 1;
         SelectionContext ctx = new SelectionContext();
-        String operationName = "MyServiceOperation";
+        String operationName = "MyServiceOperation1";
         ctx.select(ObjectType.OperationName, operationName);
-        servicePresenter.fetchMetric(ServiceMetric.ConsumerErrors, ctx, Entity.Operation, now, oneHourLater, hoursInterval);
+        servicePresenter.fetchMetric(ServiceMetric.ConsumerErrors, ctx, Entity.Operation, now, oneHourLater,
+                        hoursInterval);
         verify(view).activate();
         verify(view).setMetric(Matchers.eq(ServiceMetric.ConsumerErrors), Matchers.any(MetricData.class));
     }
-    
 
 }
