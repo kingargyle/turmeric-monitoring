@@ -8,10 +8,16 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -45,8 +51,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * The Class DAOSOAMetricsQueryServiceProviderTest.
  */
@@ -59,8 +63,9 @@ public class DAOSOAMetricsQueryServiceProviderTest {
 
     /**
      * Creates the entity manager factory.
-     *
-     * @throws Exception the exception
+     * 
+     * @throws Exception
+     *             the exception
      */
     @BeforeClass
     public static void createEntityManagerFactory() throws Exception {
@@ -70,8 +75,9 @@ public class DAOSOAMetricsQueryServiceProviderTest {
 
     /**
      * Creates the data.
-     *
-     * @throws Exception the exception
+     * 
+     * @throws Exception
+     *             the exception
      */
     public static void createData() throws Exception {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
@@ -221,12 +227,14 @@ public class DAOSOAMetricsQueryServiceProviderTest {
                 metricValue.setAggregationPeriod(60);
                 metricValue.addMetricComponentValue(new MetricComponentValue(opErrRequest_1, 1));
                 entityManager.persist(metricValue);
-                
-                org.ebayopensource.turmeric.runtime.error.model.Error error1 =
-                    new org.ebayopensource.turmeric.runtime.error.model.Error(1, "error_1", ErrorCategory.SYSTEM, ErrorSeverity.ERROR, "domain_1", "sub_domain_1", "organization");
-            entityManager.persist(error1);
-            ErrorValue errorValue1 = new ErrorValue(error1, "message1", "service_3", "operation_3_1", "consumer_3", oneMinuteAgo, true, 0);
-            entityManager.persist(errorValue1);
+
+                org.ebayopensource.turmeric.runtime.error.model.Error error1 = new org.ebayopensource.turmeric.runtime.error.model.Error(
+                                1, "error_1", ErrorCategory.SYSTEM, ErrorSeverity.ERROR, "domain_1", "sub_domain_1",
+                                "organization");
+                entityManager.persist(error1);
+                ErrorValue errorValue1 = new ErrorValue(error1, "message1", "service_3", "operation_3_1", "consumer_3",
+                                oneMinuteAgo, true, 0);
+                entityManager.persist(errorValue1);
 
                 org.ebayopensource.turmeric.runtime.error.model.Error error2 = new org.ebayopensource.turmeric.runtime.error.model.Error(
                                 2, "error_2", ErrorCategory.SYSTEM, ErrorSeverity.ERROR, "domain_1", "sub_domain_1",
@@ -752,7 +760,9 @@ public class DAOSOAMetricsQueryServiceProviderTest {
         metricCriteria.setSecondStartTime(oneMinuteAgo);
         metricCriteria.setDuration(3600);
 
-        List<ErrorViewData> errorData = provider.getErrorMetricsData("Category", Collections.<String>emptyList(), Collections.<String>emptyList(), Collections.<String>emptyList(), null, null, null, null, metricCriteria);
+        List<ErrorViewData> errorData = provider.getErrorMetricsData("Category", Collections.<String> emptyList(),
+                        Collections.<String> emptyList(), Collections.<String> emptyList(), null, null, null, null,
+                        metricCriteria);
         assertEquals(3, errorData.size());
         ErrorViewData errorDatum = errorData.get(0);
         String errorId = "3";
@@ -765,7 +775,9 @@ public class DAOSOAMetricsQueryServiceProviderTest {
 
         String errorId2 = "2";
         String errorName2 = "error_2";
-        errorData = provider.getErrorMetricsData("Category", Arrays.asList("service_3"), Arrays.asList("operation_3_1"), Arrays.asList("consumer_3"), errorId2, ErrorCategory.SYSTEM.value(), ErrorSeverity.ERROR.value(), null, metricCriteria);
+        errorData = provider.getErrorMetricsData("Category", Arrays.asList("service_3"),
+                        Arrays.asList("operation_3_1"), Arrays.asList("consumer_3"), errorId2,
+                        ErrorCategory.SYSTEM.value(), ErrorSeverity.ERROR.value(), null, metricCriteria);
         assertEquals(1, errorData.size());
         errorDatum = errorData.get(0);
         assertEquals(errorId2, errorDatum.getError().getErrorId());
@@ -796,7 +808,6 @@ public class DAOSOAMetricsQueryServiceProviderTest {
         assertEquals(errorName, errorDatum.getError().getErrorName());
         assertEquals(3, errorDatum.getErrorCount1());
         assertEquals(1, errorDatum.getErrorCount2());
-        assertEquals(200, errorDatum.getErrorDiff(), 1);
 
         String errorId2 = "2";
         String errorName2 = "error_2";
@@ -809,10 +820,8 @@ public class DAOSOAMetricsQueryServiceProviderTest {
         assertEquals(errorName2, errorDatum.getError().getErrorName());
         assertEquals(3, errorDatum.getErrorCount1());
         assertEquals(1, errorDatum.getErrorCount2());
-        assertEquals(200, errorDatum.getErrorDiff(), 1);
     }
 
-    
     /**
      * Test get system error graph for service one minute ago.
      */
@@ -838,7 +847,6 @@ public class DAOSOAMetricsQueryServiceProviderTest {
 
     }
 
-    
     /**
      * Test get system error graph for service two minutes ago.
      */
@@ -865,7 +873,6 @@ public class DAOSOAMetricsQueryServiceProviderTest {
 
     }
 
-    
     /**
      * Test get application error graph for service one minute ago.
      */
@@ -891,7 +898,6 @@ public class DAOSOAMetricsQueryServiceProviderTest {
 
     }
 
-    
     /**
      * Test get application error graph for service two minutes ago.
      */
@@ -918,7 +924,6 @@ public class DAOSOAMetricsQueryServiceProviderTest {
 
     }
 
-    
     /**
      * Test get error graph for non existant service.
      */
@@ -946,7 +951,6 @@ public class DAOSOAMetricsQueryServiceProviderTest {
 
     }
 
-    
     /**
      * Test get error graph for empty category.
      */
@@ -973,12 +977,11 @@ public class DAOSOAMetricsQueryServiceProviderTest {
         }
 
     }
-    
-    
+
     /**
      * Test get error graph for non existant category.
      */
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testGetErrorGraphForNonExistantCategory() {
         long duration = 3600;// in secs
         int aggregationPeriod = 60;// in secs
@@ -988,16 +991,15 @@ public class DAOSOAMetricsQueryServiceProviderTest {
         metricCriteria.setAggregationPeriod(aggregationPeriod);
         metricCriteria.setRoleType("server");
 
-        List<MetricGraphData> result = provider.getErrorGraph("service_3", null, null, null,
-                        "NonExistantCategory", null, metricCriteria);
+        List<MetricGraphData> result = provider.getErrorGraph("service_3", null, null, null, "NonExistantCategory",
+                        null, metricCriteria);
 
     }
-    
-    
+
     /**
      * Test get error graph for non existant severity.
      */
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testGetErrorGraphForNonExistantSeverity() {
         long duration = 3600;// in secs
         int aggregationPeriod = 60;// in secs
@@ -1007,8 +1009,8 @@ public class DAOSOAMetricsQueryServiceProviderTest {
         metricCriteria.setAggregationPeriod(aggregationPeriod);
         metricCriteria.setRoleType("server");
 
-        List<MetricGraphData> result = provider.getErrorGraph("service_3", null, null, null,
-                        null, "NonExistantSeverity", metricCriteria);
+        List<MetricGraphData> result = provider.getErrorGraph("service_3", null, null, null, null,
+                        "NonExistantSeverity", metricCriteria);
 
     }
 

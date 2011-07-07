@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+
 import javax.persistence.EntityManagerFactory;
 
 import org.ebayopensource.turmeric.common.v1.types.ErrorCategory;
@@ -42,8 +43,6 @@ import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.Monit
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.SystemMetricDefs;
 import org.ebayopensource.turmeric.utils.jpa.JPAAroundAdvice;
 import org.ebayopensource.turmeric.utils.jpa.PersistenceContext;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * A Hibernate/JPA provider implementation for the SOAMetricsQueryService.
@@ -322,30 +321,7 @@ public class DAOSOAMetricsQueryServiceProvider implements SOAMetricsQueryService
                 if (row2 != null) {
                     long count2 = (Long) row2.get("errorCount");
                     errorViewData.setErrorCount2(count2);
-
                     errorViewData.setErrorCallRatio2(calls2 == 0 ? 0 : count2 / calls2);
-
-                    double errorDiff = calcDiff(Double.valueOf(count1), Double.valueOf(count2));
-                    // if (count2 == 0)
-                    // if (count1 == 0)
-                    // errorDiff = 0.0D;
-                    // else
-                    // errorDiff = -100.0D;
-                    // else
-                    // errorDiff = Math.round((count2 - count1) * 100 / count2);
-                    errorViewData.setErrorDiff(errorDiff);
-
-                    Double ratio1 = errorViewData.getErrorCallRatio1();
-                    Double ratio2 = errorViewData.getErrorCallRatio2();
-                    double ratioDiff = calcDiff(ratio1, ratio2);
-                    // if (ratio2.intValue() == 0)
-                    // if (ratio1.intValue() == 0)
-                    // ratioDiff = 0.0D;
-                    // else
-                    // ratioDiff = -100.0D;
-                    // else
-                    // ratioDiff = Math.round((ratio2 - ratio1) * 100 / ratio2);
-                    errorViewData.setRatioDiff(ratioDiff);
                 }
                 else {
                     errorViewData.setErrorCount2(0);
@@ -505,8 +481,6 @@ public class DAOSOAMetricsQueryServiceProvider implements SOAMetricsQueryService
                 if (row2 != null) {
                     Double count2 = (Double) row2.get("value");
                     metricGroupData.setCount2(count2);
-                    double diff = calcDiff(count1, count2);
-                    metricGroupData.setDiff(diff);
                 }
                 else {
                     metricGroupData.setCount2(0);
@@ -557,25 +531,6 @@ public class DAOSOAMetricsQueryServiceProvider implements SOAMetricsQueryService
             trimResultList(result, rows);
 
             return result;
-        }
-
-        private Double calcDiff(Double count1, Double count2) {
-            Double diff = Double.valueOf(0);
-            final Double ZERO_DOUBLE = Double.valueOf(0);
-
-            if (Math.abs(count1) < ZERO_DOUBLE && Math.abs(count2) < ZERO_DOUBLE) {
-                diff = ZERO_DOUBLE;
-            }
-            else if (Math.abs(count2) < ZERO_DOUBLE && Math.abs(count1) > ZERO_DOUBLE) {
-                diff = Double.valueOf(1);
-            }
-            else {
-                diff = Double.valueOf((count1 - count2) * 1.0 / count2);
-            }
-
-            diff = (Math.round(diff * 10000)) / 100.0;
-            return diff;
-
         }
 
         private void trimResultList(List<?> list, int maxRows) {

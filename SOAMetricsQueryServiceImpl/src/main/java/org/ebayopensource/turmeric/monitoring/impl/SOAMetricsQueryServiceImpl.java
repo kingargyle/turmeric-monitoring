@@ -14,12 +14,9 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
-import org.ebayopensource.turmeric.common.v1.types.AckValue;
-import org.ebayopensource.turmeric.common.v1.types.BaseResponse;
 import org.ebayopensource.turmeric.common.v1.types.CommonErrorData;
 import org.ebayopensource.turmeric.common.v1.types.ErrorMessage;
 import org.ebayopensource.turmeric.errorlibrary.turmericmonitoring.ErrorConstants;
-import org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService;
 import org.ebayopensource.turmeric.monitoring.provider.SOAMetricsQueryServiceProvider;
 import org.ebayopensource.turmeric.monitoring.provider.config.SOAMetricsQueryServiceProviderFactory;
 import org.ebayopensource.turmeric.monitoring.v1.services.ErrorInfos;
@@ -58,382 +55,478 @@ import org.ebayopensource.turmeric.monitoring.v1.services.PolicyMetricGraphData;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ErrorDataFactory;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceRuntimeException;
+import org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService;
 
 /**
  * The Class SOAMetricsQueryServiceImpl.
  */
-public class SOAMetricsQueryServiceImpl
-    implements SOAMetricsQueryService
-{
+public class SOAMetricsQueryServiceImpl implements SOAMetricsQueryService {
 
-	private static volatile SOAMetricsQueryServiceProvider s_provider;
-	private static List<CommonErrorData> s_errorData = null;
-	private static final String s_providerPropFilePath =
-		"META-INF/soa/services/config/SOAMetricsQueryService/service_provider.properties";
-	private static final String s_providerPropKey = "preferred-provider";
+    private static volatile SOAMetricsQueryServiceProvider s_provider;
+    private static List<CommonErrorData> s_errorData = null;
+    private static final String s_providerPropFilePath = "META-INF/soa/services/config/SOAMetricsQueryService/service_provider.properties";
+    private static final String s_providerPropKey = "preferred-provider";
 
+    private static void initialize() {
+        String preferredProvider = null;
+        if (s_errorData != null) {
+            throw new ServiceRuntimeException(s_errorData);
+        }
+        try {
+            if (s_provider == null) {
+                synchronized (SOAMetricsQueryServiceImpl.class) {
+                    if (s_provider == null) {
+                        preferredProvider = getPreferredProvider();
+                        if (preferredProvider == null) {
+                            s_provider = SOAMetricsQueryServiceProviderFactory.create();
+                        }
+                        else {
+                            s_provider = SOAMetricsQueryServiceProviderFactory.create(preferredProvider);
+                        }
+                    }
+                }
+            }
+        }
+        catch (ServiceException se) {
+            ErrorMessage errMsg = se.getErrorMessage();
+            s_errorData = errMsg.getError();
+            throw new ServiceRuntimeException(s_errorData);
+        }
+    }
 
-	private static void initialize(){
-		String preferredProvider = null;
-		if (s_errorData != null){
-			throw new ServiceRuntimeException(s_errorData);
-		}
-		try{
-			if (s_provider == null){
-				synchronized (SOAMetricsQueryServiceImpl.class) {
-					if (s_provider == null){
-						preferredProvider = getPreferredProvider();
-						if (preferredProvider == null){
-							s_provider = SOAMetricsQueryServiceProviderFactory.create();
-						}else{
-							s_provider = SOAMetricsQueryServiceProviderFactory.create(preferredProvider);
-						}
-					}
-				}
-			}
-		} catch(ServiceException se){
-			ErrorMessage errMsg = se.getErrorMessage();
-			s_errorData = errMsg.getError();
-			throw new ServiceRuntimeException(s_errorData);
-		}
-	}
+    private static String getPreferredProvider() {
+        ClassLoader classLoader = SOAMetricsQueryServiceImpl.class.getClassLoader();
+        InputStream inStream = classLoader.getResourceAsStream(s_providerPropFilePath);
+        String provider = null;
+        if (inStream != null) {
+            Properties properties = new Properties();
+            try {
+                properties.load(inStream);
+                provider = (String) properties.get(s_providerPropKey);
+            }
+            catch (IOException e) {
+                // ignore
+            }
+            finally {
+                try {
+                    inStream.close();
+                }
+                catch (IOException e) {
+                    // ignore
+                }
+            }
+        }
+        return provider;
+    }
 
-	private static String getPreferredProvider() {
-		ClassLoader classLoader = SOAMetricsQueryServiceImpl.class.getClassLoader();
-		InputStream	inStream = classLoader.getResourceAsStream(s_providerPropFilePath);
-		String provider = null;
-		if (inStream != null) {
-			Properties properties = new Properties();
-			try {
-				properties.load(inStream);
-				provider = (String)properties.get(s_providerPropKey);
-			} catch (IOException e) {
-				// ignore
-			}
-			finally {
-				try {
-					inStream.close();
-				} catch (IOException e) {
-					// ignore
-				}
-			}
-		}
-		return provider;
-	}
-
-
-
-
-    /* (non-Javadoc)
-     * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getCustomReportData(org.ebayopensource.turmeric.monitoring.v1.services.GetCustomReportDataRequest)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getCustomReportData(org.ebayopensource
+     * .turmeric.monitoring.v1.services.GetCustomReportDataRequest)
      */
     @Override
-	public GetCustomReportDataResponse getCustomReportData(
-			GetCustomReportDataRequest getCustomReportDataRequest) {
+    public GetCustomReportDataResponse getCustomReportData(GetCustomReportDataRequest getCustomReportDataRequest) {
 
-    	GetCustomReportDataResponse response = null;
-    	try {
-			initialize();
-			response = new GetCustomReportDataResponse();
-			List<MetricData> result = s_provider.getCustomReportData(
-					getCustomReportDataRequest.getReportCriteria(),
-					getCustomReportDataRequest.getMetricCriteria());
-			response.getReturnData().addAll(result);
-		} catch (Exception e) {
-			response.setErrorMessage(new ErrorMessage());
-			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
-		}
-		return response;
-	}
+        GetCustomReportDataResponse response = null;
+        try {
+            initialize();
+            response = new GetCustomReportDataResponse();
+            List<MetricData> result = s_provider.getCustomReportData(getCustomReportDataRequest.getReportCriteria(),
+                            getCustomReportDataRequest.getMetricCriteria());
+            response.getReturnData().addAll(result);
+        }
+        catch (Exception e) {
+            response.setErrorMessage(new ErrorMessage());
+            response.getErrorMessage()
+                            .getError()
+                            .add(ErrorDataFactory.createErrorData(
+                                            ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR,
+                                            ErrorConstants.ERRORDOMAIN));
+        }
+        return response;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getDetailData(org.ebayopensource.turmeric.monitoring.v1.services.GetDetailDataRequest)
-	 */
-	@Override
-	public GetDetailDataResponse getDetailData(
-			GetDetailDataRequest getDetailDataRequest) {
-		GetDetailDataResponse response = null;
-		try {
-			initialize();
-			response = new GetDetailDataResponse();
-			List<MetricData> result = s_provider.getDetailData(
-					getDetailDataRequest.getDc(), getDetailDataRequest
-							.getMetricCriteria(), getDetailDataRequest
-							.getMetricResourceCriteria());
-			response.getReturnData().addAll(result);
-		} catch (Exception e) {
-			response.setErrorMessage(new ErrorMessage());
-			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
-		}
-		return response;
-	}
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getDetailData(org.ebayopensource.
+     * turmeric.monitoring.v1.services.GetDetailDataRequest)
+     */
+    @Override
+    public GetDetailDataResponse getDetailData(GetDetailDataRequest getDetailDataRequest) {
+        GetDetailDataResponse response = null;
+        try {
+            initialize();
+            response = new GetDetailDataResponse();
+            List<MetricData> result = s_provider.getDetailData(getDetailDataRequest.getDc(),
+                            getDetailDataRequest.getMetricCriteria(), getDetailDataRequest.getMetricResourceCriteria());
+            response.getReturnData().addAll(result);
+        }
+        catch (Exception e) {
+            response.setErrorMessage(new ErrorMessage());
+            response.getErrorMessage()
+                            .getError()
+                            .add(ErrorDataFactory.createErrorData(
+                                            ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR,
+                                            ErrorConstants.ERRORDOMAIN));
+        }
+        return response;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getErrorGraph(org.ebayopensource.turmeric.monitoring.v1.services.GetErrorGraphRequest)
-	 */
-	@Override
-	public GetErrorGraphResponse getErrorGraph(
-			GetErrorGraphRequest getErrorGraphRequest) {
-		GetErrorGraphResponse response = null;
-		initialize();
-		try {
-			response = new GetErrorGraphResponse();
-			List<MetricGraphData> result = s_provider.getErrorGraph(
-					getErrorGraphRequest.getServiceName(), getErrorGraphRequest
-							.getOperationName(), getErrorGraphRequest
-							.getConsumerName(), getErrorGraphRequest
-							.getErrorId(), getErrorGraphRequest
-							.getErrorCategory(), getErrorGraphRequest
-							.getErrorSeverity(), getErrorGraphRequest
-							.getMetricCriteria());
-			response.getReturnData().addAll(result);
-		} catch (Exception e) {
-			response.setErrorMessage(new ErrorMessage());
-			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
-		}
-		return response;
-	}
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getErrorGraph(org.ebayopensource.
+     * turmeric.monitoring.v1.services.GetErrorGraphRequest)
+     */
+    @Override
+    public GetErrorGraphResponse getErrorGraph(GetErrorGraphRequest getErrorGraphRequest) {
+        GetErrorGraphResponse response = null;
+        initialize();
+        try {
+            response = new GetErrorGraphResponse();
+            List<MetricGraphData> result = s_provider.getErrorGraph(getErrorGraphRequest.getServiceName(),
+                            getErrorGraphRequest.getOperationName(), getErrorGraphRequest.getConsumerName(),
+                            getErrorGraphRequest.getErrorId(), getErrorGraphRequest.getErrorCategory(),
+                            getErrorGraphRequest.getErrorSeverity(), getErrorGraphRequest.getMetricCriteria());
+            response.getReturnData().addAll(result);
+        }
+        catch (Exception e) {
+            response.setErrorMessage(new ErrorMessage());
+            response.getErrorMessage()
+                            .getError()
+                            .add(ErrorDataFactory.createErrorData(
+                                            ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR,
+                                            ErrorConstants.ERRORDOMAIN));
+        }
+        return response;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getErrorMetricsData(org.ebayopensource.turmeric.monitoring.v1.services.GetErrorMetricsDataRequest)
-	 */
-	@Override
-	public GetErrorMetricsDataResponse getErrorMetricsData(
-			GetErrorMetricsDataRequest getErrorMetricsDataRequest) {
-		GetErrorMetricsDataResponse response = null;
-		initialize();
-		try {
-			response = new GetErrorMetricsDataResponse();
-			List<ErrorViewData> result = s_provider.getErrorMetricsData(
-					getErrorMetricsDataRequest.getErrorType(),
-					getErrorMetricsDataRequest.getServiceName(),
-					getErrorMetricsDataRequest.getOperationName(),
-					getErrorMetricsDataRequest.getConsumerName(),
-					getErrorMetricsDataRequest.getErrorId(),
-					getErrorMetricsDataRequest.getErrorCategory(),
-					getErrorMetricsDataRequest.getErrorSeverity(),
-					getErrorMetricsDataRequest.getErrorName(),
-					getErrorMetricsDataRequest.getMetricCriteria());
-			response.getReturnData().addAll(result);
-		} catch (Exception e) {
-			response.setErrorMessage(new ErrorMessage());
-			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
-		}
-		return response;
-	}
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getErrorMetricsData(org.ebayopensource
+     * .turmeric.monitoring.v1.services.GetErrorMetricsDataRequest)
+     */
+    @Override
+    public GetErrorMetricsDataResponse getErrorMetricsData(GetErrorMetricsDataRequest getErrorMetricsDataRequest) {
+        GetErrorMetricsDataResponse response = null;
+        initialize();
+        try {
+            response = new GetErrorMetricsDataResponse();
+            List<ErrorViewData> result = s_provider.getErrorMetricsData(getErrorMetricsDataRequest.getErrorType(),
+                            getErrorMetricsDataRequest.getServiceName(), getErrorMetricsDataRequest.getOperationName(),
+                            getErrorMetricsDataRequest.getConsumerName(), getErrorMetricsDataRequest.getErrorId(),
+                            getErrorMetricsDataRequest.getErrorCategory(),
+                            getErrorMetricsDataRequest.getErrorSeverity(), getErrorMetricsDataRequest.getErrorName(),
+                            getErrorMetricsDataRequest.getMetricCriteria());
+            updateErrorDiffValues(result);
+            response.getReturnData().addAll(result);
+        }
+        catch (Exception e) {
+            response.setErrorMessage(new ErrorMessage());
+            response.getErrorMessage()
+                            .getError()
+                            .add(ErrorDataFactory.createErrorData(
+                                            ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR,
+                                            ErrorConstants.ERRORDOMAIN));
+        }
+        return response;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getErrorMetricsMetadata(org.ebayopensource.turmeric.monitoring.v1.services.GetErrorMetricsMetadataRequest)
-	 */
-	@Override
-	public GetErrorMetricsMetadataResponse getErrorMetricsMetadata(
-			GetErrorMetricsMetadataRequest getErrorMetricsMetadataRequest) {
-		GetErrorMetricsMetadataResponse response = null;
-		try {
-			initialize();
-			response = new GetErrorMetricsMetadataResponse();
-			ErrorInfos result = s_provider.getErrorMetricsMetadata(
-					getErrorMetricsMetadataRequest.getErrorId(),
-					getErrorMetricsMetadataRequest.getErrorName(),
-					getErrorMetricsMetadataRequest.getServiceName());
-			response.setReturnData(result);
-		} catch (Exception e) {
-			response.setErrorMessage(new ErrorMessage());
-			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
-		}
-		return response;
-	}
+    public void updateErrorDiffValues(List<ErrorViewData> result) {
+        for (ErrorViewData errorViewData : result) {
+            calcErrorDiffValues(errorViewData);
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getMetricsData(org.ebayopensource.turmeric.monitoring.v1.services.GetMetricsRequest)
-	 */
-	@Override
-	public GetMetricsResponse getMetricsData(
-			GetMetricsRequest getMetricsDataRequest) {
-		GetMetricsResponse response = null;
-		try {
-			initialize();
-			response = new GetMetricsResponse();
-			List<MetricGroupData> result = s_provider.getMetricsData(
-					getMetricsDataRequest.getMetricCriteria(),
-					getMetricsDataRequest.getMetricResourceCriteria());
-			response.getReturnData().addAll(result);
-		} catch (Exception e) {
-			response.setErrorMessage(new ErrorMessage());
-			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
-		}
-		return response;
-	}
+    public void calcErrorDiffValues(ErrorViewData errorViewData) {
+        double errorCount1 = errorViewData.getErrorCount1();
+        double errorCount2 = errorViewData.getErrorCount2();
+        errorViewData.setErrorDiff(calcDiff(errorCount1, errorCount2));
+        double errorCallRatio1 = errorViewData.getErrorCallRatio1();
+        double errorCallRatio2 = errorViewData.getErrorCallRatio2();
+        errorViewData.setRatioDiff(calcDiff(errorCallRatio1, errorCallRatio2));
+    }
 
-	/* (non-Javadoc)
-	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getMetricsMetadata(org.ebayopensource.turmeric.monitoring.v1.services.GetMetricsMetadataRequest)
-	 */
-	@Override
-	public GetMetricsMetadataResponse getMetricsMetadata(
-			GetMetricsMetadataRequest getMetricsMetadataRequest) {
-		GetMetricsMetadataResponse response = null;
-		try {
-			initialize();
-			response = new GetMetricsMetadataResponse();
-			List<String> result = s_provider
-					.getMetricsMetadata(
-							getMetricsMetadataRequest.getResourceEntityType()
-									.value(),
-							getMetricsMetadataRequest.getResourceEntityName(),
-							(getMetricsMetadataRequest
-									.getResourceEntityResponseType() == null) ? null
-									: getMetricsMetadataRequest
-											.getResourceEntityResponseType()
-											.value());
-			response.getResourceEntityResponseNames().addAll(result);
-		} catch (Exception e) {
-			response.setErrorMessage(new ErrorMessage());
-			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
-		}
-		return response;
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getErrorMetricsMetadata(org.
+     * ebayopensource.turmeric.monitoring.v1.services.GetErrorMetricsMetadataRequest)
+     */
+    @Override
+    public GetErrorMetricsMetadataResponse getErrorMetricsMetadata(
+                    GetErrorMetricsMetadataRequest getErrorMetricsMetadataRequest) {
+        GetErrorMetricsMetadataResponse response = null;
+        try {
+            initialize();
+            response = new GetErrorMetricsMetadataResponse();
+            ErrorInfos result = s_provider.getErrorMetricsMetadata(getErrorMetricsMetadataRequest.getErrorId(),
+                            getErrorMetricsMetadataRequest.getErrorName(),
+                            getErrorMetricsMetadataRequest.getServiceName());
+            response.setReturnData(result);
+        }
+        catch (Exception e) {
+            response.setErrorMessage(new ErrorMessage());
+            response.getErrorMessage()
+                            .getError()
+                            .add(ErrorDataFactory.createErrorData(
+                                            ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR,
+                                            ErrorConstants.ERRORDOMAIN));
+        }
+        return response;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getMetricSummaryData(org.ebayopensource.turmeric.monitoring.v1.services.GetMetricSummaryDataRequest)
-	 */
-	@Override
-	public GetMetricSummaryDataResponse getMetricSummaryData(
-			GetMetricSummaryDataRequest getMetricSummaryDataRequest) {
-		GetMetricSummaryDataResponse response = null;
-		try {
-			initialize();
-			response = new GetMetricSummaryDataResponse();
-			MetricData result = s_provider.getMetricSummaryData(
-					getMetricSummaryDataRequest.getDc(),
-					getMetricSummaryDataRequest.getMetricCriteria(),
-					getMetricSummaryDataRequest.getMetricResourceCriteria());
-			response.setReturnData(result);
-		} catch (Exception e) {
-			response.setErrorMessage(new ErrorMessage());
-			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
-		}
-		return response;
-	}
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getMetricsData(org.ebayopensource
+     * .turmeric.monitoring.v1.services.GetMetricsRequest)
+     */
+    @Override
+    public GetMetricsResponse getMetricsData(GetMetricsRequest getMetricsDataRequest) {
+        GetMetricsResponse response = null;
+        try {
+            initialize();
+            response = new GetMetricsResponse();
+            List<MetricGroupData> result = s_provider.getMetricsData(getMetricsDataRequest.getMetricCriteria(),
+                            getMetricsDataRequest.getMetricResourceCriteria());
+            updateDiffValues(result);
+            response.getReturnData().addAll(result);
+        }
+        catch (Exception e) {
+            response.setErrorMessage(new ErrorMessage());
+            response.getErrorMessage()
+                            .getError()
+                            .add(ErrorDataFactory.createErrorData(
+                                            ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR,
+                                            ErrorConstants.ERRORDOMAIN));
+        }
+        return response;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getMetricValue(org.ebayopensource.turmeric.monitoring.v1.services.GetMetricValueRequest)
-	 */
-	@Override
-	public GetMetricValueResponse getMetricValue(
-			GetMetricValueRequest getMetricValueRequest) {
-		GetMetricValueResponse response = null;
-		try {
-			initialize();
-			response = new GetMetricValueResponse();
-			List<MetricGraphData> result = s_provider.getMetricValue(
-					getMetricValueRequest.getCriteriaInfo(),
-					getMetricValueRequest.getStartTime(), getMetricValueRequest
-							.getDuration(), getMetricValueRequest
-							.getAggregationPeriod(), getMetricValueRequest
-							.getAutoDelay());
-			response.getReturnData().addAll(result);
-		} catch (Exception e) {
-			response.setErrorMessage(new ErrorMessage());
-			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
-		}
-		return response;
-	}
+    public void updateDiffValues(List<MetricGroupData> result) {
+        for (MetricGroupData metricGroupData : result) {
+            calcDiffValue(metricGroupData);
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getPolicyMetricData(org.ebayopensource.turmeric.monitoring.v1.services.GetPolicyMetricDataRequest)
-	 */
-	@Override
-	public GetPolicyMetricDataResponse getPolicyMetricData(
-			GetPolicyMetricDataRequest getPolicyMetricDataRequest) {
-		GetPolicyMetricDataResponse response = null;
-		try {
-			initialize();
-			response = new GetPolicyMetricDataResponse();
-			List<PolicyMetricData> result = s_provider.getPolicyMetricData(
-					getPolicyMetricDataRequest.getStartTime(),
-					getPolicyMetricDataRequest.getEndTime(),
-					getPolicyMetricDataRequest.getPolicyType(),
-					getPolicyMetricDataRequest.getPolicyName(),
-					getPolicyMetricDataRequest.getServiceName(),
-					getPolicyMetricDataRequest.getOperationName(),
-					getPolicyMetricDataRequest.getSubjectTypeName(),
-					getPolicyMetricDataRequest.getSubjectValue(),
-					getPolicyMetricDataRequest.getEffect());
-			response.getReturnData().addAll(result);
-		} catch (Exception e) {
-			response.setErrorMessage(new ErrorMessage());
-			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
-		}
-		return response;
-	}
+    public void calcDiffValue(MetricGroupData metricGroupData) {
+        double count1 = metricGroupData.getCount1();
+        double count2 = metricGroupData.getCount2();
+        Double diff = calcDiff(count1, count2);
+        metricGroupData.setDiff(diff);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getPolicyMetricDetailData(org.ebayopensource.turmeric.monitoring.v1.services.GetPolicyMetricDetailDataRequest)
-	 */
-	@Override
-	public GetPolicyMetricDetailDataResponse getPolicyMetricDetailData(
-			GetPolicyMetricDetailDataRequest getPolicyMetricDetailDataRequest) {
-		GetPolicyMetricDetailDataResponse response = null;
-		try {
-			initialize();
-			response = new GetPolicyMetricDetailDataResponse();
-			List<PolicyMetricGraphData> result = s_provider
-					.getPolicyMetricDetailData(getPolicyMetricDetailDataRequest
-							.getPolicyName(), getPolicyMetricDetailDataRequest
-							.getServiceName(), getPolicyMetricDetailDataRequest
-							.getOperationName(),
-							getPolicyMetricDetailDataRequest
-									.getSubjectTypeName(),
-							getPolicyMetricDetailDataRequest.getSubjectValue(),
-							getPolicyMetricDetailDataRequest.getListType(),
-							getPolicyMetricDetailDataRequest.getStartTime(),
-							getPolicyMetricDetailDataRequest.getEndTime());
-			response.getReturnData().addAll(result);
-		} catch (Exception e) {
-			response.setErrorMessage(new ErrorMessage());
-			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
-		}
-		return response;
-	}
+    public Double calcDiff(double count1, double count2) {
+        Double diff = Double.valueOf(0);
+        final Double ZERO_DOUBLE = Double.valueOf(0);
 
-	/* (non-Javadoc)
-	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getStandardReportData(org.ebayopensource.turmeric.monitoring.v1.services.GetStandardReportRequest)
-	 */
-	@Override
-	public GetStandardReportResponse getStandardReportData(
-			GetStandardReportRequest getStandardReportDataRequest) {
-		GetStandardReportResponse response = null;
-		try {
-			initialize();
-			response = new GetStandardReportResponse();
-			List<MetricData> result = s_provider.getStandardReportData(
-					getStandardReportDataRequest.getReportType(),
-					getStandardReportDataRequest.getMetricCriteria());
-			response.getReturnData().addAll(result);
-		} catch (Exception e) {
-			response.setErrorMessage(new ErrorMessage());
-			response.getErrorMessage().getError().add(ErrorDataFactory.createErrorData(ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR, ErrorConstants.ERRORDOMAIN));
-		}
-		return response;
-	}
+        if (Math.abs(count1) < ZERO_DOUBLE && Math.abs(count2) < ZERO_DOUBLE) {
+            diff = ZERO_DOUBLE;
+        }
+        else if (Math.abs(count2) < ZERO_DOUBLE && Math.abs(count1) > ZERO_DOUBLE) {
+            diff = Double.valueOf(1);
+        }
+        else {
+            diff = Double.valueOf((count1 - count2) * 1.0 / count2);
+        }
 
-	/* (non-Javadoc)
-	 * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getVersion(org.ebayopensource.turmeric.monitoring.v1.services.GetVersionRequest)
-	 */
-	@Override
-	public GetVersionResponse getVersion(GetVersionRequest param0) {
-		initialize();
+        diff = (Math.round(diff * 10000)) / 100.0;
+        return diff;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getMetricsMetadata(org.ebayopensource
+     * .turmeric.monitoring.v1.services.GetMetricsMetadataRequest)
+     */
+    @Override
+    public GetMetricsMetadataResponse getMetricsMetadata(GetMetricsMetadataRequest getMetricsMetadataRequest) {
+        GetMetricsMetadataResponse response = null;
+        try {
+            initialize();
+            response = new GetMetricsMetadataResponse();
+            List<String> result = s_provider.getMetricsMetadata(getMetricsMetadataRequest.getResourceEntityType()
+                            .value(), getMetricsMetadataRequest.getResourceEntityName(), (getMetricsMetadataRequest
+                            .getResourceEntityResponseType() == null) ? null : getMetricsMetadataRequest
+                            .getResourceEntityResponseType().value());
+            response.getResourceEntityResponseNames().addAll(result);
+        }
+        catch (Exception e) {
+            response.setErrorMessage(new ErrorMessage());
+            response.getErrorMessage()
+                            .getError()
+                            .add(ErrorDataFactory.createErrorData(
+                                            ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR,
+                                            ErrorConstants.ERRORDOMAIN));
+        }
+        return response;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getMetricSummaryData(org.ebayopensource
+     * .turmeric.monitoring.v1.services.GetMetricSummaryDataRequest)
+     */
+    @Override
+    public GetMetricSummaryDataResponse getMetricSummaryData(GetMetricSummaryDataRequest getMetricSummaryDataRequest) {
+        GetMetricSummaryDataResponse response = null;
+        try {
+            initialize();
+            response = new GetMetricSummaryDataResponse();
+            MetricData result = s_provider.getMetricSummaryData(getMetricSummaryDataRequest.getDc(),
+                            getMetricSummaryDataRequest.getMetricCriteria(),
+                            getMetricSummaryDataRequest.getMetricResourceCriteria());
+            response.setReturnData(result);
+        }
+        catch (Exception e) {
+            response.setErrorMessage(new ErrorMessage());
+            response.getErrorMessage()
+                            .getError()
+                            .add(ErrorDataFactory.createErrorData(
+                                            ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR,
+                                            ErrorConstants.ERRORDOMAIN));
+        }
+        return response;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getMetricValue(org.ebayopensource
+     * .turmeric.monitoring.v1.services.GetMetricValueRequest)
+     */
+    @Override
+    public GetMetricValueResponse getMetricValue(GetMetricValueRequest getMetricValueRequest) {
+        GetMetricValueResponse response = null;
+        try {
+            initialize();
+            response = new GetMetricValueResponse();
+            List<MetricGraphData> result = s_provider.getMetricValue(getMetricValueRequest.getCriteriaInfo(),
+                            getMetricValueRequest.getStartTime(), getMetricValueRequest.getDuration(),
+                            getMetricValueRequest.getAggregationPeriod(), getMetricValueRequest.getAutoDelay());
+            response.getReturnData().addAll(result);
+        }
+        catch (Exception e) {
+            response.setErrorMessage(new ErrorMessage());
+            response.getErrorMessage()
+                            .getError()
+                            .add(ErrorDataFactory.createErrorData(
+                                            ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR,
+                                            ErrorConstants.ERRORDOMAIN));
+        }
+        return response;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getPolicyMetricData(org.ebayopensource
+     * .turmeric.monitoring.v1.services.GetPolicyMetricDataRequest)
+     */
+    @Override
+    public GetPolicyMetricDataResponse getPolicyMetricData(GetPolicyMetricDataRequest getPolicyMetricDataRequest) {
+        GetPolicyMetricDataResponse response = null;
+        try {
+            initialize();
+            response = new GetPolicyMetricDataResponse();
+            List<PolicyMetricData> result = s_provider.getPolicyMetricData(getPolicyMetricDataRequest.getStartTime(),
+                            getPolicyMetricDataRequest.getEndTime(), getPolicyMetricDataRequest.getPolicyType(),
+                            getPolicyMetricDataRequest.getPolicyName(), getPolicyMetricDataRequest.getServiceName(),
+                            getPolicyMetricDataRequest.getOperationName(),
+                            getPolicyMetricDataRequest.getSubjectTypeName(),
+                            getPolicyMetricDataRequest.getSubjectValue(), getPolicyMetricDataRequest.getEffect());
+            response.getReturnData().addAll(result);
+        }
+        catch (Exception e) {
+            response.setErrorMessage(new ErrorMessage());
+            response.getErrorMessage()
+                            .getError()
+                            .add(ErrorDataFactory.createErrorData(
+                                            ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR,
+                                            ErrorConstants.ERRORDOMAIN));
+        }
+        return response;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getPolicyMetricDetailData(org.
+     * ebayopensource.turmeric.monitoring.v1.services.GetPolicyMetricDetailDataRequest)
+     */
+    @Override
+    public GetPolicyMetricDetailDataResponse getPolicyMetricDetailData(
+                    GetPolicyMetricDetailDataRequest getPolicyMetricDetailDataRequest) {
+        GetPolicyMetricDetailDataResponse response = null;
+        try {
+            initialize();
+            response = new GetPolicyMetricDetailDataResponse();
+            List<PolicyMetricGraphData> result = s_provider.getPolicyMetricDetailData(
+                            getPolicyMetricDetailDataRequest.getPolicyName(),
+                            getPolicyMetricDetailDataRequest.getServiceName(),
+                            getPolicyMetricDetailDataRequest.getOperationName(),
+                            getPolicyMetricDetailDataRequest.getSubjectTypeName(),
+                            getPolicyMetricDetailDataRequest.getSubjectValue(),
+                            getPolicyMetricDetailDataRequest.getListType(),
+                            getPolicyMetricDetailDataRequest.getStartTime(),
+                            getPolicyMetricDetailDataRequest.getEndTime());
+            response.getReturnData().addAll(result);
+        }
+        catch (Exception e) {
+            response.setErrorMessage(new ErrorMessage());
+            response.getErrorMessage()
+                            .getError()
+                            .add(ErrorDataFactory.createErrorData(
+                                            ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR,
+                                            ErrorConstants.ERRORDOMAIN));
+        }
+        return response;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getStandardReportData(org.ebayopensource
+     * .turmeric.monitoring.v1.services.GetStandardReportRequest)
+     */
+    @Override
+    public GetStandardReportResponse getStandardReportData(GetStandardReportRequest getStandardReportDataRequest) {
+        GetStandardReportResponse response = null;
+        try {
+            initialize();
+            response = new GetStandardReportResponse();
+            List<MetricData> result = s_provider.getStandardReportData(getStandardReportDataRequest.getReportType(),
+                            getStandardReportDataRequest.getMetricCriteria());
+            response.getReturnData().addAll(result);
+        }
+        catch (Exception e) {
+            response.setErrorMessage(new ErrorMessage());
+            response.getErrorMessage()
+                            .getError()
+                            .add(ErrorDataFactory.createErrorData(
+                                            ErrorConstants.SVC_SOAMETRICSQUERYSERVICE_INTERNAL_ERROR,
+                                            ErrorConstants.ERRORDOMAIN));
+        }
+        return response;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService#getVersion(org.ebayopensource.turmeric
+     * .monitoring.v1.services.GetVersionRequest)
+     */
+    @Override
+    public GetVersionResponse getVersion(GetVersionRequest param0) {
+        initialize();
         GetVersionResponse response = new GetVersionResponse();
         response.setVersion("1.0.0");
 
-		return response;
+        return response;
     }
-	
-	
-
-
-
-
-
 
 }
