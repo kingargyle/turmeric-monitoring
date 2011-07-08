@@ -326,8 +326,8 @@ public class DAOSOAMetricsQueryServiceProvider implements SOAMetricsQueryService
                 else {
                     errorViewData.setErrorCount2(0);
                     errorViewData.setErrorCallRatio2(0);
-                    errorViewData.setErrorDiff(errorViewData.getErrorCount1() == 0 ? 0 : -100);
-                    errorViewData.setRatioDiff(errorViewData.getErrorCallRatio1() == 0 ? 0 : -100);
+                    // errorViewData.setErrorDiff(errorViewData.getErrorCount1() == 0 ? 0 : -100);
+                    // errorViewData.setRatioDiff(errorViewData.getErrorCallRatio1() == 0 ? 0 : -100);
                 }
 
                 result.add(errorViewData);
@@ -484,7 +484,7 @@ public class DAOSOAMetricsQueryServiceProvider implements SOAMetricsQueryService
                 }
                 else {
                     metricGroupData.setCount2(0);
-                    metricGroupData.setDiff(-100);
+                    // metricGroupData.setDiff(-100);
                 }
 
                 CriteriaInfo criteriaInfo = populateCriteriaInfo(groupBy, row1);
@@ -498,7 +498,7 @@ public class DAOSOAMetricsQueryServiceProvider implements SOAMetricsQueryService
                 Double count2 = (Double) row2.get("value");
                 metricGroupData.setCount2(count2);
                 metricGroupData.setCount1(0);
-                metricGroupData.setDiff(100);
+                // metricGroupData.setDiff(100);
 
                 CriteriaInfo criteriaInfo = populateCriteriaInfo(groupBy, row2);
                 metricGroupData.setCriteriaInfo(criteriaInfo);

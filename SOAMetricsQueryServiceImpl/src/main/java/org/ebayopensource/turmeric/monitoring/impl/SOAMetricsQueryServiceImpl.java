@@ -244,10 +244,20 @@ public class SOAMetricsQueryServiceImpl implements SOAMetricsQueryService {
     public void calcErrorDiffValues(ErrorViewData errorViewData) {
         double errorCount1 = errorViewData.getErrorCount1();
         double errorCount2 = errorViewData.getErrorCount2();
-        errorViewData.setErrorDiff(calcDiff(errorCount1, errorCount2));
+        if (errorCount2 != 0d) {
+            errorViewData.setErrorDiff(calcDiff(errorCount1, errorCount2));
+        }
+        else {
+            errorViewData.setErrorDiff(errorViewData.getErrorCount1() == 0 ? 0 : -100);
+        }
         double errorCallRatio1 = errorViewData.getErrorCallRatio1();
         double errorCallRatio2 = errorViewData.getErrorCallRatio2();
-        errorViewData.setRatioDiff(calcDiff(errorCallRatio1, errorCallRatio2));
+        if (errorCallRatio2 != 0d) {
+            errorViewData.setRatioDiff(calcDiff(errorCallRatio1, errorCallRatio2));
+        }
+        else {
+            errorViewData.setRatioDiff(errorViewData.getErrorCallRatio1() == 0 ? 0 : -100);
+        }
     }
 
     /*
@@ -319,21 +329,23 @@ public class SOAMetricsQueryServiceImpl implements SOAMetricsQueryService {
         metricGroupData.setDiff(diff);
     }
 
-    public Double calcDiff(double count1, double count2) {
+    public Double calcDiff(double from, double to) {
         Double diff = Double.valueOf(0);
-        final Double ZERO_DOUBLE = Double.valueOf(0);
-
-        if (Math.abs(count1) < ZERO_DOUBLE && Math.abs(count2) < ZERO_DOUBLE) {
-            diff = ZERO_DOUBLE;
-        }
-        else if (Math.abs(count2) < ZERO_DOUBLE && Math.abs(count1) > ZERO_DOUBLE) {
-            diff = Double.valueOf(1);
+        if (from == 0d) {
+            if (to != 0d) {
+                diff = 100d;
+            }
         }
         else {
-            diff = Double.valueOf((count1 - count2) * 1.0 / count2);
+            if (to != 0d) {
+                diff = Double.valueOf(((to - from) * 100) / from);
+            }
+            else {
+                diff = -100d;
+            }
         }
+        diff = (Math.round(diff * 100)) / 100.0;
 
-        diff = (Math.round(diff * 10000)) / 100.0;
         return diff;
     }
 
