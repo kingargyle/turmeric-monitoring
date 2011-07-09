@@ -3,6 +3,7 @@ package org.ebayopensource.turmeric.monitoring;
 import static org.junit.Assert.assertEquals;
 
 import org.ebayopensource.turmeric.monitoring.impl.SOAMetricsQueryServiceImpl;
+import org.ebayopensource.turmeric.monitoring.provider.model.ExtendedErrorViewData;
 import org.ebayopensource.turmeric.monitoring.v1.services.ErrorViewData;
 import org.ebayopensource.turmeric.monitoring.v1.services.MetricGroupData;
 import org.junit.After;
@@ -101,14 +102,18 @@ public class SOAMetricsQueryServiceImplTest {
 
     @Test
     public void testCalcErrorDiffValues() {
-        ErrorViewData errorViewData = new ErrorViewData();
+        ExtendedErrorViewData errorViewData = new ExtendedErrorViewData();
         errorViewData.setErrorCount1(1l);
         errorViewData.setErrorCount2(2l);
+        errorViewData.setErrorCall1(1l);
+        errorViewData.setErrorCall2(2l);
         errorViewData.setErrorCallRatio1(1l);
         errorViewData.setErrorCallRatio2(2l);
         service.calcErrorDiffValues(errorViewData);
         Double expectedValue = Double.valueOf(100d);
         assertEquals(expectedValue, Double.valueOf(errorViewData.getErrorDiff()));
         assertEquals(expectedValue, Double.valueOf(errorViewData.getRatioDiff()));
+        assertEquals(Double.valueOf(1d), Double.valueOf(errorViewData.getErrorCallRatio1()));
+        assertEquals(Double.valueOf(1d), Double.valueOf(errorViewData.getErrorCallRatio2()));
     }
 }

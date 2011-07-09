@@ -19,6 +19,7 @@ import org.ebayopensource.turmeric.common.v1.types.ErrorMessage;
 import org.ebayopensource.turmeric.errorlibrary.turmericmonitoring.ErrorConstants;
 import org.ebayopensource.turmeric.monitoring.provider.SOAMetricsQueryServiceProvider;
 import org.ebayopensource.turmeric.monitoring.provider.config.SOAMetricsQueryServiceProviderFactory;
+import org.ebayopensource.turmeric.monitoring.provider.model.ExtendedErrorViewData;
 import org.ebayopensource.turmeric.monitoring.v1.services.ErrorInfos;
 import org.ebayopensource.turmeric.monitoring.v1.services.ErrorViewData;
 import org.ebayopensource.turmeric.monitoring.v1.services.GetCustomReportDataRequest;
@@ -215,8 +216,9 @@ public class SOAMetricsQueryServiceImpl implements SOAMetricsQueryService {
         initialize();
         try {
             response = new GetErrorMetricsDataResponse();
-            List<ErrorViewData> result = s_provider.getErrorMetricsData(getErrorMetricsDataRequest.getErrorType(),
-                            getErrorMetricsDataRequest.getServiceName(), getErrorMetricsDataRequest.getOperationName(),
+            List<ExtendedErrorViewData> result = s_provider.getExtendedErrorMetricsData(
+                            getErrorMetricsDataRequest.getErrorType(), getErrorMetricsDataRequest.getServiceName(),
+                            getErrorMetricsDataRequest.getOperationName(),
                             getErrorMetricsDataRequest.getConsumerName(), getErrorMetricsDataRequest.getErrorId(),
                             getErrorMetricsDataRequest.getErrorCategory(),
                             getErrorMetricsDataRequest.getErrorSeverity(), getErrorMetricsDataRequest.getErrorName(),
@@ -235,13 +237,13 @@ public class SOAMetricsQueryServiceImpl implements SOAMetricsQueryService {
         return response;
     }
 
-    public void updateErrorDiffValues(List<ErrorViewData> result) {
-        for (ErrorViewData errorViewData : result) {
+    public void updateErrorDiffValues(List<ExtendedErrorViewData> result) {
+        for (ExtendedErrorViewData errorViewData : result) {
             calcErrorDiffValues(errorViewData);
         }
     }
 
-    public void calcErrorDiffValues(ErrorViewData errorViewData) {
+    public void calcErrorDiffValues(ExtendedErrorViewData errorViewData) {
         double errorCount1 = errorViewData.getErrorCount1();
         double errorCount2 = errorViewData.getErrorCount2();
         if (errorCount2 != 0d) {
@@ -258,6 +260,10 @@ public class SOAMetricsQueryServiceImpl implements SOAMetricsQueryService {
         else {
             errorViewData.setRatioDiff(errorViewData.getErrorCallRatio1() == 0 ? 0 : -100);
         }
+        double errorCall1 = errorViewData.getErrorCall1();
+        double errorCall2 = errorViewData.getErrorCall2();
+        errorViewData.setErrorCallRatio1(errorCall1 == 0 ? 0 : errorViewData.getErrorCount1() / errorCall1);
+        errorViewData.setErrorCallRatio2(errorCall2 == 0 ? 0 : errorViewData.getErrorCount2() / errorCall2);
     }
 
     /*

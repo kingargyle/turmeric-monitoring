@@ -25,6 +25,7 @@ import org.ebayopensource.turmeric.common.v1.types.ErrorSeverity;
 import org.ebayopensource.turmeric.monitoring.MetricsDAO;
 import org.ebayopensource.turmeric.monitoring.MetricsDAOImpl;
 import org.ebayopensource.turmeric.monitoring.model.MetricComponentDef;
+import org.ebayopensource.turmeric.monitoring.provider.model.ExtendedErrorViewData;
 import org.ebayopensource.turmeric.monitoring.v1.services.CriteriaInfo;
 import org.ebayopensource.turmeric.monitoring.v1.services.ErrorInfos;
 import org.ebayopensource.turmeric.monitoring.v1.services.ErrorViewData;
@@ -184,6 +185,15 @@ public class DAOSOAMetricsQueryServiceProvider implements SOAMetricsQueryService
         return delegate.getMetricsMetadata(resourceEntityType, resourceEntityName, resourceEntityResponseType);
     }
 
+    @Override
+    public List<ExtendedErrorViewData> getExtendedErrorMetricsData(String errorType, List<String> serviceName,
+                    List<String> operationName, List<String> consumerName, String errorId, String errorCategory,
+                    String errorSeverity, String errorName, MetricCriteria metricCriteria) {
+
+        return delegate.getExtendedErrorMetricsData(errorType, serviceName, operationName, consumerName, errorId,
+                        errorCategory, errorSeverity, errorName, metricCriteria);
+    }
+
     private static class Target implements SOAMetricsQueryServiceProvider {
         private final MetricsDAO metricsDAO = new MetricsDAOImpl();
         private final MetricsErrorDAO errorDAO = new MetricsErrorDAOImpl();
@@ -326,8 +336,6 @@ public class DAOSOAMetricsQueryServiceProvider implements SOAMetricsQueryService
                 else {
                     errorViewData.setErrorCount2(0);
                     errorViewData.setErrorCallRatio2(0);
-                    // errorViewData.setErrorDiff(errorViewData.getErrorCount1() == 0 ? 0 : -100);
-                    // errorViewData.setRatioDiff(errorViewData.getErrorCallRatio1() == 0 ? 0 : -100);
                 }
 
                 result.add(errorViewData);
@@ -709,6 +717,151 @@ public class DAOSOAMetricsQueryServiceProvider implements SOAMetricsQueryService
                 long errorId = (Long) row.get("errorId");
                 result.put(String.valueOf(errorId), row);
             }
+            return result;
+        }
+
+        @Override
+        public List<ExtendedErrorViewData> getExtendedErrorMetricsData(String errorType, List<String> serviceNames,
+                        List<String> operationNames, List<String> consumerNames, String errorIdString,
+                        String errorCategoryString, String errorSeverityString, String errorNameParam,
+                        MetricCriteria metricCriteria) {
+            long firstStartTime = metricCriteria.getFirstStartTime();
+            long secondStartTime = metricCriteria.getSecondStartTime();
+            long duration = TimeUnit.SECONDS.toMillis(metricCriteria.getDuration());
+            int aggregationPeriod = metricCriteria.getAggregationPeriod();
+            boolean serverSide = !MonitoringSystem.COLLECTION_LOCATION_CLIENT.equals(metricCriteria.getRoleType());
+
+            // Validate input parameters
+            Long errorId = errorIdString == null ? null : Long.parseLong(errorIdString);
+            String errorCategory = errorCategoryString == null ? null : ErrorCategory.fromValue(errorCategoryString)
+                            .value();
+            String errorSeverity = errorSeverityString == null ? null : ErrorSeverity.fromValue(errorSeverityString)
+                            .value();
+
+            Map<String, List<String>> filters = new HashMap<String, List<String>>();
+            if (!serviceNames.isEmpty())
+                filters.put(ResourceEntity.SERVICE.value(), serviceNames);
+            if (!operationNames.isEmpty())
+                filters.put(ResourceEntity.OPERATION.value(), operationNames);
+            if (!consumerNames.isEmpty())
+                filters.put(ResourceEntity.CONSUMER.value(), consumerNames);
+
+            List<Map<String, Object>> errors1;
+            double calls1;
+            List<Map<String, Object>> errors2;
+            double calls2;
+            if ("Category".equals(errorType)) {
+                errors1 = errorDAO.findErrorValuesByCategory(firstStartTime, firstStartTime + duration, serverSide,
+                                aggregationPeriod, errorId, errorCategory, errorSeverity, filters);
+                calls1 = metricsDAO.findCallsCount(firstStartTime, firstStartTime + duration, serverSide,
+                                aggregationPeriod);
+                errors2 = errorDAO.findErrorValuesByCategory(secondStartTime, secondStartTime + duration, serverSide,
+                                aggregationPeriod, errorId, errorCategory, errorSeverity, filters);
+                calls2 = metricsDAO.findCallsCount(secondStartTime, secondStartTime + duration, serverSide,
+                                aggregationPeriod);
+            }
+            else if ("Severity".equals(errorType)) {
+                errors1 = errorDAO.findErrorValuesBySeverity(firstStartTime, firstStartTime + duration, serverSide,
+                                aggregationPeriod, errorId, errorCategory, errorSeverity, filters);
+                calls1 = metricsDAO.findCallsCount(firstStartTime, firstStartTime + duration, serverSide,
+                                aggregationPeriod);
+                errors2 = errorDAO.findErrorValuesBySeverity(secondStartTime, secondStartTime + duration, serverSide,
+                                aggregationPeriod, errorId, errorCategory, errorSeverity, filters);
+                calls2 = metricsDAO.findCallsCount(secondStartTime, secondStartTime + duration, serverSide,
+                                aggregationPeriod);
+            }
+            else {
+                throw new IllegalArgumentException("Invalid error type " + errorType);
+            }
+
+            Map<String, Map<String, Object>> map1 = transformAggregatedErrorValues(errors1);
+            Map<String, Map<String, Object>> map2 = transformAggregatedErrorValues(errors2);
+
+            List<ExtendedErrorViewData> result = new ArrayList<ExtendedErrorViewData>();
+            for (Map.Entry<String, Map<String, Object>> entry : map1.entrySet()) {
+                ExtendedErrorViewData errorViewData = new ExtendedErrorViewData();
+                Map<String, Object> row1 = entry.getValue();
+
+                long errorId1 = (Long) row1.get("errorId");
+                String errorName = (String) row1.get("errorName");
+                org.ebayopensource.turmeric.monitoring.v1.services.Error error1 = new org.ebayopensource.turmeric.monitoring.v1.services.Error();
+                error1.setErrorId(String.valueOf(errorId1));
+                error1.setErrorName(errorName);
+                errorViewData.setError(error1);
+
+                long count1 = (Long) row1.get("errorCount");
+                errorViewData.setErrorCount1(count1);
+                errorViewData.setErrorCall1(calls1);
+                // errorViewData.setErrorCallRatio1(calls1 == 0 ? 0 : count1 / calls1);
+
+                Map<String, Object> row2 = map2.remove(entry.getKey());
+                if (row2 != null) {
+                    long count2 = (Long) row2.get("errorCount");
+                    errorViewData.setErrorCount2(count2);
+                    errorViewData.setErrorCall2(calls2);
+                    // errorViewData.setErrorCallRatio2(calls2 == 0 ? 0 : count2 / calls2);
+                }
+                else {
+                    errorViewData.setErrorCount2(0);
+                    errorViewData.setErrorCall2(0);
+                    // errorViewData.setErrorCallRatio2(0);
+                }
+
+                result.add(errorViewData);
+            }
+            for (Map.Entry<String, Map<String, Object>> entry : map2.entrySet()) {
+                ExtendedErrorViewData errorViewData = new ExtendedErrorViewData();
+                Map<String, Object> row2 = entry.getValue();
+
+                long errorId2 = (Long) row2.get("errorId");
+                String errorName = (String) row2.get("errorName");
+                org.ebayopensource.turmeric.monitoring.v1.services.Error error2 = new org.ebayopensource.turmeric.monitoring.v1.services.Error();
+                error2.setErrorId(String.valueOf(errorId2));
+                error2.setErrorName(errorName);
+                errorViewData.setError(error2);
+
+                long count2 = (Long) row2.get("errorCount");
+                errorViewData.setErrorCount2(count2);
+                errorViewData.setErrorCall2(calls2);
+                // errorViewData.setErrorCallRatio2(calls2 == 0 ? 0 : count2 / calls2);
+
+                errorViewData.setErrorCount1(0);
+                errorViewData.setErrorCall1(0);
+                // errorViewData.setErrorCallRatio1(0);
+                // errorViewData.setErrorDiff(100);
+                // errorViewData.setRatioDiff(100);
+
+                result.add(errorViewData);
+            }
+
+            // Sort the results
+            final boolean sortAsc = metricCriteria.getSortOrder() == SortOrderType.ASCENDING;
+            Collections.sort(result, new Comparator<ErrorViewData>() {
+                @Override
+                public int compare(ErrorViewData evd1, ErrorViewData evd2) {
+                    double v1 = Math.max(evd1.getErrorCount1(), evd1.getErrorCount2());
+                    double v2 = Math.max(evd2.getErrorCount1(), evd2.getErrorCount2());
+                    if (v1 == v2) {
+                        v1 = evd1.getErrorCount1() + evd1.getErrorCount2();
+                        v2 = evd2.getErrorCount1() + evd2.getErrorCount2();
+                    }
+                    if (v1 == v2) {
+                        v1 = evd1.getErrorCallRatio1();
+                        v2 = evd2.getErrorCallRatio2();
+                    }
+                    if (v1 == v2) {
+                        v1 = evd1.getErrorCallRatio1() + evd1.getErrorCallRatio2();
+                        v2 = evd2.getErrorCallRatio2() + evd2.getErrorCallRatio2();
+                    }
+                    int result = v1 > v2 ? 1 : v1 < v2 ? -1 : 0;
+                    return sortAsc ? result : -result;
+                }
+            });
+
+            // Trim to the number of requested rows
+            int rows = metricCriteria.getNumRows() == null ? 0 : Integer.parseInt(metricCriteria.getNumRows());
+            trimResultList(result, rows);
+
             return result;
         }
     }
