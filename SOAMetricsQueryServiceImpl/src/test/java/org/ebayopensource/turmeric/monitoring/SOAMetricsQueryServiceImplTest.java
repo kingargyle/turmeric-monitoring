@@ -112,8 +112,34 @@ public class SOAMetricsQueryServiceImplTest {
         service.calcErrorDiffValues(errorViewData);
         Double expectedValue = Double.valueOf(100d);
         assertEquals(expectedValue, Double.valueOf(errorViewData.getErrorDiff()));
-        assertEquals(expectedValue, Double.valueOf(errorViewData.getRatioDiff()));
-        assertEquals(Double.valueOf(1d), Double.valueOf(errorViewData.getErrorCallRatio1()));
-        assertEquals(Double.valueOf(1d), Double.valueOf(errorViewData.getErrorCallRatio2()));
     }
+
+    @Test
+    public void testCalcErrorDiffValuesErrorCount2InZero() {
+        ExtendedErrorViewData errorViewData = new ExtendedErrorViewData();
+        errorViewData.setErrorCount1(1l);
+        errorViewData.setErrorCount2(0l);
+        errorViewData.setErrorCall1(1l);
+        errorViewData.setErrorCall2(2l);
+        errorViewData.setErrorCallRatio1(1l);
+        errorViewData.setErrorCallRatio2(2l);
+        service.calcErrorDiffValues(errorViewData);
+        Double expectedValue = Double.valueOf(-100d);
+        assertEquals(expectedValue, Double.valueOf(errorViewData.getErrorDiff()));
+    }
+
+    @Test
+    public void testCalcErrorDiffValuesErrorCallRadio2InZero() {
+        ExtendedErrorViewData errorViewData = new ExtendedErrorViewData();
+        errorViewData.setErrorCount1(1l);
+        errorViewData.setErrorCount2(1l);
+        errorViewData.setErrorCall1(1l);
+        errorViewData.setErrorCall2(1l);
+        errorViewData.setErrorCallRatio1(1l);
+        errorViewData.setErrorCallRatio2(0l);
+        service.calcErrorDiffValues(errorViewData);
+        Double expectedValue = Double.valueOf(-100d);
+        assertEquals(expectedValue, Double.valueOf(errorViewData.getRatioDiff()));
+    }
+
 }

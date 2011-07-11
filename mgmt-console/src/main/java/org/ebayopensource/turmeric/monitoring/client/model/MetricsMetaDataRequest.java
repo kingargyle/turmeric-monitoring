@@ -20,82 +20,84 @@ public class MetricsMetaDataRequest {
 
     /**
      * Gets the rest url.
-     *
-     * @param resourceEntityType the resource entity type
-     * @param resourceEntityName the resource entity name
-     * @param resourceEntityResponseType the resource entity response type
+     * 
+     * @param resourceEntityType
+     *            the resource entity type
+     * @param resourceEntityName
+     *            the resource entity name
+     * @param resourceEntityResponseType
+     *            the resource entity response type
      * @return the rest url
      */
-    public static String getRestURL (String resourceEntityType, Set<String> resourceEntityName, String resourceEntityResponseType) {
-        String baseURL = GWT.getModuleBaseURL()+"smqs";
+    public static String getRestURL(String resourceEntityType, Set<String> resourceEntityName,
+                    String resourceEntityResponseType) {
+        String baseURL = GWT.getModuleBaseURL() + "smqs";
         String url = baseURL;
-        url += "?"+MetricsQueryService.SERVICE_NAME_HEADER_VALUE;
-        url += "&"+MetricsQueryService.OPERATION_NAME_HEADER+"=getMetricsMetadata";
-        url += "&"+MetricsQueryService.USECASE_HEADER_VALUE;
-        url += "&"+MetricsQueryService.NV_DATA_FORMAT_HEADER_VALUE;
-        url += "&"+MetricsQueryService.JSON_RESPONSE_FORMAT_HEADER_VALUE;
-        url += "&"+MetricsQueryService.NV_NAMESPACE;
-        
-        url +="&ns:resourceEntityType="+resourceEntityType;
+        url += "?" + MetricsQueryService.SERVICE_NAME_HEADER_VALUE;
+        url += "&" + MetricsQueryService.OPERATION_NAME_HEADER + "=getMetricsMetadata";
+        url += "&" + MetricsQueryService.USECASE_HEADER_VALUE;
+        url += "&" + MetricsQueryService.NV_DATA_FORMAT_HEADER_VALUE;
+        url += "&" + MetricsQueryService.JSON_RESPONSE_FORMAT_HEADER_VALUE;
+        url += "&" + MetricsQueryService.NV_NAMESPACE;
+
+        url += "&ns:resourceEntityType=" + resourceEntityType;
 
         if (resourceEntityName != null && resourceEntityName.size() > 0) {
             if (resourceEntityName.size() == 1)
-                url+="&ns:resourceEntityName="+resourceEntityName.iterator().next();
+                url += "&ns:resourceEntityName=" + resourceEntityName.iterator().next();
             else {
-                int i=0;
-                for (String s:resourceEntityName) {
-                    url+="&ns:resourceEntityName("+(i++)+")="+s;
+                int i = 0;
+                for (String s : resourceEntityName) {
+                    url += "&ns:resourceEntityName(" + (i++) + ")=" + s;
                 }
             }
         }
-        url += "&ns:resourceEntityResponseType="+resourceEntityResponseType;
-        
+        url += "&ns:resourceEntityResponseType=" + resourceEntityResponseType;
+
         return url;
     }
-    
+
     /**
      * Gets the jSON url.
-     *
+     * 
      * @return the jSON url
      */
-    public static String getJSONUrl () {
-        String baseURL = GWT.getModuleBaseURL()+"smqs";
+    public static String getJSONUrl() {
+        String baseURL = GWT.getModuleBaseURL() + "smqs";
         String url = baseURL;
-        url += "?"+MetricsQueryService.SERVICE_NAME_HEADER_VALUE;
-        url += "&"+MetricsQueryService.OPERATION_NAME_HEADER+"=getMetricsMetadata";
-        url += "&"+MetricsQueryService.USECASE_HEADER_VALUE;
-        url += "&"+MetricsQueryService.JSON_DATA_FORMAT_HEADER_VALUE;
-        url += "&"+MetricsQueryService.JSON_RESPONSE_FORMAT_HEADER_VALUE;
-        url += "&"+MetricsQueryService.NV_NAMESPACE;
+        url += "?" + MetricsQueryService.SERVICE_NAME_HEADER_VALUE;
+        url += "&" + MetricsQueryService.OPERATION_NAME_HEADER + "=getMetricsMetadata";
+        url += "&" + MetricsQueryService.USECASE_HEADER_VALUE;
+        url += "&" + MetricsQueryService.JSON_DATA_FORMAT_HEADER_VALUE;
+        url += "&" + MetricsQueryService.JSON_RESPONSE_FORMAT_HEADER_VALUE;
+        url += "&" + MetricsQueryService.NV_NAMESPACE;
         return url;
     }
-    
+
     /**
      * Gets the jSON.
-     *
-     * @param resourceEntityType the resource entity type
-     * @param resourceEntityName the resource entity name
-     * @param resourceEntityResponseType the resource entity response type
+     * 
+     * @param resourceEntityType
+     *            the resource entity type
+     * @param resourceEntityName
+     *            the resource entity name
+     * @param resourceEntityResponseType
+     *            the resource entity response type
      * @return the jSON
      */
-    public static String getJSON (String resourceEntityType, Set<String> resourceEntityName, String resourceEntityResponseType) {
-        String json = ""+
-        "{" +
-        "   \"jsonns.ns\":\""+MetricsQueryService.NAMESPACE+"\"," +
-        "   \"ns.getMetricsMetadataRequest\":{" +
-        "       \"ns.resourceEntityType\":\""+resourceEntityType+"\","+
-        "       \"ns.resourceEntityName\":[";
+    public static String getJSON(String resourceEntityType, Set<String> resourceEntityName,
+                    String resourceEntityResponseType) {
+        String json = "" + "{" + "   \"jsonns.ns\":\"" + MetricsQueryService.NAMESPACE + "\","
+                        + "   \"ns.getMetricsMetadataRequest\":{" + "       \"ns.resourceEntityType\":\""
+                        + resourceEntityType + "\"," + "       \"ns.resourceEntityName\":[";
         Iterator<String> itor = resourceEntityName.iterator();
         while (itor.hasNext()) {
-            json += "\""+itor.next()+"\"";
+            json += "\"" + itor.next() + "\"";
             if (itor.hasNext())
                 json += ",";
         }
-        json += "],"+
-        "       \"ns.resourceEntityResponseType\":\"" + resourceEntityResponseType + "\"" +
-        "   }" +
-        "}";
-        
+        json += "]," + "       \"ns.resourceEntityResponseType\":\"" + resourceEntityResponseType + "\"" + "   }" + "}";
+
         return json;
     }
 }

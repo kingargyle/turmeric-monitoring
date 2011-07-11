@@ -325,6 +325,38 @@ public class DAOSOAMetricsQueryServiceProviderTest {
     }
 
     /**
+     * Test get metrics data by operation all services all operations all consumers.
+     */
+    @Test
+    public void testGetMetricsDataNoDiffInProvider() {
+        long now = System.currentTimeMillis();
+        long oneHourAgo = now - TimeUnit.SECONDS.toMillis(3600);
+        long twoHoursAgo = oneHourAgo - TimeUnit.SECONDS.toMillis(3600);
+
+        MetricCriteria metricCriteria = new MetricCriteria();
+        metricCriteria.setSecondStartTime(oneHourAgo);
+        metricCriteria.setFirstStartTime(twoHoursAgo);
+        metricCriteria.setDuration(3600);
+        metricCriteria.setAggregationPeriod(60);
+        metricCriteria.setMetricName("CallCount");
+
+        MetricResourceCriteria metricResourceCriteria = new MetricResourceCriteria();
+        ResourceEntityRequest entityRequest = new ResourceEntityRequest();
+        entityRequest.setResourceEntityType(ResourceEntity.SERVICE);
+        metricResourceCriteria.getResourceRequestEntities().add(entityRequest);
+        metricResourceCriteria.setResourceEntityResponseType(ResourceEntity.OPERATION.value());
+
+        List<MetricGroupData> result = provider.getMetricsData(metricCriteria, metricResourceCriteria);
+        // All 4 operations of the services have been called
+        assertEquals(4, result.size());
+        // First result must be the operation that got called 3 times, then the one that got called 2 times
+        assertEquals("operation_1_2", result.get(0).getCriteriaInfo().getOperationName());
+        assertEquals(0d, result.get(0).getDiff(), 0d);
+        assertEquals("operation_2_2", result.get(1).getCriteriaInfo().getOperationName());
+        assertEquals(0d, result.get(1).getDiff(), 0d);
+    }
+
+    /**
      * Test get metrics data by operation one service all operations all consumers.
      */
     @Test
@@ -820,6 +852,41 @@ public class DAOSOAMetricsQueryServiceProviderTest {
         assertEquals(errorName2, errorDatum.getError().getErrorName());
         assertEquals(3, errorDatum.getErrorCount1());
         assertEquals(1, errorDatum.getErrorCount2());
+    }
+
+    /**
+     * Test get error metrics data by severity.
+     */
+    @Test
+    public void testGetErrorMetricsDataNoDiffInProvider() {
+        MetricCriteria metricCriteria = new MetricCriteria();
+        metricCriteria.setFirstStartTime(twoMinutesAgo);
+        metricCriteria.setSecondStartTime(oneMinuteAgo);
+        metricCriteria.setDuration(3600);
+
+        List<ErrorViewData> errorData = provider.getErrorMetricsData("Severity", Collections.<String> emptyList(),
+                        Collections.<String> emptyList(), Collections.<String> emptyList(), null, null, null, null,
+                        metricCriteria);
+        assertEquals(3, errorData.size());
+        ErrorViewData errorDatum = errorData.get(0);
+        String errorId = "2";
+        assertEquals(errorId, errorDatum.getError().getErrorId());
+        String errorName = "error_2";
+        assertEquals(errorName, errorDatum.getError().getErrorName());
+        assertEquals(3, errorDatum.getErrorCount1());
+        assertEquals(1, errorDatum.getErrorCount2());
+
+        String errorId2 = "2";
+        String errorName2 = "error_2";
+        errorData = provider.getErrorMetricsData("Severity", Arrays.asList("service_3"),
+                        Arrays.asList("operation_3_1"), Arrays.asList("consumer_3"), errorId2,
+                        ErrorCategory.SYSTEM.value(), ErrorSeverity.ERROR.value(), null, metricCriteria);
+        assertEquals(1, errorData.size());
+        errorDatum = errorData.get(0);
+        assertEquals(0d, errorDatum.getErrorDiff(), 0d);
+        assertEquals(0d, errorDatum.getRatioDiff(), 0d);
+        assertEquals(0d, errorDatum.getErrorCallRatio1(), 0d);
+        assertEquals(0d, errorDatum.getErrorCallRatio2(), 0d);
     }
 
     /**

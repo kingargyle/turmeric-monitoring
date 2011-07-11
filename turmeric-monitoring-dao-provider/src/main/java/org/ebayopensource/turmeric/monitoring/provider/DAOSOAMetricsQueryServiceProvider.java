@@ -325,17 +325,13 @@ public class DAOSOAMetricsQueryServiceProvider implements SOAMetricsQueryService
                 long count1 = (Long) row1.get("errorCount");
                 errorViewData.setErrorCount1(count1);
 
-                errorViewData.setErrorCallRatio1(calls1 == 0 ? 0 : count1 / calls1);
-
                 Map<String, Object> row2 = map2.remove(entry.getKey());
                 if (row2 != null) {
                     long count2 = (Long) row2.get("errorCount");
                     errorViewData.setErrorCount2(count2);
-                    errorViewData.setErrorCallRatio2(calls2 == 0 ? 0 : count2 / calls2);
                 }
                 else {
                     errorViewData.setErrorCount2(0);
-                    errorViewData.setErrorCallRatio2(0);
                 }
 
                 result.add(errorViewData);
@@ -354,13 +350,7 @@ public class DAOSOAMetricsQueryServiceProvider implements SOAMetricsQueryService
                 long count2 = (Long) row2.get("errorCount");
                 errorViewData.setErrorCount2(count2);
 
-                errorViewData.setErrorCallRatio2(calls2 == 0 ? 0 : count2 / calls2);
-
                 errorViewData.setErrorCount1(0);
-                errorViewData.setErrorCallRatio1(0);
-                errorViewData.setErrorDiff(100);
-                errorViewData.setRatioDiff(100);
-
                 result.add(errorViewData);
             }
 
@@ -492,7 +482,6 @@ public class DAOSOAMetricsQueryServiceProvider implements SOAMetricsQueryService
                 }
                 else {
                     metricGroupData.setCount2(0);
-                    // metricGroupData.setDiff(-100);
                 }
 
                 CriteriaInfo criteriaInfo = populateCriteriaInfo(groupBy, row1);
@@ -506,7 +495,6 @@ public class DAOSOAMetricsQueryServiceProvider implements SOAMetricsQueryService
                 Double count2 = (Double) row2.get("value");
                 metricGroupData.setCount2(count2);
                 metricGroupData.setCount1(0);
-                // metricGroupData.setDiff(100);
 
                 CriteriaInfo criteriaInfo = populateCriteriaInfo(groupBy, row2);
                 metricGroupData.setCriteriaInfo(criteriaInfo);
@@ -792,19 +780,15 @@ public class DAOSOAMetricsQueryServiceProvider implements SOAMetricsQueryService
                 long count1 = (Long) row1.get("errorCount");
                 errorViewData.setErrorCount1(count1);
                 errorViewData.setErrorCall1(calls1);
-                // errorViewData.setErrorCallRatio1(calls1 == 0 ? 0 : count1 / calls1);
-
                 Map<String, Object> row2 = map2.remove(entry.getKey());
                 if (row2 != null) {
                     long count2 = (Long) row2.get("errorCount");
                     errorViewData.setErrorCount2(count2);
                     errorViewData.setErrorCall2(calls2);
-                    // errorViewData.setErrorCallRatio2(calls2 == 0 ? 0 : count2 / calls2);
                 }
                 else {
                     errorViewData.setErrorCount2(0);
                     errorViewData.setErrorCall2(0);
-                    // errorViewData.setErrorCallRatio2(0);
                 }
 
                 result.add(errorViewData);
@@ -823,14 +807,8 @@ public class DAOSOAMetricsQueryServiceProvider implements SOAMetricsQueryService
                 long count2 = (Long) row2.get("errorCount");
                 errorViewData.setErrorCount2(count2);
                 errorViewData.setErrorCall2(calls2);
-                // errorViewData.setErrorCallRatio2(calls2 == 0 ? 0 : count2 / calls2);
-
                 errorViewData.setErrorCount1(0);
                 errorViewData.setErrorCall1(0);
-                // errorViewData.setErrorCallRatio1(0);
-                // errorViewData.setErrorDiff(100);
-                // errorViewData.setRatioDiff(100);
-
                 result.add(errorViewData);
             }
 
