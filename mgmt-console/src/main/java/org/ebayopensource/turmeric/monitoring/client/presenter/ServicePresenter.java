@@ -736,7 +736,8 @@ public class ServicePresenter implements Presenter.TabPresenter {
             subject.add(opName);
         }
 
-        MetricCriteria mc = MetricCriteria.newMetricCriteria(m.toMetricName(), date2, date1, intervalHrs,
+        // flip flop dates
+        MetricCriteria mc = MetricCriteria.newMetricCriteria(m.toMetricName(), date1, date2, intervalHrs,
                         Ordering.Descending, 10, Perspective.Server, false);
         MetricResourceCriteria rmc = MetricResourceCriteria.newMetricResourceCriteria(subject, returnType);
         String url = queryService.getMetricDataDownloadUrl(mc, rmc);

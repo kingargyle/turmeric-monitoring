@@ -48,6 +48,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class MetricsQueryServiceImpl extends AbstractConsoleService implements MetricsQueryService {
     private static Logger errorLogger = Logger.getLogger("errorLogger");
+
     /**
      * Instantiates a new metrics query service impl.
      */
@@ -72,7 +73,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                 MetricCriteria.medAggregationPeriod = Integer.valueOf(tmp).intValue();
             }
             catch (NumberFormatException e) {
-                //log?
+                // log?
             }
         }
         tmp = config.get("minAggregationPeriod");
@@ -81,26 +82,29 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                 MetricCriteria.minAggregationPeriod = Integer.valueOf(tmp).intValue();
             }
             catch (NumberFormatException e) {
-               //log?
+                // log?
             }
         }
     }
 
     /**
      * Call the remote server to obtain metrics measurements.
-     *
-     * @param criteria the criteria
-     * @param resourceCriteria the resource criteria
-     * @param callback the callback
+     * 
+     * @param criteria
+     *            the criteria
+     * @param resourceCriteria
+     *            the resource criteria
+     * @param callback
+     *            the callback
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getMetricData(org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria,
-     * org.ebayopensource.turmeric.monitoring.client.model.MetricResourceCriteria,
-     * com.google.gwt.user.client.rpc.AsyncCallback)
+     *      org.ebayopensource.turmeric.monitoring.client.model.MetricResourceCriteria,
+     *      com.google.gwt.user.client.rpc.AsyncCallback)
      */
     public void getMetricData(final MetricCriteria criteria, final MetricResourceCriteria resourceCriteria,
                     final AsyncCallback<MetricData> callback) {
 
         final String url = URL.encode(MetricsDataRequest.getRestURL(criteria, resourceCriteria));
-        GWT.log("calling the getMetricsData ="+url);
+        GWT.log("calling the getMetricsData =" + url);
         RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
         final MetricData data = new MetricData();
         data.setRestUrl(url);
@@ -118,12 +122,12 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                     if (response.getStatusCode() != Response.SC_OK) {
                         callback.onFailure(getErrorAsThrowable(response));
                     }
-                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length()>0) {
+                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length() > 0) {
                         callback.onFailure(getErrorAsThrowable(response));
                     }
                     else {
                         String responseText = response.getText();
-                        GWT.log("getMetricData. responseText ="+responseText);
+                        GWT.log("getMetricData. responseText =" + responseText);
                         MetricsDataResponse metricsResponse = MetricsDataResponse.fromJSON(response.getText());
                         if (metricsResponse == null) {
                             GWT.log("bad response: " + response.getText());
@@ -152,11 +156,14 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
     /**
      * Gets the metric data download url.
-     *
-     * @param criteria the criteria
-     * @param resourceCriteria the resource criteria
+     * 
+     * @param criteria
+     *            the criteria
+     * @param resourceCriteria
+     *            the resource criteria
      * @return the metric data download url
-     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getMetricDataDownloadUrl(org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria, org.ebayopensource.turmeric.monitoring.client.model.MetricResourceCriteria)
+     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getMetricDataDownloadUrl(org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria,
+     *      org.ebayopensource.turmeric.monitoring.client.model.MetricResourceCriteria)
      */
     public String getMetricDataDownloadUrl(MetricCriteria criteria, MetricResourceCriteria resourceCriteria) {
         return URL.encode(MetricsDataRequest.getRestDownloadUrl(criteria, resourceCriteria));
@@ -164,8 +171,9 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
     /**
      * Call the remote server to obtain the list of services and their operations.
-     *
-     * @param callback the callback
+     * 
+     * @param callback
+     *            the callback
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getServices(com.google.gwt.user.client.rpc.AsyncCallback)
      */
     public void getServices(final AsyncCallback<Map<String, Set<String>>> callback) {
@@ -187,13 +195,13 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
                 public void onResponseReceived(Request request, Response response) {
                     if (response.getStatusCode() != Response.SC_OK) {
-                        errorLogger.log(Level.SEVERE, "Errored request in getServices call: " + url + " response code=" + response.getStatusCode() + " response="
-                                        + response.getText());
+                        errorLogger.log(Level.SEVERE, "Errored request in getServices call: " + url + " response code="
+                                        + response.getStatusCode() + " response=" + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
-                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length()>0) {
-                        errorLogger.log(Level.SEVERE, "Errored request in getServices call: " + url + " response code=" + response.getStatusCode() + " response="
-                                        + response.getText());
+                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length() > 0) {
+                        errorLogger.log(Level.SEVERE, "Errored request in getServices call: " + url + " response code="
+                                        + response.getStatusCode() + " response=" + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
                     else {
@@ -224,9 +232,11 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
     /**
      * Talk to the remote server to obtain a list of all operations for the given services.
-     *
-     * @param serviceMap keys are the list of services for which to obtain the operations
-     * @param callback the callback
+     * 
+     * @param serviceMap
+     *            keys are the list of services for which to obtain the operations
+     * @param callback
+     *            the callback
      */
     public void getServiceOperations(final Map<String, Set<String>> serviceMap,
                     final AsyncCallback<Map<String, Set<String>>> callback) {
@@ -243,13 +253,15 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
                 public void onResponseReceived(final Request request, final Response response) {
                     if (response.getStatusCode() != Response.SC_OK) {
-                        errorLogger.log(Level.SEVERE, "Errored request in getServiceOperations call: " + url + " response code=" + response.getStatusCode() + " response="
-                                        + response.getText());
+                        errorLogger.log(Level.SEVERE,
+                                        "Errored request in getServiceOperations call: " + url + " response code="
+                                                        + response.getStatusCode() + " response=" + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
-                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length()>0) {
-                        errorLogger.log(Level.SEVERE, "Errored request in getServiceOperations call: " + url + " response code=" + response.getStatusCode() + " response="
-                                        + response.getText());
+                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length() > 0) {
+                        errorLogger.log(Level.SEVERE,
+                                        "Errored request in getServiceOperations call: " + url + " response code="
+                                                        + response.getStatusCode() + " response=" + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
                     else {
@@ -290,9 +302,11 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
     /**
      * Gets the service operations json.
-     *
-     * @param serviceMap the service map
-     * @param callback the callback
+     * 
+     * @param serviceMap
+     *            the service map
+     * @param callback
+     *            the callback
      */
     public void getServiceOperationsJSON(final Map<String, Set<String>> serviceMap,
                     final AsyncCallback<Map<String, Set<String>>> callback) {
@@ -309,12 +323,14 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
                 public void onResponseReceived(final Request request, final Response response) {
                     if (response.getStatusCode() != Response.SC_OK) {
-                        errorLogger.log(Level.SEVERE, "Errored request in getServiceOperationsJSON call: " + url + " response code=" + response.getStatusCode() + " response="
-                                        + response.getText());
+                        errorLogger.log(Level.SEVERE,
+                                        "Errored request in getServiceOperationsJSON call: " + url + " response code="
+                                                        + response.getStatusCode() + " response=" + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
-                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length()>0) {
-                        errorLogger.log(Level.SEVERE, "Errored request in getServiceOperationsJSON call: " + url + " Response=" + response.getText());
+                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length() > 0) {
+                        errorLogger.log(Level.SEVERE, "Errored request in getServiceOperationsJSON call: " + url
+                                        + " Response=" + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
                     else {
@@ -355,15 +371,18 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
     /**
      * Gets the error data.
-     *
-     * @param errorCriteria the error criteria
-     * @param metricCriteria the metric criteria
-     * @param callback the callback
+     * 
+     * @param errorCriteria
+     *            the error criteria
+     * @param metricCriteria
+     *            the metric criteria
+     * @param callback
+     *            the callback
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getErrorData(org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorType,
-     * java.util.List, java.util.List, java.util.List, java.lang.String, boolean,
-     * org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorCategory,
-     * org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorSeverity,
-     * org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria)
+     *      java.util.List, java.util.List, java.util.List, java.lang.String, boolean,
+     *      org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorCategory,
+     *      org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.ErrorSeverity,
+     *      org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria)
      */
     public void getErrorData(final ErrorCriteria errorCriteria, final MetricCriteria metricCriteria,
                     final AsyncCallback<ErrorMetricData> callback) {
@@ -383,18 +402,21 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
                 public void onResponseReceived(Request request, Response response) {
                     if (response.getStatusCode() != Response.SC_OK) {
-                        errorLogger.log(Level.SEVERE, "Errored request in getErrorData call: " + url + " response code=" + response.getStatusCode() + " response="
-                                        + response.getText());
+                        errorLogger.log(Level.SEVERE,
+                                        "Errored request in getErrorData call: " + url + " response code="
+                                                        + response.getStatusCode() + " response=" + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
-                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length()>0) {
-                        errorLogger.log(Level.SEVERE, "Errored request in getErrorData call: " + url + " Response=" + response.getText());
+                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length() > 0) {
+                        errorLogger.log(Level.SEVERE, "Errored request in getErrorData call: " + url + " Response="
+                                        + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
                     else {
                         ErrorMetricsDataResponse metricsResponse = ErrorMetricsDataResponse.fromJSON(response.getText());
                         if (metricsResponse == null) {
-                            errorLogger.log(Level.SEVERE, "Errored request in getErrorData call: " + url + " Response=" + response.getText());
+                            errorLogger.log(Level.SEVERE, "Errored request in getErrorData call: " + url + " Response="
+                                            + response.getText());
                             callback.onFailure(new Throwable(ConsoleUtil.messages.badOrMissingResponseData()));
                         }
                         else {
@@ -414,7 +436,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
             });
         }
         catch (RequestException x) {
-            errorLogger.log(Level.SEVERE,"error in getErrorData call", x);
+            errorLogger.log(Level.SEVERE, "error in getErrorData call", x);
             callback.onFailure(x);
             GWT.log("Exception in server call: " + x.toString());
         }
@@ -422,12 +444,14 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
     /**
      * Gets the error data download url.
-     *
-     * @param ec the ec
-     * @param mc the mc
+     * 
+     * @param ec
+     *            the ec
+     * @param mc
+     *            the mc
      * @return the error data download url
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getErrorDataDownloadUrl(org.ebayopensource.turmeric.monitoring.client.model.ErrorCriteria,
-     * org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria)
+     *      org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria)
      */
     public String getErrorDataDownloadUrl(ErrorCriteria ec, MetricCriteria mc) {
         return URL.encode(ErrorMetricsDataRequest.getRestDownloadUrl(ec, mc));
@@ -435,13 +459,17 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
 
     /**
      * Gets the error detail.
-     *
-     * @param errorId the error id
-     * @param errorName the error name
-     * @param service the service
-     * @param callback the callback
+     * 
+     * @param errorId
+     *            the error id
+     * @param errorName
+     *            the error name
+     * @param service
+     *            the service
+     * @param callback
+     *            the callback
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getErrorDetail(java.lang.String,
-     * java.lang.String, com.google.gwt.user.client.rpc.AsyncCallback)
+     *      java.lang.String, com.google.gwt.user.client.rpc.AsyncCallback)
      */
     public void getErrorDetail(final String errorId, final String errorName, final String service,
                     final AsyncCallback<ErrorDetail> callback) {
@@ -452,19 +480,21 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
             builder.sendRequest(null, new RequestCallback() {
 
                 public void onError(Request request, Throwable err) {
-                    errorLogger.log(Level.SEVERE,"Error in getErrorDetail call:", err);
+                    errorLogger.log(Level.SEVERE, "Error in getErrorDetail call:", err);
                     callback.onFailure(err);
                 }
 
                 public void onResponseReceived(Request request, Response response) {
                     if (response.getStatusCode() != Response.SC_OK) {
-                        errorLogger.log(Level.SEVERE, "Errored request in getErrorDetail call: " + url + " response code=" + response.getStatusCode() + " response="
-                                        + response.getText());
+                        errorLogger.log(Level.SEVERE,
+                                        "Errored request in getErrorDetail call: " + url + " response code="
+                                                        + response.getStatusCode() + " response=" + response.getText());
                         callback.onFailure(new Throwable("Error " + response.getStatusCode()));
                     }
-                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length()>0) {
-                        errorLogger.log(Level.SEVERE, "Errored request in getErrorDetail call: " + url + " response code=" + response.getStatusCode() + " response="
-                                        + response.getText());
+                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length() > 0) {
+                        errorLogger.log(Level.SEVERE,
+                                        "Errored request in getErrorDetail call: " + url + " response code="
+                                                        + response.getStatusCode() + " response=" + response.getText());
                         callback.onFailure(new Throwable(ConsoleUtil.messages.badRequestData()));
                     }
                     else {
@@ -486,20 +516,23 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
             });
         }
         catch (RequestException x) {
-            errorLogger.log(Level.SEVERE,"Error in getErrorDetail call", x);
+            errorLogger.log(Level.SEVERE, "Error in getErrorDetail call", x);
             callback.onFailure(x);
         }
     }
 
     /**
      * Gets the error time slot data.
-     *
-     * @param ec the ec
-     * @param mc the mc
-     * @param callback the callback
+     * 
+     * @param ec
+     *            the ec
+     * @param mc
+     *            the mc
+     * @param callback
+     *            the callback
      * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getErrorTimeSlotData(org.ebayopensource.turmeric.monitoring.client.model.ErrorCriteria,
-     * org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria,
-     * com.google.gwt.user.client.rpc.AsyncCallback)
+     *      org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria,
+     *      com.google.gwt.user.client.rpc.AsyncCallback)
      */
     public void getErrorTimeSlotData(final ErrorCriteria ec, final MetricCriteria mc,
                     final AsyncCallback<ErrorTimeSlotData> callback) {
@@ -510,7 +543,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
         data.setRestUrl(url);
         data.setErrorCriteria(ec);
         data.setMetricCriteria(mc);
-        GWT.log("getErrorTimeSlotData.url ="+url);
+        GWT.log("getErrorTimeSlotData.url =" + url);
         try {
             builder.sendRequest(null, new RequestCallback() {
 
@@ -522,7 +555,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                     if (response.getStatusCode() != Response.SC_OK) {
                         callback.onFailure(new Throwable("Error " + response.getStatusCode()));
                     }
-                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length()>0) {
+                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length() > 0) {
                         callback.onFailure(new Throwable(ConsoleUtil.messages.badRequestData()));
                     }
                     else {
@@ -553,172 +586,191 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
         }
     }
 
-    private void getMetricValueForDate(MetricValue mv, final AsyncCallback<TimeSlotData> callback) throws RequestException {
+    private void getMetricValueForDate(MetricValue mv, final AsyncCallback<TimeSlotData> callback)
+                    throws RequestException {
 
-            final TimeSlotData data = new TimeSlotData();
-            data.setReturnData(new ArrayList<TimeSlotValue>(0));
-            
-            final String url = URL.encode(MetricValueRequest.getRestURL(mv));
-            RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
-            builder.setTimeoutMillis(60000);
-            GWT.log("getServiceCallTrend url ->" + url);
-            builder.sendRequest(null, new RequestCallback() {
-                public void onError(Request request, Throwable err) {
-                    GWT.log("Error calling the SQMS",err);
-                    callback.onFailure(err);
+        final TimeSlotData data = new TimeSlotData();
+        data.setReturnData(new ArrayList<TimeSlotValue>(0));
+
+        final String url = URL.encode(MetricValueRequest.getRestURL(mv));
+        RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
+        builder.setTimeoutMillis(60000);
+        GWT.log("getServiceCallTrend url ->" + url);
+        builder.sendRequest(null, new RequestCallback() {
+            public void onError(Request request, Throwable err) {
+                GWT.log("Error calling the SQMS", err);
+                callback.onFailure(err);
+            }
+
+            public void onResponseReceived(Request request, Response response) {
+                if (response.getStatusCode() != Response.SC_OK) {
+                    GWT.log("Response status code: " + response.getStatusCode());
+                    callback.onFailure(new RequestException("Response status code: " + response.getStatusCode()));
                 }
-
-                public void onResponseReceived(Request request, Response response) {
-                    if (response.getStatusCode() != Response.SC_OK) {
-                        GWT.log("Response status code: "+response.getStatusCode());
-                        callback.onFailure(new RequestException("Response status code: "+response.getStatusCode()));
-                    }
-                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length()>0) {
-                        GWT.log("Error. Response headers : "+response.getHeadersAsString());
-                        callback.onFailure(new RequestException("Error. Response headers : "+response.getHeadersAsString()));
+                else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length() > 0) {
+                    GWT.log("Error. Response headers : " + response.getHeadersAsString());
+                    callback.onFailure(new RequestException("Error. Response headers : "
+                                    + response.getHeadersAsString()));
+                }
+                else {
+                    // GWT.log(response.getText());
+                    MetricValueResponse graphResponse = MetricValueResponse.fromJSON(response.getText());
+                    if (graphResponse == null) {
+                        GWT.log("Null response");
                     }
                     else {
-                        //GWT.log(response.getText());
-                        MetricValueResponse graphResponse = MetricValueResponse.fromJSON(response.getText());
-                        if (graphResponse == null) {
-                            GWT.log("Null response");
-                        }else {
-                            JsArray<MetricGraphDataJS> rows = graphResponse.getReturnData();
-                            //GWT.log("rows.size = "+rows.length());
-                            List<TimeSlotValue> results = new ArrayList<TimeSlotValue>();
-                            if (rows != null) {
-                                for (int i = 0; i < rows.length(); i++) {
-                                    MetricGraphDataJS js = rows.get(i);
-                                    results.add(js);
-                                }
+                        JsArray<MetricGraphDataJS> rows = graphResponse.getReturnData();
+                        // GWT.log("rows.size = "+rows.length());
+                        List<TimeSlotValue> results = new ArrayList<TimeSlotValue>();
+                        if (rows != null) {
+                            for (int i = 0; i < rows.length(); i++) {
+                                MetricGraphDataJS js = rows.get(i);
+                                results.add(js);
                             }
-                            //GWT.log("results  = "+results.size());
-                            data.getReturnData().addAll(results);
-                            //GWT.log("adding all results: "+data.getReturnData().size());
-                            callback.onSuccess(data);
                         }
+                        // GWT.log("results  = "+results.size());
+                        data.getReturnData().addAll(results);
+                        // GWT.log("adding all results: "+data.getReturnData().size());
+                        callback.onSuccess(data);
                     }
                 }
-            });
-        
+            }
+        });
+
     }
 
     /**
      * Gets the metric value trend.
-     *
-     * @param firstDate the first date
-     * @param secondDate the second date
-     * @param callback the callback
-     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getServiceMetricValueTrend(org.ebayopensource.turmeric.monitoring.client.model.MetricValue, org.ebayopensource.turmeric.monitoring.client.model.MetricValue, com.google.gwt.user.client.rpc.AsyncCallback)
+     * 
+     * @param firstDate
+     *            the first date
+     * @param secondDate
+     *            the second date
+     * @param callback
+     *            the callback
+     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getServiceMetricValueTrend(org.ebayopensource.turmeric.monitoring.client.model.MetricValue,
+     *      org.ebayopensource.turmeric.monitoring.client.model.MetricValue,
+     *      com.google.gwt.user.client.rpc.AsyncCallback)
      */
     @Override
     public void getMetricValueTrend(final MetricValue firstDate, final MetricValue secondDate,
-                     final AsyncCallback<List<TimeSlotData>> callback) {
+                    final AsyncCallback<List<TimeSlotData>> callback) {
         try {
             final TimeSlotData firstDateRange = new TimeSlotData();
             final TimeSlotData secondDateRange = new TimeSlotData();
-            this.getMetricValueForDate(firstDate , new AsyncCallback<TimeSlotData>(){
+            this.getMetricValueForDate(firstDate, new AsyncCallback<TimeSlotData>() {
 
                 @Override
                 public void onFailure(Throwable arg0) {
-                    errorLogger.log(Level.SEVERE, "Error in getMetricValueTrend for the date:"+firstDate.getStartTime(), arg0);
-                    Window.alert("Error: "+arg0.getMessage());
+                    errorLogger.log(Level.SEVERE,
+                                    "Error in getMetricValueTrend for the date:" + firstDate.getStartTime(), arg0);
+                    Window.alert("Error: " + arg0.getMessage());
                 }
 
                 @Override
                 public void onSuccess(TimeSlotData arg0) {
                     firstDateRange.setReturnData(arg0.getReturnData());
                     try {
-                        getMetricValueForDate(secondDate , new AsyncCallback<TimeSlotData>(){
+                        getMetricValueForDate(secondDate, new AsyncCallback<TimeSlotData>() {
 
                             @Override
                             public void onFailure(Throwable arg0) {
-                                errorLogger.log(Level.SEVERE, "Error in getMetricValueTrend for the date:"+secondDate.getStartTime(), arg0);
-                                Window.alert("Error: "+arg0.getMessage());
+                                errorLogger.log(Level.SEVERE,
+                                                "Error in getMetricValueTrend for the date:"
+                                                                + secondDate.getStartTime(), arg0);
+                                Window.alert("Error: " + arg0.getMessage());
                             }
 
                             @Override
                             public void onSuccess(TimeSlotData arg0) {
                                 secondDateRange.setReturnData(arg0.getReturnData());
-                                List<TimeSlotData> results =  new ArrayList<TimeSlotData>();
+                                List<TimeSlotData> results = new ArrayList<TimeSlotData>();
                                 results.add(firstDateRange);
                                 results.add(secondDateRange);
                                 callback.onSuccess(results);
                             }
-                            
+
                         });
                     }
                     catch (RequestException e) {
                         e.printStackTrace();
                     }
                 }
-                
+
             });
-            
+
         }
         catch (RequestException x) {
             callback.onFailure(x);
         }
 
     }
-    
+
     /**
      * Gets the error trend.
-     *
-     * @param ec the ec
-     * @param firstDate the first date
-     * @param secondDate the second date
-     * @param callback the callback
-     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getErrorTrend(org.ebayopensource.turmeric.monitoring.client.model.ErrorCriteria, org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria, org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria, com.google.gwt.user.client.rpc.AsyncCallback)
+     * 
+     * @param ec
+     *            the ec
+     * @param firstDate
+     *            the first date
+     * @param secondDate
+     *            the second date
+     * @param callback
+     *            the callback
+     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getErrorTrend(org.ebayopensource.turmeric.monitoring.client.model.ErrorCriteria,
+     *      org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria,
+     *      org.ebayopensource.turmeric.monitoring.client.model.MetricCriteria,
+     *      com.google.gwt.user.client.rpc.AsyncCallback)
      */
     @Override
     public void getErrorTrend(final ErrorCriteria ec, final MetricCriteria firstDate, final MetricCriteria secondDate,
-                     final AsyncCallback<List<ErrorTimeSlotData>> callback) {
+                    final AsyncCallback<List<ErrorTimeSlotData>> callback) {
         final ErrorTimeSlotData firstDateRange = new ErrorTimeSlotData();
         final ErrorTimeSlotData secondDateRange = new ErrorTimeSlotData();
-        //GWT.log("getErrorTrend.firstDate ="+firstDate.date1);
-        this.getErrorTimeSlotData(ec, firstDate, new AsyncCallback<ErrorTimeSlotData>(){
+        // GWT.log("getErrorTrend.firstDate ="+firstDate.date1);
+        this.getErrorTimeSlotData(ec, firstDate, new AsyncCallback<ErrorTimeSlotData>() {
 
             @Override
             public void onFailure(Throwable arg0) {
-                Window.alert("Error: "+arg0.getMessage());
+                Window.alert("Error: " + arg0.getMessage());
             }
 
             @Override
             public void onSuccess(ErrorTimeSlotData arg0) {
                 firstDateRange.setReturnData(arg0.getReturnData());
-                getErrorTimeSlotData(ec, secondDate , new AsyncCallback<ErrorTimeSlotData>(){
+                getErrorTimeSlotData(ec, secondDate, new AsyncCallback<ErrorTimeSlotData>() {
 
                     @Override
                     public void onFailure(Throwable arg0) {
-                        Window.alert("Error: "+arg0.getMessage());
+                        Window.alert("Error: " + arg0.getMessage());
                     }
 
                     @Override
                     public void onSuccess(ErrorTimeSlotData arg0) {
                         secondDateRange.setReturnData(arg0.getReturnData());
-                        List<ErrorTimeSlotData> results =  new ArrayList<ErrorTimeSlotData>();
+                        List<ErrorTimeSlotData> results = new ArrayList<ErrorTimeSlotData>();
                         results.add(firstDateRange);
                         results.add(secondDateRange);
                         callback.onSuccess(results);
                     }
-                    
+
                 });
             }
-        });     
+        });
 
     }
-    
-    
+
     /**
      * Gets the service consumers.
-     *
-     * @param serviceName the service name
-     * @param callback the callback
-     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getServiceConsumers(java.lang.String, com.google.gwt.user.client.rpc.AsyncCallback)
+     * 
+     * @param serviceName
+     *            the service name
+     * @param callback
+     *            the callback
+     * @see org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService#getServiceConsumers(java.lang.String,
+     *      com.google.gwt.user.client.rpc.AsyncCallback)
      */
-    public void getServiceConsumers(final String serviceName,
-                    final AsyncCallback<Set<String>> callback) {
+    public void getServiceConsumers(final String serviceName, final AsyncCallback<Set<String>> callback) {
 
         Set<String> serviceNames = new HashSet<String>();
         serviceNames.add(serviceName);
@@ -737,7 +789,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                                         + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
                     }
-                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length()>0) {
+                    else if (response.getHeader(ERROR_HEADER) != null && response.getHeader(ERROR_HEADER).length() > 0) {
                         GWT.log("Errored request: " + url + " response code=" + response.getStatusCode() + " response="
                                         + response.getText());
                         callback.onFailure(getErrorAsThrowable(response));
@@ -748,8 +800,8 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                             callback.onFailure(new Throwable(ConsoleUtil.messages.badOrMissingResponseData()));
                         else {
                             Set<String> consumerNames = metaDataResponse.getOrderedResourceEntityResponseNames();
-                            
-                                callback.onSuccess(consumerNames);
+
+                            callback.onSuccess(consumerNames);
                         }
                     }
                 }

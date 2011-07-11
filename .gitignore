@@ -6,4 +6,5 @@ target
 *.log
 lib
 deploy
+gen-src
 
