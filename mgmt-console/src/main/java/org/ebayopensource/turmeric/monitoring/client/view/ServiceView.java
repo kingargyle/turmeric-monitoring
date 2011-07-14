@@ -23,8 +23,13 @@ import org.ebayopensource.turmeric.monitoring.client.model.MetricsQueryService.E
 import org.ebayopensource.turmeric.monitoring.client.model.ObjectType;
 import org.ebayopensource.turmeric.monitoring.client.model.ServiceMetric;
 import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
+import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue;
 import org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter;
 import org.ebayopensource.turmeric.monitoring.client.util.GraphUtil;
+import org.ebayopensource.turmeric.monitoring.client.view.graph.AvgGraphDataAggregator;
+import org.ebayopensource.turmeric.monitoring.client.view.graph.GraphRenderer;
+import org.ebayopensource.turmeric.monitoring.client.view.graph.LineChartGraphRenderer;
+import org.ebayopensource.turmeric.monitoring.client.view.graph.SumGraphDataAggregator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -838,7 +843,10 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
     public void setServiceCallTrendData(List<TimeSlotData> graphData, long aggregationPeriod, int hourSpan,
                     String graphTitle) {
         if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
-            GraphUtil.createLineChart(topVolumePanel, graphData, aggregationPeriod, hourSpan, graphTitle);
+            // GraphUtil.createLineChart(topVolumePanel, graphData, aggregationPeriod, hourSpan, graphTitle);
+            GraphRenderer renderer = new LineChartGraphRenderer(new SumGraphDataAggregator(), graphTitle,
+                            this.topVolumePanel, graphData, aggregationPeriod, hourSpan);
+            renderer.render();
         }
         else {
             GWT.log("empty graphData");
@@ -854,10 +862,22 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
     public void setServicePerformanceTrendData(List<TimeSlotData> graphData, long aggregationPeriod, int hourSpan,
                     String graphTitle) {
         if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
-            GraphUtil.createLineChart(this.leastPerformancePanel, graphData, aggregationPeriod, hourSpan, graphTitle);
+            GraphRenderer renderer = new LineChartGraphRenderer(new AvgGraphDataAggregator(), graphTitle,
+                            this.leastPerformancePanel, graphData, aggregationPeriod, hourSpan);
+            renderer.render();
+            // GraphUtil.createLineChart(this.leastPerformancePanel, graphData, aggregationPeriod, hourSpan,
+            // graphTitle);
         }
         else {
             GWT.log("empty graphData");
+        }
+    }
+
+    private void printGraphDataValues(TimeSlotData timeSlotData) {
+        for (TimeSlotValue value : timeSlotData.getReturnData()) {
+            System.err.println("value.criteria=" + value.getCriteria());
+            System.err.println("value.getTimeSlot=" + value.getTimeSlot());
+            System.err.println("value.getValue=" + value.getValue());
         }
     }
 
@@ -870,7 +890,10 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
     public void setServiceErrorTrendData(List<TimeSlotData> graphData, long aggregationPeriod, int hourSpan,
                     String graphTitle) {
         if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
-            GraphUtil.createLineChart(this.topErrorsPanel, graphData, aggregationPeriod, hourSpan, graphTitle);
+            // GraphUtil.createLineChart(this.topErrorsPanel, graphData, aggregationPeriod, hourSpan, graphTitle);
+            GraphRenderer renderer = new LineChartGraphRenderer(new SumGraphDataAggregator(), graphTitle,
+                            this.topErrorsPanel, graphData, aggregationPeriod, hourSpan);
+            renderer.render();
         }
         else {
             GWT.log("empty graphData");

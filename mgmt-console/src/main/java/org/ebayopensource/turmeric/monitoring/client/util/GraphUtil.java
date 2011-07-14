@@ -32,23 +32,32 @@ import com.google.gwt.visualization.client.visualizations.LineChart.Options;
  * The Class GraphUtil.
  */
 public class GraphUtil {
-    
+
     /**
      * Gets the simple graph data.
-     *
-     * @param queryService the query service
-     * @param metricName the metric name
-     * @param roleType the role type
-     * @param aggregationPeriod the aggregation period
-     * @param selectionContext the selection context
-     * @param date1 the date1
-     * @param date2 the date2
-     * @param hourSpan the hour span
-     * @param callback the callback
+     * 
+     * @param queryService
+     *            the query service
+     * @param metricName
+     *            the metric name
+     * @param roleType
+     *            the role type
+     * @param aggregationPeriod
+     *            the aggregation period
+     * @param selectionContext
+     *            the selection context
+     * @param date1
+     *            the date1
+     * @param date2
+     *            the date2
+     * @param hourSpan
+     *            the hour span
+     * @param callback
+     *            the callback
      */
-    public static void getSimpleGraphData(MetricsQueryService queryService, String metricName, String roleType, long aggregationPeriod,
-                    final SelectionContext selectionContext, long date1, long date2, final int hourSpan,
-                    AsyncCallback<List<TimeSlotData>> callback) {
+    public static void getSimpleGraphData(MetricsQueryService queryService, String metricName, String roleType,
+                    long aggregationPeriod, final SelectionContext selectionContext, long date1, long date2,
+                    final int hourSpan, AsyncCallback<List<TimeSlotData>> callback) {
         long hourToSecondsMultiplier = 3600;
         CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
         criteriaInfo.setMetricName(metricName);
@@ -57,30 +66,42 @@ public class GraphUtil {
             criteriaInfo.setOperationName(selectionContext.getSelection(ObjectType.OperationName));
         }
         criteriaInfo.setRoleType(roleType);
-        if(aggregationPeriod >= 3600){
+        if (aggregationPeriod >= 3600) {
             hourToSecondsMultiplier = aggregationPeriod;
         }
         queryService.getMetricValueTrend(new MetricValue(criteriaInfo, date1, hourToSecondsMultiplier * hourSpan,
-                        (int) aggregationPeriod, ""), new MetricValue(criteriaInfo, date2,
-                                        hourToSecondsMultiplier * hourSpan, (int) aggregationPeriod, ""), callback);
+                        (int) aggregationPeriod, ""), new MetricValue(criteriaInfo, date2, hourToSecondsMultiplier
+                        * hourSpan, (int) aggregationPeriod, ""), callback);
     }
-    
+
     /**
      * Gets the simple error graph data.
-     *
-     * @param queryService the query service
-     * @param errorType the error type
-     * @param errorCategory the error category
-     * @param severity the severity
-     * @param roleType the role type
-     * @param aggregationPeriod the aggregation period
-     * @param selectionContext the selection context
-     * @param date1 the date1
-     * @param date2 the date2
-     * @param hourSpan the hour span
-     * @param callback the callback
+     * 
+     * @param queryService
+     *            the query service
+     * @param errorType
+     *            the error type
+     * @param errorCategory
+     *            the error category
+     * @param severity
+     *            the severity
+     * @param roleType
+     *            the role type
+     * @param aggregationPeriod
+     *            the aggregation period
+     * @param selectionContext
+     *            the selection context
+     * @param date1
+     *            the date1
+     * @param date2
+     *            the date2
+     * @param hourSpan
+     *            the hour span
+     * @param callback
+     *            the callback
      */
-    public static void getSimpleErrorGraphData(MetricsQueryService queryService, ErrorType errorType, ErrorCategory errorCategory,  ErrorSeverity severity, String roleType, long aggregationPeriod,
+    public static void getSimpleErrorGraphData(MetricsQueryService queryService, ErrorType errorType,
+                    ErrorCategory errorCategory, ErrorSeverity severity, String roleType, long aggregationPeriod,
                     final SelectionContext selectionContext, long date1, long date2, final int hourSpan,
                     AsyncCallback<List<ErrorTimeSlotData>> callback) {
         String serviceName = selectionContext.getSelection(ObjectType.ServiceName);
@@ -89,33 +110,38 @@ public class GraphUtil {
         List<String> serviceNames = null;
         List<String> consumerNames = null;
         List<String> operationNames = null;
-        if(serviceName != null){
+        if (serviceName != null) {
             serviceNames = Arrays.asList(serviceName);
         }
-        if(consumerName != null){
+        if (consumerName != null) {
             consumerNames = Arrays.asList(consumerName);
         }
-        
-        if(operationName != null){
+
+        if (operationName != null) {
             operationNames = Arrays.asList(operationName);
         }
-        
-        ErrorCriteria ec = ErrorCriteria.newErrorCriteria(errorType , serviceNames, operationNames, consumerNames, null, false, errorCategory, severity);
-        MetricCriteria firstDate = new MetricCriteria("", date1, hourSpan,(int)aggregationPeriod);
-        MetricCriteria secondDate =  new MetricCriteria("", date2, hourSpan,(int)aggregationPeriod);
-        queryService.getErrorTrend(ec, firstDate,secondDate, callback);
-        
-        
+
+        ErrorCriteria ec = ErrorCriteria.newErrorCriteria(errorType, serviceNames, operationNames, consumerNames, null,
+                        false, errorCategory, severity);
+        MetricCriteria firstDate = new MetricCriteria("", date1, hourSpan, (int) aggregationPeriod);
+        MetricCriteria secondDate = new MetricCriteria("", date2, hourSpan, (int) aggregationPeriod);
+        queryService.getErrorTrend(ec, firstDate, secondDate, callback);
+
     }
-    
+
     /**
      * Creates the line chart.
-     *
-     * @param panel the panel
-     * @param timeData the time data
-     * @param aggregationPeriod the aggregation period
-     * @param hourSpan the hour span
-     * @param graphTitle the graph title
+     * 
+     * @param panel
+     *            the panel
+     * @param timeData
+     *            the time data
+     * @param aggregationPeriod
+     *            the aggregation period
+     * @param hourSpan
+     *            the hour span
+     * @param graphTitle
+     *            the graph title
      */
     public static void createLineChart(final SummaryPanel panel, final List<? extends TimeSlotData> timeData,
                     final long aggregationPeriod, final int hourSpan, final String graphTitle) {
@@ -132,18 +158,20 @@ public class GraphUtil {
 
         VisualizationUtils.loadVisualizationApi(onLoadCallback, "corechart");
     }
-    
-    
+
     /**
      * Creates the chart data table.
-     *
-     * @param timeDataRange the time data range
-     * @param aggregationPeriod the aggregation period
-     * @param hourSpan the hour span
+     * 
+     * @param timeDataRange
+     *            the time data range
+     * @param aggregationPeriod
+     *            the aggregation period
+     * @param hourSpan
+     *            the hour span
      * @return the abstract data table
      */
-    public static AbstractDataTable createChartDataTable(List<? extends TimeSlotData> timeDataRange, long aggregationPeriod,
-                    int hourSpan) {
+    public static AbstractDataTable createChartDataTable(List<? extends TimeSlotData> timeDataRange,
+                    long aggregationPeriod, int hourSpan) {
         int plotPointsPerHour = 1;
         if (aggregationPeriod < 3600) {// then, each point represents X minutes. e.g: minAggregationPeriod = 60, then we
                                        // would get 60 points to plot per hour
@@ -158,7 +186,8 @@ public class GraphUtil {
                             plotPointsPerHour, hourSpan);
             double[] secondDateRangeArray = calculatePlotPointsPerTimeUnit(secondDateRange.getReturnData(),
                             plotPointsPerHour, hourSpan);
-            String[] labelArray = calculateDateTimeLabelPerTimeUnit(firstDateRange.getReturnData(), plotPointsPerHour, hourSpan);
+            String[] labelArray = calculateDateTimeLabelPerTimeUnit(firstDateRange.getReturnData(), plotPointsPerHour,
+                            hourSpan);
             if (rowSize > 0) {
                 data.addColumn(ColumnType.STRING, "x");
                 data.addColumn(ColumnType.NUMBER,
@@ -171,9 +200,7 @@ public class GraphUtil {
                 data.addRows(rowSize);
                 for (int i = 0; i < rowSize; i++) {
                     // GWT.log("getValue = "+timeData.getReturnData().get(i).getValue());
-                    data.setValue(i,
-                                    0,
-                                    labelArray[i]);
+                    data.setValue(i, 0, labelArray[i]);
                     data.setValue(i, 1, firstDateRangeArray[i]);
                     data.setValue(i, 2, secondDateRangeArray[i]);
                 }
@@ -187,8 +214,9 @@ public class GraphUtil {
         }
         return data;
     }
-    
-    private static double[] calculatePlotPointsPerTimeUnit(List<TimeSlotValue> returnData, int plotPointsPerTimeUnit, int span) {
+
+    private static double[] calculatePlotPointsPerTimeUnit(List<TimeSlotValue> returnData, int plotPointsPerTimeUnit,
+                    int span) {
         double[] result = new double[span];
         int arrayIndex = 0;
         int counter = 0;
@@ -202,12 +230,12 @@ public class GraphUtil {
         }
         return result;
     }
-    
-    
+
     /**
      * Creates the options.
-     *
-     * @param graphTitle the graph title
+     * 
+     * @param graphTitle
+     *            the graph title
      * @return the options
      */
     public static Options createOptions(String graphTitle) {
@@ -224,9 +252,9 @@ public class GraphUtil {
         options.setTitleFontSize(12d);
         return options;
     }
-    
-    private static String[] calculateDateTimeLabelPerTimeUnit(List<TimeSlotValue> returnData, int plotPointsPerTimeUnit,
-                    int span) {
+
+    private static String[] calculateDateTimeLabelPerTimeUnit(List<TimeSlotValue> returnData,
+                    int plotPointsPerTimeUnit, int span) {
         String[] result = new String[span];
         int arrayIndex = 0;
         int counter = 0;
@@ -245,16 +273,21 @@ public class GraphUtil {
 
     /**
      * Creates the error line chart.
-     *
-     * @param panel the panel
-     * @param dataRanges the data ranges
-     * @param aggregationPeriod the aggregation period
-     * @param hourSpan the hour span
-     * @param graphTitle the graph title
+     * 
+     * @param panel
+     *            the panel
+     * @param dataRanges
+     *            the data ranges
+     * @param aggregationPeriod
+     *            the aggregation period
+     * @param hourSpan
+     *            the hour span
+     * @param graphTitle
+     *            the graph title
      */
     public static void createErrorLineChart(SummaryPanel panel, List<ErrorTimeSlotData> dataRanges,
                     long aggregationPeriod, int hourSpan, String graphTitle) {
         createLineChart(panel, dataRanges, aggregationPeriod, hourSpan, graphTitle);
     }
-    
+
 }

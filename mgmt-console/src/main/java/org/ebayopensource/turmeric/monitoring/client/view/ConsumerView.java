@@ -29,6 +29,11 @@ import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
 import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue;
 import org.ebayopensource.turmeric.monitoring.client.presenter.ConsumerPresenter;
 import org.ebayopensource.turmeric.monitoring.client.util.GraphUtil;
+import org.ebayopensource.turmeric.monitoring.client.view.graph.AvgGraphDataAggregator;
+import org.ebayopensource.turmeric.monitoring.client.view.graph.ColumnChartGraphRenderer;
+import org.ebayopensource.turmeric.monitoring.client.view.graph.GraphRenderer;
+import org.ebayopensource.turmeric.monitoring.client.view.graph.LineChartGraphRenderer;
+import org.ebayopensource.turmeric.monitoring.client.view.graph.SumGraphDataAggregator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -915,79 +920,14 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     public void setConsumerCallTrendData(List<TimeSlotData> graphData, long aggregationPeriod, int hourSpan,
                     String graphTitle) {
         if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
-            GraphUtil.createLineChart(topVolumePanel, graphData, aggregationPeriod, hourSpan, graphTitle);
+            GraphRenderer renderer = new LineChartGraphRenderer(new SumGraphDataAggregator(), graphTitle,
+                            this.topVolumePanel, graphData, aggregationPeriod, hourSpan);
+            renderer.render();
+            // GraphUtil.createLineChart(topVolumePanel, graphData, aggregationPeriod, hourSpan, graphTitle);
         }
         else {
             GWT.log("empty graphData");
         }
-    }
-
-    private void createLineChart(final SummaryPanel panel, final List<TimeSlotData> timeData, final String graphTitle) {
-        Runnable onLoadCallback = new Runnable() {
-            public void run() {
-                final LineChart lineChart = new LineChart(createChartDataTable(timeData), createOptions(graphTitle));
-                panel.addChart(lineChart);
-            }
-        };
-
-        // Load the visualization api, passing the onLoadCallback to be called
-        // when loading is done.
-        // The gwt param "corechart" tells gwt to use the new charts
-
-        VisualizationUtils.loadVisualizationApi(onLoadCallback, "corechart");
-    }
-
-    private AbstractDataTable createChartDataTable(List<TimeSlotData> timeDataRange) {
-
-        DataTable data = DataTable.create();
-        TimeSlotData firstDateRange = timeDataRange.get(0);
-        TimeSlotData secondDateRange = timeDataRange.get(1);
-        if (firstDateRange.getReturnData() != null && secondDateRange.getReturnData() != null) {
-            int rowSize = firstDateRange.getReturnData() != null ? firstDateRange.getReturnData().size() : 0;
-
-            if (rowSize > 0) {
-                data.addColumn(ColumnType.STRING, "x");
-                data.addColumn(ColumnType.NUMBER,
-                                ConsoleUtil.shotTimeFormat.format(new Date(firstDateRange.getReturnData().get(0)
-                                                .getTimeSlot())));
-
-                data.addColumn(ColumnType.NUMBER,
-                                ConsoleUtil.shotTimeFormat.format(new Date(secondDateRange.getReturnData().get(0)
-                                                .getTimeSlot())));
-                data.addRows(rowSize);
-                for (int i = 0; i < rowSize; i++) {
-                    // GWT.log("getValue = "+timeData.getReturnData().get(i).getValue());
-                    data.setValue(i,
-                                    0,
-                                    ConsoleUtil.onlyTimeFormat.format(new Date(firstDateRange.getReturnData().get(i)
-                                                    .getTimeSlot())));
-                    data.setValue(i, 1, firstDateRange.getReturnData().get(i).getValue());
-                    data.setValue(i, 2, secondDateRange.getReturnData().get(i).getValue());
-                }
-            }
-            else {
-                data.addColumn(ColumnType.STRING, "x");
-                data.addColumn(ColumnType.NUMBER, "");
-                data.addColumn(ColumnType.NUMBER, "");
-                data.addRows(rowSize);
-            }
-        }
-        return data;
-    }
-
-    private Options createOptions(String graphTitle) {
-        Options options = Options.create();
-        // options.setWidth(620);
-        options.setHeight(230);
-        options.setEnableTooltip(true);
-        options.setShowCategories(true);
-        options.set("fontSize", 10d);
-        options.setSmoothLine(true);
-        options.setPointSize(3);
-        options.setLineSize(3);
-        options.setTitle(graphTitle);
-        options.setTitleFontSize(12d);
-        return options;
     }
 
     /**
@@ -1008,7 +948,11 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     public void setConsumerPerformanceTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan,
                     String graphTitle) {
         if (dataRanges.get(0).getReturnData() != null && dataRanges.get(1).getReturnData() != null) {
-            GraphUtil.createLineChart(this.leastPerformancePanel, dataRanges, aggregationPeriod, hourSpan, graphTitle);
+            GraphRenderer renderer = new LineChartGraphRenderer(new AvgGraphDataAggregator(), graphTitle,
+                            this.leastPerformancePanel, dataRanges, aggregationPeriod, hourSpan);
+            renderer.render();
+            // GraphUtil.createLineChart(this.leastPerformancePanel, dataRanges, aggregationPeriod, hourSpan,
+            // graphTitle);
         }
         else {
             GWT.log("empty graphData");
@@ -1033,7 +977,11 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     public void setConsumerErrorTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan,
                     String graphTitle) {
         if (dataRanges.get(0).getReturnData() != null && dataRanges.get(1).getReturnData() != null) {
-            GraphUtil.createLineChart(this.topServiceErrorsPanel, dataRanges, aggregationPeriod, hourSpan, graphTitle);
+            GraphRenderer renderer = new LineChartGraphRenderer(new AvgGraphDataAggregator(), graphTitle,
+                            this.topServiceErrorsPanel, dataRanges, aggregationPeriod, hourSpan);
+            renderer.render();
+            // GraphUtil.createLineChart(this.topServiceErrorsPanel, dataRanges, aggregationPeriod, hourSpan,
+            // graphTitle);
         }
         else {
             GWT.log("empty graphData");
@@ -1188,7 +1136,10 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     public void setConsumerServicePerformanceTrendData(Map<String, List<TimeSlotData>> graphData,
                     long aggregationPeriod, int hourSpan, String graphTitle) {
         if (graphData != null) {
-            createColumnChart(this.performancePanel, graphData, graphTitle);
+            ColumnChartGraphRenderer renderer = new ColumnChartGraphRenderer(new AvgGraphDataAggregator(), graphTitle,
+                            this.performancePanel, graphData, aggregationPeriod, hourSpan);
+            renderer.render();
+            // createColumnChart(this.performancePanel, graphData, graphTitle);
         }
         else {
             GWT.log("empty graphData");
