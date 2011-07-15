@@ -948,7 +948,7 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     public void setConsumerPerformanceTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan,
                     String graphTitle) {
         if (dataRanges.get(0).getReturnData() != null && dataRanges.get(1).getReturnData() != null) {
-            GraphRenderer renderer = new LineChartGraphRenderer(new AvgGraphDataAggregator(), graphTitle,
+            GraphRenderer renderer = new LineChartGraphRenderer(new SumGraphDataAggregator(), graphTitle,
                             this.leastPerformancePanel, dataRanges, aggregationPeriod, hourSpan);
             renderer.render();
             // GraphUtil.createLineChart(this.leastPerformancePanel, dataRanges, aggregationPeriod, hourSpan,
@@ -977,7 +977,7 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     public void setConsumerErrorTrendData(List<TimeSlotData> dataRanges, long aggregationPeriod, int hourSpan,
                     String graphTitle) {
         if (dataRanges.get(0).getReturnData() != null && dataRanges.get(1).getReturnData() != null) {
-            GraphRenderer renderer = new LineChartGraphRenderer(new AvgGraphDataAggregator(), graphTitle,
+            GraphRenderer renderer = new LineChartGraphRenderer(new SumGraphDataAggregator(), graphTitle,
                             this.topServiceErrorsPanel, dataRanges, aggregationPeriod, hourSpan);
             renderer.render();
             // GraphUtil.createLineChart(this.topServiceErrorsPanel, dataRanges, aggregationPeriod, hourSpan,
@@ -1136,7 +1136,7 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     public void setConsumerServicePerformanceTrendData(Map<String, List<TimeSlotData>> graphData,
                     long aggregationPeriod, int hourSpan, String graphTitle) {
         if (graphData != null) {
-            ColumnChartGraphRenderer renderer = new ColumnChartGraphRenderer(new AvgGraphDataAggregator(), graphTitle,
+            ColumnChartGraphRenderer renderer = new ColumnChartGraphRenderer(new SumGraphDataAggregator(), graphTitle,
                             this.performancePanel, graphData, aggregationPeriod, hourSpan);
             renderer.render();
             // createColumnChart(this.performancePanel, graphData, graphTitle);

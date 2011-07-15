@@ -862,7 +862,7 @@ public class ServiceView extends ResizeComposite implements ServicePresenter.Dis
     public void setServicePerformanceTrendData(List<TimeSlotData> graphData, long aggregationPeriod, int hourSpan,
                     String graphTitle) {
         if (graphData.get(0).getReturnData() != null && graphData.get(1).getReturnData() != null) {
-            GraphRenderer renderer = new LineChartGraphRenderer(new AvgGraphDataAggregator(), graphTitle,
+            GraphRenderer renderer = new LineChartGraphRenderer(new SumGraphDataAggregator(), graphTitle,
                             this.leastPerformancePanel, graphData, aggregationPeriod, hourSpan);
             renderer.render();
             // GraphUtil.createLineChart(this.leastPerformancePanel, graphData, aggregationPeriod, hourSpan,
