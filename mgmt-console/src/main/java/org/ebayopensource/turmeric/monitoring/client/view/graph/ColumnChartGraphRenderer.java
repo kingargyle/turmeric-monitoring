@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2006-2010 eBay Inc. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *  
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.client.view.graph;
 
 import java.util.Date;
@@ -21,15 +29,40 @@ import com.google.gwt.visualization.client.visualizations.ColumnChart;
 import com.google.gwt.visualization.client.visualizations.Visualization;
 import com.google.gwt.visualization.client.visualizations.LineChart.Options;
 
+/**
+ * The Class ColumnChartGraphRenderer.
+ */
 public class ColumnChartGraphRenderer extends GraphRenderer {
+
+    /** The data range. */
     Map<String, List<TimeSlotData>> dataRange;
 
+    /**
+     * Instantiates a new column chart graph renderer.
+     * 
+     * @param dataAgregator
+     *            the data agregator
+     * @param graphTitle
+     *            the graph title
+     * @param panel
+     *            the panel
+     * @param dataRange
+     *            the data range
+     * @param aggregationPeriod
+     *            the aggregation period
+     * @param hourSpan
+     *            the hour span
+     */
     public ColumnChartGraphRenderer(GraphDataAggregator dataAgregator, String graphTitle, SummaryPanel panel,
                     Map<String, List<TimeSlotData>> dataRange, long aggregationPeriod, int hourSpan) {
         super(dataAgregator, graphTitle, panel, aggregationPeriod, hourSpan);
         this.dataRange = dataRange;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.view.graph.GraphRenderer#createOptions()
+     */
     @Override
     protected CommonChartOptions createOptions() {
         com.google.gwt.visualization.client.visualizations.ColumnChart.Options options = com.google.gwt.visualization.client.visualizations.ColumnChart.Options
@@ -45,6 +78,10 @@ public class ColumnChartGraphRenderer extends GraphRenderer {
         return options;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.view.graph.GraphRenderer#createDataTable()
+     */
     @Override
     protected AbstractDataTable createDataTable() {
         DataTable data = DataTable.create();
@@ -96,6 +133,10 @@ public class ColumnChartGraphRenderer extends GraphRenderer {
         return data;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.view.graph.GraphRenderer#createVisualization()
+     */
     @Override
     public Visualization<? extends AbstractDrawOptions> createVisualization() {
         return new ColumnChart(createDataTable(),

@@ -25,8 +25,6 @@ import org.ebayopensource.turmeric.monitoring.client.model.ServiceMetric;
 import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotData;
 import org.ebayopensource.turmeric.monitoring.client.model.TimeSlotValue;
 import org.ebayopensource.turmeric.monitoring.client.presenter.ServicePresenter;
-import org.ebayopensource.turmeric.monitoring.client.util.GraphUtil;
-import org.ebayopensource.turmeric.monitoring.client.view.graph.AvgGraphDataAggregator;
 import org.ebayopensource.turmeric.monitoring.client.view.graph.GraphRenderer;
 import org.ebayopensource.turmeric.monitoring.client.view.graph.LineChartGraphRenderer;
 import org.ebayopensource.turmeric.monitoring.client.view.graph.SumGraphDataAggregator;

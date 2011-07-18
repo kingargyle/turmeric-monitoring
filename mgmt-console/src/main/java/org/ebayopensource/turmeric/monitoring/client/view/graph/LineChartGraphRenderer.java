@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2006-2010 eBay Inc. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *  
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.client.view.graph;
 
 import java.util.Date;
@@ -16,15 +24,40 @@ import com.google.gwt.visualization.client.visualizations.LineChart;
 import com.google.gwt.visualization.client.visualizations.Visualization;
 import com.google.gwt.visualization.client.visualizations.LineChart.Options;
 
+/**
+ * The Class LineChartGraphRenderer.
+ */
 public class LineChartGraphRenderer extends GraphRenderer {
-    protected List<TimeSlotData> graphData;
 
+    /** The graph data. */
+    protected List<? extends TimeSlotData> graphData;
+
+    /**
+     * Instantiates a new line chart graph renderer.
+     * 
+     * @param dataAgregator
+     *            the data agregator
+     * @param graphTitle
+     *            the graph title
+     * @param panel
+     *            the panel
+     * @param graphData
+     *            the graph data
+     * @param aggregationPeriod
+     *            the aggregation period
+     * @param hourSpan
+     *            the hour span
+     */
     public LineChartGraphRenderer(GraphDataAggregator dataAgregator, String graphTitle, SummaryPanel panel,
-                    List<TimeSlotData> graphData, long aggregationPeriod, int hourSpan) {
+                    List<? extends TimeSlotData> graphData, long aggregationPeriod, int hourSpan) {
         super(dataAgregator, graphTitle, panel, aggregationPeriod, hourSpan);
         this.graphData = graphData;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.view.graph.GraphRenderer#createOptions()
+     */
     @Override
     protected CommonChartOptions createOptions() {
         Options options = Options.create();
@@ -41,6 +74,10 @@ public class LineChartGraphRenderer extends GraphRenderer {
         return options;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.view.graph.GraphRenderer#createDataTable()
+     */
     @Override
     protected AbstractDataTable createDataTable() {
         int plotPointsPerHour = 1;
@@ -87,6 +124,10 @@ public class LineChartGraphRenderer extends GraphRenderer {
         return data;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.ebayopensource.turmeric.monitoring.client.view.graph.GraphRenderer#createVisualization()
+     */
     @Override
     public Visualization<? extends AbstractDrawOptions> createVisualization() {
         return new LineChart(createDataTable(), (Options) createOptions());
