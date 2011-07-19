@@ -8,7 +8,7 @@
             <ns2:machineName>localhost</ns2:machineName>
             <ns2:roleType>server</ns2:roleType>
         </ns2:criteriaInfo>
-        <ns2:diff>198.42</ns2:diff>
+        <ns2:diff>-66.49</ns2:diff>
         <ns2:count2>3981225.0</ns2:count2>
         <ns2:count1>1.1880648E7</ns2:count1>
     </ns2:returnData>
@@ -21,7 +21,7 @@
             <ns2:machineName>localhost</ns2:machineName>
             <ns2:roleType>server</ns2:roleType>
         </ns2:criteriaInfo>
-        <ns2:diff>198.43</ns2:diff>
+        <ns2:diff>-66.49</ns2:diff>
         <ns2:count2>3980656.0</ns2:count2>
         <ns2:count1>1.1879654E7</ns2:count1>
     </ns2:returnData>
@@ -34,7 +34,7 @@
             <ns2:machineName>localhost</ns2:machineName>
             <ns2:roleType>server</ns2:roleType>
         </ns2:criteriaInfo>
-        <ns2:diff>75.44</ns2:diff>
+        <ns2:diff>-43.0</ns2:diff>
         <ns2:count2>566.0</ns2:count2>
         <ns2:count1>993.0</ns2:count1>
     </ns2:returnData>

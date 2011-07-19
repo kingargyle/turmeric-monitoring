@@ -8,7 +8,7 @@
             <ns2:machineName>carver-intalio</ns2:machineName>
             <ns2:roleType>server</ns2:roleType>
         </ns2:criteriaInfo>
-        <ns2:diff>198.42</ns2:diff>
+        <ns2:diff>-66.49</ns2:diff>
         <ns2:count2>7962447.0</ns2:count2>
         <ns2:count1>2.3761295E7</ns2:count1>
     </ns2:returnData>
