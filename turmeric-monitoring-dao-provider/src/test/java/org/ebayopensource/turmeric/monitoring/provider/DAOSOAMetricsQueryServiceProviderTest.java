@@ -46,6 +46,7 @@ import org.ebayopensource.turmeric.monitoring.v1.services.ResourceEntityRequest;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.MonitoringSystem;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.SystemMetricDefs;
 import org.ebayopensource.turmeric.runtime.error.model.ErrorValue;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -55,23 +56,14 @@ import org.junit.Test;
  * The Class DAOSOAMetricsQueryServiceProviderTest.
  */
 public class DAOSOAMetricsQueryServiceProviderTest {
-    private static EntityManagerFactory entityManagerFactory;
+    private EntityManagerFactory entityManagerFactory;
     private SOAMetricsQueryServiceProvider provider;
-    private static long now = System.currentTimeMillis();
-    private static long oneMinuteAgo = now - TimeUnit.SECONDS.toMillis(60);
-    private static long twoMinutesAgo = oneMinuteAgo - TimeUnit.SECONDS.toMillis(60);
-
-    /**
-     * Creates the entity manager factory.
-     * 
-     * @throws Exception
-     *             the exception
-     */
-    @BeforeClass
-    public static void createEntityManagerFactory() throws Exception {
-        entityManagerFactory = Persistence.createEntityManagerFactory("metrics");
-        createData();
-    }
+    private long now = 0l;
+    private long sixtyMinsAgo = 0l;
+    private long sixtyOneMinsAgo = 0l;
+    private long sixtyTwoMinsAgo = 0l;
+    private long oneMinuteAgo = 0l;
+    private long twoMinutesAgo = 0l;
 
     /**
      * Creates the data.
@@ -79,7 +71,7 @@ public class DAOSOAMetricsQueryServiceProviderTest {
      * @throws Exception
      *             the exception
      */
-    public static void createData() throws Exception {
+    public void createData() throws Exception {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         try {
             EntityTransaction transaction = entityManager.getTransaction();
@@ -130,10 +122,6 @@ public class DAOSOAMetricsQueryServiceProviderTest {
                 Machine machine = Machine.newMachine();
                 entityManager.persist(machine);
 
-                long sixtyMinsAgo = now - TimeUnit.SECONDS.toMillis(3600);
-                long sixtyOneMinsAgo = sixtyMinsAgo - TimeUnit.SECONDS.toMillis(60);
-                long sixtyTwoMinsAgo = sixtyOneMinsAgo - TimeUnit.SECONDS.toMillis(60);
-
                 // Consumer1 calls operation_1_1 62 mins ago
                 MetricValue metricValue = new MetricValue(metric_1, metricClassifier1, machine);
                 metricValue.setTimeStamp(sixtyTwoMinsAgo);
@@ -148,7 +136,7 @@ public class DAOSOAMetricsQueryServiceProviderTest {
                 metricValue.setServerSide(true);
                 metricValue.setAggregationPeriod(60);
                 metricValue.addMetricComponentValue(new MetricComponentValue(opTimeTotal_1, 1));
-                metricValue.addMetricComponentValue(new MetricComponentValue(opTimeTotal_2, 41));
+                metricValue.addMetricComponentValue(new MetricComponentValue(opTimeTotal_2, 27.3));
                 entityManager.persist(metricValue);
                 // Consumer2 calls operation_1_1 61 mins ago
                 metricValue = new MetricValue(metric_1, metricClassifier2, machine);
@@ -164,7 +152,7 @@ public class DAOSOAMetricsQueryServiceProviderTest {
                 metricValue.setServerSide(true);
                 metricValue.setAggregationPeriod(60);
                 metricValue.addMetricComponentValue(new MetricComponentValue(opTimeTotal_1, 1));
-                metricValue.addMetricComponentValue(new MetricComponentValue(opTimeTotal_2, 41));
+                metricValue.addMetricComponentValue(new MetricComponentValue(opTimeTotal_2, 41.234));
                 entityManager.persist(metricValue);
                 // Then calls operation_1_2
                 metricValue = new MetricValue(metric_2, metricClassifier2, machine);
@@ -203,7 +191,7 @@ public class DAOSOAMetricsQueryServiceProviderTest {
                 metricValue.setServerSide(true);
                 metricValue.setAggregationPeriod(60);
                 metricValue.addMetricComponentValue(new MetricComponentValue(opTimeTotal_1, 1));
-                metricValue.addMetricComponentValue(new MetricComponentValue(opTimeTotal_2, 41));
+                metricValue.addMetricComponentValue(new MetricComponentValue(opTimeTotal_2, 16.7));
                 entityManager.persist(metricValue);
                 // Then calls operation_2_1
                 metricValue = new MetricValue(metric_3, metricClassifier2, machine);
@@ -277,19 +265,30 @@ public class DAOSOAMetricsQueryServiceProviderTest {
     }
 
     /**
-     * Destroy entity manager factory.
+     * Inits the provider.
+     * 
+     * @throws Exception
      */
-    @AfterClass
-    public static void destroyEntityManagerFactory() {
-        entityManagerFactory.close();
+    @Before
+    public void setup() throws Exception {
+        now = System.currentTimeMillis();
+        sixtyMinsAgo = now - TimeUnit.SECONDS.toMillis(3600);
+        sixtyOneMinsAgo = sixtyMinsAgo - TimeUnit.SECONDS.toMillis(60);
+        sixtyTwoMinsAgo = sixtyOneMinsAgo - TimeUnit.SECONDS.toMillis(60);
+        oneMinuteAgo = now - TimeUnit.SECONDS.toMillis(60);
+        twoMinutesAgo = oneMinuteAgo - TimeUnit.SECONDS.toMillis(60);
+        entityManagerFactory = Persistence.createEntityManagerFactory("metrics");
+        createData();
+        provider = new DAOSOAMetricsQueryServiceProvider(entityManagerFactory);
     }
 
     /**
-     * Inits the provider.
+     * Destroy entity manager factory.
      */
-    @Before
-    public void initProvider() {
-        provider = new DAOSOAMetricsQueryServiceProvider(entityManagerFactory);
+    @After
+    public void tearDown() {
+        entityManagerFactory.close();
+        provider = null;
     }
 
     /**
@@ -569,7 +568,7 @@ public class DAOSOAMetricsQueryServiceProviderTest {
         // Only one consumer requested
         assertEquals(1, result.size());
         assertEquals("consumer_1", result.get(0).getCriteriaInfo().getConsumerName());
-        assertEquals(41, Double.valueOf(result.get(0).getCount1()).intValue());
+        assertEquals(27, Double.valueOf(result.get(0).getCount1()).intValue());
         assertEquals(0, Double.valueOf(result.get(0).getCount2()).intValue());
     }
 
@@ -682,23 +681,48 @@ public class DAOSOAMetricsQueryServiceProviderTest {
      * Test get metric value by operation one service one operation all consumers.
      */
     @Test
-    public void testGetMetricValueByOperationOneServiceOneOperationAllConsumers() {
-        long now = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(1);
-        long oneHourAgo = now - TimeUnit.SECONDS.toMillis(3600);
-
+    public void testGetMetricValueForOneServiceOneOperation() {
         CriteriaInfo criteriaInfo = new CriteriaInfo();
         criteriaInfo.setMetricName("ResponseTime");
         criteriaInfo.setRoleType(MonitoringSystem.COLLECTION_LOCATION_SERVER);
         criteriaInfo.setServiceName("service_2");
         criteriaInfo.setOperationName("operation_2_2");
 
-        long duration = 3600;
+        long duration = 3720;
         int aggregationPeriod = 60;
-        List<MetricGraphData> result = provider.getMetricValue(criteriaInfo, oneHourAgo, duration, aggregationPeriod,
-                        null);
+        List<MetricGraphData> result = provider.getMetricValue(criteriaInfo, this.sixtyTwoMinsAgo, duration,
+                        aggregationPeriod, null);
         assertEquals(duration / aggregationPeriod, result.size());
-        // One call for operation_2_2
-        assertEquals(41, Double.valueOf(result.get(57).getCount()).intValue());
+        // Three calls for operation_2_2. So, the numbers should be: first call time/totalcalls, second call time/total
+        // counts...Check out metrics_4 object to see the call counts - call times stored
+
+        assertEquals(27.3 / 3, Double.valueOf(result.get(0).getCount()).doubleValue(), 0d);
+        assertEquals(41.234 / 3, Double.valueOf(result.get(1).getCount()).doubleValue(), 0d);
+        assertEquals(16.7 / 3, Double.valueOf(result.get(60).getCount()).doubleValue(), 0d);
+    }
+
+    /**
+     * Test get metric value by operation one service all operations.
+     */
+    @Test
+    public void testGetMetricValueForOneServiceAllOperations() {
+        CriteriaInfo criteriaInfo = new CriteriaInfo();
+        criteriaInfo.setMetricName("ResponseTime");
+        criteriaInfo.setRoleType(MonitoringSystem.COLLECTION_LOCATION_SERVER);
+        criteriaInfo.setServiceName("service_2");
+
+        long duration = 3720;
+        int aggregationPeriod = 60;
+        List<MetricGraphData> result = provider.getMetricValue(criteriaInfo, this.sixtyTwoMinsAgo, duration,
+                        aggregationPeriod, null);
+        assertEquals(duration / aggregationPeriod, result.size());
+        // Three calls for all operations. So, the numbers should be: first call time/totalcalls, second call time/total
+        // counts...Check out metrics_4 object to see the call counts - call times stored
+
+        assertEquals(27.3 / 4, Double.valueOf(result.get(0).getCount()).doubleValue(), 0d);
+        assertEquals(41.234 / 4, Double.valueOf(result.get(1).getCount()).doubleValue(), 0d);
+        assertEquals(16.7 / 4, Double.valueOf(result.get(60).getCount()).doubleValue(), 0d);
+        assertEquals(31.0 / 4, Double.valueOf(result.get(61).getCount()).doubleValue(), 0d);
     }
 
     /**

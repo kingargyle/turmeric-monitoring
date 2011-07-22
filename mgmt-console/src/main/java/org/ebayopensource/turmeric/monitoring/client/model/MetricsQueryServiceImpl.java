@@ -595,7 +595,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
         final String url = URL.encode(MetricValueRequest.getRestURL(mv));
         RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
         builder.setTimeoutMillis(60000);
-        GWT.log("getServiceCallTrend url ->" + url);
+        GWT.log("getMetricValueForDate url ->" + url);
         builder.sendRequest(null, new RequestCallback() {
             public void onError(Request request, Throwable err) {
                 GWT.log("Error calling the SQMS", err);
@@ -613,7 +613,7 @@ public class MetricsQueryServiceImpl extends AbstractConsoleService implements M
                                     + response.getHeadersAsString()));
                 }
                 else {
-                    // GWT.log(response.getText());
+                    GWT.log(response.getText());
                     MetricValueResponse graphResponse = MetricValueResponse.fromJSON(response.getText());
                     if (graphResponse == null) {
                         GWT.log("Null response");

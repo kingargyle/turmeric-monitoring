@@ -660,6 +660,7 @@ public class DAOSOAMetricsQueryServiceProvider implements SOAMetricsQueryService
         private Map<String, Map<String, Object>> transformAggregatedMetricComponentValues(String encodedMetricName,
                         List<Map<String, Object>> rows) {
             Map<String, Map<String, Object>> result = new HashMap<String, Map<String, Object>>();
+            Double totalCount = 0.0D;
             for (Map<String, Object> row : rows) {
                 // Need to create a key that is the same for the N
                 // metricComponentDefs
@@ -681,11 +682,13 @@ public class DAOSOAMetricsQueryServiceProvider implements SOAMetricsQueryService
                     else if ("ResponseTime".equals(encodedMetricName)) {
                         if ("count".equals(metricComponentDef.getName())) {
                             Double count = (Double) row.get("value");
-                            existingRow.put("value", count == 0 ? 0.0D : (Double) existingRow.get("value") / count);
+                            existingRow.put("value", count == 0 ? 0.0D : (Double) existingRow.get("value"));
+                            totalCount += count;
                         }
                         else {
                             Double count = (Double) existingRow.get("value");
-                            existingRow.put("value", count == 0 ? 0.0D : (Double) row.get("value") / count);
+                            existingRow.put("value", count == 0 ? 0.0D : (Double) row.get("value"));
+                            totalCount += count;
                         }
                     }
                     else {
@@ -694,6 +697,16 @@ public class DAOSOAMetricsQueryServiceProvider implements SOAMetricsQueryService
                 }
                 else {
                     result.put(key, row);
+                }
+            }
+            if (("ResponseTime".equals(encodedMetricName) && totalCount > 0.0d)) {
+                // need to avg each element by the total Count, for the getMetricValue case
+                for (Map<String, Object> mapToAvg : result.values()) {
+                    Double valueToAvg = (Double) mapToAvg.get("value");
+                    if (valueToAvg != null) {
+                        valueToAvg = valueToAvg / totalCount;
+                        mapToAvg.put("value", valueToAvg);
+                    }
                 }
             }
             return result;
