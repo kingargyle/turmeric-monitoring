@@ -85,51 +85,56 @@ public class ColumnChartGraphRenderer extends GraphRenderer {
     @Override
     protected AbstractDataTable createDataTable() {
         DataTable data = DataTable.create();
-        Iterator<String> keys = dataRange.keySet().iterator();
-        String consumerName = null;
-        int rowSize = dataRange.keySet().size();
-        int i = 0;
-        boolean datesAlreadyAdded = false;
-        data.addRows(rowSize);
-        while (keys.hasNext()) {
-            consumerName = keys.next();
-            if (dataRange.get(consumerName) == null || dataRange.get(consumerName).size() == 0) {
-                continue;
-            }
-            TimeSlotData firstDateRange = dataRange.get(consumerName).get(0);
-            // GWT.log("firstDateRange for consumer = " + consumerName + ". "+
-            // firstDateRange.getReturnData().get(0).getValue());
-            TimeSlotData secondDateRange = dataRange.get(consumerName).get(1);
-            if (firstDateRange.getReturnData() != null && secondDateRange.getReturnData() != null) {
 
-                if (rowSize > 0) {
-                    if (!datesAlreadyAdded) {
-                        data.addColumn(ColumnType.STRING, "x");
-                        data.addColumn(ColumnType.NUMBER,
-                                        ConsoleUtil.shotTimeFormat.format(new Date(firstDateRange.getReturnData()
-                                                        .get(0).getTimeSlot())));
+        if (dataRange != null && dataRange.size() > 0) {
+            Iterator<String> keys = dataRange.keySet().iterator();
+            String consumerName = null;
+            int rowSize = dataRange.keySet().size();
+            int i = 0;
+            boolean datesAlreadyAdded = false;
+            data.addRows(rowSize);
+            while (keys.hasNext()) {
+                consumerName = keys.next();
+                if (dataRange.get(consumerName) == null || dataRange.get(consumerName).size() == 0) {
+                    continue;
+                }
+                TimeSlotData firstDateRange = dataRange.get(consumerName).get(0);
+                // GWT.log("firstDateRange for consumer = " + consumerName + ". "+
+                // firstDateRange.getReturnData().get(0).getValue());
+                TimeSlotData secondDateRange = dataRange.get(consumerName).get(1);
+                if (firstDateRange.getReturnData() != null && secondDateRange.getReturnData() != null) {
 
-                        data.addColumn(ColumnType.NUMBER,
-                                        ConsoleUtil.shotTimeFormat.format(new Date(secondDateRange.getReturnData()
-                                                        .get(0).getTimeSlot())));
-                        datesAlreadyAdded = true;
+                    if (rowSize > 0) {
+                        if (!datesAlreadyAdded) {
+                            data.addColumn(ColumnType.STRING, "x");
+                            data.addColumn(ColumnType.NUMBER,
+                                            ConsoleUtil.shotTimeFormat.format(new Date(firstDateRange.getReturnData()
+                                                            .get(0).getTimeSlot())));
+
+                            data.addColumn(ColumnType.NUMBER,
+                                            ConsoleUtil.shotTimeFormat.format(new Date(secondDateRange.getReturnData()
+                                                            .get(0).getTimeSlot())));
+                            datesAlreadyAdded = true;
+                        }
+
+                        data.setValue(i, 0, consumerName);
+                        data.setValue(i, 1, this.dataAggregator.aggregateAll(firstDateRange.getReturnData()));
+                        data.setValue(i, 2, this.dataAggregator.aggregateAll(secondDateRange.getReturnData()));
+                        i++;
                     }
+                    else {
+                        data.addColumn(ColumnType.STRING, "x");
+                        data.addColumn(ColumnType.NUMBER, "");
+                        data.addColumn(ColumnType.NUMBER, "");
 
-                    data.setValue(i, 0, consumerName);
-                    data.setValue(i, 1, this.dataAggregator.aggregateAll(firstDateRange.getReturnData()));
-                    data.setValue(i, 2, this.dataAggregator.aggregateAll(secondDateRange.getReturnData()));
-                    i++;
+                    }
                 }
-                else {
-                    data.addColumn(ColumnType.STRING, "x");
-                    data.addColumn(ColumnType.NUMBER, "");
-                    data.addColumn(ColumnType.NUMBER, "");
 
-                }
             }
-
         }
-
+        else {// the dataRange object list null or empty
+            data.addColumn(ColumnType.STRING, "x");
+        }
         return data;
     }
 

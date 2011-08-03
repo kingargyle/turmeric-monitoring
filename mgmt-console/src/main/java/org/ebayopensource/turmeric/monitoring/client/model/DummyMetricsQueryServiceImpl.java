@@ -478,234 +478,235 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
         // result.setRestUrl(URL.encode(MetricsDataRequest.getRestURL(criteria, resourceCriteria)));
         result.setMetricCriteria(criteria);
         result.setMetricResourceCriteria(resourceCriteria);
+        boolean nonExistantService = resourceCriteria.resourceEntityRequests.get(0).resourceEntityNames
+                        .contains("ANonExistantMyService");
+        List<MetricGroupData> metrics = new ArrayList<MetricGroupData>();
+        result.setReturnData(metrics);
+        if (!nonExistantService) {// if the service name is != that 'ANonexistantService'
+            if ("CallCount".equals(criteria.metricName)) {
 
-        if ("CallCount".equals(criteria.metricName)) {
-            List<MetricGroupData> metrics = new ArrayList<MetricGroupData>();
-            result.setReturnData(metrics);
-            int max = (resourceCriteria.resourceEntityRequests != null
-                            && resourceCriteria.resourceEntityRequests.size() > 1 ? 1 : 10);
-            for (int i = 0; i < max; i++) {
-                MetricGroupDataImpl rd = new MetricGroupDataImpl();
-                CriteriaInfoImpl ci = new CriteriaInfoImpl();
-                rd.setCriteriaInfo(ci);
-                metrics.add(rd);
-                if (resourceCriteria.resourceEntityResponseType.equals(Entity.Operation)) {
-                    // Was a specific operation requested?
-                    if (resourceCriteria.resourceEntityRequests != null) {
-                        for (ResourceEntityRequest r : resourceCriteria.resourceEntityRequests) {
-                            if (r.resourceEntityType.equals(Entity.Operation))
-                                ci.setOperationName(r.resourceEntityNames.get(0));
+                int max = (resourceCriteria.resourceEntityRequests != null
+                                && resourceCriteria.resourceEntityRequests.size() > 1 ? 1 : 10);
+                for (int i = 0; i < max; i++) {
+                    MetricGroupDataImpl rd = new MetricGroupDataImpl();
+                    CriteriaInfoImpl ci = new CriteriaInfoImpl();
+                    rd.setCriteriaInfo(ci);
+                    metrics.add(rd);
+                    if (resourceCriteria.resourceEntityResponseType.equals(Entity.Operation)) {
+                        // Was a specific operation requested?
+                        if (resourceCriteria.resourceEntityRequests != null) {
+                            for (ResourceEntityRequest r : resourceCriteria.resourceEntityRequests) {
+                                if (r.resourceEntityType.equals(Entity.Operation))
+                                    ci.setOperationName(r.resourceEntityNames.get(0));
+                            }
                         }
+                        // Make up some
+                        if (ci.getOperationName() == null)
+                            ci.setOperationName("Op" + i);
                     }
-                    // Make up some
-                    if (ci.getOperationName() == null)
-                        ci.setOperationName("Op" + i);
+                    else if (resourceCriteria.resourceEntityResponseType.equals(Entity.Service)) {
+                        if (resourceCriteria.resourceEntityRequests != null) {
+                            for (ResourceEntityRequest r : resourceCriteria.resourceEntityRequests) {
+                                if (r.resourceEntityType.equals(Entity.Service))
+                                    ci.setServiceName(r.resourceEntityNames.get(0));
+                            }
+                        }
+                        if (ci.getServiceName() == null)
+                            ci.setServiceName("Service" + i);
+                    }
+                    else if (resourceCriteria.resourceEntityResponseType.equals(Entity.Consumer)) {
+                        ci.setConsumerName("Consumer" + i);
+                    }
+
+                    int s1 = Random.nextInt(1000);
+                    rd.setCount1(new Double(s1).toString());
+                    int s2 = Random.nextInt(1000);
+                    rd.setCount2(new Double(s2).toString());
+                    int s3 = Random.nextInt(100);
+                    rd.setDiff(new Double(s3).toString());
+
+                }
+            }
+            else if ("ResponseTime".equals(criteria.metricName)) {
+
+                int max = (resourceCriteria.resourceEntityRequests != null
+                                && resourceCriteria.resourceEntityRequests.size() > 1 ? 1 : 10);
+
+                for (int i = 0; i < max; i++) {
+                    MetricGroupDataImpl rd = new MetricGroupDataImpl();
+                    CriteriaInfoImpl ci = new CriteriaInfoImpl();
+                    rd.setCriteriaInfo(ci);
+                    metrics.add(rd);
+                    if (resourceCriteria.resourceEntityResponseType.equals(Entity.Service)) {
+                        // Was a specific service requested?
+                        if (resourceCriteria.resourceEntityRequests != null) {
+                            for (ResourceEntityRequest r : resourceCriteria.resourceEntityRequests) {
+                                if (r.resourceEntityType.equals(Entity.Service))
+                                    ci.setServiceName(r.resourceEntityNames.get(0));
+                            }
+                        }
+                        // otherwise make up some
+                        if (ci.getServiceName() == null)
+                            ci.setServiceName("Service " + i);
+                    }
+                    else if (resourceCriteria.resourceEntityResponseType.equals(Entity.Operation)) {
+                        // Was a specific operation requested?
+                        if (resourceCriteria.resourceEntityRequests != null) {
+                            for (ResourceEntityRequest r : resourceCriteria.resourceEntityRequests) {
+                                if (r.resourceEntityType.equals(Entity.Operation))
+                                    ci.setOperationName(r.resourceEntityNames.get(0));
+                            }
+                        }
+                        // otherwise make up some
+                        if (ci.getOperationName() == null)
+                            ci.setOperationName("Op" + i);
+
+                    }
+                    else if (resourceCriteria.resourceEntityResponseType.equals(Entity.Consumer)) {
+                        // Was a specific consumer requested?
+                        if (resourceCriteria.resourceEntityRequests != null) {
+                            for (ResourceEntityRequest r : resourceCriteria.resourceEntityRequests) {
+                                if (r.resourceEntityType.equals(Entity.Consumer))
+                                    ci.setConsumerName(r.resourceEntityNames.get(0));
+                            }
+                        }
+                        // otherwise make up some
+                        if (ci.getConsumerName() == null)
+                            ci.setConsumerName("Consumer" + i);
+                    }
+
+                    double s1 = Random.nextInt(5000000) / 1.0;
+                    rd.setCount1(new Double(s1).toString());
+                    double s2 = Random.nextInt(5000000) / 1.0;
+                    rd.setCount2(new Double(s2).toString());
+                    int s3 = Random.nextInt(100);
+                    rd.setDiff(new Double(s3).toString());
+
+                }
+
+            }
+            else if ("ErrorCount".equals(criteria.metricName)) {
+
+                if (resourceCriteria.resourceEntityResponseType.equals(Entity.Consumer)) {
+                    // int max = (resourceCriteria.resourceEntityRequests != null &&
+                    // resourceCriteria.resourceEntityRequests.size() > 1? 2 : 10);
+                    int max = 2;
+                    for (int i = 0; i < max; i++) {
+                        MetricGroupDataImpl rd = new MetricGroupDataImpl();
+                        CriteriaInfoImpl ci = new CriteriaInfoImpl();
+                        rd.setCriteriaInfo(ci);
+                        metrics.add(rd);
+                        ci.setMetricName("Err" + i);
+                        ci.setConsumerName("Consumer" + i);
+
+                        int s1 = Random.nextInt(1000);
+                        rd.setCount1(new Double(s1).toString());
+                        int s2 = Random.nextInt(1000);
+                        rd.setCount2(new Double(s2).toString());
+                        int s3 = Random.nextInt(100);
+                        rd.setDiff(new Double(s3).toString());
+                    }
                 }
                 else if (resourceCriteria.resourceEntityResponseType.equals(Entity.Service)) {
+                    // int max = (resourceCriteria.resourceEntityRequests != null &&
+                    // resourceCriteria.resourceEntityRequests.size() > 1? 2 : 10);
+                    String service = null;
                     if (resourceCriteria.resourceEntityRequests != null) {
                         for (ResourceEntityRequest r : resourceCriteria.resourceEntityRequests) {
                             if (r.resourceEntityType.equals(Entity.Service))
-                                ci.setServiceName(r.resourceEntityNames.get(0));
+                                service = r.resourceEntityNames.get(0);
                         }
                     }
-                    if (ci.getServiceName() == null)
-                        ci.setServiceName("Service" + i);
-                }
-                else if (resourceCriteria.resourceEntityResponseType.equals(Entity.Consumer)) {
-                    ci.setConsumerName("Consumer" + i);
-                }
+                    GWT.log("service=" + service);
 
-                int s1 = Random.nextInt(1000);
-                rd.setCount1(new Double(s1).toString());
-                int s2 = Random.nextInt(1000);
-                rd.setCount2(new Double(s2).toString());
-                int s3 = Random.nextInt(100);
-                rd.setDiff(new Double(s3).toString());
+                    int max = 2;
+                    for (int i = 0; i < max; i++) {
+                        MetricGroupDataImpl rd = new MetricGroupDataImpl();
+                        CriteriaInfoImpl ci = new CriteriaInfoImpl();
+                        rd.setCriteriaInfo(ci);
+                        metrics.add(rd);
+                        ci.setMetricName("Err" + i);
+                        if (service == null)
+                            ci.setServiceName("Service" + i);
+                        else
+                            ci.setServiceName(service);
 
-            }
-        }
-        else if ("ResponseTime".equals(criteria.metricName)) {
-            List<MetricGroupData> metrics = new ArrayList<MetricGroupData>();
-            result.setReturnData(metrics);
-            int max = (resourceCriteria.resourceEntityRequests != null
-                            && resourceCriteria.resourceEntityRequests.size() > 1 ? 1 : 10);
-
-            for (int i = 0; i < max; i++) {
-                MetricGroupDataImpl rd = new MetricGroupDataImpl();
-                CriteriaInfoImpl ci = new CriteriaInfoImpl();
-                rd.setCriteriaInfo(ci);
-                metrics.add(rd);
-                if (resourceCriteria.resourceEntityResponseType.equals(Entity.Service)) {
-                    // Was a specific service requested?
-                    if (resourceCriteria.resourceEntityRequests != null) {
-                        for (ResourceEntityRequest r : resourceCriteria.resourceEntityRequests) {
-                            if (r.resourceEntityType.equals(Entity.Service))
-                                ci.setServiceName(r.resourceEntityNames.get(0));
-                        }
+                        int s1 = Random.nextInt(1000);
+                        rd.setCount1(new Double(s1).toString());
+                        int s2 = Random.nextInt(1000);
+                        rd.setCount2(new Double(s2).toString());
+                        int s3 = Random.nextInt(100);
+                        rd.setDiff(new Double(s3).toString());
                     }
-                    // otherwise make up some
-                    if (ci.getServiceName() == null)
-                        ci.setServiceName("Service " + i);
                 }
                 else if (resourceCriteria.resourceEntityResponseType.equals(Entity.Operation)) {
-                    // Was a specific operation requested?
+                    // int max = (resourceCriteria.resourceEntityRequests != null &&
+                    // resourceCriteria.resourceEntityRequests.size() > 1? 2 : 10);
+                    String operation = null;
+
                     if (resourceCriteria.resourceEntityRequests != null) {
                         for (ResourceEntityRequest r : resourceCriteria.resourceEntityRequests) {
                             if (r.resourceEntityType.equals(Entity.Operation))
-                                ci.setOperationName(r.resourceEntityNames.get(0));
+                                operation = r.resourceEntityNames.get(0);
                         }
                     }
-                    // otherwise make up some
-                    if (ci.getOperationName() == null)
-                        ci.setOperationName("Op" + i);
+                    GWT.log("Op=" + operation);
+                    int max = 2;
+                    for (int i = 0; i < max; i++) {
+                        MetricGroupDataImpl rd = new MetricGroupDataImpl();
+                        CriteriaInfoImpl ci = new CriteriaInfoImpl();
+                        rd.setCriteriaInfo(ci);
+                        metrics.add(rd);
+                        ci.setMetricName("Err" + i);
+                        if (operation == null)
+                            ci.setOperationName("Op" + i);
+                        else
+                            ci.setOperationName(operation);
 
+                        int s1 = Random.nextInt(1000);
+                        rd.setCount1(new Double(s1).toString());
+                        int s2 = Random.nextInt(1000);
+                        rd.setCount2(new Double(s2).toString());
+                        int s3 = Random.nextInt(100);
+                        rd.setDiff(new Double(s3).toString());
+                    }
                 }
-                else if (resourceCriteria.resourceEntityResponseType.equals(Entity.Consumer)) {
-                    // Was a specific consumer requested?
+                else if (resourceCriteria.resourceEntityResponseType.equals(Entity.Error)) {
+                    // int max = ( resourceCriteria.resourceEntityRequests!= null &&
+                    // resourceCriteria.resourceEntityRequests.size() > 1? 2 : 10);
+
+                    String service = null;
+                    String operation = null;
                     if (resourceCriteria.resourceEntityRequests != null) {
                         for (ResourceEntityRequest r : resourceCriteria.resourceEntityRequests) {
-                            if (r.resourceEntityType.equals(Entity.Consumer))
-                                ci.setConsumerName(r.resourceEntityNames.get(0));
+                            if (r.resourceEntityType.equals(Entity.Operation))
+                                operation = r.resourceEntityNames.get(0);
+                            if (r.resourceEntityType.equals(Entity.Service))
+                                service = r.resourceEntityNames.get(0);
                         }
                     }
-                    // otherwise make up some
-                    if (ci.getConsumerName() == null)
-                        ci.setConsumerName("Consumer" + i);
-                }
-
-                double s1 = Random.nextInt(5000000) / 1.0;
-                rd.setCount1(new Double(s1).toString());
-                double s2 = Random.nextInt(5000000) / 1.0;
-                rd.setCount2(new Double(s2).toString());
-                int s3 = Random.nextInt(100);
-                rd.setDiff(new Double(s3).toString());
-
-            }
-
-        }
-        else if ("ErrorCount".equals(criteria.metricName)) {
-            List<MetricGroupData> metrics = new ArrayList<MetricGroupData>();
-            result.setReturnData(metrics);
-
-            if (resourceCriteria.resourceEntityResponseType.equals(Entity.Consumer)) {
-                // int max = (resourceCriteria.resourceEntityRequests != null &&
-                // resourceCriteria.resourceEntityRequests.size() > 1? 2 : 10);
-                int max = 2;
-                for (int i = 0; i < max; i++) {
-                    MetricGroupDataImpl rd = new MetricGroupDataImpl();
-                    CriteriaInfoImpl ci = new CriteriaInfoImpl();
-                    rd.setCriteriaInfo(ci);
-                    metrics.add(rd);
-                    ci.setMetricName("Err" + i);
-                    ci.setConsumerName("Consumer" + i);
-
-                    int s1 = Random.nextInt(1000);
-                    rd.setCount1(new Double(s1).toString());
-                    int s2 = Random.nextInt(1000);
-                    rd.setCount2(new Double(s2).toString());
-                    int s3 = Random.nextInt(100);
-                    rd.setDiff(new Double(s3).toString());
-                }
-            }
-            else if (resourceCriteria.resourceEntityResponseType.equals(Entity.Service)) {
-                // int max = (resourceCriteria.resourceEntityRequests != null &&
-                // resourceCriteria.resourceEntityRequests.size() > 1? 2 : 10);
-                String service = null;
-                if (resourceCriteria.resourceEntityRequests != null) {
-                    for (ResourceEntityRequest r : resourceCriteria.resourceEntityRequests) {
-                        if (r.resourceEntityType.equals(Entity.Service))
-                            service = r.resourceEntityNames.get(0);
+                    int max = 2;
+                    for (int i = 0; i < max; i++) {
+                        MetricGroupDataImpl rd = new MetricGroupDataImpl();
+                        CriteriaInfoImpl ci = new CriteriaInfoImpl();
+                        rd.setCriteriaInfo(ci);
+                        metrics.add(rd);
+                        ci.setMetricName("Err" + i);
+                        if (service == null)
+                            ci.setServiceName("Service" + i);
+                        else
+                            ci.setServiceName(service);
+                        if (operation == null)
+                            ci.setOperationName("Op" + i);
+                        else
+                            ci.setOperationName(operation);
+                        int s1 = Random.nextInt(1000);
+                        rd.setCount1(new Double(s1).toString());
+                        int s2 = Random.nextInt(1000);
+                        rd.setCount2(new Double(s2).toString());
+                        int s3 = Random.nextInt(100);
+                        rd.setDiff(new Double(s3).toString());
                     }
-                }
-                GWT.log("service=" + service);
-
-                int max = 2;
-                for (int i = 0; i < max; i++) {
-                    MetricGroupDataImpl rd = new MetricGroupDataImpl();
-                    CriteriaInfoImpl ci = new CriteriaInfoImpl();
-                    rd.setCriteriaInfo(ci);
-                    metrics.add(rd);
-                    ci.setMetricName("Err" + i);
-                    if (service == null)
-                        ci.setServiceName("Service" + i);
-                    else
-                        ci.setServiceName(service);
-
-                    int s1 = Random.nextInt(1000);
-                    rd.setCount1(new Double(s1).toString());
-                    int s2 = Random.nextInt(1000);
-                    rd.setCount2(new Double(s2).toString());
-                    int s3 = Random.nextInt(100);
-                    rd.setDiff(new Double(s3).toString());
-                }
-            }
-            else if (resourceCriteria.resourceEntityResponseType.equals(Entity.Operation)) {
-                // int max = (resourceCriteria.resourceEntityRequests != null &&
-                // resourceCriteria.resourceEntityRequests.size() > 1? 2 : 10);
-                String operation = null;
-
-                if (resourceCriteria.resourceEntityRequests != null) {
-                    for (ResourceEntityRequest r : resourceCriteria.resourceEntityRequests) {
-                        if (r.resourceEntityType.equals(Entity.Operation))
-                            operation = r.resourceEntityNames.get(0);
-                    }
-                }
-                GWT.log("Op=" + operation);
-                int max = 2;
-                for (int i = 0; i < max; i++) {
-                    MetricGroupDataImpl rd = new MetricGroupDataImpl();
-                    CriteriaInfoImpl ci = new CriteriaInfoImpl();
-                    rd.setCriteriaInfo(ci);
-                    metrics.add(rd);
-                    ci.setMetricName("Err" + i);
-                    if (operation == null)
-                        ci.setOperationName("Op" + i);
-                    else
-                        ci.setOperationName(operation);
-
-                    int s1 = Random.nextInt(1000);
-                    rd.setCount1(new Double(s1).toString());
-                    int s2 = Random.nextInt(1000);
-                    rd.setCount2(new Double(s2).toString());
-                    int s3 = Random.nextInt(100);
-                    rd.setDiff(new Double(s3).toString());
-                }
-            }
-            else if (resourceCriteria.resourceEntityResponseType.equals(Entity.Error)) {
-                // int max = ( resourceCriteria.resourceEntityRequests!= null &&
-                // resourceCriteria.resourceEntityRequests.size() > 1? 2 : 10);
-
-                String service = null;
-                String operation = null;
-                if (resourceCriteria.resourceEntityRequests != null) {
-                    for (ResourceEntityRequest r : resourceCriteria.resourceEntityRequests) {
-                        if (r.resourceEntityType.equals(Entity.Operation))
-                            operation = r.resourceEntityNames.get(0);
-                        if (r.resourceEntityType.equals(Entity.Service))
-                            service = r.resourceEntityNames.get(0);
-                    }
-                }
-                int max = 2;
-                for (int i = 0; i < max; i++) {
-                    MetricGroupDataImpl rd = new MetricGroupDataImpl();
-                    CriteriaInfoImpl ci = new CriteriaInfoImpl();
-                    rd.setCriteriaInfo(ci);
-                    metrics.add(rd);
-                    ci.setMetricName("Err" + i);
-                    if (service == null)
-                        ci.setServiceName("Service" + i);
-                    else
-                        ci.setServiceName(service);
-                    if (operation == null)
-                        ci.setOperationName("Op" + i);
-                    else
-                        ci.setOperationName(operation);
-                    int s1 = Random.nextInt(1000);
-                    rd.setCount1(new Double(s1).toString());
-                    int s2 = Random.nextInt(1000);
-                    rd.setCount2(new Double(s2).toString());
-                    int s3 = Random.nextInt(100);
-                    rd.setDiff(new Double(s3).toString());
                 }
             }
         }

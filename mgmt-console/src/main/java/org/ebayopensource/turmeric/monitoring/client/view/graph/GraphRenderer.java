@@ -132,7 +132,7 @@ public abstract class GraphRenderer {
     public abstract Visualization<? extends AbstractDrawOptions> createVisualization();
 
     /**
-     * Render.
+     * This template method depends on {@link #createVisualization} to create the appropriate GWT Chart.
      */
     public void render() {
         {

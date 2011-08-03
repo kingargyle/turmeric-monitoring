@@ -116,6 +116,10 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
     /**
      * The Interface Display.
      */
+    /**
+     * @author manuelchinea
+     * 
+     */
     public interface Display extends org.ebayopensource.turmeric.monitoring.client.Display {
 
         /**
@@ -320,6 +324,16 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
          *            the handler
          */
         public void addTreeElementSelectionHandler(SelectionHandler<TreeItem> handler);
+
+        /**
+         * Clear consumer service performance trends graph.
+         */
+        public void clearConsumerServicePerformanceTrendsGraph();
+
+        /**
+         * Clear consumer service error trends graph.
+         */
+        public void clearConsumerServiceErrorTrendsGraph();
 
     }
 
@@ -874,38 +888,43 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      */
     protected void getConsumerServiceErrorTrends(final String serviceName, final String operationName,
                     final long date1, final long date2, final int durationHrs, List<String> consumerNames) {
-        ConsumerTabCallbackQueue queue = new ConsumerErrorCountCallbackQueue(serviceName, operationName,
-                        minAggregationPeriod, durationHrs, ConsumerPresenter.this.view);
-        long hourToSecondsMultiplier = 3600;
-        if (minAggregationPeriod >= 3600) {
-            hourToSecondsMultiplier = minAggregationPeriod;
-        }
-        final Iterator<String> consuemrIterator = consumerNames.iterator();
-        String consumerName = null;
-        while (consuemrIterator.hasNext()) {
-            consumerName = consuemrIterator.next();
-            GWT.log("consumerName = " + consumerName);
-
-            ParallelCallback<List<TimeSlotData>> cllbck = new ParallelCallback<List<TimeSlotData>>();
-            cllbck.setId(consumerName);
-            queue.add(cllbck);
-
-            // now I call the SQMS with the data for this consumer
-            CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
-            criteriaInfo.setMetricName("ErrorCount");
-            criteriaInfo.setConsumerName(consumerName);
-            criteriaInfo.setServiceName(serviceName);
-            if (operationName != null) {
-                criteriaInfo.setOperationName(operationName);
+        if (consumerNames != null && consumerNames.size() > 0) {
+            ConsumerTabCallbackQueue queue = new ConsumerErrorCountCallbackQueue(serviceName, operationName,
+                            minAggregationPeriod, durationHrs, ConsumerPresenter.this.view);
+            long hourToSecondsMultiplier = 3600;
+            if (minAggregationPeriod >= 3600) {
+                hourToSecondsMultiplier = minAggregationPeriod;
             }
-            criteriaInfo.setRoleType("server");
+            final Iterator<String> consuemrIterator = consumerNames.iterator();
+            String consumerName = null;
+            while (consuemrIterator.hasNext()) {
+                consumerName = consuemrIterator.next();
+                GWT.log("consumerName = " + consumerName);
 
-            MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, hourToSecondsMultiplier * durationHrs,
-                            (int) minAggregationPeriod, "false");
-            MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, hourToSecondsMultiplier * durationHrs,
-                            (int) minAggregationPeriod, "false");
-            queryService.getMetricValueTrend(firstDateValue, secondDateValue, cllbck);
+                ParallelCallback<List<TimeSlotData>> cllbck = new ParallelCallback<List<TimeSlotData>>();
+                cllbck.setId(consumerName);
+                queue.add(cllbck);
 
+                // now I call the SQMS with the data for this consumer
+                CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
+                criteriaInfo.setMetricName(ConsumerMetric.Errors.toMetricName());
+                criteriaInfo.setConsumerName(consumerName);
+                criteriaInfo.setServiceName(serviceName);
+                if (operationName != null) {
+                    criteriaInfo.setOperationName(operationName);
+                }
+                criteriaInfo.setRoleType(Perspective.Server.toString().toLowerCase());
+
+                MetricValue firstDateValue = new MetricValue(criteriaInfo, date1,
+                                hourToSecondsMultiplier * durationHrs, (int) minAggregationPeriod, "false");
+                MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, hourToSecondsMultiplier
+                                * durationHrs, (int) minAggregationPeriod, "false");
+                queryService.getMetricValueTrend(firstDateValue, secondDateValue, cllbck);
+
+            }
+        }
+        else {
+            ConsumerPresenter.this.view.clearConsumerServiceErrorTrendsGraph();
         }
     }
 
@@ -927,41 +946,46 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      */
     protected void getConsumerServicePerformanceTrends(final String serviceName, final String operationName,
                     final long date1, final long date2, final int durationHrs, List<String> consumerNames) {
-        long hourToSecondsMultiplier = 3600;
-        if (minAggregationPeriod >= 3600) {
-            hourToSecondsMultiplier = minAggregationPeriod;
-        }
-        ConsumerTabCallbackQueue queue = new ConsumerResponseTimeCallbackQueue(serviceName, operationName,
-                        minAggregationPeriod, durationHrs, ConsumerPresenter.this.view);
-        final Iterator<String> consuemrIterator = consumerNames.iterator();
-        String consumerName = null;
-        while (consuemrIterator.hasNext()) {
-            consumerName = consuemrIterator.next();
-            GWT.log("consumerName = " + consumerName);
-
-            ParallelCallback<List<TimeSlotData>> cllbck = new ParallelCallback<List<TimeSlotData>>();
-            cllbck.setId(consumerName);
-            queue.add(cllbck);
-
-            // now i trigger the calls
-            // now I call the SQMS with the data for this consumer
-            CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
-            criteriaInfo.setMetricName("ResponseTime");
-            criteriaInfo.setConsumerName(consumerName);
-            criteriaInfo.setServiceName(serviceName);
-            if (operationName != null) {
-                criteriaInfo.setOperationName(operationName);
+        if (consumerNames != null && consumerNames.size() > 0) {
+            long hourToSecondsMultiplier = 3600;
+            if (minAggregationPeriod >= 3600) {
+                hourToSecondsMultiplier = minAggregationPeriod;
             }
-            criteriaInfo.setRoleType("server");
-            // Date firstDate = Util.resetTo12am(date1);
-            // Date secondDate = Util.resetTo12am(date2);
+            ConsumerTabCallbackQueue queue = new ConsumerResponseTimeCallbackQueue(serviceName, operationName,
+                            minAggregationPeriod, durationHrs, ConsumerPresenter.this.view);
+            final Iterator<String> consuemrIterator = consumerNames.iterator();
+            String consumerName = null;
+            while (consuemrIterator.hasNext()) {
+                consumerName = consuemrIterator.next();
+                GWT.log("consumerName = " + consumerName);
 
-            MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, hourToSecondsMultiplier * durationHrs,
-                            (int) minAggregationPeriod, "false");
-            MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, hourToSecondsMultiplier * durationHrs,
-                            (int) minAggregationPeriod, "false");
-            queryService.getMetricValueTrend(firstDateValue, secondDateValue, cllbck);
+                ParallelCallback<List<TimeSlotData>> cllbck = new ParallelCallback<List<TimeSlotData>>();
+                cllbck.setId(consumerName);
+                queue.add(cllbck);
 
+                // now i trigger the calls
+                // now I call the SQMS with the data for this consumer
+                CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
+                criteriaInfo.setMetricName(ConsumerMetric.Performance.toMetricName());
+                criteriaInfo.setConsumerName(consumerName);
+                criteriaInfo.setServiceName(serviceName);
+                if (operationName != null) {
+                    criteriaInfo.setOperationName(operationName);
+                }
+                criteriaInfo.setRoleType(Perspective.Server.toString().toLowerCase());
+                // Date firstDate = Util.resetTo12am(date1);
+                // Date secondDate = Util.resetTo12am(date2);
+
+                MetricValue firstDateValue = new MetricValue(criteriaInfo, date1,
+                                hourToSecondsMultiplier * durationHrs, (int) minAggregationPeriod, "false");
+                MetricValue secondDateValue = new MetricValue(criteriaInfo, date2, hourToSecondsMultiplier
+                                * durationHrs, (int) minAggregationPeriod, "false");
+                queryService.getMetricValueTrend(firstDateValue, secondDateValue, cllbck);
+
+            }
+        }
+        else {
+            ConsumerPresenter.this.view.clearConsumerServicePerformanceTrendsGraph();
         }
     }
 
@@ -989,13 +1013,13 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         }
         // now I call the SQMS with the data for this consumer
         CriteriaInfoImpl criteriaInfo = new CriteriaInfoImpl();
-        criteriaInfo.setMetricName("ResponseTime");
+        criteriaInfo.setMetricName(ConsumerMetric.Performance.toMetricName());
         criteriaInfo.setConsumerName(consumerName);
         criteriaInfo.setServiceName(serviceName);
         if (operationName != null) {
             criteriaInfo.setOperationName(operationName);
         }
-        criteriaInfo.setRoleType("server");
+        criteriaInfo.setRoleType(Perspective.Server.toString().toLowerCase());
         // Date firstDate = Util.resetTo12am(date1);
         // Date secondDate = Util.resetTo12am(date2);
 
@@ -1056,7 +1080,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         if (operationName != null) {
             criteriaInfo.setOperationName(operationName);
         }
-        criteriaInfo.setRoleType("server");
+        criteriaInfo.setRoleType(Perspective.Server.toString().toLowerCase());
         // Date firstDate = Util.resetTo12am(date1);
         // Date secondDate = Util.resetTo12am(date2);
 
@@ -1126,7 +1150,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
                 if (operationName != null) {
                     criteriaInfo.setOperationName(operationName);
                 }
-                criteriaInfo.setRoleType("server");
+                criteriaInfo.setRoleType(Perspective.Server.toString().toLowerCase());
 
                 // now I create the parallel callback object
                 ParallelCallback<List<TimeSlotData>> cllbck = new ParallelCallback<List<TimeSlotData>>();
@@ -1161,6 +1185,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      *            the date2
      * @param durationHrs
      *            the duration hrs
+     * @return the consumer call trend
      */
     protected void getConsumerCallTrend(final String serviceName, final String consumerName,
                     final String operationName, final long date1, final long date2, final int durationHrs) {
@@ -1176,9 +1201,7 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         if (operationName != null) {
             criteriaInfo.setOperationName(operationName);
         }
-        criteriaInfo.setRoleType("server");
-        // Date firstDate = Util.resetTo12am(date1);
-        // Date secondDate = Util.resetTo12am(date2);
+        criteriaInfo.setRoleType(Perspective.Server.toString().toLowerCase());
 
         MetricValue firstDateValue = new MetricValue(criteriaInfo, date1, hourToSecondsMultiplier * durationHrs,
                         (int) minAggregationPeriod, "false");
@@ -1266,6 +1289,17 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
         History.newItem(token.toString(), fire);
     }
 
+    /**
+     * Make filter label.
+     * 
+     * @param d1
+     *            the d1
+     * @param d2
+     *            the d2
+     * @param durationHrs
+     *            the duration hrs
+     * @return the string
+     */
     private String makeFilterLabel(long d1, long d2, int durationHrs) {
         String d1s = ConsoleUtil.timeFormat.format(new Date(d1));
         String d2s = ConsoleUtil.timeFormat.format(new Date(d2));

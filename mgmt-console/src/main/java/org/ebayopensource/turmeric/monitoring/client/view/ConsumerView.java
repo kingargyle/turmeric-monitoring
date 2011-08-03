@@ -1003,12 +1003,23 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     @Override
     public void setConsumerServiceCallTrendData(Map<String, List<TimeSlotData>> dataRange, long aggregationPeriod,
                     int hourSpan, String graphTitle) {
-        if (dataRange != null) {
-            createColumnChart(this.callVolumePanel, dataRange, graphTitle);
-        }
-        else {
-            GWT.log("empty graphData");
-        }
+
+        GraphRenderer renderer = new ColumnChartGraphRenderer(new SumGraphDataAggregator(), graphTitle,
+                        this.callVolumePanel, dataRange, aggregationPeriod, hourSpan);
+        renderer.render();
+
+        // if (dataRange != null) {
+        // GraphRenderer renderer = new ColumnChartGraphRenderer(new SumGraphDataAggregator(), graphTitle,
+        // this.callVolumePanel, dataRange, aggregationPeriod, hourSpan);
+        // renderer.render();
+        // // createColumnChart(this.callVolumePanel, dataRange, graphTitle);
+        // }
+        // else {
+        // GWT.log("empty graphData");
+        // GraphRenderer renderer = new ColumnChartGraphRenderer(new SumGraphDataAggregator(), graphTitle,
+        // this.callVolumePanel, null, aggregationPeriod, hourSpan);
+        // renderer.render();
+        // }
     }
 
     private void createColumnChart(final SummaryPanel panel, final Map<String, List<TimeSlotData>> dataRange,
@@ -1162,7 +1173,10 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     public void setConsumerErrorCountTrendData(Map<String, List<TimeSlotData>> graphData, long aggregationPeriod,
                     int hourSpan, String graphTitle) {
         if (graphData != null) {
-            createColumnChart(this.errorsPanel, graphData, graphTitle);
+            GraphRenderer renderer = new ColumnChartGraphRenderer(new SumGraphDataAggregator(), graphTitle,
+                            this.errorsPanel, graphData, aggregationPeriod, hourSpan);
+            renderer.render();
+            // createColumnChart(this.errorsPanel, graphData, graphTitle);
         }
         else {
             GWT.log("empty graphData");
@@ -1176,9 +1190,7 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
      */
     @Override
     public void clearConsumerServiceCallTrendGraph() {
-        Map emptyData = new HashMap<String, List<TimeSlotData>>();
-        emptyData.put("", new ArrayList<TimeSlotData>());
-        createColumnChart(this.callVolumePanel, emptyData, "");
+        this.callVolumePanel.clearChart();
     }
 
     @Override
@@ -1194,6 +1206,16 @@ public class ConsumerView extends Composite implements ConsumerPresenter.Display
     @Override
     public void addTreeElementSelectionHandler(SelectionHandler<TreeItem> handler) {
         getSelector().addSelectionHandler(handler);
+    }
+
+    @Override
+    public void clearConsumerServicePerformanceTrendsGraph() {
+        this.performancePanel.clearChart();
+    }
+
+    @Override
+    public void clearConsumerServiceErrorTrendsGraph() {
+        this.errorsPanel.clearChart();
     }
 
 }
