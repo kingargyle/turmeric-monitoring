@@ -95,7 +95,7 @@ public class ConsumerPresenterITCase extends ConsoleIntegrationTestBase {
 
         assertTrue(html.contains(firstServiceName));
         // now, I select the first service in the tree
-        selectServiceForTab(ServicePresenter.SERVICE_ID, firstServiceName);
+        selectServiceForTab(ConsumerPresenter.CONSUMER_ID, firstServiceName);
 
         view.getFilter().setDate1(new Date());
         Browser.click((Widget) view.getFilter().getApplyButton());
