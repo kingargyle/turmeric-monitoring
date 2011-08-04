@@ -1185,7 +1185,6 @@ public class ConsumerPresenter implements Presenter.TabPresenter {
      *            the date2
      * @param durationHrs
      *            the duration hrs
-     * @return the consumer call trend
      */
     protected void getConsumerCallTrend(final String serviceName, final String consumerName,
                     final String operationName, final long date1, final long date2, final int durationHrs) {

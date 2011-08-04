@@ -34,15 +34,34 @@ import com.google.gwt.visualization.client.visualizations.Visualization;
  */
 public class SummaryPanel extends Composite {
 
+    /** The panel. */
     private HorizontalPanel panel;
+
+    /** The scroller. */
     private ScrollPanel scroller;
+
+    /** The heading label. */
     private Label headingLabel;
+
+    /** The download img. */
     private Image downloadImg;
+
+    /** The download url. */
     private String downloadUrl;
+
+    /** The info img. */
     private Image infoImg;
+
+    /** The info. */
     private String info;
+
+    /** The download img light. */
     private Image downloadImgLight;
+
+    /** The info img light. */
     private Image infoImgLight;
+
+    /** The content grid. */
     private Grid contentGrid;
 
     /**
@@ -132,6 +151,12 @@ public class SummaryPanel extends Composite {
         setDataTableButtonGrid(headingGrid);
     }
 
+    /**
+     * Sets the data table button grid.
+     * 
+     * @param buttonGrid
+     *            the new data table button grid
+     */
     private void setDataTableButtonGrid(Grid buttonGrid) {
         ((Grid) contentGrid.getWidget(1, 0)).setWidget(0, 0, buttonGrid);
     }
@@ -234,6 +259,9 @@ public class SummaryPanel extends Composite {
         return (LineChart) contentGrid.getWidget(0, 0);
     }
 
+    /**
+     * Clears the chart from the panel.
+     */
     public void clearChart() {
         contentGrid.clearCell(0, 0);
     }
