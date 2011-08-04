@@ -478,8 +478,11 @@ public class DummyMetricsQueryServiceImpl implements MetricsQueryService {
         // result.setRestUrl(URL.encode(MetricsDataRequest.getRestURL(criteria, resourceCriteria)));
         result.setMetricCriteria(criteria);
         result.setMetricResourceCriteria(resourceCriteria);
-        boolean nonExistantService = resourceCriteria.resourceEntityRequests.get(0).resourceEntityNames
-                        .contains("ANonExistantMyService");
+        boolean nonExistantService = false;
+        if (resourceCriteria.resourceEntityRequests != null && resourceCriteria.resourceEntityRequests.size() > 0) {
+            nonExistantService = resourceCriteria.resourceEntityRequests.get(0).resourceEntityNames
+                            .contains("ANonExistantMyService");
+        }
         List<MetricGroupData> metrics = new ArrayList<MetricGroupData>();
         result.setReturnData(metrics);
         if (!nonExistantService) {// if the service name is != that 'ANonexistantService'
