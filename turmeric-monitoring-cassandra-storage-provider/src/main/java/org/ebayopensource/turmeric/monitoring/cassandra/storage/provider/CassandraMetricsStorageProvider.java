@@ -26,6 +26,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
     /** The long period. */
     private int longPeriod;
 
+    /** The snapshot interval. */
     private int snapshotInterval;
 
     /** The server side. */
@@ -34,8 +35,10 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
     /** The store service metrics. */
     private boolean storeServiceMetrics;
 
+    /** The metric id dao. */
     private MetricIdentifierDAO metricIdDAO;
 
+    /** The metrics dao. */
     private MetricsDAO metricsDAO;
 
     /*
@@ -87,15 +90,31 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
                         cmetricIdentifier = findMetricId(getKeyfromMetricId(metricId));
                         if (cmetricIdentifier == null) {
                             createMetricId(metricId, metricValueAggregator);
+                            cmetricIdentifier = findMetricId(getKeyfromMetricId(metricId));
                         }
                     }
                     // now, store the service stats for the getMetricsMetadata calls
                     metricsDAO.saveServiceOperationByIpCF(getIPAddress(), cmetricIdentifier);
+                    // now, store the service stats for the getMetricsMetadata calls for consumers
+                    metricsDAO.saveServiceConsumerByIpCF(getIPAddress(), cmetricIdentifier,
+                                    metricClassifier.getUseCase());
+
+                    // now, lets store the metricvalues
+
                 }
             }
+            cmetricIdentifier = null;
         }
     }
 
+    /**
+     * Creates the metric id.
+     * 
+     * @param metricId
+     *            the metric id
+     * @param metricValueAggregator
+     *            the metric value aggregator
+     */
     private void createMetricId(org.ebayopensource.turmeric.runtime.common.monitoring.MetricId metricId,
                     MetricValueAggregator metricValueAggregator) {
         MetricIdentifier model = new MetricIdentifier(metricId.getMetricName(), metricId.getAdminName(),
@@ -104,10 +123,24 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
         this.metricIdDAO.save(key, model);
     }
 
+    /**
+     * Find metric id.
+     * 
+     * @param keyfromMetricId
+     *            the keyfrom metric id
+     * @return the metric identifier
+     */
     private MetricIdentifier findMetricId(String keyfromMetricId) {
         return this.metricIdDAO.find(keyfromMetricId);
     }
 
+    /**
+     * Gets the keyfrom metric id.
+     * 
+     * @param metricId
+     *            the metric id
+     * @return the keyfrom metric id
+     */
     public String getKeyfromMetricId(org.ebayopensource.turmeric.runtime.common.monitoring.MetricId metricId) {
         return metricId.getMetricName() + "-" + metricId.getAdminName() + "-" + metricId.getOperationName();
     }
@@ -148,10 +181,22 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
         return storeServiceMetrics;
     }
 
+    /**
+     * Gets the snapshot interval.
+     * 
+     * @return the snapshot interval
+     */
     public int getSnapshotInterval() {
         return snapshotInterval;
     }
 
+    /**
+     * Values are non zero.
+     * 
+     * @param metricComponentValues
+     *            the metric component values
+     * @return true, if successful
+     */
     protected boolean valuesAreNonZero(
                     org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricComponentValue[] metricComponentValues) {
         for (org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricComponentValue metricComponentValue : metricComponentValues) {

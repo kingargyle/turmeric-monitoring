@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -68,6 +70,23 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
         assertEquals(20, provider.getSnapshotInterval());
     }
 
+    @Test
+    public void testGetIpAddress() throws ServiceException, UnknownHostException {
+        String ipAddress = provider.getIPAddress();
+        String expectedIpAddress = InetAddress.getLocalHost().getCanonicalHostName();
+        assertEquals(expectedIpAddress, ipAddress);
+    }
+
+    @Test
+    public void testGetKeyfromMetricId() {
+        org.ebayopensource.turmeric.runtime.common.monitoring.MetricId metricId = new MetricId("metricName",
+                        "ServiceAdminName", "operationName");
+        String expectedKey = metricId.getMetricName() + "-" + metricId.getAdminName() + "-"
+                        + metricId.getOperationName();
+        String actualKey = provider.getKeyfromMetricId(metricId);
+        assertEquals(expectedKey, actualKey);
+    }
+
     private Map<String, String> createOptions() {
         Map<String, String> options = new HashMap<String, String>();
         options.put("hostName", cassandra_node_ip);
@@ -80,9 +99,10 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
     @Test
     public void testSaveMetricSnapshot() throws ServiceException {
 
-        long timeSnapshot = System.currentTimeMillis();
         Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollection();
+        long timeSnapshot = System.currentTimeMillis();
         provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
+        System.out.println("Time in ms =" + (System.currentTimeMillis() - timeSnapshot));
         // now I need to retrieve the values. I use Hector for this.
         ColumnSlice<Object, Object> errorColumnSlice = getColumnValues(kspace, "MetricIdentifier",
                         "test_count-service1-operation1", StringSerializer.get(), StringSerializer.get(), "metricName",
@@ -90,10 +110,33 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
         assertValues(errorColumnSlice, "metricName", "test_count", "serviceAdminName", "service1", "operationName",
                         "operation1");
 
+        ColumnSlice<Object, Object> errorColumnSlice2 = getColumnValues(kspace, "MetricIdentifier",
+                        "test_average-service2-operation2", StringSerializer.get(), StringSerializer.get(),
+                        "metricName", "serviceAdminName", "operationName");
+        assertValues(errorColumnSlice2, "metricName", "test_average", "serviceAdminName", "service2", "operationName",
+                        "operation2");
+
         HSuperColumn<Object, Object, Object> serviceOperationColumnSlice = getSuperColumnValues(kspace,
                         "ServiceOperationByIp", provider.getIPAddress(), StringSerializer.get(),
                         StringSerializer.get(), StringSerializer.get(), "service1");
         assertValues(serviceOperationColumnSlice, "service1", "operation1", "");
+
+        HSuperColumn<Object, Object, Object> serviceOperationColumnSlice2 = getSuperColumnValues(kspace,
+                        "ServiceOperationByIp", provider.getIPAddress(), StringSerializer.get(),
+                        StringSerializer.get(), StringSerializer.get(), "service2");
+        assertValues(serviceOperationColumnSlice2, "service2", "operation2", "");
+
+        // now the consumer cf
+        HSuperColumn<Object, Object, Object> serviceConsumerColumnSlice = getSuperColumnValues(kspace,
+                        "ServiceConsumerByIp", provider.getIPAddress(), StringSerializer.get(), StringSerializer.get(),
+                        StringSerializer.get(), "service1");
+        assertValues(serviceConsumerColumnSlice, "service1", "missing", "");
+
+        // now the consumer cf
+        HSuperColumn<Object, Object, Object> serviceConsumerColumnSlice2 = getSuperColumnValues(kspace,
+                        "ServiceConsumerByIp", provider.getIPAddress(), StringSerializer.get(), StringSerializer.get(),
+                        StringSerializer.get(), "service2");
+        assertValues(serviceConsumerColumnSlice2, "service2", "anotherusecase", "");
 
     }
 
@@ -128,17 +171,18 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
         MetricClassifier metricClassifier1 = new MetricClassifier("missing", "sourcedc", "targetdc");
         MetricClassifier metricClassifier2 = new MetricClassifier("anotherusecase", "sourcedc", "targetdc");
 
-        Map<MetricClassifier, MetricValue> valuesByClassifier = new HashMap<MetricClassifier, MetricValue>();
-        valuesByClassifier.put(metricClassifier1, metricValue1);
-        valuesByClassifier.put(metricClassifier2, metricValue2);
+        Map<MetricClassifier, MetricValue> valuesByClassifier1 = new HashMap<MetricClassifier, MetricValue>();
+        valuesByClassifier1.put(metricClassifier1, metricValue1);
 
         MetricValueAggregatorTestImpl aggregator1 = new MetricValueAggregatorTestImpl(metricValue1,
-                        MetricCategory.Timing, MonitoringLevel.NORMAL, valuesByClassifier);
+                        MetricCategory.Timing, MonitoringLevel.NORMAL, valuesByClassifier1);
 
         result.add(aggregator1);
 
+        Map<MetricClassifier, MetricValue> valuesByClassifier2 = new HashMap<MetricClassifier, MetricValue>();
+        valuesByClassifier2.put(metricClassifier2, metricValue2);
         MetricValueAggregatorTestImpl aggregator2 = new MetricValueAggregatorTestImpl(metricValue2,
-                        MetricCategory.Timing, MonitoringLevel.NORMAL);
+                        MetricCategory.Timing, MonitoringLevel.NORMAL, valuesByClassifier2);
 
         result.add(aggregator2);
 

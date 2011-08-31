@@ -36,6 +36,27 @@ public class MetricsDAO {
         mutator.insert(ipAddress, "ServiceOperationByIp", HFactory.createSuperColumn(superColumnName, columnList,
                         StringSerializer.get(), StringSerializer.get(), StringSerializer.get()));
 
+        // now I store a row with "All" as key, for when the searches requires to list all the services in all the nodes
+        mutator.insert("All", "ServiceOperationByIp", HFactory.createSuperColumn(superColumnName, columnList,
+                        StringSerializer.get(), StringSerializer.get(), StringSerializer.get()));
+
+        mutator.execute();
+    }
+
+    public void saveServiceConsumerByIpCF(String ipAddress, MetricIdentifier cmetricIdentifier, String consumerName) {
+        String superColumnName = cmetricIdentifier.getServiceAdminName();
+
+        Mutator<String> mutator = HFactory.createMutator(keySpace, StringSerializer.get());
+
+        List<HColumn<String, String>> columnList = Arrays.asList(HFactory.createStringColumn(consumerName, ""));
+
+        mutator.insert(ipAddress, "ServiceConsumerByIp", HFactory.createSuperColumn(superColumnName, columnList,
+                        StringSerializer.get(), StringSerializer.get(), StringSerializer.get()));
+
+        // now I store a row with "All" as key, for when the searches requires to list all the services in all the nodes
+        mutator.insert("All", "ServiceConsumerByIp", HFactory.createSuperColumn(superColumnName, columnList,
+                        StringSerializer.get(), StringSerializer.get(), StringSerializer.get()));
+
         mutator.execute();
     }
 }
