@@ -2,7 +2,9 @@ package org.ebayopensource.turmeric.monitoring.cassandra.storage.provider;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricIdentifierDAO;
@@ -13,6 +15,8 @@ import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceRuntimeExcep
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.MonitoringSystem;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricClassifier;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricsStorageProvider;
+import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricComponentValue;
+import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValue;
 import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValueAggregator;
 
 /**
@@ -70,6 +74,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
     @Override
     public void saveMetricSnapshot(long timeSnapshot, Collection<MetricValueAggregator> snapshotCollection)
                     throws ServiceException {
+        List<MetricValue> metricValuesToSave = new ArrayList<MetricValue>();
         for (MetricValueAggregator metricValueAggregator : snapshotCollection) {
             org.ebayopensource.turmeric.runtime.common.monitoring.MetricId metricId = metricValueAggregator
                             .getMetricId();
@@ -80,6 +85,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
             }
             MetricIdentifier cmetricIdentifier = null;
             Collection<MetricClassifier> classifiers = metricValueAggregator.getClassifiers();
+
             for (MetricClassifier metricClassifier : classifiers) {
                 org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValue metricValue = metricValueAggregator
                                 .getValue(metricClassifier);
@@ -98,13 +104,16 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
                     // now, store the service stats for the getMetricsMetadata calls for consumers
                     metricsDAO.saveServiceConsumerByIpCF(getIPAddress(), cmetricIdentifier,
                                     metricClassifier.getUseCase());
-
-                    // now, lets store the metricvalues
-
+                    metricValuesToSave.add(metricValue);
                 }
+
             }
+            metricsDAO.saveMetricValues(getIPAddress(), cmetricIdentifier, timeSnapshot, snapshotInterval,
+                            metricValuesToSave);
+            metricValuesToSave.clear();
             cmetricIdentifier = null;
         }
+
     }
 
     /**

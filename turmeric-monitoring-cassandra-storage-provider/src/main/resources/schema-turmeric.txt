@@ -55,6 +55,10 @@ create column family ServiceConsumerByIp
 	and column_type = Super
     and subcomparator = UTF8Type;
     
-create column family MetricCountsByServiceOperation
+create column family MetricTimeSeries
     with comparator = LongType
+    and key_validation_class=UTF8Type;
+    
+create column family MetricValues
+    with comparator = UTF8Type
     and key_validation_class=UTF8Type;
