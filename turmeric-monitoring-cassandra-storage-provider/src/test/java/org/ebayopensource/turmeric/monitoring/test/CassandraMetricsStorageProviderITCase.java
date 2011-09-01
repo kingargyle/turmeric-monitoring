@@ -3,6 +3,7 @@ package org.ebayopensource.turmeric.monitoring.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -11,6 +12,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.prettyprint.cassandra.serializers.LongSerializer;
+import me.prettyprint.cassandra.serializers.ObjectSerializer;
 import me.prettyprint.cassandra.serializers.SerializerTypeInferer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.hector.api.Keyspace;
@@ -37,7 +40,6 @@ import org.ebayopensource.turmeric.utils.cassandra.hector.HectorManager;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
@@ -119,35 +121,128 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
         HSuperColumn<Object, Object, Object> serviceOperationColumnSlice = getSuperColumnValues(kspace,
                         "ServiceOperationByIp", provider.getIPAddress(), StringSerializer.get(),
                         StringSerializer.get(), StringSerializer.get(), "service1");
-        assertValues(serviceOperationColumnSlice, "service1", "operation1", "");
+        assertColumnValueFromSuperColumn(serviceOperationColumnSlice, "operation1", "");
 
         HSuperColumn<Object, Object, Object> serviceOperationColumnSlice2 = getSuperColumnValues(kspace,
                         "ServiceOperationByIp", provider.getIPAddress(), StringSerializer.get(),
                         StringSerializer.get(), StringSerializer.get(), "service2");
-        assertValues(serviceOperationColumnSlice2, "service2", "operation2", "");
+        assertColumnValueFromSuperColumn(serviceOperationColumnSlice2, "operation2", "");
 
         // now the consumer cf
         HSuperColumn<Object, Object, Object> serviceConsumerColumnSlice = getSuperColumnValues(kspace,
                         "ServiceConsumerByIp", provider.getIPAddress(), StringSerializer.get(), StringSerializer.get(),
                         StringSerializer.get(), "service1");
-        assertValues(serviceConsumerColumnSlice, "service1", "missing", "");
+        assertColumnValueFromSuperColumn(serviceConsumerColumnSlice, "missing", "");
 
         // now the consumer cf
         HSuperColumn<Object, Object, Object> serviceConsumerColumnSlice2 = getSuperColumnValues(kspace,
                         "ServiceConsumerByIp", provider.getIPAddress(), StringSerializer.get(), StringSerializer.get(),
                         StringSerializer.get(), "service2");
-        assertValues(serviceConsumerColumnSlice2, "service2", "anotherusecase", "");
+        assertColumnValueFromSuperColumn(serviceConsumerColumnSlice2, "anotherusecase", "");
+
+        // now I check the MetricTimeSeries
+        String metricValueKeyTestCount = provider.getIPAddress() + "-" + "test_count" + "-" + timeSnapshot;
+        String metricValueKeyTestAvg = provider.getIPAddress() + "-" + "test_average" + "-" + timeSnapshot;
+
+        ColumnSlice<Object, Object> metricTimeSeriesColumnSlice = getColumnValues(kspace, "MetricTimeSeries",
+                        provider.getIPAddress() + "-" + "service1-operation1-test_count-20", LongSerializer.get(),
+                        StringSerializer.get(), timeSnapshot);
+        assertValues(metricTimeSeriesColumnSlice, timeSnapshot, metricValueKeyTestCount);
+
+        ColumnSlice<Object, Object> metricTimeSeriesColumnSlice2 = getColumnValues(kspace, "MetricTimeSeries",
+                        provider.getIPAddress() + "-" + "service2-operation2-test_average-20", LongSerializer.get(),
+                        StringSerializer.get(), timeSnapshot);
+        assertValues(metricTimeSeriesColumnSlice2, timeSnapshot, metricValueKeyTestAvg);
+
+        // now I check the MetricValues
+        ColumnSlice<Object, Object> metricValuesColumnSlice = getColumnValues(kspace, "MetricValues",
+                        metricValueKeyTestCount, StringSerializer.get(), ObjectSerializer.get(), "value");
+        assertValues(metricValuesColumnSlice, "value", 20L);
+
+        // now I check the MetricValues
+        ColumnSlice<Object, Object> metricValuesColumnSlice2 = getColumnValues(kspace, "MetricValues",
+                        metricValueKeyTestAvg, StringSerializer.get(), ObjectSerializer.get(), "count", "totalTime");
+        assertValues(metricValuesColumnSlice2, "count", 2l, "totalTime", 345d);
 
     }
 
-    private void assertValues(HSuperColumn<Object, Object, Object> serviceOperationColumnSlice, String superColumnName,
-                    Object... columnPairs) {
+    @Test
+    public void testSaveMetricSnapshotTwoMetricsTwoConsumersSameTimestampForSameOperationAndService()
+                    throws ServiceException {
+
+        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollection("ServiceX",
+                        "operationY");
+        long timeSnapshot = System.currentTimeMillis();
+        provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
+        System.out.println("Time in ms =" + (System.currentTimeMillis() - timeSnapshot));
+        // now I need to retrieve the values. I use Hector for this.
+        ColumnSlice<Object, Object> errorColumnSlice = getColumnValues(kspace, "MetricIdentifier",
+                        "test_count-ServiceX-operationY", StringSerializer.get(), StringSerializer.get(), "metricName",
+                        "serviceAdminName", "operationName");
+        assertValues(errorColumnSlice, "metricName", "test_count", "serviceAdminName", "ServiceX", "operationName",
+                        "operationY");
+
+        ColumnSlice<Object, Object> errorColumnSlice2 = getColumnValues(kspace, "MetricIdentifier",
+                        "test_average-ServiceX-operationY", StringSerializer.get(), StringSerializer.get(),
+                        "metricName", "serviceAdminName", "operationName");
+        assertValues(errorColumnSlice2, "metricName", "test_average", "serviceAdminName", "ServiceX", "operationName",
+                        "operationY");
+
+        HSuperColumn<Object, Object, Object> serviceOperationColumnSlice = getSuperColumnValues(kspace,
+                        "ServiceOperationByIp", provider.getIPAddress(), StringSerializer.get(),
+                        StringSerializer.get(), StringSerializer.get(), "ServiceX");
+        // assertValues(serviceOperationColumnSlice, "ServiceX", "operationY", "");
+        assertColumnValueFromSuperColumn(serviceOperationColumnSlice, "operationY", "");
+
+        // now the consumer cf
+        HSuperColumn<Object, Object, Object> serviceConsumerColumnSlice = getSuperColumnValues(kspace,
+                        "ServiceConsumerByIp", provider.getIPAddress(), StringSerializer.get(), StringSerializer.get(),
+                        StringSerializer.get(), "ServiceX");
+        assertColumnValueFromSuperColumn(serviceConsumerColumnSlice, "missing", "");
+
+        // now the consumer cf
+        HSuperColumn<Object, Object, Object> serviceConsumerColumnSlice2 = getSuperColumnValues(kspace,
+                        "ServiceConsumerByIp", provider.getIPAddress(), StringSerializer.get(), StringSerializer.get(),
+                        StringSerializer.get(), "ServiceX");
+        assertColumnValueFromSuperColumn(serviceConsumerColumnSlice2, "anotherusecase", "");
+
+        // now I check the MetricTimeSeries
+        String metricValueKeyTestCount = provider.getIPAddress() + "-" + "test_count" + "-" + timeSnapshot;
+        String metricValueKeyTestAvg = provider.getIPAddress() + "-" + "test_average" + "-" + timeSnapshot;
+
+        ColumnSlice<Object, Object> metricTimeSeriesColumnSlice = getColumnValues(kspace, "MetricTimeSeries",
+                        provider.getIPAddress() + "-" + "ServiceX-operationY-test_count-20", LongSerializer.get(),
+                        StringSerializer.get(), timeSnapshot);
+        assertValues(metricTimeSeriesColumnSlice, timeSnapshot, metricValueKeyTestCount);
+
+        ColumnSlice<Object, Object> metricTimeSeriesColumnSlice2 = getColumnValues(kspace, "MetricTimeSeries",
+                        provider.getIPAddress() + "-" + "ServiceX-operationY-test_average-20", LongSerializer.get(),
+                        StringSerializer.get(), timeSnapshot);
+        assertValues(metricTimeSeriesColumnSlice2, timeSnapshot, metricValueKeyTestAvg);
+
+        // now I check the MetricValues
+        ColumnSlice<Object, Object> metricValuesColumnSlice = getColumnValues(kspace, "MetricValues",
+                        metricValueKeyTestCount, StringSerializer.get(), ObjectSerializer.get(), "value");
+        assertValues(metricValuesColumnSlice, "value", 123456l);
+
+        // now I check the MetricValues
+        ColumnSlice<Object, Object> metricValuesColumnSlice2 = getColumnValues(kspace, "MetricValues",
+                        metricValueKeyTestAvg, StringSerializer.get(), ObjectSerializer.get(), "count", "totalTime");
+        assertValues(metricValuesColumnSlice2, "count", 17l, "totalTime", 456854235.123d);
+
+    }
+
+    private void assertColumnValueFromSuperColumn(HSuperColumn<Object, Object, Object> serviceOperationColumnSlice,
+                    Object columnName, Object columnValue) {
         int i = 0;
         for (HColumn<Object, Object> column : serviceOperationColumnSlice.getColumns()) {
-            assertEquals(columnPairs[2 * i], column.getName());
-            assertEquals("Expected = " + columnPairs[2 * i + 1] + ". Actual = " + column.getValue(),
-                            columnPairs[2 * i + 1], column.getValue());
+            if (column.getName().equals(columnName)) {
+                assertEquals("Expected = " + columnValue + ". Actual = " + column.getValue(), columnValue,
+                                column.getValue());
+                return;
+            }
         }
+        fail("No column found with this name = " + columnName);
     }
 
     private HSuperColumn<Object, Object, Object> getSuperColumnValues(Keyspace kspace, String cfName, Object key,
@@ -167,6 +262,35 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
         MetricValue metricValue1 = new LongSumMetricValue(metricId1, 20);
         MetricId metricId2 = new MetricId("test_average", "service2", "operation2");
         MetricValue metricValue2 = new AverageMetricValue(metricId2, 2, 345);
+
+        MetricClassifier metricClassifier1 = new MetricClassifier("missing", "sourcedc", "targetdc");
+        MetricClassifier metricClassifier2 = new MetricClassifier("anotherusecase", "sourcedc", "targetdc");
+
+        Map<MetricClassifier, MetricValue> valuesByClassifier1 = new HashMap<MetricClassifier, MetricValue>();
+        valuesByClassifier1.put(metricClassifier1, metricValue1);
+
+        MetricValueAggregatorTestImpl aggregator1 = new MetricValueAggregatorTestImpl(metricValue1,
+                        MetricCategory.Timing, MonitoringLevel.NORMAL, valuesByClassifier1);
+
+        result.add(aggregator1);
+
+        Map<MetricClassifier, MetricValue> valuesByClassifier2 = new HashMap<MetricClassifier, MetricValue>();
+        valuesByClassifier2.put(metricClassifier2, metricValue2);
+        MetricValueAggregatorTestImpl aggregator2 = new MetricValueAggregatorTestImpl(metricValue2,
+                        MetricCategory.Timing, MonitoringLevel.NORMAL, valuesByClassifier2);
+
+        result.add(aggregator2);
+
+        return result;
+    }
+
+    private Collection<MetricValueAggregator> createMetricValueAggregatorsCollection(String serviceName,
+                    String operationName) {
+        Collection<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
+        MetricId metricId1 = new MetricId("test_count", serviceName, operationName);
+        MetricValue metricValue1 = new LongSumMetricValue(metricId1, 123456);
+        MetricId metricId2 = new MetricId("test_average", serviceName, operationName);
+        MetricValue metricValue2 = new AverageMetricValue(metricId2, 17, 456854235.123);
 
         MetricClassifier metricClassifier1 = new MetricClassifier("missing", "sourcedc", "targetdc");
         MetricClassifier metricClassifier2 = new MetricClassifier("anotherusecase", "sourcedc", "targetdc");

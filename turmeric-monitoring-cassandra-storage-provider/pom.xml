@@ -58,12 +58,12 @@
 							<goal>start</goal>
 							<goal>stop</goal>
 						</goals>
+						<configuration>
+							<loadAfterFirstStart>true</loadAfterFirstStart>
+							<script>${basedir}/src/main/resources/schema-turmeric.txt</script>
+						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<loadAfterFirstStart>true</loadAfterFirstStart>
-					<script>${basedir}/src/main/resources/schema-turmeric.txt</script>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>

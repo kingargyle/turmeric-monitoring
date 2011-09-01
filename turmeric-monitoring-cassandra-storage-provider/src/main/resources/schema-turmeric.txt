@@ -44,21 +44,24 @@ create column family MetricIdentifier
 		{column_name : serviceAdminName, validation_class: UTF8Type},
 		{column_name : operationName, validation_class: UTF8Type} ];
 
+create column family MetricTimeSeries
+    with comparator = LongType
+    and key_validation_class=UTF8Type;
+    
+create column family ServiceConsumerByIp
+	with key_validation_class = UTF8Type
+	and column_type = Super
+    and subcomparator = UTF8Type;
+    
+create column family MetricValues
+    with comparator = UTF8Type
+    and key_validation_class=UTF8Type;
+    
 create column family ServiceOperationByIp
 	with key_validation_class = UTF8Type
 	and column_type = Super
     and subcomparator = UTF8Type;
 
 
-create column family ServiceConsumerByIp
-	with key_validation_class = UTF8Type
-	and column_type = Super
-    and subcomparator = UTF8Type;
     
-create column family MetricTimeSeries
-    with comparator = LongType
-    and key_validation_class=UTF8Type;
-    
-create column family MetricValues
-    with comparator = UTF8Type
-    and key_validation_class=UTF8Type;
+;
