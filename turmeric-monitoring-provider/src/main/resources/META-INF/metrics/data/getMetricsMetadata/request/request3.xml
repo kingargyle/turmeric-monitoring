@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<getMetricsMetadataRequest xmlns:ns2="http://www.ebayopensource.org/turmeric/monitoring/v1/services" xmlns:ns3="http://www.ebayopensource.org/turmeric/common/v1/types">
-    <ns2:resourceEntityType>Pool</ns2:resourceEntityType>
-    <ns2:resourceEntityName>v3besbulk1core</ns2:resourceEntityName>
-    <ns2:resourceEntityName>v3apisandboxcore</ns2:resourceEntityName>
-    <ns2:resourceEntityName>v3apibulkcore</ns2:resourceEntityName>
-    <ns2:resourceEntityName>v3bundledcore</ns2:resourceEntityName>
-    <ns2:resourceEntityResponseType>Service</ns2:resourceEntityResponseType>
-</getMetricsMetadataRequest>
