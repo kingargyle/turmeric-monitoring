@@ -61,7 +61,12 @@ create column family ServiceOperationByIp
 	with key_validation_class = UTF8Type
 	and column_type = Super
     and subcomparator = UTF8Type;
-
+    
+create column family ServiceCallsByTime
+	with key_validation_class = UTF8Type
+	and column_type = Super
+	and comparator = LongType
+    and subcomparator = UTF8Type;
 
     
 ;

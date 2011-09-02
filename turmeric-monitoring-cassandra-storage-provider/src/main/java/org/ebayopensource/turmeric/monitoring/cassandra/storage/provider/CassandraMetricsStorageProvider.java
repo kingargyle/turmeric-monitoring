@@ -19,11 +19,9 @@ import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricIdenti
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricsDAO;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.model.MetricIdentifier;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
-import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceRuntimeException;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.MonitoringSystem;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricClassifier;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricsStorageProvider;
-import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricComponentValue;
 import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValue;
 import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValueAggregator;
 
