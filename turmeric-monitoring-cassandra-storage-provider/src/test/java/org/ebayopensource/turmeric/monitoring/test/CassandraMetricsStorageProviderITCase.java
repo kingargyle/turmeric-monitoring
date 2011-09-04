@@ -198,12 +198,14 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
                     throws ServiceException {
         String serviceName = "ServiceX";
         String operationName = "operationY";
+        String ipAddress = provider.getIPAddress();
+        Object serviceCallsByTimeKey = ipAddress + "-" + serviceName;
 
         Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollection(serviceName,
                         operationName);
         long timeSnapshot = System.currentTimeMillis();
-        String metricValueKeyTestCount = provider.getIPAddress() + "-" + "test_count" + "-" + timeSnapshot;
-        String metricValueKeyTestAvg = provider.getIPAddress() + "-" + "test_average" + "-" + timeSnapshot;
+        String metricValueKeyTestCount = ipAddress + "-" + "test_count" + "-" + timeSnapshot;
+        String metricValueKeyTestAvg = ipAddress + "-" + "test_average" + "-" + timeSnapshot;
 
         provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
 
@@ -215,28 +217,32 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
                         STR_SERIALIZER, STR_SERIALIZER, new String[] { "metricName", "serviceAdminName",
                                 "operationName" }, new String[] { "test_average", serviceName, operationName });
 
-        assertCassandraSuperColumnValues("ServiceOperationByIp", provider.getIPAddress(), serviceName, STR_SERIALIZER,
+        assertCassandraSuperColumnValues("ServiceOperationByIp", ipAddress, serviceName, STR_SERIALIZER,
                         STR_SERIALIZER, STR_SERIALIZER, new String[] { operationName }, new String[] { "" });
 
-        assertCassandraSuperColumnValues("ServiceConsumerByIp", provider.getIPAddress(), serviceName, STR_SERIALIZER,
-                        STR_SERIALIZER, STR_SERIALIZER, new String[] { "missing" }, new String[] { "" });
+        assertCassandraSuperColumnValues("ServiceConsumerByIp", ipAddress, serviceName, STR_SERIALIZER, STR_SERIALIZER,
+                        STR_SERIALIZER, new String[] { "missing" }, new String[] { "" });
 
-        assertCassandraSuperColumnValues("ServiceConsumerByIp", provider.getIPAddress(), serviceName, STR_SERIALIZER,
-                        STR_SERIALIZER, STR_SERIALIZER, new String[] { "anotherusecase" }, new String[] { "" });
+        assertCassandraSuperColumnValues("ServiceConsumerByIp", ipAddress, serviceName, STR_SERIALIZER, STR_SERIALIZER,
+                        STR_SERIALIZER, new String[] { "anotherusecase" }, new String[] { "" });
 
-        assertCassandraColumnValues("MetricTimeSeries", provider.getIPAddress() + "-" + serviceName + "-"
-                        + operationName + "-test_count-20", LONG_SERIALIZER, STR_SERIALIZER,
-                        new Long[] { timeSnapshot }, new String[] { metricValueKeyTestCount });
+        assertCassandraColumnValues("MetricTimeSeries", ipAddress + "-" + serviceName + "-" + operationName
+                        + "-test_count-20", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
+                        new String[] { metricValueKeyTestCount });
 
-        assertCassandraColumnValues("MetricTimeSeries", provider.getIPAddress() + "-" + serviceName + "-"
-                        + operationName + "-test_average-20", LONG_SERIALIZER, STR_SERIALIZER,
-                        new Long[] { timeSnapshot }, new String[] { metricValueKeyTestAvg });
+        assertCassandraColumnValues("MetricTimeSeries", ipAddress + "-" + serviceName + "-" + operationName
+                        + "-test_average-20", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
+                        new String[] { metricValueKeyTestAvg });
 
         assertCassandraColumnValues("MetricValues", metricValueKeyTestCount, STR_SERIALIZER, OBJ_SERIALIZER,
                         new String[] { "value" }, new Object[] { 123456l });
 
         assertCassandraColumnValues("MetricValues", metricValueKeyTestAvg, STR_SERIALIZER, OBJ_SERIALIZER,
                         new String[] { "count", "totalTime" }, new Object[] { 17l, 456854235.123d });
+
+        assertCassandraSuperColumnValues("ServiceCallsByTime", serviceCallsByTimeKey, Long.valueOf(timeSnapshot),
+                        LONG_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER, new String[] { operationName },
+                        new String[] { "" });
 
     }
 
@@ -248,9 +254,12 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
         String operationName = "operationY1";
         String consumerName = "consumerZ1";
 
+        String ipAddress = provider.getIPAddress();
+        Object serviceCallsByTimeKey = ipAddress + "-" + serviceName;
         long timeSnapshot = System.currentTimeMillis();
-        String metricValueKeyTestCount = provider.getIPAddress() + "-" + "test_count" + "-" + timeSnapshot;
-        String metricValueKeyTestAvg = provider.getIPAddress() + "-" + "test_average" + "-" + timeSnapshot;
+
+        String metricValueKeyTestCount = ipAddress + "-" + "test_count" + "-" + timeSnapshot;
+        String metricValueKeyTestAvg = ipAddress + "-" + "test_average" + "-" + timeSnapshot;
         Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
                         serviceName, operationName, consumerName);
 
@@ -264,25 +273,29 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
                         STR_SERIALIZER, STR_SERIALIZER, new String[] { "metricName", "serviceAdminName",
                                 "operationName" }, new String[] { "test_average", serviceName, operationName });
 
-        assertCassandraSuperColumnValues("ServiceOperationByIp", provider.getIPAddress(), serviceName, STR_SERIALIZER,
+        assertCassandraSuperColumnValues("ServiceOperationByIp", ipAddress, serviceName, STR_SERIALIZER,
                         STR_SERIALIZER, STR_SERIALIZER, new String[] { operationName }, new String[] { "" });
 
-        assertCassandraSuperColumnValues("ServiceConsumerByIp", provider.getIPAddress(), serviceName, STR_SERIALIZER,
-                        STR_SERIALIZER, STR_SERIALIZER, new String[] { consumerName }, new String[] { "" });
+        assertCassandraSuperColumnValues("ServiceConsumerByIp", ipAddress, serviceName, STR_SERIALIZER, STR_SERIALIZER,
+                        STR_SERIALIZER, new String[] { consumerName }, new String[] { "" });
 
-        assertCassandraColumnValues("MetricTimeSeries", provider.getIPAddress() + "-" + serviceName + "-"
-                        + operationName + "-test_count-20", LONG_SERIALIZER, STR_SERIALIZER,
-                        new Long[] { timeSnapshot }, new String[] { metricValueKeyTestCount });
+        assertCassandraColumnValues("MetricTimeSeries", ipAddress + "-" + serviceName + "-" + operationName
+                        + "-test_count-20", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
+                        new String[] { metricValueKeyTestCount });
 
-        assertCassandraColumnValues("MetricTimeSeries", provider.getIPAddress() + "-" + serviceName + "-"
-                        + operationName + "-test_average-20", LONG_SERIALIZER, STR_SERIALIZER,
-                        new Long[] { timeSnapshot }, new String[] { metricValueKeyTestAvg });
+        assertCassandraColumnValues("MetricTimeSeries", ipAddress + "-" + serviceName + "-" + operationName
+                        + "-test_average-20", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
+                        new String[] { metricValueKeyTestAvg });
 
         assertCassandraColumnValues("MetricValues", metricValueKeyTestCount, STR_SERIALIZER, OBJ_SERIALIZER,
                         new String[] { "value" }, new Object[] { 123456l });
 
         assertCassandraColumnValues("MetricValues", metricValueKeyTestAvg, STR_SERIALIZER, OBJ_SERIALIZER,
                         new String[] { "count", "totalTime" }, new Object[] { 17l, 456854235.123d });
+
+        assertCassandraSuperColumnValues("ServiceCallsByTime", serviceCallsByTimeKey, Long.valueOf(timeSnapshot),
+                        LONG_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER, new String[] { operationName },
+                        new String[] { "" });
 
     }
 
