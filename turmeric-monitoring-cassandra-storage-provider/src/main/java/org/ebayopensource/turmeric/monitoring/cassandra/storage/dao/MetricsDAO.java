@@ -85,7 +85,6 @@ public class MetricsDAO {
                         StringSerializer.get(), StringSerializer.get(), StringSerializer.get()));
 
         MutationResult result = mutator.execute();
-        System.out.println("saving ServiceOperationByIp. Time in microsec=" + result.getExecutionTimeMicro());
     }
 
     /**
@@ -113,7 +112,6 @@ public class MetricsDAO {
                         StringSerializer.get(), StringSerializer.get(), StringSerializer.get()));
 
         MutationResult result = mutator.execute();
-        System.out.println("saving ServiceConsumerByIp. Time in microsec=" + result.getExecutionTimeMicro());
     }
 
     /**
@@ -160,7 +158,6 @@ public class MetricsDAO {
                         serviceOperationCallsByTimeColumn);
 
         MutationResult result = metricTimeSeriesMutator.execute();
-        System.out.println("saving MetricTimeSeries. Time in microsec=" + result.getExecutionTimeMicro());
     }
 
     private String createServiceOperationCallsInTime(String ipAddress, MetricIdentifier cmetricIdentifier) {

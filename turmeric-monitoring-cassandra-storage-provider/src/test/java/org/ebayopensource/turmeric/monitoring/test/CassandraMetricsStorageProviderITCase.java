@@ -21,6 +21,8 @@ import java.util.Map;
 
 import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.HSuperColumn;
+import me.prettyprint.hector.api.beans.OrderedRows;
+import me.prettyprint.hector.api.beans.OrderedSuperRows;
 import me.prettyprint.hector.api.beans.Row;
 import me.prettyprint.hector.api.beans.Rows;
 import me.prettyprint.hector.api.beans.SuperRow;
@@ -30,6 +32,8 @@ import me.prettyprint.hector.api.mutation.Mutator;
 import me.prettyprint.hector.api.query.MultigetSliceQuery;
 import me.prettyprint.hector.api.query.MultigetSuperSliceQuery;
 import me.prettyprint.hector.api.query.QueryResult;
+import me.prettyprint.hector.api.query.RangeSlicesQuery;
+import me.prettyprint.hector.api.query.RangeSuperSlicesQuery;
 
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.CassandraMetricsStorageProvider;
 import org.ebayopensource.turmeric.monitoring.utils.CassandraTestHelper;
@@ -67,79 +71,35 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
     }
 
     private void cleanUpTestData() {
-        if (!keysToRemove.isEmpty()) {
-            if (keysToRemove.containsKey("MetricTimeSeries")) {
-                // first, cleanup of "MetricTimeSeries"
-                MultigetSliceQuery<String, Long, String> multigetSliceQuery = HFactory.createMultigetSliceQuery(kspace,
-                                STR_SERIALIZER, LONG_SERIALIZER, STR_SERIALIZER);
-                multigetSliceQuery.setColumnFamily("MetricTimeSeries");
-                multigetSliceQuery.setKeys(keysToRemove.get("MetricTimeSeries"));
-                multigetSliceQuery.setRange(0l, Long.MAX_VALUE, false, 3);
-
-                QueryResult<Rows<String, Long, String>> result = multigetSliceQuery.execute();
-                Mutator<String> metricTimeSeries = HFactory.createMutator(kspace, STR_SERIALIZER);
-                for (Row<String, Long, String> row : result.get()) {
-                    System.out.println("MetricTimeSeries:key to delete=" + row.getKey());
-                    metricTimeSeries.delete(row.getKey(), "MetricTimeSeries", null, STR_SERIALIZER);
-                }
-
+        String[] columnFamilies = { "MetricTimeSeries", "MetricIdentifier", "MetricValues" };
+        for (String cf : columnFamilies) {
+            RangeSlicesQuery<String, String, String> rq = HFactory.createRangeSlicesQuery(kspace, STR_SERIALIZER,
+                            STR_SERIALIZER, STR_SERIALIZER);
+            rq.setColumnFamily(cf);
+            rq.setRange("", "", false, 1000);
+            QueryResult<OrderedRows<String, String, String>> qr = rq.execute();
+            OrderedRows<String, String, String> orderedRows = qr.get();
+            Mutator<String> deleteMutator = HFactory.createMutator(kspace, STR_SERIALIZER);
+            for (Row<String, String, String> row : orderedRows) {
+                deleteMutator.delete(row.getKey(), cf, null, STR_SERIALIZER);
             }
-            if (keysToRemove.containsKey("MetricIdentifier")) {
-                MultigetSliceQuery<String, String, String> multigetSliceQuery = HFactory.createMultigetSliceQuery(
-                                kspace, STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER);
-                multigetSliceQuery.setColumnFamily("MetricIdentifier");
-                multigetSliceQuery.setKeys(keysToRemove.get("MetricIdentifier"));
-                multigetSliceQuery.setRange("", "", false, 3);
-                QueryResult<Rows<String, String, String>> result = multigetSliceQuery.execute();
-                Mutator<String> metricIdentifier = HFactory.createMutator(kspace, STR_SERIALIZER);
-                for (Row<String, String, String> row : result.get()) {
-                    System.out.println("MetricIdentifier:key to delete=" + row.getKey());
-                    metricIdentifier.delete(row.getKey(), "MetricIdentifier", null, STR_SERIALIZER);
-                }
-            }
-            if (keysToRemove.containsKey("ServiceOperationByIp")) {
-                MultigetSuperSliceQuery<String, String, String, String> multigetSliceQuery = HFactory
-                                .createMultigetSuperSliceQuery(kspace, STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER,
-                                                STR_SERIALIZER);
-                multigetSliceQuery.setColumnFamily("ServiceOperationByIp");
-                multigetSliceQuery.setKeys(keysToRemove.get("ServiceOperationByIp"));
-                multigetSliceQuery.setRange("", "", false, 3);
-                QueryResult<SuperRows<String, String, String, String>> result = multigetSliceQuery.execute();
-                Mutator<String> serviceOperationByIp = HFactory.createMutator(kspace, STR_SERIALIZER);
-                for (SuperRow<String, String, String, String> row : result.get()) {
-                    System.out.println("ServiceOperationByIp:key to delete=" + row.getKey());
-                    serviceOperationByIp.delete(row.getKey(), "ServiceOperationByIp", null, STR_SERIALIZER);
-                }
-            }
-            if (keysToRemove.containsKey("ServiceConsumerByIp")) {
-                MultigetSuperSliceQuery<String, String, String, String> multigetSliceQuery = HFactory
-                                .createMultigetSuperSliceQuery(kspace, STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER,
-                                                STR_SERIALIZER);
-                multigetSliceQuery.setColumnFamily("ServiceConsumerByIp");
-                multigetSliceQuery.setKeys(keysToRemove.get("ServiceConsumerByIp"));
-                multigetSliceQuery.setRange("", "", false, 3);
-                QueryResult<SuperRows<String, String, String, String>> result = multigetSliceQuery.execute();
-                Mutator<String> serviceConsumerByIp = HFactory.createMutator(kspace, STR_SERIALIZER);
-                for (SuperRow<String, String, String, String> row : result.get()) {
-                    System.out.println("ServiceConsumerByIp:key to delete=" + row.getKey());
-                    serviceConsumerByIp.delete(row.getKey(), "ServiceConsumerByIp", null, STR_SERIALIZER);
-                }
-            }
-            if (keysToRemove.containsKey("MetricValues")) {
-                MultigetSliceQuery<String, String, String> multigetSliceQuery = HFactory.createMultigetSliceQuery(
-                                kspace, STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER);
-                multigetSliceQuery.setColumnFamily("MetricValues");
-                multigetSliceQuery.setKeys(keysToRemove.get("MetricValues"));
-                multigetSliceQuery.setRange("", "", false, 3);
-                QueryResult<Rows<String, String, String>> result = multigetSliceQuery.execute();
-                Mutator<String> metricIdentifier = HFactory.createMutator(kspace, STR_SERIALIZER);
-                for (Row<String, String, String> row : result.get()) {
-                    System.out.println("MetricValues:key to delete=" + row.getKey());
-                    metricIdentifier.delete(row.getKey(), "MetricValues", null, STR_SERIALIZER);
-                }
-            }
-            keysToRemove.clear();
         }
+
+        String[] superColumnFamilies = { "ServiceCallsByTime", "ServiceConsumerByIp", "ServiceOperationByIp" };
+        for (String scf : superColumnFamilies) {
+            RangeSuperSlicesQuery<String, String, String, String> rq = HFactory.createRangeSuperSlicesQuery(kspace,
+                            STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER);
+            rq.setColumnFamily(scf);
+            rq.setRange("", "", false, 1000);
+            QueryResult<OrderedSuperRows<String, String, String, String>> qr = rq.execute();
+            OrderedSuperRows<String, String, String, String> orderedRows = qr.get();
+            Mutator<String> deleteMutator = HFactory.createMutator(kspace, STR_SERIALIZER);
+
+            for (SuperRow<String, String, String, String> row : orderedRows) {
+                deleteMutator.delete(row.getKey(), scf, null, STR_SERIALIZER);
+            }
+        }
+
     }
 
     @Test
@@ -190,19 +150,7 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
         String[] metricIdentifierColumns = new String[] { "metricName", "serviceAdminName", "operationName" };
         Long[] metricSeriesColumn = new Long[] { timeSnapshot };
 
-        addToKeyCleanupList("MetricTimeSeries", metricSeriesKeyForTestCount);
-        addToKeyCleanupList("MetricTimeSeries", metricSeriesKeyForTestAvg);
-        addToKeyCleanupList("MetricIdentifier", "test_count-service1-operation1");
-        addToKeyCleanupList("MetricIdentifier", "test_average-service2-operation2");
-        addToKeyCleanupList("ServiceOperationByIp", ipAddress);
-        addToKeyCleanupList("ServiceOperationByIp", "All");
-        addToKeyCleanupList("ServiceConsumerByIp", "All");
-        addToKeyCleanupList("ServiceConsumerByIp", ipAddress);
-        addToKeyCleanupList("MetricValues", metricValueKeyTestCount);
-        addToKeyCleanupList("MetricValues", metricValueKeyTestAvg);
-
         provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
-        System.out.println("Time in ms =" + (System.currentTimeMillis() - timeSnapshot));
 
         assertCassandraColumnValues("MetricIdentifier", "test_count-service1-operation1", STR_SERIALIZER,
                         STR_SERIALIZER, metricIdentifierColumns,
@@ -245,15 +193,6 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
                         new String[] { "" });
     }
 
-    private void addToKeyCleanupList(String cfName, String key) {
-        List<String> keys = this.keysToRemove.get(cfName);
-        if (keys == null) {
-            keys = new ArrayList<String>();
-            this.keysToRemove.put(cfName, keys);
-        }
-        keys.add(key);
-    }
-
     @Test
     public void testSaveMetricSnapshotTwoMetricsTwoConsumersSameTimestampForSameOperationAndService()
                     throws ServiceException {
@@ -266,75 +205,38 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
         String metricValueKeyTestCount = provider.getIPAddress() + "-" + "test_count" + "-" + timeSnapshot;
         String metricValueKeyTestAvg = provider.getIPAddress() + "-" + "test_average" + "-" + timeSnapshot;
 
-        addToKeyCleanupList("MetricTimeSeries", provider.getIPAddress() + "-" + serviceName + "-" + operationName
-                        + "-test_count-20");
-        addToKeyCleanupList("MetricTimeSeries", provider.getIPAddress() + "-" + serviceName + "-" + operationName
-                        + "-test_average-20");
-        addToKeyCleanupList("MetricIdentifier", "test_count-" + serviceName + "-" + operationName);
-        addToKeyCleanupList("MetricIdentifier", "test_average-" + serviceName + "-" + operationName);
-        addToKeyCleanupList("ServiceOperationByIp", provider.getIPAddress());
-        addToKeyCleanupList("ServiceOperationByIp", "All");
-        addToKeyCleanupList("ServiceConsumerByIp", "All");
-        addToKeyCleanupList("ServiceConsumerByIp", provider.getIPAddress());
-        addToKeyCleanupList("MetricValues", metricValueKeyTestCount);
-        addToKeyCleanupList("MetricValues", metricValueKeyTestAvg);
-
         provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
-        System.out.println("Time in ms =" + (System.currentTimeMillis() - timeSnapshot));
-        // now I need to retrieve the values. I use Hector for this.
-        ColumnSlice<Object, Object> errorColumnSlice = getColumnValues(kspace, "MetricIdentifier", "test_count-"
-                        + serviceName + "-" + operationName, STR_SERIALIZER, STR_SERIALIZER, "metricName",
-                        "serviceAdminName", "operationName");
-        assertValues(errorColumnSlice, "metricName", "test_count", "serviceAdminName", serviceName, "operationName",
-                        operationName);
 
-        ColumnSlice<Object, Object> errorColumnSlice2 = getColumnValues(kspace, "MetricIdentifier", "test_average-"
-                        + serviceName + "-" + operationName, STR_SERIALIZER, STR_SERIALIZER, "metricName",
-                        "serviceAdminName", "operationName");
-        assertValues(errorColumnSlice2, "metricName", "test_average", "serviceAdminName", serviceName, "operationName",
-                        operationName);
+        assertCassandraColumnValues("MetricIdentifier", "test_count-" + serviceName + "-" + operationName,
+                        STR_SERIALIZER, STR_SERIALIZER, new String[] { "metricName", "serviceAdminName",
+                                "operationName" }, new String[] { "test_count", serviceName, operationName });
 
-        HSuperColumn<Object, Object, Object> serviceOperationColumnSlice = getSuperColumnValues(kspace,
-                        "ServiceOperationByIp", provider.getIPAddress(), STR_SERIALIZER, STR_SERIALIZER,
-                        STR_SERIALIZER, serviceName);
-        // assertValues(serviceOperationColumnSlice, "ServiceX", "operationY", "");
-        assertColumnValueFromSuperColumn(serviceOperationColumnSlice, new String[] { operationName },
-                        new String[] { "" });
+        assertCassandraColumnValues("MetricIdentifier", "test_average-" + serviceName + "-" + operationName,
+                        STR_SERIALIZER, STR_SERIALIZER, new String[] { "metricName", "serviceAdminName",
+                                "operationName" }, new String[] { "test_average", serviceName, operationName });
 
-        // now the consumer cf
-        HSuperColumn<Object, Object, Object> serviceConsumerColumnSlice = getSuperColumnValues(kspace,
-                        "ServiceConsumerByIp", provider.getIPAddress(), STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER,
-                        serviceName);
-        assertColumnValueFromSuperColumn(serviceConsumerColumnSlice, new String[] { "missing" }, new String[] { "" });
+        assertCassandraSuperColumnValues("ServiceOperationByIp", provider.getIPAddress(), serviceName, STR_SERIALIZER,
+                        STR_SERIALIZER, STR_SERIALIZER, new String[] { operationName }, new String[] { "" });
 
-        // now the consumer cf
-        HSuperColumn<Object, Object, Object> serviceConsumerColumnSlice2 = getSuperColumnValues(kspace,
-                        "ServiceConsumerByIp", provider.getIPAddress(), STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER,
-                        serviceName);
-        assertColumnValueFromSuperColumn(serviceConsumerColumnSlice2, new String[] { "anotherusecase" },
-                        new String[] { "" });
+        assertCassandraSuperColumnValues("ServiceConsumerByIp", provider.getIPAddress(), serviceName, STR_SERIALIZER,
+                        STR_SERIALIZER, STR_SERIALIZER, new String[] { "missing" }, new String[] { "" });
 
-        // now I check the MetricTimeSeries
+        assertCassandraSuperColumnValues("ServiceConsumerByIp", provider.getIPAddress(), serviceName, STR_SERIALIZER,
+                        STR_SERIALIZER, STR_SERIALIZER, new String[] { "anotherusecase" }, new String[] { "" });
 
-        ColumnSlice<Object, Object> metricTimeSeriesColumnSlice = getColumnValues(kspace, "MetricTimeSeries",
-                        provider.getIPAddress() + "-" + serviceName + "-" + operationName + "-test_count-20",
-                        LONG_SERIALIZER, STR_SERIALIZER, timeSnapshot);
-        assertValues(metricTimeSeriesColumnSlice, timeSnapshot, metricValueKeyTestCount);
+        assertCassandraColumnValues("MetricTimeSeries", provider.getIPAddress() + "-" + serviceName + "-"
+                        + operationName + "-test_count-20", LONG_SERIALIZER, STR_SERIALIZER,
+                        new Long[] { timeSnapshot }, new String[] { metricValueKeyTestCount });
 
-        ColumnSlice<Object, Object> metricTimeSeriesColumnSlice2 = getColumnValues(kspace, "MetricTimeSeries",
-                        provider.getIPAddress() + "-" + serviceName + "-" + operationName + "-test_average-20",
-                        LONG_SERIALIZER, STR_SERIALIZER, timeSnapshot);
-        assertValues(metricTimeSeriesColumnSlice2, timeSnapshot, metricValueKeyTestAvg);
+        assertCassandraColumnValues("MetricTimeSeries", provider.getIPAddress() + "-" + serviceName + "-"
+                        + operationName + "-test_average-20", LONG_SERIALIZER, STR_SERIALIZER,
+                        new Long[] { timeSnapshot }, new String[] { metricValueKeyTestAvg });
 
-        // now I check the MetricValues
-        ColumnSlice<Object, Object> metricValuesColumnSlice = getColumnValues(kspace, "MetricValues",
-                        metricValueKeyTestCount, STR_SERIALIZER, OBJ_SERIALIZER, "value");
-        assertValues(metricValuesColumnSlice, "value", 123456l);
+        assertCassandraColumnValues("MetricValues", metricValueKeyTestCount, STR_SERIALIZER, OBJ_SERIALIZER,
+                        new String[] { "value" }, new Object[] { 123456l });
 
-        // now I check the MetricValues
-        ColumnSlice<Object, Object> metricValuesColumnSlice2 = getColumnValues(kspace, "MetricValues",
-                        metricValueKeyTestAvg, STR_SERIALIZER, OBJ_SERIALIZER, "count", "totalTime");
-        assertValues(metricValuesColumnSlice2, "count", 17l, "totalTime", 456854235.123d);
+        assertCassandraColumnValues("MetricValues", metricValueKeyTestAvg, STR_SERIALIZER, OBJ_SERIALIZER,
+                        new String[] { "count", "totalTime" }, new Object[] { 17l, 456854235.123d });
 
     }
 
@@ -352,68 +254,35 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
         Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
                         serviceName, operationName, consumerName);
 
-        addToKeyCleanupList("MetricTimeSeries", provider.getIPAddress() + "-" + serviceName + "-" + operationName
-                        + "-test_count-20");
-        addToKeyCleanupList("MetricTimeSeries", provider.getIPAddress() + "-" + serviceName + "-" + operationName
-                        + "-test_average-20");
-        addToKeyCleanupList("MetricIdentifier", "test_count-" + serviceName + "-" + operationName);
-        addToKeyCleanupList("MetricIdentifier", "test_average-" + serviceName + "-" + operationName);
-        addToKeyCleanupList("ServiceOperationByIp", provider.getIPAddress());
-        addToKeyCleanupList("ServiceOperationByIp", "All");
-        addToKeyCleanupList("ServiceConsumerByIp", provider.getIPAddress());
-        addToKeyCleanupList("ServiceConsumerByIp", "All");
-        addToKeyCleanupList("MetricValues", metricValueKeyTestCount);
-        addToKeyCleanupList("MetricValues", metricValueKeyTestAvg);
-
         provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
-        System.out.println("Time in ms =" + (System.currentTimeMillis() - timeSnapshot));
-        // now I need to retrieve the values. I use Hector for this.
-        ColumnSlice<Object, Object> errorColumnSlice = getColumnValues(kspace, "MetricIdentifier", "test_count-"
-                        + serviceName + "-" + operationName, STR_SERIALIZER, STR_SERIALIZER, "metricName",
-                        "serviceAdminName", "operationName");
-        assertValues(errorColumnSlice, "metricName", "test_count", "serviceAdminName", serviceName, "operationName",
-                        operationName);
 
-        ColumnSlice<Object, Object> errorColumnSlice2 = getColumnValues(kspace, "MetricIdentifier", "test_average-"
-                        + serviceName + "-" + operationName, STR_SERIALIZER, STR_SERIALIZER, "metricName",
-                        "serviceAdminName", "operationName");
-        assertValues(errorColumnSlice2, "metricName", "test_average", "serviceAdminName", serviceName, "operationName",
-                        operationName);
+        assertCassandraColumnValues("MetricIdentifier", "test_count-" + serviceName + "-" + operationName,
+                        STR_SERIALIZER, STR_SERIALIZER, new String[] { "metricName", "serviceAdminName",
+                                "operationName" }, new String[] { "test_count", serviceName, operationName });
 
-        HSuperColumn<Object, Object, Object> serviceOperationColumnSlice = getSuperColumnValues(kspace,
-                        "ServiceOperationByIp", provider.getIPAddress(), STR_SERIALIZER, STR_SERIALIZER,
-                        STR_SERIALIZER, serviceName);
-        // assertValues(serviceOperationColumnSlice, "ServiceX", "operationY", "");
-        assertColumnValueFromSuperColumn(serviceOperationColumnSlice, new String[] { operationName },
-                        new String[] { "" });
+        assertCassandraColumnValues("MetricIdentifier", "test_average-" + serviceName + "-" + operationName,
+                        STR_SERIALIZER, STR_SERIALIZER, new String[] { "metricName", "serviceAdminName",
+                                "operationName" }, new String[] { "test_average", serviceName, operationName });
 
-        // now the consumer cf
-        HSuperColumn<Object, Object, Object> serviceConsumerColumnSlice = getSuperColumnValues(kspace,
-                        "ServiceConsumerByIp", provider.getIPAddress(), STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER,
-                        serviceName);
-        assertColumnValueFromSuperColumn(serviceConsumerColumnSlice, new String[] { consumerName }, new String[] { "" });
+        assertCassandraSuperColumnValues("ServiceOperationByIp", provider.getIPAddress(), serviceName, STR_SERIALIZER,
+                        STR_SERIALIZER, STR_SERIALIZER, new String[] { operationName }, new String[] { "" });
 
-        // now I check the MetricTimeSeries
+        assertCassandraSuperColumnValues("ServiceConsumerByIp", provider.getIPAddress(), serviceName, STR_SERIALIZER,
+                        STR_SERIALIZER, STR_SERIALIZER, new String[] { consumerName }, new String[] { "" });
 
-        ColumnSlice<Object, Object> metricTimeSeriesColumnSlice = getColumnValues(kspace, "MetricTimeSeries",
-                        provider.getIPAddress() + "-" + serviceName + "-" + operationName + "-test_count-20",
-                        LONG_SERIALIZER, STR_SERIALIZER, timeSnapshot);
-        assertValues(metricTimeSeriesColumnSlice, timeSnapshot, metricValueKeyTestCount);
+        assertCassandraColumnValues("MetricTimeSeries", provider.getIPAddress() + "-" + serviceName + "-"
+                        + operationName + "-test_count-20", LONG_SERIALIZER, STR_SERIALIZER,
+                        new Long[] { timeSnapshot }, new String[] { metricValueKeyTestCount });
 
-        ColumnSlice<Object, Object> metricTimeSeriesColumnSlice2 = getColumnValues(kspace, "MetricTimeSeries",
-                        provider.getIPAddress() + "-" + serviceName + "-" + operationName + "-test_average-20",
-                        LONG_SERIALIZER, STR_SERIALIZER, timeSnapshot);
-        assertValues(metricTimeSeriesColumnSlice2, timeSnapshot, metricValueKeyTestAvg);
+        assertCassandraColumnValues("MetricTimeSeries", provider.getIPAddress() + "-" + serviceName + "-"
+                        + operationName + "-test_average-20", LONG_SERIALIZER, STR_SERIALIZER,
+                        new Long[] { timeSnapshot }, new String[] { metricValueKeyTestAvg });
 
-        // now I check the MetricValues
-        ColumnSlice<Object, Object> metricValuesColumnSlice = getColumnValues(kspace, "MetricValues",
-                        metricValueKeyTestCount, STR_SERIALIZER, OBJ_SERIALIZER, "value");
-        assertValues(metricValuesColumnSlice, "value", 123456l);
+        assertCassandraColumnValues("MetricValues", metricValueKeyTestCount, STR_SERIALIZER, OBJ_SERIALIZER,
+                        new String[] { "value" }, new Object[] { 123456l });
 
-        // now I check the MetricValues
-        ColumnSlice<Object, Object> metricValuesColumnSlice2 = getColumnValues(kspace, "MetricValues",
-                        metricValueKeyTestAvg, STR_SERIALIZER, OBJ_SERIALIZER, "count", "totalTime");
-        assertValues(metricValuesColumnSlice2, "count", 17l, "totalTime", 456854235.123d);
+        assertCassandraColumnValues("MetricValues", metricValueKeyTestAvg, STR_SERIALIZER, OBJ_SERIALIZER,
+                        new String[] { "count", "totalTime" }, new Object[] { 17l, 456854235.123d });
 
     }
 
