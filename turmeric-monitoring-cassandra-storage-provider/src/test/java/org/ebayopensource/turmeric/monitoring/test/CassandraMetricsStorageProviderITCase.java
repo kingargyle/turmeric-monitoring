@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2006-2011 eBay Inc. All Rights Reserved.
+ * Copyright (c) 2006|2011 eBay Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *  
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE|2.0
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.test;
 
@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import me.prettyprint.cassandra.model.CqlQuery;
+import me.prettyprint.cassandra.model.CqlRows;
 import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.HSuperColumn;
 import me.prettyprint.hector.api.beans.OrderedRows;
@@ -38,6 +40,7 @@ import me.prettyprint.hector.api.query.RangeSuperSlicesQuery;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.CassandraMetricsStorageProvider;
 import org.ebayopensource.turmeric.monitoring.utils.CassandraTestHelper;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
+import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.MonitoringSystem;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricCategory;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricClassifier;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricId;
@@ -60,7 +63,7 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
         provider = new CassandraMetricsStorageProvider();
         kspace = new HectorManager().getKeyspace(cluster_name, cassandra_node_ip, keyspace_name, "MetricIdentifier");
         Map<String, String> options = createOptions();
-        provider.init(options, null, null, 20);
+        provider.init(options, null, MonitoringSystem.COLLECTION_LOCATION_SERVER, 20);
     }
 
     @After
@@ -72,6 +75,8 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
 
     private void cleanUpTestData() {
         String[] columnFamilies = { "MetricTimeSeries", "MetricIdentifier", "MetricValues" };
+        String[] superColumnFamilies = { "ServiceCallsByTime", "ServiceConsumerByIp", "ServiceOperationByIp" };
+
         for (String cf : columnFamilies) {
             RangeSlicesQuery<String, String, String> rq = HFactory.createRangeSlicesQuery(kspace, STR_SERIALIZER,
                             STR_SERIALIZER, STR_SERIALIZER);
@@ -85,7 +90,6 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
             }
         }
 
-        String[] superColumnFamilies = { "ServiceCallsByTime", "ServiceConsumerByIp", "ServiceOperationByIp" };
         for (String scf : superColumnFamilies) {
             RangeSuperSlicesQuery<String, String, String, String> rq = HFactory.createRangeSuperSlicesQuery(kspace,
                             STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER);
@@ -105,8 +109,6 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
     @Test
     public void testInit() {
         assertFalse(provider.isStoreServiceMetrics());
-        assertEquals(3600, provider.getMidPeriod());
-        assertEquals(86400, provider.getLongPeriod());
         assertEquals(20, provider.getSnapshotInterval());
     }
 
@@ -121,9 +123,10 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
     public void testGetKeyfromMetricId() {
         org.ebayopensource.turmeric.runtime.common.monitoring.MetricId metricId = new MetricId("metricName",
                         "ServiceAdminName", "operationName");
-        String expectedKey = metricId.getMetricName() + "-" + metricId.getAdminName() + "-"
-                        + metricId.getOperationName();
-        String actualKey = provider.getKeyfromMetricId(metricId);
+        String expectedKey = metricId.getMetricName() + CassandraMetricsStorageProvider.KEY_SEPARATOR
+                        + metricId.getAdminName() + CassandraMetricsStorageProvider.KEY_SEPARATOR
+                        + metricId.getOperationName() + "|true";
+        String actualKey = provider.getKeyfromMetricId(metricId, true);
         assertEquals(expectedKey, actualKey);
     }
 
@@ -141,22 +144,26 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
         Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollection();
         long timeSnapshot = System.currentTimeMillis();
         String ipAddress = provider.getIPAddress();
-        String metricValueKeyTestCount = ipAddress + "-" + "test_count" + "-" + timeSnapshot;
-        String metricValueKeyTestAvg = ipAddress + "-" + "test_average" + "-" + timeSnapshot;
-        String metricSeriesKeyForTestCount = ipAddress + "-" + "service1-operation1-test_count-20";
-        String metricSeriesKeyForTestAvg = ipAddress + "-" + "service2-operation2-test_average-20";
-        String serviceCallsByTimeKey = ipAddress + "-service1";
-        String serviceCallsByTimeKeySrv2 = ipAddress + "-service2";
+        String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "test_count"
+                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
+        String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "test_average"
+                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
+        String metricSeriesKeyForTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
+                        + "service1|operation1|test_count|20";
+        String metricSeriesKeyForTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
+                        + "service2|operation2|test_average|20";
+        String serviceCallsByTimeKey = ipAddress + "|service1|true";
+        String serviceCallsByTimeKeySrv2 = ipAddress + "|service2|true";
         String[] metricIdentifierColumns = new String[] { "metricName", "serviceAdminName", "operationName" };
         Long[] metricSeriesColumn = new Long[] { timeSnapshot };
 
         provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
 
-        assertCassandraColumnValues("MetricIdentifier", "test_count-service1-operation1", STR_SERIALIZER,
+        assertCassandraColumnValues("MetricIdentifier", "test_count|service1|operation1|true", STR_SERIALIZER,
                         STR_SERIALIZER, metricIdentifierColumns,
                         new String[] { "test_count", "service1", "operation1" });
 
-        assertCassandraColumnValues("MetricIdentifier", "test_average-service2-operation2", STR_SERIALIZER,
+        assertCassandraColumnValues("MetricIdentifier", "test_average|service2|operation2|true", STR_SERIALIZER,
                         STR_SERIALIZER, metricIdentifierColumns, new String[] { "test_average", "service2",
                                 "operation2" });
 
@@ -199,23 +206,30 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
         String serviceName = "ServiceX";
         String operationName = "operationY";
         String ipAddress = provider.getIPAddress();
-        Object serviceCallsByTimeKey = ipAddress + "-" + serviceName;
+        Object serviceCallsByTimeKey = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName
+                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + true;
 
         Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollection(serviceName,
                         operationName);
         long timeSnapshot = System.currentTimeMillis();
-        String metricValueKeyTestCount = ipAddress + "-" + "test_count" + "-" + timeSnapshot;
-        String metricValueKeyTestAvg = ipAddress + "-" + "test_average" + "-" + timeSnapshot;
+        String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "test_count"
+                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
+        String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "test_average"
+                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
 
         provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
 
-        assertCassandraColumnValues("MetricIdentifier", "test_count-" + serviceName + "-" + operationName,
-                        STR_SERIALIZER, STR_SERIALIZER, new String[] { "metricName", "serviceAdminName",
-                                "operationName" }, new String[] { "test_count", serviceName, operationName });
+        assertCassandraColumnValues("MetricIdentifier", "test_count|" + serviceName
+                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
+                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + "true", STR_SERIALIZER, STR_SERIALIZER,
+                        new String[] { "metricName", "serviceAdminName", "operationName" }, new String[] {
+                                "test_count", serviceName, operationName });
 
-        assertCassandraColumnValues("MetricIdentifier", "test_average-" + serviceName + "-" + operationName,
-                        STR_SERIALIZER, STR_SERIALIZER, new String[] { "metricName", "serviceAdminName",
-                                "operationName" }, new String[] { "test_average", serviceName, operationName });
+        assertCassandraColumnValues("MetricIdentifier", "test_average|" + serviceName
+                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
+                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + "true", STR_SERIALIZER, STR_SERIALIZER,
+                        new String[] { "metricName", "serviceAdminName", "operationName" }, new String[] {
+                                "test_average", serviceName, operationName });
 
         assertCassandraSuperColumnValues("ServiceOperationByIp", ipAddress, serviceName, STR_SERIALIZER,
                         STR_SERIALIZER, STR_SERIALIZER, new String[] { operationName }, new String[] { "" });
@@ -226,12 +240,14 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
         assertCassandraSuperColumnValues("ServiceConsumerByIp", ipAddress, serviceName, STR_SERIALIZER, STR_SERIALIZER,
                         STR_SERIALIZER, new String[] { "anotherusecase" }, new String[] { "" });
 
-        assertCassandraColumnValues("MetricTimeSeries", ipAddress + "-" + serviceName + "-" + operationName
-                        + "-test_count-20", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
+        assertCassandraColumnValues("MetricTimeSeries", ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
+                        + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
+                        + "|test_count|20", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
                         new String[] { metricValueKeyTestCount });
 
-        assertCassandraColumnValues("MetricTimeSeries", ipAddress + "-" + serviceName + "-" + operationName
-                        + "-test_average-20", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
+        assertCassandraColumnValues("MetricTimeSeries", ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
+                        + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
+                        + "|test_average|20", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
                         new String[] { metricValueKeyTestAvg });
 
         assertCassandraColumnValues("MetricValues", metricValueKeyTestCount, STR_SERIALIZER, OBJ_SERIALIZER,
@@ -255,23 +271,30 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
         String consumerName = "consumerZ1";
 
         String ipAddress = provider.getIPAddress();
-        Object serviceCallsByTimeKey = ipAddress + "-" + serviceName;
+        Object serviceCallsByTimeKey = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName
+                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + true;
         long timeSnapshot = System.currentTimeMillis();
 
-        String metricValueKeyTestCount = ipAddress + "-" + "test_count" + "-" + timeSnapshot;
-        String metricValueKeyTestAvg = ipAddress + "-" + "test_average" + "-" + timeSnapshot;
+        String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "test_count"
+                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
+        String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "test_average"
+                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
         Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
                         serviceName, operationName, consumerName);
 
         provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
 
-        assertCassandraColumnValues("MetricIdentifier", "test_count-" + serviceName + "-" + operationName,
-                        STR_SERIALIZER, STR_SERIALIZER, new String[] { "metricName", "serviceAdminName",
-                                "operationName" }, new String[] { "test_count", serviceName, operationName });
+        assertCassandraColumnValues("MetricIdentifier", "test_count|" + serviceName
+                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
+                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + "true", STR_SERIALIZER, STR_SERIALIZER,
+                        new String[] { "metricName", "serviceAdminName", "operationName" }, new String[] {
+                                "test_count", serviceName, operationName });
 
-        assertCassandraColumnValues("MetricIdentifier", "test_average-" + serviceName + "-" + operationName,
-                        STR_SERIALIZER, STR_SERIALIZER, new String[] { "metricName", "serviceAdminName",
-                                "operationName" }, new String[] { "test_average", serviceName, operationName });
+        assertCassandraColumnValues("MetricIdentifier", "test_average|" + serviceName
+                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
+                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + "true", STR_SERIALIZER, STR_SERIALIZER,
+                        new String[] { "metricName", "serviceAdminName", "operationName" }, new String[] {
+                                "test_average", serviceName, operationName });
 
         assertCassandraSuperColumnValues("ServiceOperationByIp", ipAddress, serviceName, STR_SERIALIZER,
                         STR_SERIALIZER, STR_SERIALIZER, new String[] { operationName }, new String[] { "" });
@@ -279,12 +302,14 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
         assertCassandraSuperColumnValues("ServiceConsumerByIp", ipAddress, serviceName, STR_SERIALIZER, STR_SERIALIZER,
                         STR_SERIALIZER, new String[] { consumerName }, new String[] { "" });
 
-        assertCassandraColumnValues("MetricTimeSeries", ipAddress + "-" + serviceName + "-" + operationName
-                        + "-test_count-20", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
+        assertCassandraColumnValues("MetricTimeSeries", ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
+                        + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
+                        + "|test_count|20", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
                         new String[] { metricValueKeyTestCount });
 
-        assertCassandraColumnValues("MetricTimeSeries", ipAddress + "-" + serviceName + "-" + operationName
-                        + "-test_average-20", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
+        assertCassandraColumnValues("MetricTimeSeries", ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
+                        + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
+                        + "|test_average|20", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
                         new String[] { metricValueKeyTestAvg });
 
         assertCassandraColumnValues("MetricValues", metricValueKeyTestCount, STR_SERIALIZER, OBJ_SERIALIZER,

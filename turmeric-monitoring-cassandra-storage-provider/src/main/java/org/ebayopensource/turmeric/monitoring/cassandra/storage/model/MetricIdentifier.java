@@ -8,6 +8,8 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.cassandra.storage.model;
 
+import static org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.CassandraMetricsStorageProvider.KEY_SEPARATOR;
+
 /**
  * The Class MetricId.
  */
@@ -21,6 +23,8 @@ public class MetricIdentifier {
 
     /** The operation name. */
     private String operationName;
+
+    private boolean serverSide;
 
     /**
      * Instantiates a new metric id.
@@ -39,11 +43,12 @@ public class MetricIdentifier {
      * @param operationName
      *            the operation name
      */
-    public MetricIdentifier(String metricName, String serviceAdminName, String operationName) {
+    public MetricIdentifier(String metricName, String serviceAdminName, String operationName, boolean serverSide) {
         super();
         this.metricName = metricName;
         this.serviceAdminName = serviceAdminName;
         this.operationName = operationName;
+        this.serverSide = serverSide;
     }
 
     /*
@@ -157,7 +162,12 @@ public class MetricIdentifier {
      * @return the key
      */
     public String getKey() {
-        return this.metricName + "-" + this.serviceAdminName + "-" + this.operationName;
+        return this.metricName + KEY_SEPARATOR + this.serviceAdminName + KEY_SEPARATOR + this.operationName
+                        + KEY_SEPARATOR + this.serverSide;
+    }
+
+    public boolean isServerSide() {
+        return serverSide;
     }
 
 }

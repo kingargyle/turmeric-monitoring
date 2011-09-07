@@ -67,6 +67,14 @@ create column family ServiceCallsByTime
 	and column_type = Super
 	and comparator = LongType
     and subcomparator = UTF8Type;
+    
+create column family MetricValuesByIpAndDate
+	with key_validation_class = UTF8Type
+	and column_type = Super
+    and comparator = LongType
+    and subcomparator = UTF8Type;
+    
+
 
     
 ;

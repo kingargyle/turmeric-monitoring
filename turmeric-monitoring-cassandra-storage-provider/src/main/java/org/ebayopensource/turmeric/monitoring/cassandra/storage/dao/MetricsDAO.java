@@ -8,15 +8,16 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.cassandra.storage.dao;
 
-import java.util.ArrayList;
+import static org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.CassandraMetricsStorageProvider.KEY_SEPARATOR;
+
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.ObjectSerializer;
-import me.prettyprint.cassandra.serializers.SerializerTypeInferer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
-import me.prettyprint.cassandra.serializers.TypeInferringSerializer;
 import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.beans.HColumn;
 import me.prettyprint.hector.api.beans.HSuperColumn;
@@ -29,12 +30,14 @@ import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricCompone
 import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValue;
 import org.ebayopensource.turmeric.utils.cassandra.hector.HectorManager;
 
-import com.google.common.collect.Lists;
-
 /**
  * The Class MetricsDAO.
  */
 public class MetricsDAO {
+
+    private static final StringSerializer STR_SERIALIZER = StringSerializer.get();
+
+    private static final SimpleDateFormat DATE_FORMATER = new SimpleDateFormat("ddMMyyyy");
 
     /** The cluster name. */
     private String clusterName;
@@ -44,6 +47,9 @@ public class MetricsDAO {
 
     /** The key space. */
     private Keyspace keySpace;
+
+    ObjectSerializer OBJ_SERIALIZER = ObjectSerializer.get();
+    LongSerializer LNG_SERIALIZER = LongSerializer.get();
 
     /**
      * Instantiates a new metrics dao.
@@ -72,17 +78,17 @@ public class MetricsDAO {
     public void saveServiceOperationByIpCF(String ipAddress, MetricIdentifier cmetricIdentifier) {
         String superColumnName = cmetricIdentifier.getServiceAdminName();
 
-        Mutator<String> mutator = HFactory.createMutator(keySpace, StringSerializer.get());
+        Mutator<String> mutator = HFactory.createMutator(keySpace, STR_SERIALIZER);
 
         List<HColumn<String, String>> columnList = Arrays.asList(HFactory.createStringColumn(
                         cmetricIdentifier.getOperationName(), ""));
 
         mutator.addInsertion(ipAddress, "ServiceOperationByIp", HFactory.createSuperColumn(superColumnName, columnList,
-                        StringSerializer.get(), StringSerializer.get(), StringSerializer.get()));
+                        STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER));
 
         // now I store a row with "All" as key, for when the searches requires to list all the services in all the nodes
         mutator.addInsertion("All", "ServiceOperationByIp", HFactory.createSuperColumn(superColumnName, columnList,
-                        StringSerializer.get(), StringSerializer.get(), StringSerializer.get()));
+                        STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER));
 
         MutationResult result = mutator.execute();
     }
@@ -100,16 +106,16 @@ public class MetricsDAO {
     public void saveServiceConsumerByIpCF(String ipAddress, MetricIdentifier cmetricIdentifier, String consumerName) {
         String superColumnName = cmetricIdentifier.getServiceAdminName();
 
-        Mutator<String> mutator = HFactory.createMutator(keySpace, StringSerializer.get());
+        Mutator<String> mutator = HFactory.createMutator(keySpace, STR_SERIALIZER);
 
         List<HColumn<String, String>> columnList = Arrays.asList(HFactory.createStringColumn(consumerName, ""));
 
         mutator.addInsertion(ipAddress, "ServiceConsumerByIp", HFactory.createSuperColumn(superColumnName, columnList,
-                        StringSerializer.get(), StringSerializer.get(), StringSerializer.get()));
+                        STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER));
 
         // now I store a row with "All" as key, for when the searches requires to list all the services in all the nodes
         mutator.addInsertion("All", "ServiceConsumerByIp", HFactory.createSuperColumn(superColumnName, columnList,
-                        StringSerializer.get(), StringSerializer.get(), StringSerializer.get()));
+                        STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER));
 
         MutationResult result = mutator.execute();
     }
@@ -130,38 +136,56 @@ public class MetricsDAO {
      */
     @SuppressWarnings("unchecked")
     public void saveMetricValues(String ipAddress, MetricIdentifier cmetricIdentifier, long now, int snapshotInterval,
-                    List<MetricValue> metricValuesToSave) {
+                    boolean serverSide, List<MetricValue> metricValuesToSave) {
         String timeSeriesKey = createKeyForTimeSeries(ipAddress, cmetricIdentifier, snapshotInterval);
         String metricValueKey = null;
-        StringSerializer stringSerializer = StringSerializer.get();
-        Mutator<String> metricTimeSeriesMutator = HFactory.createMutator(keySpace, stringSerializer);
-        ObjectSerializer objectSerializer = ObjectSerializer.get();
-        LongSerializer longSerializer = LongSerializer.get();
+        String metricValuesByIpDate = null;
+
+        Mutator<String> metricTimeSeriesMutator = HFactory.createMutator(keySpace, STR_SERIALIZER);
+
         for (MetricValue metricValue : metricValuesToSave) {
-            metricValueKey = createKyeForMetricValue(ipAddress, cmetricIdentifier, now);
+            metricValueKey = createKeyForMetricValue(ipAddress, cmetricIdentifier, now);
+            metricValuesByIpDate = createKeyForMetricValuesByIpAndDate(ipAddress);
             MetricComponentValue[] metricComponentValues = metricValue.getValues();
             for (MetricComponentValue metricComponentValue : metricComponentValues) {
                 metricTimeSeriesMutator.addInsertion(metricValueKey, "MetricValues", HFactory.createColumn(
-                                metricComponentValue.getName(), metricComponentValue.getValue(), stringSerializer,
-                                objectSerializer));
+                                metricComponentValue.getName(), metricComponentValue.getValue(), STR_SERIALIZER,
+                                OBJ_SERIALIZER));
+
+                List<HColumn<String, String>> metricValuesColumns = Arrays.asList(HFactory.createColumn(metricValueKey,
+                                "", STR_SERIALIZER, STR_SERIALIZER));
+
+                HSuperColumn<Long, String, String> serviceOperationCallsByTimeColumn = HFactory.createSuperColumn(now,
+                                metricValuesColumns, LNG_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER);
+
+                metricTimeSeriesMutator.addInsertion(metricValuesByIpDate, "MetricValuesByIpAndDate",
+                                serviceOperationCallsByTimeColumn);
+
             }
 
             metricTimeSeriesMutator.addInsertion(timeSeriesKey, "MetricTimeSeries",
-                            HFactory.createColumn(now, metricValueKey, longSerializer, stringSerializer));
+                            HFactory.createColumn(now, metricValueKey, LNG_SERIALIZER, STR_SERIALIZER));
         }
         String serviceOperationCallsByTimeKey = createServiceOperationCallsInTime(ipAddress, cmetricIdentifier);
         List<HColumn<String, String>> operationListColumns = Arrays.asList(HFactory.createColumn(
-                        cmetricIdentifier.getOperationName(), "", stringSerializer, stringSerializer));
+                        cmetricIdentifier.getOperationName(), "", STR_SERIALIZER, STR_SERIALIZER));
         HSuperColumn<Long, String, String> serviceOperationCallsByTimeColumn = HFactory.createSuperColumn(now,
-                        operationListColumns, longSerializer, stringSerializer, stringSerializer);
+                        operationListColumns, LNG_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER);
         metricTimeSeriesMutator.addInsertion(serviceOperationCallsByTimeKey, "ServiceCallsByTime",
                         serviceOperationCallsByTimeColumn);
 
         MutationResult result = metricTimeSeriesMutator.execute();
     }
 
-    private String createServiceOperationCallsInTime(String ipAddress, MetricIdentifier cmetricIdentifier) {
-        return ipAddress + "-" + cmetricIdentifier.getServiceAdminName();
+    public String createKeyForMetricValuesByIpAndDate(String ipAddress) {
+        String date = DATE_FORMATER.format(new Date());
+        String result = ipAddress + KEY_SEPARATOR + date;
+        return result;
+    }
+
+    public String createServiceOperationCallsInTime(String ipAddress, MetricIdentifier cmetricIdentifier) {
+        return ipAddress + KEY_SEPARATOR + cmetricIdentifier.getServiceAdminName() + KEY_SEPARATOR
+                        + cmetricIdentifier.isServerSide();
     }
 
     /**
@@ -175,8 +199,8 @@ public class MetricsDAO {
      *            the now
      * @return the string
      */
-    private String createKyeForMetricValue(String ipAddress, MetricIdentifier cmetricIdentifier, long now) {
-        return ipAddress + "-" + cmetricIdentifier.getMetricName() + "-" + now;
+    private String createKeyForMetricValue(String ipAddress, MetricIdentifier cmetricIdentifier, long now) {
+        return ipAddress + KEY_SEPARATOR + cmetricIdentifier.getMetricName() + KEY_SEPARATOR + now;
     }
 
     /**
@@ -191,7 +215,8 @@ public class MetricsDAO {
      * @return the string
      */
     private String createKeyForTimeSeries(String ipAddress, MetricIdentifier cmetricIdentifier, int snapshotInterval) {
-        return ipAddress + "-" + cmetricIdentifier.getServiceAdminName() + "-" + cmetricIdentifier.getOperationName()
-                        + "-" + cmetricIdentifier.getMetricName() + "-" + snapshotInterval;
+        return ipAddress + KEY_SEPARATOR + cmetricIdentifier.getServiceAdminName() + KEY_SEPARATOR
+                        + cmetricIdentifier.getOperationName() + KEY_SEPARATOR + cmetricIdentifier.getMetricName()
+                        + KEY_SEPARATOR + snapshotInterval;
     }
 }

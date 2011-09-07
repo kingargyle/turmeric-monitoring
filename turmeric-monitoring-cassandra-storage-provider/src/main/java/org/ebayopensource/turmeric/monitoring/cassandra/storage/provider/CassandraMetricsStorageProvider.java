@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricIdentifierDAO;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricsDAO;
@@ -30,11 +31,8 @@ import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValueAg
  */
 public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
 
-    /** The mid period. */
-    private int midPeriod;
-
-    /** The long period. */
-    private int longPeriod;
+    /** The Constant KEY_SEPARATOR. */
+    public static final String KEY_SEPARATOR = "|";
 
     /** The snapshot interval. */
     private int snapshotInterval;
@@ -51,15 +49,22 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
     /** The metrics dao. */
     private MetricsDAO metricsDAO;
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Inits the.
+     * 
+     * @param options
+     *            the options
+     * @param name
+     *            the name
+     * @param collectionLocation
+     *            the collection location
+     * @param snapshotInterval
+     *            the snapshot interval
      * @see org.ebayopensource.turmeric.runtime.common.monitoring.MetricsStorageProvider#init(java.util.Map,
-     * java.lang.String, java.lang.String, java.lang.Integer)
+     *      java.lang.String, java.lang.String, java.lang.Integer)
      */
     @Override
     public void init(Map<String, String> options, String name, String collectionLocation, Integer snapshotInterval) {
-        this.midPeriod = 3600;
-        this.longPeriod = 86400;
         this.serverSide = MonitoringSystem.COLLECTION_LOCATION_SERVER.equals(collectionLocation);
         this.storeServiceMetrics = Boolean.parseBoolean(options.get("storeServiceMetrics"));
         this.snapshotInterval = snapshotInterval;
@@ -72,14 +77,25 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
         metricsDAO = new MetricsDAO(clusterName, host, s_keyspace);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Save metric snapshot.
+     * 
+     * @param timeSnapshot
+     *            the time snapshot
+     * @param snapshotCollection
+     *            the snapshot collection
+     * @throws ServiceException
+     *             the service exception
      * @see org.ebayopensource.turmeric.runtime.common.monitoring.MetricsStorageProvider#saveMetricSnapshot(long,
-     * java.util.Collection)
+     *      java.util.Collection)
      */
     @Override
     public void saveMetricSnapshot(long timeSnapshot, Collection<MetricValueAggregator> snapshotCollection)
                     throws ServiceException {
+
+        if (snapshotCollection == null || snapshotCollection.isEmpty()) {
+            return;
+        }
         List<MetricValue> metricValuesToSave = new ArrayList<MetricValue>();
         for (MetricValueAggregator metricValueAggregator : snapshotCollection) {
             org.ebayopensource.turmeric.runtime.common.monitoring.MetricId metricId = metricValueAggregator
@@ -99,10 +115,10 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
                                 .getValues();
                 if (valuesAreNonZero(metricComponentValues)) {
                     if (cmetricIdentifier == null) {
-                        cmetricIdentifier = findMetricId(getKeyfromMetricId(metricId));
+                        cmetricIdentifier = findMetricId(getKeyfromMetricId(metricId, serverSide));
                         if (cmetricIdentifier == null) {
                             createMetricId(metricId, metricValueAggregator);
-                            cmetricIdentifier = findMetricId(getKeyfromMetricId(metricId));
+                            cmetricIdentifier = findMetricId(getKeyfromMetricId(metricId, serverSide));
                         }
                     }
                     // now, store the service stats for the getMetricsMetadata calls
@@ -114,12 +130,11 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
                 }
 
             }
-            metricsDAO.saveMetricValues(getIPAddress(), cmetricIdentifier, timeSnapshot, snapshotInterval,
+            metricsDAO.saveMetricValues(getIPAddress(), cmetricIdentifier, timeSnapshot, snapshotInterval, serverSide,
                             metricValuesToSave);
             metricValuesToSave.clear();
             cmetricIdentifier = null;
         }
-
     }
 
     /**
@@ -133,7 +148,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
     private void createMetricId(org.ebayopensource.turmeric.runtime.common.monitoring.MetricId metricId,
                     MetricValueAggregator metricValueAggregator) {
         MetricIdentifier model = new MetricIdentifier(metricId.getMetricName(), metricId.getAdminName(),
-                        metricId.getOperationName());
+                        metricId.getOperationName(), serverSide);
         String key = model.getKey();
         this.metricIdDAO.save(key, model);
     }
@@ -150,32 +165,18 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
     }
 
     /**
-     * Gets the keyfrom metric id.
+     * Gets the key from the metric id.
      * 
      * @param metricId
      *            the metric id
+     * @param serverSide
+     *            the server side
      * @return the keyfrom metric id
      */
-    public String getKeyfromMetricId(org.ebayopensource.turmeric.runtime.common.monitoring.MetricId metricId) {
-        return metricId.getMetricName() + "-" + metricId.getAdminName() + "-" + metricId.getOperationName();
-    }
-
-    /**
-     * Gets the mid period.
-     * 
-     * @return the mid period
-     */
-    public int getMidPeriod() {
-        return midPeriod;
-    }
-
-    /**
-     * Gets the long period.
-     * 
-     * @return the long period
-     */
-    public int getLongPeriod() {
-        return longPeriod;
+    public String getKeyfromMetricId(org.ebayopensource.turmeric.runtime.common.monitoring.MetricId metricId,
+                    boolean serverSide) {
+        return metricId.getMetricName() + KEY_SEPARATOR + metricId.getAdminName() + KEY_SEPARATOR
+                        + metricId.getOperationName() + KEY_SEPARATOR + serverSide;
     }
 
     /**
