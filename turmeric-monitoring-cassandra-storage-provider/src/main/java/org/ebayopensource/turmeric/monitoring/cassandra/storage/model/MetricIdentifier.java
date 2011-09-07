@@ -42,6 +42,8 @@ public class MetricIdentifier {
      *            the service admin name
      * @param operationName
      *            the operation name
+     * @param serverSide
+     *            the server side
      */
     public MetricIdentifier(String metricName, String serviceAdminName, String operationName, boolean serverSide) {
         super();
@@ -166,6 +168,11 @@ public class MetricIdentifier {
                         + KEY_SEPARATOR + this.serverSide;
     }
 
+    /**
+     * Checks if is server side.
+     * 
+     * @return true, if is server side
+     */
     public boolean isServerSide() {
         return serverSide;
     }

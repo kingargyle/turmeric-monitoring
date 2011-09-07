@@ -56,7 +56,6 @@ import org.junit.Test;
 
 public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
     CassandraMetricsStorageProvider provider = null;
-    Map<String, List<String>> keysToRemove = new HashMap<String, List<String>>();
 
     @Before
     public void setUp() {
@@ -149,9 +148,9 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
         String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "test_average"
                         + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
         String metricSeriesKeyForTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
-                        + "service1|operation1|test_count|20";
+                        + "service1|operation1|test_count|20|true";
         String metricSeriesKeyForTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
-                        + "service2|operation2|test_average|20";
+                        + "service2|operation2|test_average|20|true";
         String serviceCallsByTimeKey = ipAddress + "|service1|true";
         String serviceCallsByTimeKeySrv2 = ipAddress + "|service2|true";
         String[] metricIdentifierColumns = new String[] { "metricName", "serviceAdminName", "operationName" };
@@ -242,12 +241,12 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
 
         assertCassandraColumnValues("MetricTimeSeries", ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
                         + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
-                        + "|test_count|20", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
+                        + "|test_count|20|true", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
                         new String[] { metricValueKeyTestCount });
 
         assertCassandraColumnValues("MetricTimeSeries", ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
                         + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
-                        + "|test_average|20", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
+                        + "|test_average|20|true", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
                         new String[] { metricValueKeyTestAvg });
 
         assertCassandraColumnValues("MetricValues", metricValueKeyTestCount, STR_SERIALIZER, OBJ_SERIALIZER,
@@ -304,12 +303,12 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
 
         assertCassandraColumnValues("MetricTimeSeries", ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
                         + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
-                        + "|test_count|20", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
+                        + "|test_count|20|true", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
                         new String[] { metricValueKeyTestCount });
 
         assertCassandraColumnValues("MetricTimeSeries", ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
                         + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
-                        + "|test_average|20", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
+                        + "|test_average|20|true", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
                         new String[] { metricValueKeyTestAvg });
 
         assertCassandraColumnValues("MetricValues", metricValueKeyTestCount, STR_SERIALIZER, OBJ_SERIALIZER,

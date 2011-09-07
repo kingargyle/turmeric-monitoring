@@ -37,8 +37,24 @@ public class MetricDAOITCase extends CassandraTestHelper {
     @Test
     public void testCreateServiceOperationCallsInTime() {
         MetricIdentifier cmetricIdentifier = new MetricIdentifier("metricName1", "servName1", "ops1", false);
-        String actual = metricDAO.createServiceOperationCallsInTime("testip", cmetricIdentifier);
+        String actual = metricDAO.createKeyForServiceOperationCallsInTime("testip", cmetricIdentifier);
         String expected = "testip|servName1|false";
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testCreateKeyForTimeSeries() {
+        MetricIdentifier cmetricIdentifier = new MetricIdentifier("metricName2", "servName2", "ops4", true);
+        String actual = metricDAO.createKeyForTimeSeries("theip", cmetricIdentifier, 15);
+        String expected = "theip|servName2|ops4|metricName2|15|true";
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testCreateKeyForServiceOperationCallsInTime() {
+        MetricIdentifier cmetricIdentifier = new MetricIdentifier("metricName3", "servName3", "ops7", false);
+        String actual = metricDAO.createKeyForServiceOperationCallsInTime("theip", cmetricIdentifier);
+        String expected = "theip|servName3|false";
         assertEquals(expected, actual);
     }
 }

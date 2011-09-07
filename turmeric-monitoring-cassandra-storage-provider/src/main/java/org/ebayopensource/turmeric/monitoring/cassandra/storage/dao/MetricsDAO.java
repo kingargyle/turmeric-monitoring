@@ -35,8 +35,16 @@ import org.ebayopensource.turmeric.utils.cassandra.hector.HectorManager;
  */
 public class MetricsDAO {
 
+    /** The Constant STR_SERIALIZER. */
     private static final StringSerializer STR_SERIALIZER = StringSerializer.get();
 
+    /** The Constant OBJ_SERIALIZER. */
+    private static final ObjectSerializer OBJ_SERIALIZER = ObjectSerializer.get();
+
+    /** The Constant LNG_SERIALIZER. */
+    private static final LongSerializer LNG_SERIALIZER = LongSerializer.get();
+
+    /** The Constant DATE_FORMATER. */
     private static final SimpleDateFormat DATE_FORMATER = new SimpleDateFormat("ddMMyyyy");
 
     /** The cluster name. */
@@ -47,9 +55,6 @@ public class MetricsDAO {
 
     /** The key space. */
     private Keyspace keySpace;
-
-    ObjectSerializer OBJ_SERIALIZER = ObjectSerializer.get();
-    LongSerializer LNG_SERIALIZER = LongSerializer.get();
 
     /**
      * Instantiates a new metrics dao.
@@ -90,7 +95,7 @@ public class MetricsDAO {
         mutator.addInsertion("All", "ServiceOperationByIp", HFactory.createSuperColumn(superColumnName, columnList,
                         STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER));
 
-        MutationResult result = mutator.execute();
+        mutator.execute();
     }
 
     /**
@@ -117,7 +122,7 @@ public class MetricsDAO {
         mutator.addInsertion("All", "ServiceConsumerByIp", HFactory.createSuperColumn(superColumnName, columnList,
                         STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER));
 
-        MutationResult result = mutator.execute();
+        mutator.execute();
     }
 
     /**
@@ -131,6 +136,8 @@ public class MetricsDAO {
      *            the now
      * @param snapshotInterval
      *            the snapshot interval
+     * @param serverSide
+     *            the server side
      * @param metricValuesToSave
      *            the metric values to save
      */
@@ -166,7 +173,7 @@ public class MetricsDAO {
             metricTimeSeriesMutator.addInsertion(timeSeriesKey, "MetricTimeSeries",
                             HFactory.createColumn(now, metricValueKey, LNG_SERIALIZER, STR_SERIALIZER));
         }
-        String serviceOperationCallsByTimeKey = createServiceOperationCallsInTime(ipAddress, cmetricIdentifier);
+        String serviceOperationCallsByTimeKey = createKeyForServiceOperationCallsInTime(ipAddress, cmetricIdentifier);
         List<HColumn<String, String>> operationListColumns = Arrays.asList(HFactory.createColumn(
                         cmetricIdentifier.getOperationName(), "", STR_SERIALIZER, STR_SERIALIZER));
         HSuperColumn<Long, String, String> serviceOperationCallsByTimeColumn = HFactory.createSuperColumn(now,
@@ -174,16 +181,32 @@ public class MetricsDAO {
         metricTimeSeriesMutator.addInsertion(serviceOperationCallsByTimeKey, "ServiceCallsByTime",
                         serviceOperationCallsByTimeColumn);
 
-        MutationResult result = metricTimeSeriesMutator.execute();
+        metricTimeSeriesMutator.execute();
     }
 
+    /**
+     * Creates the key for metric values by ip and date.
+     * 
+     * @param ipAddress
+     *            the ip address
+     * @return the string
+     */
     public String createKeyForMetricValuesByIpAndDate(String ipAddress) {
         String date = DATE_FORMATER.format(new Date());
         String result = ipAddress + KEY_SEPARATOR + date;
         return result;
     }
 
-    public String createServiceOperationCallsInTime(String ipAddress, MetricIdentifier cmetricIdentifier) {
+    /**
+     * Creates the service operation calls in time.
+     * 
+     * @param ipAddress
+     *            the ip address
+     * @param cmetricIdentifier
+     *            the cmetric identifier
+     * @return the string
+     */
+    public String createKeyForServiceOperationCallsInTime(String ipAddress, MetricIdentifier cmetricIdentifier) {
         return ipAddress + KEY_SEPARATOR + cmetricIdentifier.getServiceAdminName() + KEY_SEPARATOR
                         + cmetricIdentifier.isServerSide();
     }
@@ -199,7 +222,7 @@ public class MetricsDAO {
      *            the now
      * @return the string
      */
-    private String createKeyForMetricValue(String ipAddress, MetricIdentifier cmetricIdentifier, long now) {
+    public String createKeyForMetricValue(String ipAddress, MetricIdentifier cmetricIdentifier, long now) {
         return ipAddress + KEY_SEPARATOR + cmetricIdentifier.getMetricName() + KEY_SEPARATOR + now;
     }
 
@@ -214,9 +237,9 @@ public class MetricsDAO {
      *            the snapshot interval
      * @return the string
      */
-    private String createKeyForTimeSeries(String ipAddress, MetricIdentifier cmetricIdentifier, int snapshotInterval) {
+    public String createKeyForTimeSeries(String ipAddress, MetricIdentifier cmetricIdentifier, int snapshotInterval) {
         return ipAddress + KEY_SEPARATOR + cmetricIdentifier.getServiceAdminName() + KEY_SEPARATOR
                         + cmetricIdentifier.getOperationName() + KEY_SEPARATOR + cmetricIdentifier.getMetricName()
-                        + KEY_SEPARATOR + snapshotInterval;
+                        + KEY_SEPARATOR + snapshotInterval + KEY_SEPARATOR + cmetricIdentifier.isServerSide();
     }
 }
