@@ -62,7 +62,7 @@
         <module>SOAMetricsQueryServiceTest</module>
         <module>mgmt-console</module>
         <module>monitoring-dist</module>
-    <module>turmeric-monitoring-cassandra-storage-provider</module>
+        <module>turmeric-monitoring-cassandra-storage-provider</module>
   </modules>
 
 </project>
