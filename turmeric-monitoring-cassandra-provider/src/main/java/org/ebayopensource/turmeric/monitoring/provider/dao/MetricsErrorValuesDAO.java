@@ -8,10 +8,16 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.dao;
 
+import java.util.List;
+import java.util.Set;
+
 
 /**
  * The Interface MetricsErrorDAO.
  * @author jose alvarez muguerza
  */
 public interface MetricsErrorValuesDAO  {
+	Set<org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue> findItems(List<String> keys, String rangeFrom, String rangeTo );
+
+	
 }

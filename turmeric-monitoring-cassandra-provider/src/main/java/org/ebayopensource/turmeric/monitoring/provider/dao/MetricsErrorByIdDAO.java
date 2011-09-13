@@ -8,10 +8,16 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.dao;
 
+import java.util.List;
+import java.util.Set;
+
+
 
 /**
  * The Interface MetricsErrorDAO.
  * @author jose alvarez muguerza
  */
-public interface MetricsErrorDAO  {
+public interface MetricsErrorByIdDAO {
+	org.ebayopensource.turmeric.runtime.error.cassandra.model.Error find(String key);
+
 }

@@ -8,48 +8,34 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.dao.impl;
 
-import java.util.List;
-import java.util.Map;
-
-import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorsByCategoryDAO;
-import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
+import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorValuesDAO;
 
 /**
  * @author jamuguerza
- *
+ * 
  */
-public class MetricsErrorsByCategoryDAOImpl extends AbstractColumnFamilyDao<String, Long> implements
-		MetricsErrorsByCategoryDAO{
-		
+public class MetricsErrorsByCategoryDAOImpl extends
+		BaseMetricsErrorsByFiltersDAOImpl {
+
 	/**
 	 * Instantiates a new metrics error dao impl.
-	 *
-	 * @param clusterName the cluster name
-	 * @param host the host
-	 * @param s_keyspace the s_keyspace
-	 * @param columnFamilyName the column family name
+	 * 
+	 * @param clusterName
+	 *            the cluster name
+	 * @param host
+	 *            the host
+	 * @param s_keyspace
+	 *            the s_keyspace
+	 * @param columnFamilyName
+	 *            the column family name
 	 */
-	public MetricsErrorsByCategoryDAOImpl(String clusterName, String host,
-			String s_keyspace,  String columnFamilyName) {
-		super(clusterName, host, s_keyspace, String.class, Long.class,
-				columnFamilyName);
+	public MetricsErrorsByCategoryDAOImpl(final String clusterName,
+			final String host, final String s_keyspace,
+			final String columnFamilyName,
+			final MetricsErrorValuesDAO errorValuesDaoImpl) {
+
+		super(clusterName, host, s_keyspace, columnFamilyName,
+				errorValuesDaoImpl);
 	}
 
-	@Override
-	public List<Map<String, Object>> findErrorValuesByCategory(long beginTime,
-			long endTime, boolean serverSide, int aggregationPeriod,
-			Long errorId, String category, String severity,
-			Map<String, List<String>> filters) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Map<String, Object>> findAllErrorValuesByCategory(
-			long beginTime, long endTime, boolean serverSide,
-			int aggregationPeriod, Long errorId, String category,
-			String severity, Map<String, List<String>> filters) {
-		// TODO Auto-generated method stub
-		return null;
-	}	
 }

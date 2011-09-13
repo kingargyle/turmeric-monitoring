@@ -11,14 +11,23 @@ package org.ebayopensource.turmeric.monitoring.provider;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
-import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorDAO;
+import org.ebayopensource.turmeric.common.v1.types.ErrorCategory;
+import org.ebayopensource.turmeric.common.v1.types.ErrorSeverity;
+
+import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricsDAO;
+import org.ebayopensource.turmeric.monitoring.provider.dao.BaseMetricsErrorsByFilterDAO;
+import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorByIdDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorValuesDAO;
-import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorsByCategoryDAO;
-import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorsBySeverityDAO;
-import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorDAOImpl;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorByIdDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorValuesDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorsByCategoryDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorsBySeverityDAOImpl;
@@ -34,6 +43,10 @@ import org.ebayopensource.turmeric.monitoring.v1.services.MetricResourceCriteria
 import org.ebayopensource.turmeric.monitoring.v1.services.PolicyMetricData;
 import org.ebayopensource.turmeric.monitoring.v1.services.PolicyMetricGraphData;
 import org.ebayopensource.turmeric.monitoring.v1.services.ReportCriteria;
+import org.ebayopensource.turmeric.monitoring.v1.services.ResourceEntity;
+import org.ebayopensource.turmeric.monitoring.v1.services.SortOrderType;
+import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.MonitoringSystem;
+import org.ebayopensource.turmeric.runtime.error.cassandra.model.Error;
 import org.ebayopensource.turmeric.utils.ContextUtils;
 import org.ebayopensource.turmeric.utils.cassandra.service.CassandraManager;
 
@@ -45,13 +58,15 @@ import org.ebayopensource.turmeric.utils.cassandra.service.CassandraManager;
 public class SOAMetricsQueryServiceCassandraProviderImpl implements
 		SOAMetricsQueryServiceProvider {
 
-	private final MetricsErrorDAO metricsErrorDAO;
-
+	private final MetricsErrorByIdDAO metricsErrorByIdDAO;
+	
 	private final MetricsErrorValuesDAO metricsErrorValuesDAO;
 
-	private final MetricsErrorsByCategoryDAO metricsErrorsByCategoryDAO;
+	private final BaseMetricsErrorsByFilterDAO metricsErrorsByCategoryDAO;
 
-	private final MetricsErrorsBySeverityDAO metricsErrorsBySeverityDAO;
+	private final BaseMetricsErrorsByFilterDAO metricsErrorsBySeverityDAO;
+	
+	private final MetricsDAO metricsDAO ;
 
 	/** The Constant cassandraPropFilePath. */
 	private static final String cassandraPropFilePath = "META-INF/config/cassandra/cassandra.properties";
@@ -68,9 +83,9 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements
 	/** The Constant c_keyspace. */
 	private static final String c_keyspace = "cassandra-monitoring-keyspace";
 
-	/** The Constant c_error_cf. */
-	private static final String c_error_cf = "cassandra-error-cf";
-
+	/** The Constant c_error_by_id_cf. */
+	private static final String c_error_by_id_cf = "cassandra-error-by-id-cf";
+	
 	/** The Constant c_error_values_cf. */
 	private static final String c_error_values_cf = "cassandra-error-values-cf";
 
@@ -90,6 +105,8 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements
 
 	private static String errorCF;
 
+	private static String errorByIdCF;
+	
 	private static String errorValuesCF;
 
 	private static String errorsByCategoryCF;
@@ -105,10 +122,20 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements
 	 * Instantiates a new Metrics Query Service cassandra provider impl.
 	 */
 	public SOAMetricsQueryServiceCassandraProviderImpl() {
-		metricsErrorDAO = new MetricsErrorDAOImpl(clusterName, host, keyspace, errorCF);
-		metricsErrorValuesDAO = new MetricsErrorValuesDAOImpl(clusterName, host, keyspace, errorValuesCF);
-		metricsErrorsByCategoryDAO = new MetricsErrorsByCategoryDAOImpl(clusterName, host, keyspace, errorsByCategoryCF);
-		metricsErrorsBySeverityDAO = new MetricsErrorsBySeverityDAOImpl(clusterName, host, keyspace, errorsBySeverityCF);
+		
+		metricsErrorByIdDAO = new MetricsErrorByIdDAOImpl(clusterName, c_hostIp,
+				keyspace, errorByIdCF);
+		
+		metricsErrorValuesDAO = new MetricsErrorValuesDAOImpl(clusterName,
+				host, keyspace, errorValuesCF);
+		
+		metricsErrorsByCategoryDAO = new MetricsErrorsByCategoryDAOImpl(
+				clusterName, host, keyspace, errorsByCategoryCF, metricsErrorValuesDAO);
+		
+		metricsErrorsBySeverityDAO = new MetricsErrorsBySeverityDAOImpl(
+				clusterName, host, keyspace, errorsBySeverityCF, metricsErrorValuesDAO);
+		
+		metricsDAO = new MetricsDAO(clusterName, host, keyspace);
 	}
 
 	/**
@@ -131,7 +158,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements
 
 				keyspace = (String) properties.get(c_keyspace);
 
-				errorCF = (String) properties.get(c_error_cf);
+				errorByIdCF = (String) properties.get(c_error_by_id_cf);
 				errorValuesCF = (String) properties.get(c_error_values_cf);
 				errorsByCategoryCF = (String) properties
 						.get(c_errors_by_category_cf);
@@ -153,7 +180,6 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements
 	@Override
 	public List<MetricData> getCustomReportData(ReportCriteria reportCriteria,
 			MetricCriteria metricCriteria) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -161,43 +187,360 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements
 	public List<MetricData> getDetailData(String dc,
 			MetricCriteria metricCriteria,
 			MetricResourceCriteria metricResourceCriteria) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<MetricGraphData> getErrorGraph(String serviceName,
-			String operationName, String consumerName, String errorId,
-			String errorCategory, String errorSeverity,
-			MetricCriteria metricCriteria) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<MetricGraphData> getErrorGraph(final String serviceName,
+			final String operationName, final String consumerName, final String errorId,
+			final String errorCategory, final String errorSeverity,
+			final MetricCriteria metricCriteria) {
+
+		List<MetricGraphData> result = new ArrayList<MetricGraphData>();
+
+		final String filter = getFilter(errorCategory, errorSeverity);
+		
+		 int aggregationPeriod = metricCriteria.getAggregationPeriod();
+         long beginTime = metricCriteria.getFirstStartTime();
+         long duration = metricCriteria.getDuration();
+         long endTime = beginTime + TimeUnit.SECONDS.toMillis(duration);
+         boolean serverSide = MonitoringSystem.COLLECTION_LOCATION_SERVER.equals(metricCriteria.getRoleType());
+		
+         Map<String, List<String>> filters = new HashMap<String, List<String>>();
+         if (serviceName != null && !"".equals(serviceName)){
+             filters.put(ResourceEntity.SERVICE.value(), Collections.singletonList(serviceName));
+         }
+         if (operationName != null && !"".equals(operationName)){
+             filters.put(ResourceEntity.OPERATION.value(), Collections.singletonList(operationName));
+         }
+         if (consumerName != null && !"".equals(consumerName)){
+             filters.put(ResourceEntity.CONSUMER.value(), Collections.singletonList(consumerName));
+         }       
+         
+         List<Map<String, Object>> queryResult = metricsErrorsByCategoryDAO.findErrorValuesByFilter(beginTime, endTime,
+                 serverSide, aggregationPeriod, null, filter, filters);
+
+
+         for (int i = 0; i < duration / aggregationPeriod; ++i) {
+             long startTime = beginTime + TimeUnit.SECONDS.toMillis(i * aggregationPeriod);
+             long stopTime = startTime + TimeUnit.SECONDS.toMillis(aggregationPeriod);
+             double value = 0;
+             for (Map<String, Object> row : queryResult) {
+                 long time = (Long) row.get("timeStamp");
+                 if (startTime <= time && time < stopTime) {
+                     value += 1;
+                 }
+             }
+             MetricGraphData metricGraphData = new MetricGraphData();
+             metricGraphData.setCount(value);
+             metricGraphData.setTimeSlot(startTime);
+             metricGraphData.setCriteria(null); // Not supported for now
+             result.add(metricGraphData);
+         }
+
+         return result;
+        
 	}
 
-	@Override
-	public List<ErrorViewData> getErrorMetricsData(String errorType,
-			List<String> serviceName, List<String> operationName,
-			List<String> consumerName, String errorId, String errorCategory,
-			String errorSeverity, String errorName,
-			MetricCriteria metricCriteria) {
-		// TODO Auto-generated method stub
-		return null;
+	private String getFilter(final String errorCategory, final String errorSeverity) {
+		 String filter = null;
+		 
+		if(errorCategory != null){
+			filter = ErrorCategory.fromValue(errorCategory).value();
+		}else if(errorSeverity != null){
+			filter = ErrorSeverity.fromValue(errorSeverity).value();
+		}
+		
+		return filter;
 	}
 
-	@Override
-	public List<ExtendedErrorViewData> getExtendedErrorMetricsData(
-			String errorType, List<String> serviceName,
-			List<String> operationName, List<String> consumerName,
-			String errorId, String errorCategory, String errorSeverity,
-			String errorName, MetricCriteria metricCriteria) {
-		// TODO Auto-generated method stub
-		return null;
+    @Override
+    public List<ErrorViewData> getErrorMetricsData(final String errorType, final List<String> serviceNames,
+    		final List<String> operationNames, final List<String> consumerNames, final String errorIdString,
+    		final String errorCategory, final String errorSeverity, final String isErrorId,
+    		final MetricCriteria metricCriteria) {
+        long firstStartTime = metricCriteria.getFirstStartTime();
+        long secondStartTime = metricCriteria.getSecondStartTime();
+        long duration = TimeUnit.SECONDS.toMillis(metricCriteria.getDuration());
+        int aggregationPeriod = metricCriteria.getAggregationPeriod();
+        boolean serverSide = !MonitoringSystem.COLLECTION_LOCATION_CLIENT.equals(metricCriteria.getRoleType());
+
+        // Validate input parameters
+        Long errorId = errorIdString == null ? null : Long.parseLong(errorIdString);
+        
+		final String filter = getFilter(errorCategory, errorSeverity);
+
+        Map<String, List<String>> filters = populateFilters(serviceNames,
+				operationNames, consumerNames);
+
+        List<Map<String, Object>> errors1;
+        double calls1;
+        List<Map<String, Object>> errors2;
+        double calls2;
+        if ("Category".equals(errorType)) {
+            errors1 = metricsErrorsByCategoryDAO.findErrorValuesByFilter(firstStartTime, firstStartTime + duration, serverSide,
+                            aggregationPeriod, errorId, filter, filters);
+            errors2 = metricsErrorsByCategoryDAO.findErrorValuesByFilter(secondStartTime, secondStartTime + duration, serverSide,
+                            aggregationPeriod, errorId, filter, filters);
+        }
+        else if ("Severity".equals(errorType)) {
+            errors1 = metricsErrorsBySeverityDAO.findErrorValuesByFilter(firstStartTime, firstStartTime + duration, serverSide,
+                            aggregationPeriod, errorId, filter, filters);
+            errors2 = metricsErrorsBySeverityDAO.findErrorValuesByFilter(secondStartTime, secondStartTime + duration, serverSide,
+                            aggregationPeriod, errorId, filter, filters);
+        }
+        else {
+            throw new IllegalArgumentException("Invalid error type " + errorType);
+        }
+
+        Map<String, Map<String, Object>> map1 = transformAggregatedErrorValues(errors1);
+        Map<String, Map<String, Object>> map2 = transformAggregatedErrorValues(errors2);
+
+        List<ErrorViewData> result = new ArrayList<ErrorViewData>();
+        for (Map.Entry<String, Map<String, Object>> entry : map1.entrySet()) {
+            ErrorViewData errorViewData = new ErrorViewData();
+            Map<String, Object> row1 = entry.getValue();
+
+            long errorId1 = (Long) row1.get("errorId");
+            String errorName = (String) row1.get("errorName");
+            org.ebayopensource.turmeric.monitoring.v1.services.Error error1 = new org.ebayopensource.turmeric.monitoring.v1.services.Error();
+            error1.setErrorId(String.valueOf(errorId1));
+            error1.setErrorName(errorName);
+            errorViewData.setError(error1);
+
+            long count1 = (Long) row1.get("errorCount");
+            errorViewData.setErrorCount1(count1);
+
+            Map<String, Object> row2 = map2.remove(entry.getKey());
+            if (row2 != null) {
+                long count2 = (Long) row2.get("errorCount");
+                errorViewData.setErrorCount2(count2);
+            }
+            else {
+                errorViewData.setErrorCount2(0);
+            }
+
+            result.add(errorViewData);
+        }
+        for (Map.Entry<String, Map<String, Object>> entry : map2.entrySet()) {
+            ErrorViewData errorViewData = new ErrorViewData();
+            Map<String, Object> row2 = entry.getValue();
+
+            long errorId2 = (Long) row2.get("errorId");
+            String errorName = (String) row2.get("errorName");
+            org.ebayopensource.turmeric.monitoring.v1.services.Error error2 = new org.ebayopensource.turmeric.monitoring.v1.services.Error();
+            error2.setErrorId(String.valueOf(errorId2));
+            error2.setErrorName(errorName);
+            errorViewData.setError(error2);
+
+            long count2 = (Long) row2.get("errorCount");
+            errorViewData.setErrorCount2(count2);
+
+            errorViewData.setErrorCount1(0);
+            result.add(errorViewData);
+        }
+
+        // Sort the results
+        final boolean sortAsc = metricCriteria.getSortOrder() == SortOrderType.ASCENDING;
+        Collections.sort(result, new Comparator<ErrorViewData>() {
+            @Override
+            public int compare(ErrorViewData evd1, ErrorViewData evd2) {
+                double v1 = Math.max(evd1.getErrorCount1(), evd1.getErrorCount2());
+                double v2 = Math.max(evd2.getErrorCount1(), evd2.getErrorCount2());
+                if (v1 == v2) {
+                    v1 = evd1.getErrorCount1() + evd1.getErrorCount2();
+                    v2 = evd2.getErrorCount1() + evd2.getErrorCount2();
+                }
+                if (v1 == v2) {
+                    v1 = evd1.getErrorCallRatio1();
+                    v2 = evd2.getErrorCallRatio2();
+                }
+                if (v1 == v2) {
+                    v1 = evd1.getErrorCallRatio1() + evd1.getErrorCallRatio2();
+                    v2 = evd2.getErrorCallRatio2() + evd2.getErrorCallRatio2();
+                }
+                int result = v1 > v2 ? 1 : v1 < v2 ? -1 : 0;
+                return sortAsc ? result : -result;
+            }
+        });
+
+        // Trim to the number of requested rows
+        int rows = metricCriteria.getNumRows() == null ? 0 : Integer.parseInt(metricCriteria.getNumRows());
+        trimResultList(result, rows);
+
+        return result;
+    }
+
+	
+    @Override
+    public List<ExtendedErrorViewData> getExtendedErrorMetricsData(String errorType, List<String> serviceNames,
+                    List<String> operationNames, List<String> consumerNames, String errorIdString,
+                    String errorCategory, String errorSeverity, String errorNameParam,
+                    MetricCriteria metricCriteria) {
+        long firstStartTime = metricCriteria.getFirstStartTime();
+        long secondStartTime = metricCriteria.getSecondStartTime();
+        long duration = TimeUnit.SECONDS.toMillis(metricCriteria.getDuration());
+        int aggregationPeriod = metricCriteria.getAggregationPeriod();
+        boolean serverSide = !MonitoringSystem.COLLECTION_LOCATION_CLIENT.equals(metricCriteria.getRoleType());
+
+        // Validate input parameters
+        Long errorId = errorIdString == null ? null : Long.parseLong(errorIdString);
+
+        final String filter = getFilter(errorCategory, errorSeverity);
+
+        Map<String, List<String>> filters = populateFilters(serviceNames,
+				operationNames, consumerNames);
+
+        List<Map<String, Object>> errors1;
+        double calls1;
+        List<Map<String, Object>> errors2;
+        double calls2;
+        
+        if ("Category".equals(errorType)) {
+            errors1 = metricsErrorsByCategoryDAO.findErrorValuesByFilter(firstStartTime, firstStartTime + duration, serverSide,
+                            aggregationPeriod, errorId, filter, filters);
+            calls1 = 0L;
+//            calls1 = metricsDAO.findCallsCount(firstStartTime, firstStartTime + duration, serverSide,
+//                            aggregationPeriod);
+            errors2 = metricsErrorsByCategoryDAO.findErrorValuesByFilter(secondStartTime, secondStartTime + duration, serverSide,
+                            aggregationPeriod, errorId, filter, filters);
+            calls2 = 0L;
+//            calls2 = metricsDAO.findCallsCount(secondStartTime, secondStartTime + duration, serverSide,
+//                            aggregationPeriod);
+        }
+        else if ("Severity".equals(errorType)) {
+            errors1 = metricsErrorsBySeverityDAO.findErrorValuesByFilter(firstStartTime, firstStartTime + duration, serverSide,
+                            aggregationPeriod, errorId, filter, filters);
+            calls1 = 0L;
+//            calls1 = metricsDAO.findCallsCount(firstStartTime, firstStartTime + duration, serverSide,
+//                            aggregationPeriod);
+            errors2 = metricsErrorsBySeverityDAO.findErrorValuesByFilter(secondStartTime, secondStartTime + duration, serverSide,
+                            aggregationPeriod, errorId, filter, filters);
+            calls2 = 0L;
+//            calls2 = metricsDAO.findCallsCount(secondStartTime, secondStartTime + duration, serverSide,
+//                            aggregationPeriod);
+        }
+        else {
+            throw new IllegalArgumentException("Invalid error type " + errorType);
+        }
+
+        Map<String, Map<String, Object>> map1 = transformAggregatedErrorValues(errors1);
+        Map<String, Map<String, Object>> map2 = transformAggregatedErrorValues(errors2);
+
+        List<ExtendedErrorViewData> result = new ArrayList<ExtendedErrorViewData>();
+        for (Map.Entry<String, Map<String, Object>> entry : map1.entrySet()) {
+            ExtendedErrorViewData errorViewData = new ExtendedErrorViewData();
+            Map<String, Object> row1 = entry.getValue();
+
+            long errorId1 = (Long) row1.get("errorId");
+            String errorName = (String) row1.get("errorName");
+            org.ebayopensource.turmeric.monitoring.v1.services.Error error1 = new org.ebayopensource.turmeric.monitoring.v1.services.Error();
+            error1.setErrorId(String.valueOf(errorId1));
+            error1.setErrorName(errorName);
+            errorViewData.setError(error1);
+
+            long count1 = (Long) row1.get("errorCount");
+            errorViewData.setErrorCount1(count1);
+            errorViewData.setErrorCall1(calls1);
+            Map<String, Object> row2 = map2.remove(entry.getKey());
+            if (row2 != null) {
+                long count2 = (Long) row2.get("errorCount");
+                errorViewData.setErrorCount2(count2);
+                errorViewData.setErrorCall2(calls2);
+            }
+            else {
+                errorViewData.setErrorCount2(0);
+                errorViewData.setErrorCall2(0);
+            }
+
+            result.add(errorViewData);
+        }
+        for (Map.Entry<String, Map<String, Object>> entry : map2.entrySet()) {
+            ExtendedErrorViewData errorViewData = new ExtendedErrorViewData();
+            Map<String, Object> row2 = entry.getValue();
+
+            long errorId2 = (Long) row2.get("errorId");
+            String errorName = (String) row2.get("errorName");
+            org.ebayopensource.turmeric.monitoring.v1.services.Error error2 = new org.ebayopensource.turmeric.monitoring.v1.services.Error();
+            error2.setErrorId(String.valueOf(errorId2));
+            error2.setErrorName(errorName);
+            errorViewData.setError(error2);
+
+            long count2 = (Long) row2.get("errorCount");
+            errorViewData.setErrorCount2(count2);
+            errorViewData.setErrorCall2(calls2);
+            errorViewData.setErrorCount1(0);
+            errorViewData.setErrorCall1(0);
+            result.add(errorViewData);
+        }
+
+        // Sort the results
+        final boolean sortAsc = metricCriteria.getSortOrder() == SortOrderType.ASCENDING;
+        Collections.sort(result, new Comparator<ErrorViewData>() {
+            @Override
+            public int compare(ErrorViewData evd1, ErrorViewData evd2) {
+                double v1 = Math.max(evd1.getErrorCount1(), evd1.getErrorCount2());
+                double v2 = Math.max(evd2.getErrorCount1(), evd2.getErrorCount2());
+                if (v1 == v2) {
+                    v1 = evd1.getErrorCount1() + evd1.getErrorCount2();
+                    v2 = evd2.getErrorCount1() + evd2.getErrorCount2();
+                }
+                if (v1 == v2) {
+                    v1 = evd1.getErrorCallRatio1();
+                    v2 = evd2.getErrorCallRatio2();
+                }
+                if (v1 == v2) {
+                    v1 = evd1.getErrorCallRatio1() + evd1.getErrorCallRatio2();
+                    v2 = evd2.getErrorCallRatio2() + evd2.getErrorCallRatio2();
+                }
+                int result = v1 > v2 ? 1 : v1 < v2 ? -1 : 0;
+                return sortAsc ? result : -result;
+            }
+        });
+
+        // Trim to the number of requested rows
+        int rows = metricCriteria.getNumRows() == null ? 0 : Integer.parseInt(metricCriteria.getNumRows());
+        trimResultList(result, rows);
+
+        return result;
+    }
+
+	private Map<String, List<String>> populateFilters(final 
+			List<String> serviceNames, final List<String> operationNames,
+			final List<String> consumerNames) {
+		
+		Map<String, List<String>> filters = new HashMap<String, List<String>>();
+      
+		if (!serviceNames.isEmpty()){
+            filters.put(ResourceEntity.SERVICE.value(), serviceNames);
+        }
+        
+        if (!operationNames.isEmpty()){
+            filters.put(ResourceEntity.OPERATION.value(), operationNames);
+        }
+        
+        if (!consumerNames.isEmpty()){
+            filters.put(ResourceEntity.CONSUMER.value(), consumerNames);
+        }
+        
+		return filters;
 	}
+
 
 	@Override
 	public ErrorInfos getErrorMetricsMetadata(String errorId, String errorName,
 			String serviceName) {
-		// TODO Auto-generated method stub
+		Error error = metricsErrorByIdDAO.find(errorId);
+		if (error != null) {
+			ErrorInfos result = new ErrorInfos();
+			result.setId(String.valueOf(error.getErrorId()));
+			result.setName(error.getName());
+			result.setCategory(error.getCategory());
+			result.setSeverity(error.getSeverity());
+			result.setDomain(error.getDomain());
+			result.setSubDomain(error.getSubDomain());
+			return result;
+		}
 		return null;
 	}
 
@@ -212,7 +555,6 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements
 	public MetricData getMetricSummaryData(String dc,
 			MetricCriteria metricCriteria,
 			MetricResourceCriteria metricResourceCriteria) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -229,7 +571,6 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements
 			long endTime, String policyType, String policyName,
 			String serviceName, String operationName, String subjectTypeName,
 			String subjectValue, String effect) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -238,22 +579,59 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements
 			String policyName, String serviceName, String operationName,
 			String subjectTypeName, String subjectValue, String listType,
 			long startTime, long endTime) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public List<MetricData> getStandardReportData(String reportType,
 			MetricCriteria metricCriteria) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public List<String> getMetricsMetadata(String resourceEntityType,
 			List<String> resourceEntityName, String resourceEntityResponseType) {
-		// TODO Auto-generated method stub
-		return null;
+		ResourceEntity resourceEntity = ResourceEntity
+				.fromValue(resourceEntityType);
+		if (resourceEntity != ResourceEntity.SERVICE) {
+			throw new IllegalArgumentException(
+					"Unsupported input ResourceEntity " + resourceEntityType);
+		}
+
+		ResourceEntity responseEntity = ResourceEntity
+				.fromValue(resourceEntityResponseType);
+		switch (responseEntity) {
+		case SERVICE:
+			// TODO implement a new metric DAO for cassandra
+			// return
+			// metricsDAO.findMetricServiceAdminNames(resourceEntityName);
+		case OPERATION:
+			// TODO implement a new metric DAO for cassandra
+			// return metricsDAO.findMetricOperationNames(resourceEntityName);
+		case CONSUMER: {
+			// TODO implement a new metric DAO for cassandra
+			// return metricsDAO.findMetricConsumerNames(resourceEntityName);
+		}
+		default:
+			throw new IllegalArgumentException(
+					"Unsupported output ResourceEntity "
+							+ resourceEntityResponseType);
+		}
+
 	}
+
+	 private Map<String, Map<String, Object>> transformAggregatedErrorValues(List<Map<String, Object>> rows) {
+         Map<String, Map<String, Object>> result = new HashMap<String, Map<String, Object>>();
+         for (Map<String, Object> row : rows) {
+             long errorId = (Long) row.get("errorId");
+             result.put(String.valueOf(errorId), row);
+         }
+         return result;
+     }
+	 
+     private void trimResultList(List<?> list, int maxRows) {
+         if (maxRows > 0 && list.size() > maxRows)
+             list.subList(0, maxRows);
+     }
 
 }

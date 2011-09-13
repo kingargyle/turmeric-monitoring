@@ -8,42 +8,27 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.dao.impl;
 
-import java.util.List;
-import java.util.Map;
+import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorValuesDAO;
 
-import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorsByCategoryDAO;
-import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorsBySeverityDAO;
-import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
 
 /**
  * @author jamuguerza
  *
  */
-public class MetricsErrorsBySeverityDAOImpl extends AbstractColumnFamilyDao<String, Long> implements
-		MetricsErrorsBySeverityDAO{
-		
+public class MetricsErrorsBySeverityDAOImpl extends BaseMetricsErrorsByFiltersDAOImpl {
+
 	/**
-	 * Instantiates a new metrics error dao impl.
+	 * Instantiates a new metrics errors by severity dao impl.
 	 *
 	 * @param clusterName the cluster name
 	 * @param host the host
 	 * @param s_keyspace the s_keyspace
 	 * @param columnFamilyName the column family name
+	 * @param errorValuesDaoImpl the error values dao impl
 	 */
-	public MetricsErrorsBySeverityDAOImpl(String clusterName, String host,
-			String s_keyspace,  String columnFamilyName) {
-		super(clusterName, host, s_keyspace, String.class, Long.class,
-				columnFamilyName);
+	public MetricsErrorsBySeverityDAOImpl(final String clusterName, final String host,
+			final String s_keyspace,  final String columnFamilyName, final MetricsErrorValuesDAO errorValuesDaoImpl) {
+		super(clusterName, host, s_keyspace, columnFamilyName, errorValuesDaoImpl);
 	}
-
-	@Override
-	public List<Map<String, Object>> findErrorValuesBySeverity(long beginTime,
-			long endTime, boolean serverSide, int aggregationPeriod,
-			Long errorId, String category, String severity,
-			Map<String, List<String>> filters) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 
 }

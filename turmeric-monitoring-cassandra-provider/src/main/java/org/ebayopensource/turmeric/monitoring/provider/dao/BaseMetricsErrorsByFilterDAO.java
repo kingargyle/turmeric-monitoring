@@ -14,10 +14,10 @@ import java.util.Map;
 
 
 /**
- * The Interface ErrorsBySeverityDAO.
+ * The Interface BaseMetricsErrorsByFilterDAO.
  * @author jose alvarez muguerza
  */
-public interface MetricsErrorsBySeverityDAO  {
+public interface BaseMetricsErrorsByFilterDAO  {
 
     /**
 	 * Given a <code>beginTime</code> and a <code>endTime</code> and a <code>aggregationPeriod</code>
@@ -28,11 +28,10 @@ public interface MetricsErrorsBySeverityDAO  {
      * @param serverSide true or false
      * @param aggregationPeriod The aggregation period to retrieve for.
      * @param errorId The errorId
-     * @param category The category
-     * @param severity The severity
+     * @param filter The category/The severity
      * @param filters Filter values.
      * @return A List of Maps with resulting values.
      */
-    List<Map<String, Object>> findErrorValuesBySeverity(long beginTime, long endTime, boolean serverSide, int aggregationPeriod, Long errorId, String category, String severity, Map<String,List<String>> filters);
+    List<Map<String, Object>> findErrorValuesByFilter(long beginTime, long endTime, boolean serverSide, int aggregationPeriod, Long errorId, String filter, Map<String,List<String>> filters);
 
 }

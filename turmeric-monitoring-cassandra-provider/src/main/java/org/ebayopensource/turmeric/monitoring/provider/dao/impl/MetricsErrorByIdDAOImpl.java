@@ -8,7 +8,8 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.dao.impl;
 
-import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorDAO;
+
+import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorByIdDAO;
 import org.ebayopensource.turmeric.runtime.error.cassandra.model.Error;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
 
@@ -16,8 +17,8 @@ import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
  * @author jamuguerza
  *
  */
-public class MetricsErrorDAOImpl extends AbstractColumnFamilyDao<String, org.ebayopensource.turmeric.runtime.error.cassandra.model.Error > implements
-		MetricsErrorDAO {
+public class MetricsErrorByIdDAOImpl extends AbstractColumnFamilyDao<String, org.ebayopensource.turmeric.runtime.error.cassandra.model.Error > implements
+		MetricsErrorByIdDAO {
 		
 	/**
 	 * Instantiates a new metrics error dao impl.
@@ -27,9 +28,11 @@ public class MetricsErrorDAOImpl extends AbstractColumnFamilyDao<String, org.eba
 	 * @param s_keyspace the s_keyspace
 	 * @param columnFamilyName the column family name
 	 */
-	public MetricsErrorDAOImpl(String clusterName, String host,
+	public MetricsErrorByIdDAOImpl(String clusterName, String host,
 			String s_keyspace,  String columnFamilyName) {
 		super(clusterName, host, s_keyspace, String.class, Error.class,
 				columnFamilyName);
-	}	
+	}
+
+
 }
