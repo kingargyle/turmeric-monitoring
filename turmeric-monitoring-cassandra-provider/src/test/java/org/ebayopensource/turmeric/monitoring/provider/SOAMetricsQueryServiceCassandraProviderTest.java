@@ -80,7 +80,7 @@ public class SOAMetricsQueryServiceCassandraProviderTest {
 	 */
 	private void createData() {
 
-		org.ebayopensource.turmeric.runtime.error.cassandra.model.Error error1 = new org.ebayopensource.turmeric.runtime.error.cassandra.model.Error();
+		org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorById error1 = new org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorById();
 		error1.setErrorId(1L);
 		error1.setCategory( ErrorCategory.SYSTEM.value());
 		error1.setDomain("domain_1");

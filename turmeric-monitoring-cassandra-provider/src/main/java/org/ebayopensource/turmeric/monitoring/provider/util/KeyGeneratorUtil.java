@@ -20,7 +20,7 @@ public class KeyGeneratorUtil {
 
 	private static final String KEY_TOKEN = "|"; 
 
-	private static final String KEY_ALL = "ALL"; 
+	private static final String KEY_ALL = "All"; 
 
 
 	/**

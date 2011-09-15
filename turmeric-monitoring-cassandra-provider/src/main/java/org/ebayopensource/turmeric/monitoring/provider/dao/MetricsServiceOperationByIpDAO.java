@@ -8,10 +8,30 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.dao;
 
+import java.util.List;
+
+
 /**
- * The Interface MetricsErrorDAO.
+ * The Interface MetricsServiceOperationByIpDAO.
  * @author jose alvarez muguerza
  */
-public interface MetricsErrorByIdDAO {
-	org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorById find(String key);
+public interface MetricsServiceOperationByIpDAO  {
+
+	  /**
+     * Find metric operation names.
+     *
+     * @param serviceNames the service names
+     * @return the list
+     */
+    List<String> findMetricOperationNames(List<String> serviceNames);
+    
+    /**
+     * Find metric service admin names.
+     *
+     * @param serviceNames the service names
+     * @return the list
+     */
+    List<String> findMetricServiceAdminNames(List<String> serviceNames);
+
+
 }
