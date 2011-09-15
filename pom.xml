@@ -55,8 +55,8 @@
         <module>monitoring-metrics-jpa</module>
         <module>SOAMetricsQueryService</module>
         <module>SOAMetricsQueryServiceProviderInterface</module>
-        <module>turmeric-monitoring-provider</module>
         <module>turmeric-monitoring-dao-provider</module>
+        <module>turmeric-monitoring-cassandra-provider</module>
         <module>MonitoringErrorLibrary</module>
         <module>SOAMetricsQueryServiceImpl</module>
         <module>SOAMetricsQueryServiceTest</module>

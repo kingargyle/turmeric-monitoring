@@ -9,7 +9,7 @@
 
  -->
 <metrics-query-service-provider-config xmlns="http://www.ebayopensource.org/turmeric/services/logging/v1/config">
-	<default>turmeric</default>
+	<default>turmeric-jpa</default>
 	<provider-config-list>
 		<provider-config>
 			<name>eBay</name>
@@ -18,9 +18,15 @@
 			</provider-impl-class-name>
 		</provider-config>
  		<provider-config>
-			<name>turmeric</name>
+			<name>turmeric-jpa</name>
 			<provider-impl-class-name>
 					org.ebayopensource.turmeric.monitoring.provider.DAOSOAMetricsQueryServiceProvider
+			</provider-impl-class-name>
+		</provider-config>
+		<provider-config>
+			<name>turmeric-cassandra</name>
+			<provider-impl-class-name>
+					org.ebayopensource.turmeric.monitoring.provider.SOAMetricsQueryServiceCassandraProviderImpl
 			</provider-impl-class-name>
 		</provider-config>
 	</provider-config-list>
