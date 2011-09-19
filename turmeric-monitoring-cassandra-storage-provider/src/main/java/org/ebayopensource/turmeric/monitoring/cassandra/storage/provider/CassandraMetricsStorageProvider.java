@@ -95,13 +95,17 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
     @Override
     public void saveMetricSnapshot(long timeSnapshot, Collection<MetricValueAggregator> snapshotCollection)
                     throws ServiceException {
-
         try {
+        	System.out.println("snapshotCollection null?"+snapshotCollection);
+        	
             if (snapshotCollection == null || snapshotCollection.isEmpty()) {
+            	System.out.println("snapshotCollection empty");
                 return;
             }
             List<MetricValue> metricValuesToSave = new ArrayList<MetricValue>();
+            System.out.println("snapshotCollection element size = "+snapshotCollection.size());
             for (MetricValueAggregator metricValueAggregator : snapshotCollection) {
+            	System.out.println("metricValueAggregator="+metricValueAggregator);
                 org.ebayopensource.turmeric.runtime.common.monitoring.MetricId metricId = metricValueAggregator
                                 .getMetricId();
                 if (metricId.getOperationName() == null) {
@@ -114,7 +118,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
 
                 MetricIdentifier cmetricIdentifier = null;
                 Collection<MetricClassifier> classifiers = metricValueAggregator.getClassifiers();
-
+                System.out.println("classifiers.size="+classifiers.size());
                 for (MetricClassifier metricClassifier : classifiers) {
                     org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValue metricValue = metricValueAggregator
                                     .getValue(metricClassifier);

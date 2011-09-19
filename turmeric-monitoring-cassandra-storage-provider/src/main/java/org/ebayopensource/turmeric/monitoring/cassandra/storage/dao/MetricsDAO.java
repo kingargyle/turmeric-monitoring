@@ -144,6 +144,9 @@ public class MetricsDAO {
     @SuppressWarnings("unchecked")
     public void saveMetricValues(String ipAddress, MetricIdentifier cmetricIdentifier, long now, int snapshotInterval,
                     boolean serverSide, List<MetricValue> metricValuesToSave) {
+    	if(metricValuesToSave==null || metricValuesToSave.isEmpty()){
+    		return;
+    	}
         String timeSeriesKey = createKeyForTimeSeries(ipAddress, cmetricIdentifier, snapshotInterval);
         String metricValueKey = null;
         String metricValuesByIpDate = null;
