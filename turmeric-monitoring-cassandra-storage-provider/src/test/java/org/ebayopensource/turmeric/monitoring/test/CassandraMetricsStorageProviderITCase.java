@@ -60,7 +60,8 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
     @Before
     public void setUp() {
         provider = new CassandraMetricsStorageProvider();
-        kspace = new HectorManager().getKeyspace(cluster_name, cassandra_node_ip, keyspace_name, "MetricIdentifier");
+        kspace = new HectorManager().getKeyspace(cluster_name, cassandra_node_ip, keyspace_name, "MetricIdentifier",
+                        false);
         Map<String, String> options = createOptions();
         provider.init(options, null, MonitoringSystem.COLLECTION_LOCATION_SERVER, 20);
     }

@@ -39,7 +39,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.ebayopensource.turmeric.monitoring</groupId>
-			<artifactId>console</artifactId>
+			<artifactId>mgmt-console</artifactId>
 			<version>${project.version}</version>
             <type>war</type>
 		</dependency>

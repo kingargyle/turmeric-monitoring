@@ -63,7 +63,7 @@
         <module>mgmt-console</module>
         <module>monitoring-dist</module>
         <module>turmeric-monitoring-cassandra-storage-provider</module>
-    <module>offline-aggregator</module>
+    <module>sqms-cassandra</module>
   </modules>
 
 </project>

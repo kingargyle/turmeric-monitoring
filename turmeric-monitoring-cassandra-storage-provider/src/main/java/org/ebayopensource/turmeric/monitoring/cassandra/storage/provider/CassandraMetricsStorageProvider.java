@@ -22,6 +22,7 @@ import org.ebayopensource.turmeric.monitoring.cassandra.storage.model.MetricIden
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.MonitoringSystem;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricClassifier;
+import org.ebayopensource.turmeric.runtime.common.monitoring.MetricId;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricsStorageProvider;
 import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValue;
 import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValueAggregator;
@@ -48,6 +49,8 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
 
     /** The metrics dao. */
     private MetricsDAO metricsDAO;
+
+    private Collection<MetricValueAggregator> previousSnapshot;
 
     /**
      * Inits the.
@@ -93,48 +96,72 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
     public void saveMetricSnapshot(long timeSnapshot, Collection<MetricValueAggregator> snapshotCollection)
                     throws ServiceException {
 
-        if (snapshotCollection == null || snapshotCollection.isEmpty()) {
-            return;
-        }
-        List<MetricValue> metricValuesToSave = new ArrayList<MetricValue>();
-        for (MetricValueAggregator metricValueAggregator : snapshotCollection) {
-            org.ebayopensource.turmeric.runtime.common.monitoring.MetricId metricId = metricValueAggregator
-                            .getMetricId();
-            if (metricId.getOperationName() == null) {
-                // Service-level metric, should we skip it ?
-                if (!storeServiceMetrics)
-                    continue;
+        try {
+            if (snapshotCollection == null || snapshotCollection.isEmpty()) {
+                return;
             }
-            MetricIdentifier cmetricIdentifier = null;
-            Collection<MetricClassifier> classifiers = metricValueAggregator.getClassifiers();
-
-            for (MetricClassifier metricClassifier : classifiers) {
-                org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValue metricValue = metricValueAggregator
-                                .getValue(metricClassifier);
-                org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricComponentValue[] metricComponentValues = metricValue
-                                .getValues();
-                if (valuesAreNonZero(metricComponentValues)) {
-                    if (cmetricIdentifier == null) {
-                        cmetricIdentifier = findMetricId(getKeyfromMetricId(metricId, serverSide));
-                        if (cmetricIdentifier == null) {
-                            createMetricId(metricId, metricValueAggregator);
-                            cmetricIdentifier = findMetricId(getKeyfromMetricId(metricId, serverSide));
-                        }
-                    }
-                    // now, store the service stats for the getMetricsMetadata calls
-                    metricsDAO.saveServiceOperationByIpCF(getIPAddress(), cmetricIdentifier);
-                    // now, store the service stats for the getMetricsMetadata calls for consumers
-                    metricsDAO.saveServiceConsumerByIpCF(getIPAddress(), cmetricIdentifier,
-                                    metricClassifier.getUseCase());
-                    metricValuesToSave.add(metricValue);
+            List<MetricValue> metricValuesToSave = new ArrayList<MetricValue>();
+            for (MetricValueAggregator metricValueAggregator : snapshotCollection) {
+                org.ebayopensource.turmeric.runtime.common.monitoring.MetricId metricId = metricValueAggregator
+                                .getMetricId();
+                if (metricId.getOperationName() == null) {
+                    // Service-level metric, should we skip it ?
+                    if (!storeServiceMetrics)
+                        continue;
                 }
 
+                metricValueAggregator = resolve(metricValueAggregator);
+
+                MetricIdentifier cmetricIdentifier = null;
+                Collection<MetricClassifier> classifiers = metricValueAggregator.getClassifiers();
+
+                for (MetricClassifier metricClassifier : classifiers) {
+                    org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValue metricValue = metricValueAggregator
+                                    .getValue(metricClassifier);
+                    org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricComponentValue[] metricComponentValues = metricValue
+                                    .getValues();
+                    if (valuesAreNonZero(metricComponentValues)) {
+                        if (cmetricIdentifier == null) {
+                            cmetricIdentifier = findMetricId(getKeyfromMetricId(metricId, serverSide));
+                            if (cmetricIdentifier == null) {
+                                createMetricId(metricId, metricValueAggregator);
+                                cmetricIdentifier = findMetricId(getKeyfromMetricId(metricId, serverSide));
+                            }
+                        }
+                        // now, store the service stats for the getMetricsMetadata calls
+                        metricsDAO.saveServiceOperationByIpCF(getIPAddress(), cmetricIdentifier);
+                        // now, store the service stats for the getMetricsMetadata calls for consumers
+                        metricsDAO.saveServiceConsumerByIpCF(getIPAddress(), cmetricIdentifier,
+                                        metricClassifier.getUseCase());
+                        metricValuesToSave.add(metricValue);
+                    }
+
+                }
+                metricsDAO.saveMetricValues(getIPAddress(), cmetricIdentifier, timeSnapshot, snapshotInterval,
+                                serverSide, metricValuesToSave);
+                metricValuesToSave.clear();
+                cmetricIdentifier = null;
             }
-            metricsDAO.saveMetricValues(getIPAddress(), cmetricIdentifier, timeSnapshot, snapshotInterval, serverSide,
-                            metricValuesToSave);
-            metricValuesToSave.clear();
-            cmetricIdentifier = null;
         }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            previousSnapshot = snapshotCollection;
+        }
+
+    }
+
+    protected MetricValueAggregator resolve(MetricValueAggregator aggregator) {
+        if (previousSnapshot != null) {
+            MetricId metricId = aggregator.getMetricId();
+            for (MetricValueAggregator previousAggregator : previousSnapshot) {
+                if (metricId.equals(previousAggregator.getMetricId())) {
+                    return (MetricValueAggregator) aggregator.diff(previousAggregator, true);
+                }
+            }
+        }
+        return aggregator;
     }
 
     /**

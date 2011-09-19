@@ -17,7 +17,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<groupId>org.ebayopensource.turmeric.monitoring</groupId>
-	<artifactId>console</artifactId>
+	<artifactId>mgmt-console</artifactId>
 	<name>Turmeric Monitoring :: Management Console</name>
 	<packaging>war</packaging>
 	<properties>

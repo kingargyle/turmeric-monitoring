@@ -7,7 +7,8 @@
 <!-- -->
 <!-- http://www.apache.org/licenses/LICENSE-2.0 -->
 <!-- ================================================================== -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -16,42 +17,107 @@
 		<version>1.0.0.4-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	
+
 	<groupId>org.ebayopensource.turmeric.impl</groupId>
 	<artifactId>turmeric-monitoring-cassandra-provider</artifactId>
 	<packaging>jar</packaging>
 	<name>Turmeric Monitoring :: Cassandra Provider Implementation</name>
 
 	<dependencies>
-	        <dependency>
-		        <groupId>org.ebayopensource.turmeric.monitoring</groupId>
-		        <artifactId>SOAMetricsQueryServiceProviderInterface</artifactId>
-		        <version>${project.version}</version>
-	        </dependency>
-                <dependency>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
-                    <scope>test</scope>
-                </dependency>        
-                <dependency>
-                	<groupId>org.ebayopensource.turmeric.utils</groupId>
-                	<artifactId>turmeric-utils-cassandra</artifactId>
-                	<version>1.0.0.1-SNAPSHOT</version>
-                	<type>jar</type>
-                </dependency>
-                <dependency>
-                	<groupId>org.ebayopensource.turmeric.runtime</groupId>
-                	<artifactId>logging-handler-cassandra</artifactId>
-                	<version>1.0.1.0-SNAPSHOT</version>
-                	<type>jar</type>
-                	<scope>compile</scope>
-                </dependency>
-                <dependency>
-                	<groupId>org.ebayopensource.turmeric.monitoring</groupId>
-                	<artifactId>turmeric-monitoring-cassandra-storage-provider</artifactId>
-                	<version>1.0.0.4-SNAPSHOT</version>
-                	<type>jar</type>
-                	<scope>compile</scope>
-                </dependency>
+		<dependency>
+			<groupId>org.ebayopensource.turmeric.impl</groupId>
+			<artifactId>SOAMetricsQueryServiceImpl</artifactId>
+			<version>${project.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>monitoring-metrics-jpa</artifactId>
+					<groupId>
+						org.ebayopensource.turmeric.monitoring
+					</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>
+						turmeric-monitoring-dao-provider
+					</artifactId>
+					<groupId>
+						org.ebayopensource.turmeric.monitoring
+					</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>soa-client</artifactId>
+					<groupId>
+						org.ebayopensource.turmeric.runtime
+					</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.ebayopensource.turmeric.utils</groupId>
+			<artifactId>turmeric-utils-cassandra</artifactId>
+			<version>1.0.0.1-SNAPSHOT</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.ebayopensource.turmeric.runtime</groupId>
+			<artifactId>logging-handler-cassandra</artifactId>
+			<version>1.0.1.0-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>soa-client</artifactId>
+					<groupId>
+						org.ebayopensource.turmeric.runtime
+					</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.ebayopensource.turmeric.monitoring</groupId>
+			<artifactId>turmeric-monitoring-cassandra-storage-provider</artifactId>
+			<version>1.0.0.4-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>soa-client</artifactId>
+					<groupId>
+						org.ebayopensource.turmeric.runtime
+					</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.ebayopensource.turmeric.runtime</groupId>
+			<artifactId>soa-client</artifactId>
+			<version>${turmeric-runtime-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.ebayopensource.turmeric.runtime</groupId>
+			<artifactId>soa-server</artifactId>
+			<version>${turmeric-runtime-version}</version>
+		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>7.3.1.v20110307</version>
+				<configuration>
+					<useTestClasspath>true</useTestClasspath>
+					<webAppConfig>
+						<contextPath>/</contextPath>
+						<descriptor>${basedir}/src/test/webapp/WEB-INF/web.xml</descriptor>
+					</webAppConfig>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
