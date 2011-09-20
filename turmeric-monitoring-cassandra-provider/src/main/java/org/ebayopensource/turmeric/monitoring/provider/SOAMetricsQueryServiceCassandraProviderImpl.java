@@ -25,12 +25,11 @@ import org.ebayopensource.turmeric.common.v1.types.ErrorCategory;
 import org.ebayopensource.turmeric.common.v1.types.ErrorSeverity;
 
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.model.MetricIdentifier;
+
 import org.ebayopensource.turmeric.monitoring.provider.dao.BaseMetricsErrorsByFilterDAO;
-import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorByIdDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorValuesDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsServiceOperationByIpDAO;
-import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorByIdDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorValuesDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorsByCategoryDAOImpl;
@@ -276,6 +275,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements
 	}
 
 	@Override
+	@Deprecated
 	public List<ErrorViewData> getErrorMetricsData(final String errorType,
 			final List<String> serviceNames, final List<String> operationNames,
 			final List<String> consumerNames, final String errorIdString,
@@ -430,9 +430,9 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements
 					firstStartTime, firstStartTime + duration, serverSide,
 					aggregationPeriod, errorId, filter, filters);
 			calls1 = 0L;
-			// calls1 = metricsDAO.findCallsCount(firstStartTime, firstStartTime
-			// + duration, serverSide,
-			// aggregationPeriod);
+//			 calls1 = metricsDAO.findCallsCount(firstStartTime, firstStartTime
+//			 + duration, serverSide,
+//			 aggregationPeriod);
 			errors2 = metricsErrorsByCategoryDAO.findErrorValuesByFilter(
 					secondStartTime, secondStartTime + duration, serverSide,
 					aggregationPeriod, errorId, filter, filters);
@@ -895,5 +895,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements
 		if (maxRows > 0 && list.size() > maxRows)
 			list.subList(0, maxRows);
 	}
+
+
 
 }

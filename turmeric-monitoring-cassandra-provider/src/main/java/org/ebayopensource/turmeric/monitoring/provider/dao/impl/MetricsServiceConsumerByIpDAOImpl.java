@@ -18,22 +18,22 @@ import java.util.Set;
 import java.util.TreeSet;
 
 
-import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsServiceOperationByIpDAO;
+import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsServiceConsumerByIpDAO;
 import org.ebayopensource.turmeric.monitoring.provider.model.BasicModel;
 import org.ebayopensource.turmeric.monitoring.provider.model.SuperModel;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricDef;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractSuperColumnFamilyDao;
 
-import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+
 
 /**
  * The Class MetricsServiceOperationByIpDAOImpl.
  * 
  * @author jamuguerza
  */
-public class MetricsServiceOperationByIpDAOImpl extends
+public class MetricsServiceConsumerByIpDAOImpl extends
 		AbstractSuperColumnFamilyDao<String, SuperModel, String, BasicModel>
-		implements MetricsServiceOperationByIpDAO {
+		implements MetricsServiceConsumerByIpDAO {
 
 	/**
 	 * Instantiates a new metrics error values dao impl.
@@ -47,43 +47,10 @@ public class MetricsServiceOperationByIpDAOImpl extends
 	 * @param columnFamilyName
 	 *            the column family name
 	 */
-	public MetricsServiceOperationByIpDAOImpl(String clusterName, String host,
+	public MetricsServiceConsumerByIpDAOImpl(String clusterName, String host,
 			String s_keyspace, String columnFamilyName) {
 		super(clusterName, host, s_keyspace, String.class, SuperModel.class,
 				String.class, BasicModel.class, columnFamilyName);
 	}
 
-	@Override
-	public List<String> findMetricOperationNames(List<String> operationNames) {
-		Set<String> resultSet = new TreeSet<String>();
-
-		List<String> keys = new ArrayList<String>();
-		keys.add("All");
-		Map<String, SuperModel> findItems = findItems(keys,
-				operationNames.toArray(new String[operationNames.size()]));
-
-		for (Map.Entry<String, SuperModel> findItem : findItems.entrySet()) {
-			String key = findItem.getKey();
-			SuperModel superModel = findItem.getValue();
-
-			Map<String, BasicModel> columns = superModel.getColumns();
-			for (Entry<String, BasicModel> column : columns.entrySet()) {
-				String serviceName = column.getKey();
-				BasicModel basicModel = column.getValue();
-
-				String operationName = basicModel.getStringData();
-				// format List<service.operation>
-				resultSet.add(serviceName + "." + operationName);
-			}
-
-		}
-
-	    List<String> resultList = new ArrayList<String>(resultSet);
-	    return resultList;
-	}
-
-	@Override
-	public List<String> findMetricServiceAdminNames(List<String> serviceNameList) {
-		return null;
-	}
 }

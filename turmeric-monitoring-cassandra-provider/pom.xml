@@ -50,7 +50,6 @@
                 	<groupId>org.ebayopensource.turmeric.monitoring</groupId>
                 	<artifactId>turmeric-monitoring-cassandra-storage-provider</artifactId>
                 	<version>1.0.0.4-SNAPSHOT</version>
-                	<type>jar</type>
                 	<scope>compile</scope>
                 </dependency>
 	</dependencies>
