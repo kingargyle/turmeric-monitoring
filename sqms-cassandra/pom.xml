@@ -28,11 +28,13 @@
 			<groupId>org.ebayopensource.turmeric.impl</groupId>
 			<artifactId>turmeric-monitoring-cassandra-provider</artifactId>
 			<version>${project.version}</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.ebayopensource.turmeric.impl</groupId>
 			<artifactId>SOAMetricsQueryServiceImpl</artifactId>
 			<version>${project.version}</version>
+			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
 					<artifactId>monitoring-metrics-jpa</artifactId>
@@ -68,6 +70,7 @@
 			<artifactId>turmeric-utils-cassandra</artifactId>
 			<version>1.0.0.1-SNAPSHOT</version>
 			<type>jar</type>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<artifactId>jetty</artifactId>
@@ -80,7 +83,7 @@
 			<artifactId>logging-handler-cassandra</artifactId>
 			<version>1.0.1.0-SNAPSHOT</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<artifactId>soa-client</artifactId>
@@ -95,7 +98,7 @@
 			<artifactId>turmeric-monitoring-cassandra-storage-provider</artifactId>
 			<version>1.0.0.4-SNAPSHOT</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<artifactId>soa-client</artifactId>

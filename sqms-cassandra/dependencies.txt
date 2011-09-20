@@ -1,162 +1,0 @@
-[INFO] Scanning for projects...
-Downloading: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/turmeric-project/1.1.0.2-SNAPSHOT/maven-metadata.xml
-624 B           Downloaded: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/turmeric-project/1.1.0.2-SNAPSHOT/maven-metadata.xml (624 B at 0.5 KB/sec)
-Downloading: http://127.0.0.1:8781/nexus/content/repositories/ebayopensource/org/apache/maven/plugins/maven-release-plugin/2.1/maven-release-plugin-2.1.jar
-4 KB    8 KB   12 KB   16 KB   20 KB   24 KB   28 KB   32 KB   36 KB   40 KB           Downloaded: http://127.0.0.1:8781/nexus/content/repositories/ebayopensource/org/apache/maven/plugins/maven-release-plugin/2.1/maven-release-plugin-2.1.jar (40 KB at 478.3 KB/sec)
-Downloading: http://127.0.0.1:8781/nexus/content/repositories/ebayopensource/org/apache/maven/plugins/maven-deploy-plugin/2.5/maven-deploy-plugin-2.5.jar
-4 KB    8 KB   12 KB   16 KB   20 KB   23 KB           Downloaded: http://127.0.0.1:8781/nexus/content/repositories/ebayopensource/org/apache/maven/plugins/maven-deploy-plugin/2.5/maven-deploy-plugin-2.5.jar (23 KB at 296.7 KB/sec)
-Downloading: http://127.0.0.1:8781/nexus/content/repositories/ebayopensource/org/apache/maven/plugins/maven-site-plugin/2.0.1/maven-site-plugin-2.0.1.jar
-4 KB    8 KB   12 KB   16 KB   20 KB   24 KB   28 KB   32 KB   36 KB   40 KB   44 KB   48 KB   52 KB   56 KB   60 KB   64 KB   68 KB   72 KB   76 KB   79 KB           Downloaded: http://127.0.0.1:8781/nexus/content/repositories/ebayopensource/org/apache/maven/plugins/maven-site-plugin/2.0.1/maven-site-plugin-2.0.1.jar (79 KB at 1709.5 KB/sec)
-Downloading: http://127.0.0.1:8781/nexus/content/repositories/ebayopensource/org/apache/maven/plugins/maven-antrun-plugin/1.3/maven-antrun-plugin-1.3.jar
-4 KB    8 KB   12 KB   16 KB   20 KB   24 KB           Downloaded: http://127.0.0.1:8781/nexus/content/repositories/ebayopensource/org/apache/maven/plugins/maven-antrun-plugin/1.3/maven-antrun-plugin-1.3.jar (24 KB at 1000.9 KB/sec)
-Downloading: http://127.0.0.1:8781/nexus/content/repositories/ebayopensource/org/codehaus/mojo/build-helper-maven-plugin/1.5/build-helper-maven-plugin-1.5.jar
-4 KB    8 KB   12 KB   16 KB   20 KB   24 KB           Downloaded: http://127.0.0.1:8781/nexus/content/repositories/ebayopensource/org/codehaus/mojo/build-helper-maven-plugin/1.5/build-helper-maven-plugin-1.5.jar (24 KB at 329.2 KB/sec)
-Downloading: http://127.0.0.1:8781/nexus/content/repositories/ebayopensource/org/codehaus/mojo/exec-maven-plugin/1.1/exec-maven-plugin-1.1.jar
-4 KB    8 KB   12 KB   16 KB   20 KB   24 KB   27 KB           Downloaded: http://127.0.0.1:8781/nexus/content/repositories/ebayopensource/org/codehaus/mojo/exec-maven-plugin/1.1/exec-maven-plugin-1.1.jar (27 KB at 1120.1 KB/sec)
-Downloading: http://127.0.0.1:8781/nexus/content/repositories/ebayopensource/org/codehaus/mojo/jaxb2-maven-plugin/1.3/jaxb2-maven-plugin-1.3.jar
-4 KB    8 KB   12 KB   16 KB   20 KB   24 KB   24 KB   28 KB           Downloaded: http://127.0.0.1:8781/nexus/content/repositories/ebayopensource/org/codehaus/mojo/jaxb2-maven-plugin/1.3/jaxb2-maven-plugin-1.3.jar (28 KB at 461.1 KB/sec)
-Downloading: http://127.0.0.1:8781/nexus/content/repositories/ebayopensource/org/codehaus/mojo/findbugs-maven-plugin/2.3.1/findbugs-maven-plugin-2.3.1.jar
-4 KB    8 KB   12 KB   16 KB   20 KB   24 KB   28 KB   32 KB   36 KB   40 KB   44 KB   48 KB   52 KB   56 KB   60 KB   64 KB   68 KB   72 KB   76 KB   80 KB   84 KB   88 KB   92 KB   96 KB   100 KB   104 KB   108 KB   111 KB            Downloaded: http://127.0.0.1:8781/nexus/content/repositories/ebayopensource/org/codehaus/mojo/findbugs-maven-plugin/2.3.1/findbugs-maven-plugin-2.3.1.jar (111 KB at 1629.3 KB/sec)
-Downloading: http://127.0.0.1:8781/nexus/content/repositories/ebayopensource/org/apache/maven/plugins/maven-pmd-plugin/2.5/maven-pmd-plugin-2.5.jar
-4 KB     8 KB   12 KB   16 KB   20 KB   24 KB   28 KB   32 KB   36 KB   40 KB   44 KB   48 KB   52 KB   56 KB   57 KB           Downloaded: http://127.0.0.1:8781/nexus/content/repositories/ebayopensource/org/apache/maven/plugins/maven-pmd-plugin/2.5/maven-pmd-plugin-2.5.jar (57 KB at 719.2 KB/sec)
-[INFO]                                                                         
-[INFO] ------------------------------------------------------------------------
-[INFO] Building sqms-cassandra Maven Webapp 1.0.0.4-SNAPSHOT
-[INFO] ------------------------------------------------------------------------
-Downloading: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/impl/SOAMetricsQueryServiceImpl/1.0.0.4-SNAPSHOT/maven-metadata.xml
-2 KB           Downloaded: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/impl/SOAMetricsQueryServiceImpl/1.0.0.4-SNAPSHOT/maven-metadata.xml (2 KB at 1.0 KB/sec)
-Downloading: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/monitoring/turmeric-monitoring-parent/1.0.0.4-SNAPSHOT/maven-metadata.xml
-649 B           Downloaded: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/monitoring/turmeric-monitoring-parent/1.0.0.4-SNAPSHOT/maven-metadata.xml (649 B at 0.5 KB/sec)
-Downloading: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/intf/SOAMetricsQueryService/1.0.0.4-SNAPSHOT/maven-metadata.xml
-2 KB           Downloaded: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/intf/SOAMetricsQueryService/1.0.0.4-SNAPSHOT/maven-metadata.xml (2 KB at 0.9 KB/sec)
-Downloading: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/monitoring/SOAMetricsQueryServiceProviderInterface/1.0.0.4-SNAPSHOT/maven-metadata.xml
-2 KB          Downloaded: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/monitoring/SOAMetricsQueryServiceProviderInterface/1.0.0.4-SNAPSHOT/maven-metadata.xml (2 KB at 0.9 KB/sec)
-Downloading: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/errorlib/MonitoringErrorLibrary/1.0.0.4-SNAPSHOT/maven-metadata.xml
-2 KB          Downloaded: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/errorlib/MonitoringErrorLibrary/1.0.0.4-SNAPSHOT/maven-metadata.xml (2 KB at 0.9 KB/sec)
-Downloading: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/utils/TurmericUtils/1.0.0.1-SNAPSHOT/maven-metadata.xml
-1022 B            Downloaded: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/utils/TurmericUtils/1.0.0.1-SNAPSHOT/maven-metadata.xml (1022 B at 0.7 KB/sec)
-Downloading: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/runtime/logging-handler-cassandra/1.0.1.0-SNAPSHOT/maven-metadata.xml
-2 KB            Downloaded: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/runtime/logging-handler-cassandra/1.0.1.0-SNAPSHOT/maven-metadata.xml (2 KB at 1.1 KB/sec)
-Downloading: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/runtime/turmeric-runtime-parent/1.0.1.0-SNAPSHOT/maven-metadata.xml
-643 B           Downloaded: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/runtime/turmeric-runtime-parent/1.0.1.0-SNAPSHOT/maven-metadata.xml (643 B at 0.1 KB/sec)
-Downloading: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/monitoring/turmeric-monitoring-cassandra-storage-provider/1.0.0.4-SNAPSHOT/maven-metadata.xml
-2 KB           Downloaded: http://127.0.0.1:8781/nexus/content/repositories/all-snapshots/org/ebayopensource/turmeric/monitoring/turmeric-monitoring-cassandra-storage-provider/1.0.0.4-SNAPSHOT/maven-metadata.xml (2 KB at 1.1 KB/sec)
-[WARNING] The artifact sun-servlet:servlet-api:jar:2.4 has been relocated to javax.servlet:servlet-api:jar:2.4
-[INFO] 
-[INFO] --- maven-dependency-plugin:2.1:tree (default-cli) @ sqms-cassandra ---
-[WARNING] While downloading sun-servlet:servlet-api:2.4
-  This artifact has been relocated to javax.servlet:servlet-api:2.4.
-  http://maven.apache.org/guides/mini/guide-coping-with-sun-jars.html
-
-
-[INFO] org.ebayopensource.turmeric.monitoring:sqms-cassandra:war:1.0.0.4-SNAPSHOT
-[INFO] +- org.ebayopensource.turmeric.impl:SOAMetricsQueryServiceImpl:jar:1.0.0.4-SNAPSHOT:compile
-[INFO] |  +- org.ebayopensource.turmeric.intf:SOAMetricsQueryService:jar:1.0.0.4-SNAPSHOT:compile
-[INFO] |  +- org.ebayopensource.turmeric.monitoring:SOAMetricsQueryServiceProviderInterface:jar:1.0.0.4-SNAPSHOT:compile
-[INFO] |  \- org.ebayopensource.turmeric.errorlib:MonitoringErrorLibrary:jar:1.0.0.4-SNAPSHOT:compile
-[INFO] +- junit:junit:jar:4.8.1:test (scope not updated to compile)
-[INFO] +- org.ebayopensource.turmeric.utils:turmeric-utils-cassandra:jar:1.0.0.1-SNAPSHOT:compile
-[INFO] |  +- me.prettyprint:hector-core:jar:0.8.0-2:compile
-[INFO] |  |  +- commons-lang:commons-lang:jar:2.4:compile
-[INFO] |  |  +- commons-pool:commons-pool:jar:1.5.3:compile
-[INFO] |  |  +- org.apache.cassandra:cassandra-all:jar:0.8.1:compile
-[INFO] |  |  |  +- commons-cli:commons-cli:jar:1.1:compile
-[INFO] |  |  |  +- commons-codec:commons-codec:jar:1.3:compile (version managed from 1.2)
-[INFO] |  |  |  +- commons-collections:commons-collections:jar:3.2.1:compile
-[INFO] |  |  |  +- com.googlecode.concurrentlinkedhashmap:concurrentlinkedhashmap-lru:jar:1.1:compile
-[INFO] |  |  |  +- org.antlr:antlr:jar:3.2:compile
-[INFO] |  |  |  |  \- org.antlr:antlr-runtime:jar:3.2:compile
-[INFO] |  |  |  |     \- org.antlr:stringtemplate:jar:3.2:compile
-[INFO] |  |  |  |        \- antlr:antlr:jar:2.7.7:compile
-[INFO] |  |  |  +- org.apache.cassandra.deps:avro:jar:1.4.0-cassandra-1:compile
-[INFO] |  |  |  +- org.codehaus.jackson:jackson-core-asl:jar:1.4.0:compile
-[INFO] |  |  |  +- org.codehaus.jackson:jackson-mapper-asl:jar:1.4.0:compile
-[INFO] |  |  |  +- jline:jline:jar:0.9.94:compile
-[INFO] |  |  |  +- com.googlecode.json-simple:json-simple:jar:1.1:compile
-[INFO] |  |  |  +- org.yaml:snakeyaml:jar:1.6:compile
-[INFO] |  |  |  \- com.github.stephenc:jamm:jar:0.2.2:compile
-[INFO] |  |  +- org.apache.cassandra:cassandra-thrift:jar:0.8.1:compile
-[INFO] |  |  +- org.apache.thrift:libthrift:jar:0.6.1:compile
-[INFO] |  |  |  +- org.slf4j:slf4j-log4j12:jar:1.6.1:compile
-[INFO] |  |  |  \- org.apache.httpcomponents:httpclient:jar:4.0.1:compile
-[INFO] |  |  +- com.google.guava:guava:jar:r08:compile
-[INFO] |  |  +- com.github.stephenc.high-scale-lib:high-scale-lib:jar:1.1.1:compile
-[INFO] |  |  +- org.slf4j:slf4j-api:jar:1.6.1:compile
-[INFO] |  |  +- org.slf4j:jul-to-slf4j:jar:1.6.1:compile
-[INFO] |  |  +- com.github.stephenc.eaio-uuid:uuid:jar:3.2.0:compile
-[INFO] |  |  \- com.ecyrd.speed4j:speed4j:jar:0.9:compile
-[INFO] |  \- org.ebayopensource.turmeric.utils:TurmericUtils:jar:1.0.0.1-SNAPSHOT:compile
-[INFO] +- org.ebayopensource.turmeric.runtime:logging-handler-cassandra:jar:1.0.1.0-SNAPSHOT:compile
-[INFO] |  \- log4j:log4j:jar:1.2.8:compile
-[INFO] +- org.ebayopensource.turmeric.monitoring:turmeric-monitoring-cassandra-storage-provider:jar:1.0.0.4-SNAPSHOT:compile
-[INFO] +- org.ebayopensource.turmeric.runtime:soa-client:jar:1.0.0:provided
-[INFO] +- org.ebayopensource.turmeric.runtime:soa-server:jar:1.0.0:provided (scope not updated to compile)
-[INFO] +- javax.servlet:servlet-api:jar:2.4:provided
-[INFO] +- javax.xml.stream:stax-api:jar:1.0-2:provided
-[INFO] +- com.ebay.external:ahc:jar:1.0-e6:provided
-[INFO] +- com.ebay.kernel:uKernelCore:jar:1.73:provided
-[INFO] +- com.ebay.kernel:uKernel:jar:1.75.689.2:provided
-[INFO] |  +- org.slf4j:slf4j-api:pom:1.6.1:provided
-[INFO] |  +- org.slf4j:slf4j-jdk14:pom:1.6.1:provided
-[INFO] |  +- org.slf4j:slf4j-nop:pom:1.6.1:provided
-[INFO] |  +- org.slf4j:slf4j-simple:pom:1.6.1:provided
-[INFO] |  \- javax.servlet:jsp-api:jar:2.0:provided
-[INFO] +- com.ebay.utils:socket-interceptor:jar:1.0.3:provided
-[INFO] +- org.ebayopensource.turmeric.typelib:common-type-library:jar:1.0.0:provided (scope not updated to compile)
-[INFO] +- org.ebayopensource.turmeric.runtime:binding-framework:jar:1.0.0:provided
-[INFO] |  \- org.apache.geronimo.specs:geronimo-javamail_1.4_spec:jar:1.2:provided (version managed from 1.6)
-[INFO] +- org.ebayopensource.turmeric.errorlib:runtime-error-library:jar:1.0.0:provided
-[INFO] +- org.apache.neethi:neethi:jar:2.0.4:provided
-[INFO] +- org.apache.ws.commons.schema:XmlSchema:jar:1.4.2:provided
-[INFO] +- backport-util-concurrent:backport-util-concurrent:jar:3.1:provided
-[INFO] +- org.slf4j:slf4j-simple:jar:1.6.1:provided (scope not updated to compile)
-[INFO] +- org.apache.ws.commons.axiom:axiom-api:jar:1.2.9-wso2v1:provided
-[INFO] |  \- org.apache.geronimo.specs:geronimo-stax-api_1.0_spec:jar:1.0.1:provided
-[INFO] +- org.apache.ws.commons.axiom:axiom-impl:jar:1.2.9-wso2v1:provided
-[INFO] +- org.apache.ws.commons.axiom:axiom-dom:jar:1.2.9-wso2v1:provided
-[INFO] +- org.apache.axis2:axis2-kernel:jar:1.6-wso2v2:provided
-[INFO] |  \- org.apache.geronimo.specs:geronimo-jta_1.1_spec:jar:1.1:provided
-[INFO] +- org.apache.axis2:axis2-transport-http:jar:1.6-wso2v2:provided
-[INFO] +- org.apache.commons:commons-codec:jar:1.3:provided
-[INFO] +- commons-fileupload:commons-fileupload:jar:1.2:provided
-[INFO] +- commons-io:commons-io:jar:1.4:provided
-[INFO] +- commons-logging:commons-logging:jar:1.1.1:provided (scope not updated to compile)
-[INFO] +- commons-httpclient:commons-httpclient:jar:3.1:provided
-[INFO] +- org.apache.geronimo.specs:geronimo-activation_1.1_spec:jar:1.0.1:provided
-[INFO] +- org.apache.geronimo.specs:geronimo-ws-metadata_2.0_spec:jar:1.1.2:provided
-[INFO] +- org.apache.httpcomponents:httpcore:jar:4.0:provided (scope not updated to compile)
-[INFO] +- org.apache.mina:mina-core:jar:1.1.5:provided
-[INFO] +- org.apache.mina:mina-filter-ssl:jar:1.1.5:provided
-[INFO] +- javax.mail:mail:jar:1.4:provided
-[INFO] +- wsdl4j:wsdl4j:jar:1.6.2:provided
-[INFO] +- com.sun.xml.bind:jaxb-xjc:jar:2.1.2:provided
-[INFO] +- com.sun.xml.bind:jaxb-impl:jar:2.1.2:provided
-[INFO] +- javax.xml.bind:jaxb-api:jar:2.1:provided
-[INFO] +- com.sun.xml.fastinfoset:FastInfoset:jar:1.2.1:provided
-[INFO] +- javax.ws.rs:jsr311-api:jar:1.0:provided
-[INFO] +- org.codehaus.woodstox:stax2-api:jar:3.0.1:provided
-[INFO] |  \- stax:stax-api:jar:1.0.1:provided
-[INFO] +- org.apache.woden:woden-api:jar:1.0M8:provided
-[INFO] |  +- org.apache.ant:ant:jar:1.7.0:provided
-[INFO] |  |  \- org.apache.ant:ant-launcher:jar:1.7.0:provided
-[INFO] |  \- xerces:xmlParserAPIs:jar:2.6.0:provided
-[INFO] +- org.apache.woden:woden-impl-dom:jar:1.0M8:provided
-[INFO] +- org.codehaus.woodstox:woodstox-core-asl:jar:4.0.5:provided
-[INFO] +- org.codehaus.woodstox:wstx-asl:jar:3.2.9:provided
-[INFO] +- xml-apis:xml-apis:jar:1.0.b2:provided
-[INFO] +- xerces:xercesImpl:jar:2.9.1:provided
-[INFO] +- xalan:xalan:jar:2.7.1:provided
-[INFO] |  \- xalan:serializer:jar:2.7.1:provided
-[INFO] +- jaxen:jaxen:jar:1.1.1:provided
-[INFO] |  +- dom4j:dom4j:jar:1.6.1:provided
-[INFO] |  +- jdom:jdom:jar:1.0:provided
-[INFO] |  \- xom:xom:jar:1.0:provided
-[INFO] |     \- com.ibm.icu:icu4j:jar:2.6.1:provided
-[INFO] \- javax.activation:activation:jar:1.1.1:provided
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time: 21.673s
-[INFO] Finished at: Mon Sep 19 10:52:17 VET 2011
-[INFO] Final Memory: 12M/309M
-[INFO] ------------------------------------------------------------------------
