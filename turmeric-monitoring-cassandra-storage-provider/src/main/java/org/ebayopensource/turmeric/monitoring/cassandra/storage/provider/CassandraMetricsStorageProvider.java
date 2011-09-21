@@ -26,6 +26,7 @@ import org.ebayopensource.turmeric.runtime.common.monitoring.MetricId;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricsStorageProvider;
 import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValue;
 import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValueAggregator;
+import org.ebayopensource.turmeric.utils.cassandra.service.CassandraManager;
 
 /**
  * The Class CassandraMetricsStorageProvider.
@@ -75,6 +76,10 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
         String s_keyspace = options.get("keyspaceName");
         String columnFamilyName = "MetricIdentifier";
         String clusterName = options.get("clusterName");
+        String embedeed = options.get("embedeed");
+        if (embedeed == null || Boolean.valueOf(embedeed)) {
+            CassandraManager.initialize();
+        }
         metricIdDAO = new MetricIdentifierDAO(clusterName, host, s_keyspace, String.class, MetricIdentifier.class,
                         columnFamilyName);
         metricsDAO = new MetricsDAO(clusterName, host, s_keyspace);
@@ -96,16 +101,16 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
     public void saveMetricSnapshot(long timeSnapshot, Collection<MetricValueAggregator> snapshotCollection)
                     throws ServiceException {
         try {
-        	System.out.println("snapshotCollection null?"+snapshotCollection);
-        	
+            System.out.println("snapshotCollection null?" + snapshotCollection);
+
             if (snapshotCollection == null || snapshotCollection.isEmpty()) {
-            	System.out.println("snapshotCollection empty");
+                System.out.println("snapshotCollection empty");
                 return;
             }
             List<MetricValue> metricValuesToSave = new ArrayList<MetricValue>();
-            System.out.println("snapshotCollection element size = "+snapshotCollection.size());
+            System.out.println("snapshotCollection element size = " + snapshotCollection.size());
             for (MetricValueAggregator metricValueAggregator : snapshotCollection) {
-            	System.out.println("metricValueAggregator="+metricValueAggregator);
+                System.out.println("metricValueAggregator=" + metricValueAggregator);
                 org.ebayopensource.turmeric.runtime.common.monitoring.MetricId metricId = metricValueAggregator
                                 .getMetricId();
                 if (metricId.getOperationName() == null) {
@@ -118,7 +123,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
 
                 MetricIdentifier cmetricIdentifier = null;
                 Collection<MetricClassifier> classifiers = metricValueAggregator.getClassifiers();
-                System.out.println("classifiers.size="+classifiers.size());
+                System.out.println("classifiers.size=" + classifiers.size());
                 for (MetricClassifier metricClassifier : classifiers) {
                     org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValue metricValue = metricValueAggregator
                                     .getValue(metricClassifier);

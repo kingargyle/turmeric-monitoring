@@ -132,7 +132,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
      */
     public SOAMetricsQueryServiceCassandraProviderImpl() {
 
-        metricsErrorByIdDAO = new MetricsErrorByIdDAOImpl(clusterName, c_hostIp, keyspace, errorByIdCF);
+        metricsErrorByIdDAO = new MetricsErrorByIdDAOImpl(clusterName, host, keyspace, errorByIdCF);
 
         metricsErrorValuesDAO = new MetricsErrorValuesDAOImpl(clusterName, host, keyspace, errorValuesCF);
 
