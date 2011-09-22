@@ -16,12 +16,12 @@ import java.util.Map;
  *	key : String
  *	columns {
  *		supercolumnName = String
- *		superColumnValue = list of Strings
+ *		superColumnValue = list of BasicModels
  *	}
  *
  *       ex: key1: [service1: op1, op2][service2: op2, op3]
  *  
- * The Class RateLimiterPolicyModel.
+ * The Class SuperModel.
  * @author jamuguerza
  */
 public class SuperModel  {

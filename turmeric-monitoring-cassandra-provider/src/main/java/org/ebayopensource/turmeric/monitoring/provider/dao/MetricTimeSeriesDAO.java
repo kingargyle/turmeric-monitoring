@@ -11,10 +11,10 @@ package org.ebayopensource.turmeric.monitoring.provider.dao;
 
 
 /**
- * The Interface MetricsValuesByIpAndDateDAO.
+ * The Interface MetricTimeSeriesDAO.
  * @author jose alvarez muguerza
  */
-public interface MetricsValuesByIpAndDateDAO  {
+public interface MetricTimeSeriesDAO  {
 
 
 }

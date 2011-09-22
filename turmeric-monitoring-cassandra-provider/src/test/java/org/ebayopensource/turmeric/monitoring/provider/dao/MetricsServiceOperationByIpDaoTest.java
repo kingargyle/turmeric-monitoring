@@ -11,7 +11,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.CassandraMetricsStorageProvider;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.ServiceCallsByTimeDAOImpl;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricTimeSeriesDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricValuesByIpAndDateDAOImpl;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricValuesDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceConsumerByIpDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceOperationByIpDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.manager.cassandra.server.CassandraTestManager;
@@ -35,7 +38,10 @@ public class MetricsServiceOperationByIpDaoTest extends BaseTest {
 	
 	private static MetricsServiceOperationByIpDAO metricsServiceOperationByIpDAO ;
 	private static MetricsServiceConsumerByIpDAO metricsServiceConsumerByIpDAO ;
-	private static MetricValuesByIpAndDateDAOImpl metricValuesByIpAndDateDAO ;
+	private static MetricValuesByIpAndDateDAO metricValuesByIpAndDateDAO ;
+	private static MetricTimeSeriesDAO metricTimeSeriesDAO ;
+	private static MetricValuesDAO metricValuesDAO ;
+	private static ServiceCallsByTimeDAO serviceCallsByTimeDAO;
 
 	private static CassandraMetricsStorageProvider storageProvider;
 
@@ -53,7 +59,10 @@ public class MetricsServiceOperationByIpDaoTest extends BaseTest {
 		metricsServiceOperationByIpDAO = new MetricsServiceOperationByIpDAOImpl(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "ServiceOperationByIp");
 		metricsServiceConsumerByIpDAO = new MetricsServiceConsumerByIpDAOImpl(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "ServiceConsumerByIp");
 		metricValuesByIpAndDateDAO = new MetricValuesByIpAndDateDAOImpl(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "MetricValuesByIpAndDate");
-
+		metricTimeSeriesDAO = new MetricTimeSeriesDAOImpl(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "MetricTimeSeries");
+		metricValuesDAO = new MetricValuesDAOImpl(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "MetricValues");
+		serviceCallsByTimeDAO = new ServiceCallsByTimeDAOImpl(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "ServiceCallsByTime");
+		
 		storageProvider = new CassandraMetricsStorageProvider();
 		storageProvider.init(createOptions(),null, MonitoringSystem.COLLECTION_LOCATION_SERVER, 20);
 		
@@ -64,11 +73,11 @@ public class MetricsServiceOperationByIpDaoTest extends BaseTest {
 		List<String> operationNames = new ArrayList<String>();
 		operationNames.add("operationY2");
 		
-//		saveServiceOperationByIp(operationNames);
+		saveServiceOperationByIp(operationNames);
 		
 		
 //		List<String> findMetricOperationNames = metricsServiceOperationByIpDAO.findMetricOperationNames(operationNames);
-	assertTrue(true);	
+		assertTrue(true);
 //		assertNotNull(findMetricOperationNames);
 //		assertEquals(1, findMetricOperationNames.size());
 //		assertTrue("ServiceX2.operationY2".equals(findMetricOperationNames.get(0)));

@@ -12,7 +12,7 @@ package org.ebayopensource.turmeric.monitoring.provider.dao.impl;
 
 
 
-import org.ebayopensource.turmeric.monitoring.provider.dao.MetricValuesByIpAndDateDAO;
+import org.ebayopensource.turmeric.monitoring.provider.dao.ServiceCallsByTimeDAO;
 import org.ebayopensource.turmeric.monitoring.provider.model.BasicModel;
 import org.ebayopensource.turmeric.monitoring.provider.model.SuperModel;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractSuperColumnFamilyDao;
@@ -20,13 +20,13 @@ import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractSuperColumnFamily
 
 
 /**
- * The Class MetricValuesByIpAndDateDAOImpl.
+ * The Class ServiceCallsByTimeDAOImpl.
  * 
  * @author jamuguerza
  */
-public class MetricValuesByIpAndDateDAOImpl extends
-		AbstractSuperColumnFamilyDao<String, SuperModel, String, BasicModel>
-		implements MetricValuesByIpAndDateDAO {
+public class ServiceCallsByTimeDAOImpl extends
+		AbstractSuperColumnFamilyDao<Long, SuperModel, String, BasicModel>
+		implements ServiceCallsByTimeDAO {
 
 	/**
 	 * Instantiates a new metrics error values dao impl.
@@ -40,9 +40,9 @@ public class MetricValuesByIpAndDateDAOImpl extends
 	 * @param columnFamilyName
 	 *            the column family name
 	 */
-	public MetricValuesByIpAndDateDAOImpl(String clusterName, String host,
+	public ServiceCallsByTimeDAOImpl(String clusterName, String host,
 			String s_keyspace, String columnFamilyName) {
-		super(clusterName, host, s_keyspace, String.class, SuperModel.class,
+		super(clusterName, host, s_keyspace, Long.class, SuperModel.class,
 				String.class, BasicModel.class, columnFamilyName);
 	}
 
