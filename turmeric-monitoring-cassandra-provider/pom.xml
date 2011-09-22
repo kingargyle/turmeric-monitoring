@@ -103,6 +103,7 @@
 			<artifactId>soa-server</artifactId>
 			<version>${turmeric-runtime-version}</version>
 		</dependency>
+
 	</dependencies>
 	<build>
 		<plugins>
