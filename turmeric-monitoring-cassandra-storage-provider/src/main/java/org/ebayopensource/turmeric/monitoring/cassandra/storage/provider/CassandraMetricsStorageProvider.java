@@ -76,8 +76,8 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
         String s_keyspace = options.get("keyspaceName");
         String columnFamilyName = "MetricIdentifier";
         String clusterName = options.get("clusterName");
-        String embedeed = options.get("embedeed");
-        if (embedeed == null || Boolean.valueOf(embedeed)) {
+        String embedded = options.get("embedded");
+        if (Boolean.valueOf(embedded)) {
             CassandraManager.initialize();
         }
         metricIdDAO = new MetricIdentifierDAO(clusterName, host, s_keyspace, String.class, MetricIdentifier.class,
