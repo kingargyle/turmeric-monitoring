@@ -31,9 +31,9 @@ import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
  * 
  * @author jamuguerza
  */
-public class MetricsServiceOperationByIpDAOImpl extends
-		AbstractSuperColumnFamilyDao<String, SuperModel, String, BasicModel>
-		implements MetricsServiceOperationByIpDAO {
+public class MetricsServiceOperationByIpDAOImpl<SK, K> extends
+		AbstractSuperColumnFamilyDao<SK, SuperModel, String,  BasicModel>
+		implements MetricsServiceOperationByIpDAO<SK, K> {
 
 	/**
 	 * Instantiates a new metrics error values dao impl.
@@ -48,8 +48,8 @@ public class MetricsServiceOperationByIpDAOImpl extends
 	 *            the column family name
 	 */
 	public MetricsServiceOperationByIpDAOImpl(String clusterName, String host,
-			String s_keyspace, String columnFamilyName) {
-		super(clusterName, host, s_keyspace, String.class, SuperModel.class,
+			String s_keyspace, String columnFamilyName, final Class<SK> sKTypeClass, final Class<K> kTypeClass) {
+		super(clusterName, host, s_keyspace, sKTypeClass, SuperModel.class,
 				String.class, BasicModel.class, columnFamilyName);
 	}
 
@@ -57,25 +57,29 @@ public class MetricsServiceOperationByIpDAOImpl extends
 	public List<String> findMetricOperationNames(List<String> operationNames) {
 		Set<String> resultSet = new TreeSet<String>();
 
-		List<String> keys = new ArrayList<String>();
-		keys.add("All");
-		Map<String, SuperModel> findItems = findItems(keys,
-				operationNames.toArray(new String[operationNames.size()]));
+		List<SK> keys = new ArrayList<SK>();
+		keys.add((SK)"All");
+		
+		Map<SK, SuperModel> findItems = findItems(keys,null	);
 
-		for (Map.Entry<String, SuperModel> findItem : findItems.entrySet()) {
-			String key = findItem.getKey();
+		for (Map.Entry<SK, SuperModel> findItem : findItems.entrySet()) {
+			//SK key = findItem.getKey();
 			SuperModel superModel = findItem.getValue();
 
-			Map<String, BasicModel> columns = superModel.getColumns();
-			for (Entry<String, BasicModel> column : columns.entrySet()) {
-				String serviceName = column.getKey();
-				BasicModel basicModel = column.getValue();
-
-				String operationName = basicModel.getStringData();
-				// format List<service.operation>
-				resultSet.add(serviceName + "." + operationName);
+			if(superModel != null) {
+				Map<String, BasicModel> columns = superModel.getColumns();
+				for (Entry<String, BasicModel> column : columns.entrySet()) {
+						String serviceName = column.getKey();
+						BasicModel basicModel = column.getValue();
+		
+						String operationName = basicModel.getOperationName();
+						if(operationNames.contains(operationName)){
+							// format List<service.operation>
+							resultSet.add(serviceName + "." + operationName);
+							
+					}
+				}
 			}
-
 		}
 
 	    List<String> resultList = new ArrayList<String>(resultSet);
@@ -86,4 +90,6 @@ public class MetricsServiceOperationByIpDAOImpl extends
 	public List<String> findMetricServiceAdminNames(List<String> serviceNameList) {
 		return null;
 	}
+	
+
 }

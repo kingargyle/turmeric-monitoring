@@ -24,16 +24,28 @@ import java.util.concurrent.TimeUnit;
 import org.ebayopensource.turmeric.common.v1.types.ErrorCategory;
 import org.ebayopensource.turmeric.common.v1.types.ErrorSeverity;
 
+import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricIdentifierDAO;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.model.MetricIdentifier;
 
 import org.ebayopensource.turmeric.monitoring.provider.dao.BaseMetricsErrorsByFilterDAO;
+import org.ebayopensource.turmeric.monitoring.provider.dao.MetricServiceCallsByTimeDAO;
+import org.ebayopensource.turmeric.monitoring.provider.dao.MetricTimeSeriesDAO;
+import org.ebayopensource.turmeric.monitoring.provider.dao.MetricValuesByIpAndDateDAO;
+import org.ebayopensource.turmeric.monitoring.provider.dao.MetricValuesDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorByIdDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorValuesDAO;
+import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsServiceConsumerByIpDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsServiceOperationByIpDAO;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricIdentifierDAOImpl;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricServiceCallsByTimeDAOImpl;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricTimeSeriesDAOImpl;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricValuesByIpAndDateDAOImpl;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricValuesDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorByIdDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorValuesDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorsByCategoryDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorsBySeverityDAOImpl;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceConsumerByIpDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceOperationByIpDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.model.ExtendedErrorViewData;
 import org.ebayopensource.turmeric.monitoring.v1.services.CriteriaInfo;
@@ -52,7 +64,6 @@ import org.ebayopensource.turmeric.monitoring.v1.services.ResourceEntityRequest;
 import org.ebayopensource.turmeric.monitoring.v1.services.SortOrderType;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.MonitoringSystem;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.SystemMetricDefs;
-import org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorById;
 import org.ebayopensource.turmeric.utils.ContextUtils;
 import org.ebayopensource.turmeric.utils.cassandra.service.CassandraManager;
 
@@ -64,16 +75,22 @@ import org.ebayopensource.turmeric.utils.cassandra.service.CassandraManager;
 public class SOAMetricsQueryServiceCassandraProviderImpl implements
 		SOAMetricsQueryServiceProvider {
 
-	private final MetricsErrorByIdDAO metricsErrorByIdDAO;
 
-	private final MetricsErrorValuesDAO metricsErrorValuesDAO;
+	private final MetricsErrorByIdDAO<String> metricsErrorByIdDAO;
+	private final MetricsErrorValuesDAO<String> metricsErrorValuesDAO;
+	private final BaseMetricsErrorsByFilterDAO<String> metricsErrorsByCategoryDAO;
+	private final BaseMetricsErrorsByFilterDAO<String> metricsErrorsBySeverityDAO;
+	private final MetricIdentifierDAOImpl<String> metricIdentifierDAO;
 
-	private final BaseMetricsErrorsByFilterDAO metricsErrorsByCategoryDAO;
+	private final MetricsServiceOperationByIpDAO<String, String> metricsServiceOperationByIpDAO;
+	private final MetricTimeSeriesDAO<String> metricTimeSeriesDAO;
+	private final MetricsServiceConsumerByIpDAO<String, String> metricsServiceConsumerByIpDAO;
+	private final MetricValuesDAO<String> metricValuesDAO;
+	private final MetricServiceCallsByTimeDAO<String, String> metricServiceCallsByTimeDAO;
+	private final MetricValuesByIpAndDateDAO<String, String> metricValuesByIpAndDateDAO; 
+	
 
-	private final BaseMetricsErrorsByFilterDAO metricsErrorsBySeverityDAO;
-
-	private final MetricsServiceOperationByIpDAO metricsServiceOperationByIpDAO;
-
+	
 	/** The Constant cassandraPropFilePath. */
 	private static final String cassandraPropFilePath = "META-INF/config/cassandra/cassandra.properties";
 
@@ -103,6 +120,18 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements
 
 	/** The Constant c_metrics_cf. */
 	private static final String c_metrics_cf = "cassandra-metrics-cf";
+	
+	private static final String c_metric_timeseries_cf = "cassandra-metric-timeseries-cf"; 
+	
+	private static final String c_metric_consumer_by_ip_cf = "cassandra-metric-consumer-by-ip-cf"; 
+
+	private static final String c_metric_values_cf = "cassandra-metric-values-cf";
+	
+	private static final String c_metric_service_operation_by_ip_cf = "cassandra-metric-service-operation-by-ip-cf";
+	
+	private static final String c_metric_service_calls_by_time_cf = "cassandra-metric-service-calls-by-time-cf";
+	
+	private static final String c_metric_values_by_ip_and_date_cf = "cassandra-metric-values-by-ip-and-date-cf";
 
 	/** The host. */
 	private static String host;
@@ -113,14 +142,17 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements
 	private static String clusterName;
 
 	private static String errorByIdCF;
-
 	private static String errorValuesCF;
-
 	private static String errorsByCategoryCF;
-
 	private static String errorsBySeverityCF;
-
 	private static String metricsCF;
+	private static String metricByTimeSeriesCF;
+	private static String metricConsumerByIpCF;
+	private static String metricValuesCF;
+	private static String metricServiceOperationByIpCF;
+	private static String metricServiceCallsByTimeCF;
+	private static String metricValuesByIpAndDateCF;
+	
 
 	{
 		CassandraManager.initialize();
@@ -132,21 +164,20 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements
 	 */
 	public SOAMetricsQueryServiceCassandraProviderImpl() {
 
-		metricsErrorByIdDAO = new MetricsErrorByIdDAOImpl(clusterName,
-				host, keyspace, errorByIdCF);
+		metricsErrorByIdDAO = new MetricsErrorByIdDAOImpl<String>(clusterName,host, keyspace, errorByIdCF, String.class);
+		metricsErrorValuesDAO = new MetricsErrorValuesDAOImpl<String>(clusterName, host, keyspace, errorValuesCF, String.class);
+		metricsErrorsByCategoryDAO = new MetricsErrorsByCategoryDAOImpl<String>(clusterName, host, keyspace, errorsByCategoryCF, String.class, metricsErrorValuesDAO);
+		metricsErrorsBySeverityDAO = new MetricsErrorsBySeverityDAOImpl<String>(clusterName, host, keyspace, errorsBySeverityCF, String.class, metricsErrorValuesDAO);		
+		metricIdentifierDAO = new MetricIdentifierDAOImpl<String>(clusterName, host, keyspace, metricsCF, String.class);		
+		metricTimeSeriesDAO = new MetricTimeSeriesDAOImpl<String>(clusterName, host, keyspace, metricByTimeSeriesCF, String.class);
+		metricsServiceConsumerByIpDAO = new MetricsServiceConsumerByIpDAOImpl<String, String>(clusterName, host, keyspace,  metricConsumerByIpCF, String.class, String.class);		
+		metricValuesDAO = new MetricValuesDAOImpl<String>(clusterName, host, keyspace, metricValuesCF, String.class);
+		metricsServiceOperationByIpDAO = new MetricsServiceOperationByIpDAOImpl<String, String>(clusterName, host, keyspace, metricServiceOperationByIpCF, String.class, String.class);
+		metricServiceCallsByTimeDAO = new MetricServiceCallsByTimeDAOImpl<String, String>(clusterName, host, keyspace,  metricServiceCallsByTimeCF, String.class, String.class);
+		metricValuesByIpAndDateDAO = new MetricValuesByIpAndDateDAOImpl<String, String>(clusterName, host, keyspace, metricValuesByIpAndDateCF, String.class, String.class);
 
-		metricsErrorValuesDAO = new MetricsErrorValuesDAOImpl(clusterName,
-				host, keyspace, errorValuesCF);
+		
 
-		metricsErrorsByCategoryDAO = new MetricsErrorsByCategoryDAOImpl(
-				clusterName, host, keyspace, errorsByCategoryCF,
-				metricsErrorValuesDAO);
-
-		metricsErrorsBySeverityDAO = new MetricsErrorsBySeverityDAOImpl(
-				clusterName, host, keyspace, errorsBySeverityCF,
-				metricsErrorValuesDAO);
-
-		metricsServiceOperationByIpDAO = new MetricsServiceOperationByIpDAOImpl(clusterName, host, keyspace, metricsCF);
 	}
 
 	/**
@@ -171,13 +202,17 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements
 
 				errorByIdCF = (String) properties.get(c_error_by_id_cf);
 				errorValuesCF = (String) properties.get(c_error_values_cf);
-				errorsByCategoryCF = (String) properties
-						.get(c_errors_by_category_cf);
-				errorsBySeverityCF = (String) properties
-						.get(c_errors_by_severity_cf);
+				errorsByCategoryCF = (String) properties.get(c_errors_by_category_cf);
+				errorsBySeverityCF = (String) properties.get(c_errors_by_severity_cf);
 
 				metricsCF = (String) properties.get(c_metrics_cf);
-
+				metricByTimeSeriesCF = (String) properties.get(c_metric_timeseries_cf);
+				metricConsumerByIpCF = (String) properties.get(c_metric_consumer_by_ip_cf);
+				metricValuesCF = (String) properties.get(c_metric_values_cf);
+				metricServiceOperationByIpCF = (String) properties.get(c_metric_service_operation_by_ip_cf);
+				metricServiceCallsByTimeCF = (String) properties.get(c_metric_service_calls_by_time_cf);
+				metricValuesByIpAndDateCF = (String) properties.get(c_metric_values_by_ip_and_date_cf);
+				
 			} catch (IOException e) {
 				// ignore
 			} finally {
@@ -567,13 +602,13 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements
 	@Override
 	public ErrorInfos getErrorMetricsMetadata(String errorId, String errorName,
 			String serviceName) {
-		ErrorById error = metricsErrorByIdDAO.find(errorId);
+		org.ebayopensource.turmeric.runtime.error.model.Error error = metricsErrorByIdDAO.find(errorId);
 		if (error != null) {
 			ErrorInfos result = new ErrorInfos();
 			result.setId(String.valueOf(error.getErrorId()));
 			result.setName(error.getName());
-			result.setCategory(error.getCategory());
-			result.setSeverity(error.getSeverity());
+			result.setCategory(error.getCategory().value());
+			result.setSeverity(error.getSeverity().value());
 			result.setDomain(error.getDomain());
 			result.setSubDomain(error.getSubDomain());
 			return result;

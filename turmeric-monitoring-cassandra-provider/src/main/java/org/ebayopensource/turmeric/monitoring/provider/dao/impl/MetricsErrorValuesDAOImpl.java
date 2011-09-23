@@ -8,22 +8,20 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.dao.impl;
 
-import java.util.List;
-import java.util.Set;
-
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorValuesDAO;
 import org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MetricsErrorValuesDAOImpl.
  *
+ * @param <K> the key type
  * @author jamuguerza
  */
-public class MetricsErrorValuesDAOImpl extends AbstractColumnFamilyDao<String, org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue> implements
-		MetricsErrorValuesDAO {
+public class MetricsErrorValuesDAOImpl<K> extends AbstractColumnFamilyDao<K, org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue> implements
+		MetricsErrorValuesDAO<K> {
 		
+
 
 	/**
 	 * Instantiates a new metrics error values dao impl.
@@ -32,18 +30,12 @@ public class MetricsErrorValuesDAOImpl extends AbstractColumnFamilyDao<String, o
 	 * @param host the host
 	 * @param s_keyspace the s_keyspace
 	 * @param columnFamilyName the column family name
+	 * @param kTypeClass the k type class
 	 */
 	public MetricsErrorValuesDAOImpl(String clusterName, String host,
-			String s_keyspace, String columnFamilyName) {
-		super(clusterName, host, s_keyspace, String.class, ErrorValue.class,
+			String s_keyspace, String columnFamilyName, final Class<K> kTypeClass) {
+		super(clusterName, host, s_keyspace, kTypeClass, ErrorValue.class,
 				columnFamilyName);
-	}
-
-	@Override
-	public Set<ErrorValue> findItems(List<String> keys, String rangeFrom,
-			String rangeTo) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	

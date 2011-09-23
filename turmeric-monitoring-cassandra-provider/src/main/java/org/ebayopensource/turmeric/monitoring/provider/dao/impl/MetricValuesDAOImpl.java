@@ -25,9 +25,9 @@ import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractSuperColumnFamily
  * 
  * @author jamuguerza
  */
-public class MetricValuesDAOImpl extends
-		AbstractColumnFamilyDao<String, Object>
-		implements MetricValuesDAO {
+public class MetricValuesDAOImpl<K> extends
+		AbstractColumnFamilyDao<K, Object>
+		implements MetricValuesDAO<K> {
 
 	/**
 	 * Instantiates a new metric values dao impl.
@@ -37,9 +37,9 @@ public class MetricValuesDAOImpl extends
 	 * @param s_keyspace the s_keyspace
 	 * @param columnFamilyName the column family name
 	 */
-	public MetricValuesDAOImpl(String clusterName, String host,
-			String s_keyspace, String columnFamilyName) {
-		super(clusterName, host, s_keyspace, String.class, 
+	public MetricValuesDAOImpl(final String clusterName, final String host,
+			final String s_keyspace, final String columnFamilyName, final Class<K> kTypeClass) {
+		super(clusterName, host, s_keyspace, kTypeClass, 
 				 Object.class,  columnFamilyName);
 	}
 

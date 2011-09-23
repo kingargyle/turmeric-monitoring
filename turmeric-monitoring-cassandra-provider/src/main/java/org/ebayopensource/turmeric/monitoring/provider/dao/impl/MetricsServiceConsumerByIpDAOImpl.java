@@ -31,9 +31,9 @@ import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractSuperColumnFamily
  * 
  * @author jamuguerza
  */
-public class MetricsServiceConsumerByIpDAOImpl extends
-		AbstractSuperColumnFamilyDao<String, SuperModel, String, BasicModel>
-		implements MetricsServiceConsumerByIpDAO {
+public class MetricsServiceConsumerByIpDAOImpl<SK, K> extends
+		AbstractSuperColumnFamilyDao<SK, SuperModel, K, BasicModel>
+		implements MetricsServiceConsumerByIpDAO<SK, K> {
 
 	/**
 	 * Instantiates a new metrics error values dao impl.
@@ -48,9 +48,9 @@ public class MetricsServiceConsumerByIpDAOImpl extends
 	 *            the column family name
 	 */
 	public MetricsServiceConsumerByIpDAOImpl(String clusterName, String host,
-			String s_keyspace, String columnFamilyName) {
-		super(clusterName, host, s_keyspace, String.class, SuperModel.class,
-				String.class, BasicModel.class, columnFamilyName);
+			String s_keyspace, String columnFamilyName, final Class<SK> sKTypeClass, final Class<K> kTypeClass) {
+		super(clusterName, host, s_keyspace, sKTypeClass, SuperModel.class,
+				kTypeClass, BasicModel.class, columnFamilyName);
 	}
 
 }

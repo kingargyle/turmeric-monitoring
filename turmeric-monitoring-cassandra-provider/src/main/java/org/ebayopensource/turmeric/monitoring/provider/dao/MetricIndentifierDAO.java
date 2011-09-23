@@ -9,13 +9,13 @@
 package org.ebayopensource.turmeric.monitoring.provider.dao;
 
 import java.util.List;
+import java.util.Set;
 
 
 /**
- * The Interface MetricsServiceConsumerByIpDAO.
+ * The Interface MetricIndentifierDAO.
  * @author jose alvarez muguerza
  */
-public interface MetricsServiceConsumerByIpDAO<SK, K>  {
-
-
+public interface MetricIndentifierDAO<K>  {
+	
 }

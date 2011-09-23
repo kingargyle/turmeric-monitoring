@@ -24,9 +24,9 @@ import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
  * 
  * @author jamuguerza
  */
-public class MetricTimeSeriesDAOImpl extends
-		AbstractColumnFamilyDao<Long, String>
-		implements MetricTimeSeriesDAO {
+public class MetricTimeSeriesDAOImpl<K> extends
+		AbstractColumnFamilyDao<K, String>
+		implements MetricTimeSeriesDAO<K> {
 
 	/**
 	 * Instantiates a new metrics error values dao impl.
@@ -40,9 +40,9 @@ public class MetricTimeSeriesDAOImpl extends
 	 * @param columnFamilyName
 	 *            the column family name
 	 */
-	public MetricTimeSeriesDAOImpl(String clusterName, String host,
-			String s_keyspace, String columnFamilyName) {
-		super(clusterName, host, s_keyspace,Long.class, 
+	public MetricTimeSeriesDAOImpl(final String clusterName, final String host,
+			final String s_keyspace, final String columnFamilyName,  final Class<K> kTypeClass) {
+		super(clusterName, host, s_keyspace, kTypeClass, 
 				String.class,  columnFamilyName);
 	}
 

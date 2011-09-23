@@ -14,7 +14,7 @@ package org.ebayopensource.turmeric.monitoring.provider.dao;
  * The Interface MetricTimeSeriesDAO.
  * @author jose alvarez muguerza
  */
-public interface MetricTimeSeriesDAO  {
+public interface MetricTimeSeriesDAO<K> {
 
 
 }
