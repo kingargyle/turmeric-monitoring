@@ -10,7 +10,6 @@ package org.ebayopensource.turmeric.monitoring.provider.dao;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.model.MetricIdentifier;
 

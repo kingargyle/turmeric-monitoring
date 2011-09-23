@@ -12,26 +12,10 @@ import java.util.List;
 
 
 /**
- * The Interface MetricsServiceOperationByIpDAO.
+ * The Interface MetricsServiceConsumerByIpDAO.
  * @author jose alvarez muguerza
  */
-public interface MetricsServiceOperationByIpDAO  {
-
-	  /**
-     * Find metric operation names.
-     *
-     * @param serviceNames the service names
-     * @return the list
-     */
-    List<String> findMetricOperationNames(List<String> operationNames);
-    
-    /**
-     * Find metric service admin names.
-     *
-     * @param serviceNames the service names
-     * @return the list
-     */
-    List<String> findMetricServiceAdminNames(List<String> serviceNames);
+public interface MetricsServiceConsumerByIpDAO  {
 
 
 }

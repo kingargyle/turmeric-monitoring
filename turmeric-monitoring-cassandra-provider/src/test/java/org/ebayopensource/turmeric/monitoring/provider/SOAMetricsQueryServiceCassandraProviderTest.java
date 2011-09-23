@@ -65,7 +65,7 @@ public class SOAMetricsQueryServiceCassandraProviderTest {
           oneMinuteAgo = now - TimeUnit.SECONDS.toMillis(60);
           twoMinutesAgo = oneMinuteAgo - TimeUnit.SECONDS.toMillis(60);
           createData();
-//          provider = new SOAMetricsQueryServiceCassandraProviderImpl();
+//         provider = new SOAMetricsQueryServiceCassandraProviderImpl();
      
     }
 
@@ -80,14 +80,14 @@ public class SOAMetricsQueryServiceCassandraProviderTest {
 	 */
 	private void createData() {
 
-		org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorById error1 = new org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorById();
-		error1.setErrorId(1L);
-		error1.setCategory( ErrorCategory.SYSTEM.value());
-		error1.setDomain("domain_1");
-		error1.setSubDomain("sub_domain_1");
-		error1.setOrganization("organization");
-		error1.setSeverity(ErrorSeverity.ERROR.value());
-		error1.setName("error_1");
+//		org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorById error1 = new org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorById();
+//		error1.setErrorId(1L);
+//		error1.setCategory( ErrorCategory.SYSTEM.value());
+//		error1.setDomain("domain_1");
+//		error1.setSubDomain("sub_domain_1");
+//		error1.setOrganization("organization");
+//		error1.setSeverity(ErrorSeverity.ERROR.value());
+//		error1.setName("error_1");
 //		error1.setTimestamp();
 //		error1.setConsumerName();
 //        entityManager.persist(error1);
