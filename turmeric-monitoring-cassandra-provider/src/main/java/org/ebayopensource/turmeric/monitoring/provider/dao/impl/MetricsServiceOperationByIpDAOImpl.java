@@ -11,6 +11,7 @@ package org.ebayopensource.turmeric.monitoring.provider.dao.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -63,21 +64,21 @@ public class MetricsServiceOperationByIpDAOImpl<SK, K> extends
 		Map<SK, SuperModel> findItems = findItems(keys,null	);
 
 		for (Map.Entry<SK, SuperModel> findItem : findItems.entrySet()) {
-			//SK key = findItem.getKey();
+			SK key = findItem.getKey(); //IP, in this case ALL
+			
 			SuperModel superModel = findItem.getValue();
-
 			if(superModel != null) {
 				Map<String, BasicModel> columns = superModel.getColumns();
-				for (Entry<String, BasicModel> column : columns.entrySet()) {
-						String serviceName = column.getKey();
-						BasicModel basicModel = column.getValue();
-		
-						String operationName = basicModel.getOperationName();
-						if(operationNames.contains(operationName)){
-							// format List<service.operation>
-							resultSet.add(serviceName + "." + operationName);
-							
+				
+				for (BasicModel<K> column : columns.values()) {
+					String serviceName = (String) column.getKey();		
+					Map<String, Object> operations  = column.getColumns();
+					Set<String> keySet = operations.keySet();
+					
+					for (String operationName : keySet) {
+						resultSet.add(serviceName + "." + operationName);
 					}
+	
 				}
 			}
 		}

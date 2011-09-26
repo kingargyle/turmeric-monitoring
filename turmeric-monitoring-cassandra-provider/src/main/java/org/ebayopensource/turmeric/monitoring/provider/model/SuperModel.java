@@ -43,5 +43,6 @@ public class SuperModel<SK, K>  {
 	public Map<K, BasicModel> getColumns() {
 		return columns;
 	}
+
 		
 }

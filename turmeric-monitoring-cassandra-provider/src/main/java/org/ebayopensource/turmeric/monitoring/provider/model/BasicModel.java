@@ -8,6 +8,9 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.model;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * The Class Model.
  * 
@@ -16,22 +19,20 @@ package org.ebayopensource.turmeric.monitoring.provider.model;
 public class BasicModel<K> {
 		
 		public BasicModel(K keyType){
-		}
-		
+		}		
 		
 		/** The key. */
 		private K key;
 		
-		  /** The metric name. */
-	    private String metricName;
+//		  /** The metric name. */
+//	    private String metricName;
+//
+//	    /** The service admin name. */
+//	    private String serviceAdminName;
 
-	    /** The service admin name. */
-	    private String serviceAdminName;
+	    /** The operation name List. */
+	    private Map<String, Object> columns;
 
-	    /** The operation name. */
-	    private String operationName;
-
-	    private boolean serverSide;
 		
 		/**
 		 * Sets the key.
@@ -51,36 +52,31 @@ public class BasicModel<K> {
 			return key;
 		}
 
-		public String getMetricName() {
-			return metricName;
+		public void setColumns(Map<String, Object> columns) {
+			this.columns = columns;
 		}
 
-		public void setMetricName(String metricName) {
-			this.metricName = metricName;
+		public Map<String, Object> getColumns() {
+			return columns;
 		}
 
-		public String getServiceAdminName() {
-			return serviceAdminName;
-		}
 
-		public void setServiceAdminName(String serviceAdminName) {
-			this.serviceAdminName = serviceAdminName;
-		}
+//		public String getMetricName() {
+//			return metricName;
+//		}
+//
+//		public void setMetricName(String metricName) {
+//			this.metricName = metricName;
+//		}
+//
+//		public String getServiceAdminName() {
+//			return serviceAdminName;
+//		}
+//
+//		public void setServiceAdminName(String serviceAdminName) {
+//			this.serviceAdminName = serviceAdminName;
+//		}
 
-		public String getOperationName() {
-			return operationName;
-		}
 
-		public void setOperationName(String operationName) {
-			this.operationName = operationName;
-		}
-
-		public boolean isServerSide() {
-			return serverSide;
-		}
-
-		public void setServerSide(boolean serverSide) {
-			this.serverSide = serverSide;
-		}
 		
 	}
