@@ -28,6 +28,7 @@
 			<provider-impl-class-name>
 					org.ebayopensource.turmeric.monitoring.provider.SOAMetricsQueryServiceCassandraProviderImpl
 			</provider-impl-class-name>
+			<option name="host">127.0.0.1</option>
 		</provider-config>
 	</provider-config-list>
 </metrics-query-service-provider-config>

@@ -132,9 +132,9 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
 
     private Map<String, String> createOptions() {
         Map<String, String> options = new HashMap<String, String>();
-        options.put("hostName", cassandra_node_ip);
-        options.put("keyspaceName", keyspace_name);
-        options.put("clusterName", cluster_name);
+        options.put("host-address", cassandra_node_ip);
+        options.put("keyspace-name", keyspace_name);
+        options.put("cluster-name", cluster_name);
         options.put("storeServiceMetrics", "false");
         return options;
     }

@@ -10,7 +10,7 @@
  -->
 
 <service-config xmlns="http://www.ebayopensource.org/turmeric/common/config"
-                group="eBoxServiceGroup"
+                group="CommonSOAServiceGroup"
                 service-name="SOAMetricsQueryService">
     <service-impl-class-name>org.ebayopensource.turmeric.monitoring.impl.SOAMetricsQueryServiceImpl</service-impl-class-name>
     <service-interface-class-name>org.ebayopensource.turmeric.services.monitoring.intf.SOAMetricsQueryService</service-interface-class-name>

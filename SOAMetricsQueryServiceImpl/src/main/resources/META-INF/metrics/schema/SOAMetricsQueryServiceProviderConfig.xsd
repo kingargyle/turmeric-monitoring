@@ -27,9 +27,14 @@
     </complexType>
     <complexType name="SOAMetricsQueryServiceProvider">
     	<sequence>
-    		<element name="name" type="token"></element>    	
-     		<element name="provider-impl-class-name" type="token"/>
+    		<element name="name" type="token"></element>
+    		<element name="provider-impl-class-name" type="token" />
+    		<element name="options" type="tns:option"></element>
     	</sequence>
     </complexType>
 	
+
+    <complexType name="option">
+    	<attribute name="name" type="string"></attribute>
+    </complexType>
 </schema>

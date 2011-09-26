@@ -72,10 +72,10 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
         this.serverSide = MonitoringSystem.COLLECTION_LOCATION_SERVER.equals(collectionLocation);
         this.storeServiceMetrics = Boolean.parseBoolean(options.get("storeServiceMetrics"));
         this.snapshotInterval = snapshotInterval;
-        String host = options.get("hostName");
-        String s_keyspace = options.get("keyspaceName");
+        String host = options.get("host-address");
+        String s_keyspace = options.get("keyspace-name");
         String columnFamilyName = "MetricIdentifier";
-        String clusterName = options.get("clusterName");
+        String clusterName = options.get("cluster-name");
         String embedded = options.get("embedded");
         if (Boolean.valueOf(embedded)) {
             CassandraManager.initialize();
