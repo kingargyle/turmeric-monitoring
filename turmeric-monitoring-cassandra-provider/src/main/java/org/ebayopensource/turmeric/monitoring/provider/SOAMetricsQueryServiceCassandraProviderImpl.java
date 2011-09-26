@@ -142,6 +142,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements
 	private static String clusterName;
 
 	private static String errorByIdCF;
+
 	private static String errorValuesCF;
 	private static String errorsByCategoryCF;
 	private static String errorsBySeverityCF;
