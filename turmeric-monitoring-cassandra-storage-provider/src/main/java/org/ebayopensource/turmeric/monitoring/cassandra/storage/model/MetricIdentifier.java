@@ -13,7 +13,7 @@ import static org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.
 /**
  * The Class MetricId.
  */
-public class MetricIdentifier {
+public class MetricIdentifier<K> {
 
     /** The metric name. */
     private String metricName;
@@ -26,13 +26,16 @@ public class MetricIdentifier {
 
     private boolean serverSide;
 
+    public MetricIdentifier(K keyType) {
+
+    }
+
     /**
      * Instantiates a new metric id.
      */
     public MetricIdentifier() {
 
     }
-
     /**
      * Instantiates a new metric id.
      * 

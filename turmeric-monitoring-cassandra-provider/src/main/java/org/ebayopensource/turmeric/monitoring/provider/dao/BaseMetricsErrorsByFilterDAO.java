@@ -17,7 +17,7 @@ import java.util.Map;
  * The Interface BaseMetricsErrorsByFilterDAO.
  * @author jose alvarez muguerza
  */
-public interface BaseMetricsErrorsByFilterDAO  {
+public interface BaseMetricsErrorsByFilterDAO<K> {
 
     /**
 	 * Given a <code>beginTime</code> and a <code>endTime</code> and a <code>aggregationPeriod</code>
@@ -32,6 +32,6 @@ public interface BaseMetricsErrorsByFilterDAO  {
      * @param filters Filter values.
      * @return A List of Maps with resulting values.
      */
-    List<Map<String, Object>> findErrorValuesByFilter(long beginTime, long endTime, boolean serverSide, int aggregationPeriod, Long errorId, String filter, Map<String,List<String>> filters);
+    List<Map<K, Object>> findErrorValuesByFilter(long beginTime, long endTime, boolean serverSide, int aggregationPeriod, Long errorId, String filter, Map<String,List<String>> filters);
 
 }

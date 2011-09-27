@@ -43,7 +43,6 @@ public class CassandraTestManager {
 			InterruptedException, ConfigurationException {
 		if (cassandraService == null) {
 			loadConfig();
-
 			cassandraService = new EmbeddedCassandraService();
 			cassandraService.start();
 		}

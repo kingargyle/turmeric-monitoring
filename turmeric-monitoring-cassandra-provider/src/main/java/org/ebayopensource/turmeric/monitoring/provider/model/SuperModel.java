@@ -11,40 +11,38 @@ package org.ebayopensource.turmeric.monitoring.provider.model;
 
 import java.util.Map;
 
+import java.util.Map;
+
+
 /**
- *  column family XXXXXX (SupercolumnFamily){
- *	key : String
- *	columns {
- *		supercolumnName = String
- *		superColumnValue = list of Strings
- *	}
- *
- *       ex: key1: [service1: op1, op2][service2: op2, op3]
- *  
- * The Class RateLimiterPolicyModel.
+ * The Class ModelSuper.
  * @author jamuguerza
  */
-public class SuperModel  {
+public class SuperModel<SK, K>  {
 
+	public SuperModel(SK superKeyType, K keyType){
+	}
+		
 	/** The key data. */
-	private String key;
+	private SK key;
 	
-	private Map<String, BasicModel> columns ;
+	private Map<K, BasicModel> columns ;
 
-	public void setKey(String key) {
+	public void setKey(SK key) {
 		this.key = key;
 	}
 
-	public String getKey() {
+	public SK getKey() {
 		return key;
 	}
 
-	public void setColumns(Map<String, BasicModel> columns) {
+	public void setColumns(Map<K, BasicModel> columns) {
 		this.columns = columns;
 	}
 
-	public Map<String, BasicModel> getColumns() {
+	public Map<K, BasicModel> getColumns() {
 		return columns;
 	}
+
 		
 }

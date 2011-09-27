@@ -15,7 +15,7 @@ import java.util.List;
  * The Interface MetricsServiceOperationByIpDAO.
  * @author jose alvarez muguerza
  */
-public interface MetricsServiceOperationByIpDAO  {
+public interface MetricsServiceOperationByIpDAO<SK, K>  {
 
 	  /**
      * Find metric operation names.

@@ -40,19 +40,19 @@ public class KeyGeneratorUtilTest {
     
 	@Test
 	public void testNotNull() {
-		List<String> keys = KeyGeneratorUtil.generate(serverSide,filters, param1);		
+		List<String> keys = KeyGeneratorUtil.generateStringKeys(serverSide,filters, param1);		
 		assertNotNull(keys);
 	}
 
 	@Test
 	public void testNotEmpty() {
-		List<String> keys = KeyGeneratorUtil.generate(serverSide,filters, param1);		
+		List<String> keys = KeyGeneratorUtil.generateStringKeys(serverSide,filters, param1);		
 		assertFalse(keys.isEmpty());
 	}
 	
 	@Test
 	public void testKeyValuesAll() {
-		List<String> keys = KeyGeneratorUtil.generate(serverSide,filters, param1);		
+		List<String> keys = KeyGeneratorUtil.generateStringKeys(serverSide,filters, param1);		
 		assertEquals(1, keys.size());
 		assertEquals("All|All|All|All|APPLICATION|false", keys.get(0));
 	}
@@ -60,7 +60,7 @@ public class KeyGeneratorUtilTest {
 	@Test
 	public void testKeyValuesServerSide() {
 		serverSide = true;
-		List<String> keys = KeyGeneratorUtil.generate(serverSide,filters, param1);		
+		List<String> keys = KeyGeneratorUtil.generateStringKeys(serverSide,filters, param1);		
 		assertEquals(1, keys.size());
 		assertEquals("All|All|All|All|APPLICATION|true", keys.get(0));
 	}
@@ -68,7 +68,7 @@ public class KeyGeneratorUtilTest {
 	@Test
 	public void testKeyValuesParam1() {
 		param1 = "SYSTEM";
-		List<String> keys = KeyGeneratorUtil.generate(serverSide,filters, param1);		
+		List<String> keys = KeyGeneratorUtil.generateStringKeys(serverSide,filters, param1);		
 		assertEquals(1, keys.size());
 		assertEquals("All|All|All|All|SYSTEM|false", keys.get(0));
 	}
@@ -76,11 +76,11 @@ public class KeyGeneratorUtilTest {
 	@Test
 	public void testKeyValuesServer() {
 		filters.get("Server").add("Server1");
-		List<String> keys = KeyGeneratorUtil.generate(serverSide,filters, param1);		
+		List<String> keys = KeyGeneratorUtil.generateStringKeys(serverSide,filters, param1);		
 		assertEquals("Server1|All|All|All|APPLICATION|false", keys.get(0));
 	
 		filters.get("Server").add("Server2");
-		keys = KeyGeneratorUtil.generate(serverSide,filters, param1);		
+		keys = KeyGeneratorUtil.generateStringKeys(serverSide,filters, param1);		
 		assertEquals(2, keys.size());
 		assertEquals("Server1|All|All|All|APPLICATION|false", keys.get(0));
 		assertEquals("Server2|All|All|All|APPLICATION|false", keys.get(1));
@@ -89,11 +89,11 @@ public class KeyGeneratorUtilTest {
 	@Test
 	public void testKeyValuesService() {
 		filters.get("Service").add("Service1");
-		List<String> keys = KeyGeneratorUtil.generate(serverSide,filters, param1);		
+		List<String> keys = KeyGeneratorUtil.generateStringKeys(serverSide,filters, param1);		
 		assertEquals("All|Service1|All|All|APPLICATION|false", keys.get(0));
 	
 		filters.get("Service").add("Service2");
-		keys = KeyGeneratorUtil.generate(serverSide,filters, param1);		
+		keys = KeyGeneratorUtil.generateStringKeys(serverSide,filters, param1);		
 		assertEquals(2, keys.size());
 		assertEquals("All|Service1|All|All|APPLICATION|false", keys.get(0));
 		assertEquals("All|Service2|All|All|APPLICATION|false", keys.get(1));
@@ -102,11 +102,11 @@ public class KeyGeneratorUtilTest {
 	@Test
 	public void testKeyValuesConsumer() {
 		filters.get("Consumer").add("Consumer1");
-		List<String> keys = KeyGeneratorUtil.generate(serverSide,filters, param1);		
+		List<String> keys = KeyGeneratorUtil.generateStringKeys(serverSide,filters, param1);		
 		assertEquals("All|All|Consumer1|All|APPLICATION|false", keys.get(0));
 	
 		filters.get("Consumer").add("Consumer2");
-		keys = KeyGeneratorUtil.generate(serverSide,filters, param1);		
+		keys = KeyGeneratorUtil.generateStringKeys(serverSide,filters, param1);		
 		assertEquals(2, keys.size());
 		assertEquals("All|All|Consumer1|All|APPLICATION|false", keys.get(0));
 		assertEquals("All|All|Consumer2|All|APPLICATION|false", keys.get(1));
@@ -117,11 +117,11 @@ public class KeyGeneratorUtilTest {
 	@Test
 	public void testKeyValuesOperation() {
 		filters.get("Operation").add("Operation1");
-		List<String> keys = KeyGeneratorUtil.generate(serverSide,filters, param1);		
+		List<String> keys = KeyGeneratorUtil.generateStringKeys(serverSide,filters, param1);		
 		assertEquals("All|All|All|Operation1|APPLICATION|false", keys.get(0));
 	
 		filters.get("Operation").add("Operation2");
-		keys = KeyGeneratorUtil.generate(serverSide,filters, param1);		
+		keys = KeyGeneratorUtil.generateStringKeys(serverSide,filters, param1);		
 		assertEquals(2, keys.size());
 		assertEquals("All|All|All|Operation1|APPLICATION|false", keys.get(0));
 		assertEquals("All|All|All|Operation2|APPLICATION|false", keys.get(1));
@@ -140,7 +140,7 @@ public class KeyGeneratorUtilTest {
 		filters.get("Operation").add("Operation3");
 		filters.get("Operation").add("Operation4");
 		
-		List<String> keys = KeyGeneratorUtil.generate(serverSide,filters, param1);		
+		List<String> keys = KeyGeneratorUtil.generateStringKeys(serverSide,filters, param1);		
 		assertEquals(16, keys.size()); // 2 exponential 8
 		assertEquals("All|Service1|Consumer1|Operation1|APPLICATION|false", keys.get(0));
 		assertEquals("All|Service1|Consumer1|Operation2|APPLICATION|false", keys.get(1));

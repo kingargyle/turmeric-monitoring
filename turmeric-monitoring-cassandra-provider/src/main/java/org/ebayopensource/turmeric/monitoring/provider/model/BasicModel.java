@@ -8,54 +8,75 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.model;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * The Class Model.
  * 
  * @author jamuguerza
  */
-public class BasicModel {
+public class BasicModel<K> {
+		
+		public BasicModel(K keyType){
+		}		
+		
+		/** The key. */
+		private K key;
+		
+//		  /** The metric name. */
+//	    private String metricName;
+//
+//	    /** The service admin name. */
+//	    private String serviceAdminName;
 
-	/** The key. */
-	private String key;
+	    /** The operation name List. */
+	    private Map<String, Object> columns;
 
-	/** The string data. */
-	private String stringData;
+		
+		/**
+		 * Sets the key.
+		 *
+		 * @param key the new key
+		 */
+		public void setKey(K key) {
+			this.key = key;
+		}
 
-	/**
-	 * Gets the string data.
-	 * 
-	 * @return the string data
-	 */
-	public String getStringData() {
-		return stringData;
+		/**
+		 * Gets the key.
+		 *
+		 * @return the key
+		 */
+		public K getKey() {
+			return key;
+		}
+
+		public void setColumns(Map<String, Object> columns) {
+			this.columns = columns;
+		}
+
+		public Map<String, Object> getColumns() {
+			return columns;
+		}
+
+
+//		public String getMetricName() {
+//			return metricName;
+//		}
+//
+//		public void setMetricName(String metricName) {
+//			this.metricName = metricName;
+//		}
+//
+//		public String getServiceAdminName() {
+//			return serviceAdminName;
+//		}
+//
+//		public void setServiceAdminName(String serviceAdminName) {
+//			this.serviceAdminName = serviceAdminName;
+//		}
+
+
+		
 	}
-
-	/**
-	 * Sets the string data.
-	 * 
-	 * @param stringData
-	 *            the new string data
-	 */
-	public void setStringData(String stringData) {
-		this.stringData = stringData;
-	}
-
-	/**
-	 * Sets the key.
-	 * 
-	 * @param key
-	 *            the new key
-	 */
-	public void setKey(String key) {
-		this.key = key;
-	}
-
-	/**
-	 * Gets the key.
-	 * 
-	 * @return the key
-	 */
-	public String getKey() {
-		return key;
-	}
-}

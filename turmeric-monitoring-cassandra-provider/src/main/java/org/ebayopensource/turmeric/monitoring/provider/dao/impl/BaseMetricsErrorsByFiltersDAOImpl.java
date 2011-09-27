@@ -24,21 +24,21 @@ import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
  * The abstract class  BaseMetricsErrorsByFiltersDAO.
  * @author jose alvarez muguerza
  */
-public  class BaseMetricsErrorsByFiltersDAOImpl  extends AbstractColumnFamilyDao<String, String>
-	implements	BaseMetricsErrorsByFilterDAO {
+public  class BaseMetricsErrorsByFiltersDAOImpl<K>  extends AbstractColumnFamilyDao<K, String>
+	implements	BaseMetricsErrorsByFilterDAO<K> {
 
     private final MetricsErrorValuesDAO errorValuesDaoImpl ;
 
 	public BaseMetricsErrorsByFiltersDAOImpl(final String clusterName, final String host,
-			final String s_keyspace,  final String columnFamilyName, final MetricsErrorValuesDAO errorValuesDaoImpl) {
-		super(clusterName, host, s_keyspace, String.class, String.class, columnFamilyName);
+			final String s_keyspace,  final String columnFamilyName,final Class<K> kTypeClass,  final MetricsErrorValuesDAO errorValuesDaoImpl) {
+		super(clusterName, host, s_keyspace, kTypeClass, String.class, columnFamilyName);
 		this.errorValuesDaoImpl = errorValuesDaoImpl;
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.ebayopensource.turmeric.monitoring.provider.dao.BaseMetricsErrorsByFilterDAO#findErrorValuesByFilter(long, long, boolean, int, java.lang.Long, java.lang.String, java.util.Map)
 	 */
-	public List<Map<String, Object>> findErrorValuesByFilter(long beginTime,
+	public List<Map<K, Object>> findErrorValuesByFilter(long beginTime,
 			long endTime, boolean serverSide, int aggregationPeriod,
 			Long errorId, String filter,
 			Map<String, List<String>> filters) {
@@ -46,16 +46,16 @@ public  class BaseMetricsErrorsByFiltersDAOImpl  extends AbstractColumnFamilyDao
 		// agregationpPeriod not used
 		// IP or ServerName for improvement, for now we just use ALL-
 
-		final List<String> errorKeys = KeyGeneratorUtil.generate(serverSide,
+		final List<K> errorKeys =  (List<K>) KeyGeneratorUtil.generateStringKeys( serverSide,
 				filters, filter);
-		Set<String> errorValuesIds = findItems(errorKeys, String.valueOf(beginTime), String.valueOf(endTime));
+		Set<K> errorValuesIds = (Set<K>) findItems(errorKeys, String.valueOf(beginTime), String.valueOf(endTime));
 		Set<ErrorValue> errorValues = errorValuesDaoImpl.findItems(
-				new ArrayList<String>(errorValuesIds), "", "");
+				new ArrayList<K>(errorValuesIds), "", "");
 
-		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+		List<Map<K, Object>> result = new ArrayList<Map<K, Object>>();
 		for (ErrorValue errorValue : errorValues) {
-			Map<String, Object> row = new HashMap<String, Object>();
-			row.put("timeStamp", errorValue.getTimeStamp());
+			Map<K, Object> row = new HashMap<K, Object>();
+			row.put((K)"timeStamp", errorValue.getTimeStamp());
 			result.add(row);
 		}
 

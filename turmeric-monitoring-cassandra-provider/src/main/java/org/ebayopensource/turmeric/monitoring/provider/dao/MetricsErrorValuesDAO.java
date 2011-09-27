@@ -16,8 +16,8 @@ import java.util.Set;
  * The Interface MetricsErrorDAO.
  * @author jose alvarez muguerza
  */
-public interface MetricsErrorValuesDAO  {
-	Set<org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue> findItems(List<String> keys, String rangeFrom, String rangeTo );
+public interface MetricsErrorValuesDAO<K>  {
+	Set<org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue> findItems(List<K> keys, String rangeFrom, String rangeTo );
 
 	
 }

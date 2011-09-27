@@ -9,27 +9,19 @@
 package org.ebayopensource.turmeric.monitoring.provider.dao.impl;
 
 
-import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorByIdDAO;
+import org.ebayopensource.turmeric.monitoring.provider.dao.MetricIndentifierDAO;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
 
 /**
  * @author jamuguerza
  *
  */
-public class MetricsErrorByIdDAOImpl<K> extends AbstractColumnFamilyDao<K, org.ebayopensource.turmeric.runtime.error.model.Error> implements
-		MetricsErrorByIdDAO<K> {
-		
-	/**
-	 * Instantiates a new metrics error dao impl.
-	 *
-	 * @param clusterName the cluster name
-	 * @param host the host
-	 * @param s_keyspace the s_keyspace
-	 * @param columnFamilyName the column family name
-	 */
-	public MetricsErrorByIdDAOImpl(String clusterName, String host,
+public class MetricIdentifierDAOImpl<K> extends AbstractColumnFamilyDao<K, String> implements
+	MetricIndentifierDAO<K> {
+
+	public MetricIdentifierDAOImpl(String clusterName, String host,
 			String s_keyspace,  String columnFamilyName, final Class<K> kTypeClass) {
-		super(clusterName, host, s_keyspace, kTypeClass, org.ebayopensource.turmeric.runtime.error.model.Error.class,
+		super(clusterName, host, s_keyspace, kTypeClass, String.class,
 				columnFamilyName);
 	}
 

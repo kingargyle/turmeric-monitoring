@@ -15,7 +15,7 @@ import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorValuesDAO
  * @author jamuguerza
  *
  */
-public class MetricsErrorsBySeverityDAOImpl extends BaseMetricsErrorsByFiltersDAOImpl {
+public class MetricsErrorsBySeverityDAOImpl<K> extends BaseMetricsErrorsByFiltersDAOImpl<K> {
 
 	/**
 	 * Instantiates a new metrics errors by severity dao impl.
@@ -27,8 +27,8 @@ public class MetricsErrorsBySeverityDAOImpl extends BaseMetricsErrorsByFiltersDA
 	 * @param errorValuesDaoImpl the error values dao impl
 	 */
 	public MetricsErrorsBySeverityDAOImpl(final String clusterName, final String host,
-			final String s_keyspace,  final String columnFamilyName, final MetricsErrorValuesDAO errorValuesDaoImpl) {
-		super(clusterName, host, s_keyspace, columnFamilyName, errorValuesDaoImpl);
+			final String s_keyspace,  final String columnFamilyName, final Class<K> kTypeClass, final MetricsErrorValuesDAO errorValuesDaoImpl) {
+		super(clusterName, host, s_keyspace, columnFamilyName, kTypeClass, errorValuesDaoImpl);
 	}
 
 }
