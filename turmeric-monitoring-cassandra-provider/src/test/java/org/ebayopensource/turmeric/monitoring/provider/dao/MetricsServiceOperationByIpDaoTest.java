@@ -69,34 +69,56 @@ public class MetricsServiceOperationByIpDaoTest extends BaseTest {
 	}
 
 	@Test
-	public void testFindMetricOperationNames() throws ServiceException {
+	public void testOneServiceOneOperation() throws ServiceException {
 		List<String> operationNames = new ArrayList<String>();
-		operationNames.add("operationY2");
+		operationNames.add("operationY1");
 		
-		saveServiceOperationByIp(operationNames);
+		List<String> serviceNames = new ArrayList<String>();
+		serviceNames.add("ServiceX1");
+		
+		saveServiceOperationByIp(serviceNames, operationNames);
 		
 		
-	List<String> findMetricOperationNames = metricsServiceOperationByIpDAO.findMetricOperationNames(operationNames);
+		List<String> findMetricOperationNames = metricsServiceOperationByIpDAO.findMetricOperationNames(operationNames);
 		assertNotNull(findMetricOperationNames);
 		assertEquals(1, findMetricOperationNames.size());
-		assertTrue("ServiceX2.operationY2".equals(findMetricOperationNames.get(0)));
+		assertTrue("ServiceX1.operationY1".equals(findMetricOperationNames.get(0)));
 	}
+
+//	@Test
+//	public void testTwoServiceOneOperation() throws ServiceException {
+//		List<String> operationNames = new ArrayList<String>();
+//		operationNames.add("operationY1");
+//		
+//		List<String> serviceNames = new ArrayList<String>();
+//		serviceNames.add("ServiceX1");
+//		serviceNames.add("ServiceX2");
+//		saveServiceOperationByIp(serviceNames, operationNames);
+//		
+//		
+//		List<String> findMetricOperationNames = metricsServiceOperationByIpDAO.findMetricOperationNames(operationNames);
+//		assertNotNull(findMetricOperationNames);
+//		assertEquals(2, findMetricOperationNames.size());
+//		assertTrue("ServiceX1.operationY1".equals(findMetricOperationNames.get(0)));
+//		assertTrue("ServiceX2.operationY1".equals(findMetricOperationNames.get(1)));
+//	}
 
 	
     
-    private void saveServiceOperationByIp(List<String> operationNames) throws ServiceException {
-
-        String serviceName = "ServiceX2";
-        String operationName = operationNames.get(0);
-        String consumerName = "consumerZ2";
+    private void saveServiceOperationByIp(List<String> serviceNames, List<String> operationNames) throws ServiceException {
         long timeSnapshot = System.currentTimeMillis();
 
-        String ipAddress = storageProvider.getIPAddress();
-        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
-                        serviceName, operationName, consumerName);
-
-        storageProvider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
-
+    	for (String serviceName : serviceNames) {
+			for (String operationName : operationNames) {
+	    		    String consumerName = "consumerZ2";
+	
+	    	        String ipAddress = storageProvider.getIPAddress();
+	    	        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
+	    	                        serviceName, operationName, consumerName);
+	
+	    	        storageProvider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
+			}
+    	}
      }
     
 	private Collection<MetricValueAggregator> createMetricValueAggregatorsCollectionForOneConsumer(

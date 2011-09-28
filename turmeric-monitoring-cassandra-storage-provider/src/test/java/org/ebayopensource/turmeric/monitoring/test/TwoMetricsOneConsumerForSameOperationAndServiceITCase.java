@@ -39,7 +39,7 @@ public class TwoMetricsOneConsumerForSameOperationAndServiceITCase extends Cassa
     public void setUp() {
         provider = new CassandraMetricsStorageProvider();
         kspace = new HectorManager().getKeyspace(cluster_name, cassandra_node_ip, keyspace_name, "MetricIdentifier",
-                        false);
+                        false, null, String.class);
         Map<String, String> options = createOptions();
         provider.init(options, null, MonitoringSystem.COLLECTION_LOCATION_SERVER, 20);
     }

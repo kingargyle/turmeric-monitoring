@@ -70,12 +70,12 @@ public class MetricsDAO {
         this.clusterName = clusterName;
         this.host = host;
         HectorManager hectorManager = new HectorManager();
-        this.keySpace = hectorManager.getKeyspace(clusterName, host, keyspaceName, "ServiceOperationByIp", true);
-        hectorManager.getKeyspace(clusterName, host, keyspaceName, "ServiceConsumerByIp", true);
-        hectorManager.getKeyspace(clusterName, host, keyspaceName, "MetricValues", false);
-        hectorManager.getKeyspace(clusterName, host, keyspaceName, "MetricValuesByIpAndDate", true);
-        hectorManager.getKeyspace(clusterName, host, keyspaceName, "MetricTimeSeries", false);
-        hectorManager.getKeyspace(clusterName, host, keyspaceName, "ServiceCallsByTime", false);
+        this.keySpace = hectorManager.getKeyspace(clusterName, host, keyspaceName, "ServiceOperationByIp", true, String.class, String.class);
+        hectorManager.getKeyspace(clusterName, host, keyspaceName, "ServiceConsumerByIp", true, String.class, String.class);
+        hectorManager.getKeyspace(clusterName, host, keyspaceName, "MetricValues", false,  null, String.class);
+        hectorManager.getKeyspace(clusterName, host, keyspaceName, "MetricValuesByIpAndDate", true, String.class, String.class);
+        hectorManager.getKeyspace(clusterName, host, keyspaceName, "MetricTimeSeries", false,  null, String.class);
+        hectorManager.getKeyspace(clusterName, host, keyspaceName, "ServiceCallsByTime", false,  String.class,  String.class);
         
     }
 
