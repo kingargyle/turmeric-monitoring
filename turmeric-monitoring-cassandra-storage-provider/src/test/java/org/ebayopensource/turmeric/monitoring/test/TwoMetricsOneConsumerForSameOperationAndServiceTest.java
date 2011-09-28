@@ -1,5 +1,6 @@
 package org.ebayopensource.turmeric.monitoring.test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,6 +16,8 @@ import me.prettyprint.hector.api.query.QueryResult;
 import me.prettyprint.hector.api.query.RangeSlicesQuery;
 import me.prettyprint.hector.api.query.RangeSuperSlicesQuery;
 
+import org.apache.cassandra.config.ConfigurationException;
+import org.apache.thrift.transport.TTransportException;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.CassandraMetricsStorageProvider;
 import org.ebayopensource.turmeric.monitoring.utils.CassandraTestHelper;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
@@ -32,14 +35,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TwoMetricsTwoConsumersForSameOperationAndServiceITCase extends CassandraTestHelper {
+public class TwoMetricsOneConsumerForSameOperationAndServiceTest extends CassandraTestHelper {
     CassandraMetricsStorageProvider provider = null;
 
     @Before
-    public void setUp() {
+    public void setUp() throws TTransportException, IOException, InterruptedException, ConfigurationException {
+    	initialize();
         provider = new CassandraMetricsStorageProvider();
         kspace = new HectorManager().getKeyspace(cluster_name, cassandra_node_ip, keyspace_name, "MetricIdentifier",
-                        false);
+                        false, String.class, String.class);
         Map<String, String> options = createOptions();
         provider.init(options, null, MonitoringSystem.COLLECTION_LOCATION_SERVER, 20);
     }
@@ -50,6 +54,7 @@ public class TwoMetricsTwoConsumersForSameOperationAndServiceITCase extends Cass
         options.put("keyspace-name", keyspace_name);
         options.put("cluster-name", cluster_name);
         options.put("storeServiceMetrics", "false");
+        options.put("embedded", "true");
         return options;
     }
 
@@ -94,13 +99,15 @@ public class TwoMetricsTwoConsumersForSameOperationAndServiceITCase extends Cass
     }
 
     @Test
-    public void testSaveMetricIdentifier() throws ServiceException {
-        String serviceName = "ServiceA1";
-        String operationName = "operationA1";
+    public void testSaveMetricsIdentifier() throws ServiceException {
+
+        String serviceName = "ServiceX1";
+        String operationName = "operationY1";
+        String consumerName = "consumerZ1";
         long timeSnapshot = System.currentTimeMillis();
 
-        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollection(serviceName,
-                        operationName);
+        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
+                        serviceName, operationName, consumerName);
 
         provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
 
@@ -120,12 +127,15 @@ public class TwoMetricsTwoConsumersForSameOperationAndServiceITCase extends Cass
 
     @Test
     public void testSaveServiceOperationByIp() throws ServiceException {
-        String serviceName = "ServiceA2";
-        String operationName = "operationA2";
-        String ipAddress = provider.getIPAddress();
+
+        String serviceName = "ServiceX2";
+        String operationName = "operationY2";
+        String consumerName = "consumerZ2";
         long timeSnapshot = System.currentTimeMillis();
-        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollection(serviceName,
-                        operationName);
+
+        String ipAddress = provider.getIPAddress();
+        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
+                        serviceName, operationName, consumerName);
 
         provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
 
@@ -136,38 +146,39 @@ public class TwoMetricsTwoConsumersForSameOperationAndServiceITCase extends Cass
 
     @Test
     public void testSaveServiceConsumerByIp() throws ServiceException {
-        String serviceName = "ServiceA3";
-        String operationName = "operationA3";
-        String ipAddress = provider.getIPAddress();
+
+        String serviceName = "ServiceX3";
+        String operationName = "operationY3";
+        String consumerName = "consumerZ3";
         long timeSnapshot = System.currentTimeMillis();
 
-        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollection(serviceName,
-                        operationName);
+        String ipAddress = provider.getIPAddress();
+        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
+                        serviceName, operationName, consumerName);
 
         provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
 
         assertCassandraSuperColumnValues("ServiceConsumerByIp", ipAddress, serviceName, STR_SERIALIZER, STR_SERIALIZER,
-                        STR_SERIALIZER, new String[] { "missing" }, new String[] { "" });
-
-        assertCassandraSuperColumnValues("ServiceConsumerByIp", ipAddress, serviceName, STR_SERIALIZER, STR_SERIALIZER,
-                        STR_SERIALIZER, new String[] { "anotherusecase" }, new String[] { "" });
+                        STR_SERIALIZER, new String[] { consumerName }, new String[] { "" });
 
     }
 
     @Test
     public void testSaveMetricTimeSeries() throws ServiceException {
-        String serviceName = "ServiceA4";
-        String operationName = "operationA4";
+
+        String serviceName = "ServiceX4";
+        String operationName = "operationY4";
+        String consumerName = "consumerZ4";
+
         String ipAddress = provider.getIPAddress();
         long timeSnapshot = System.currentTimeMillis();
-
-        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollection(serviceName,
-                        operationName);
 
         String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "test_count"
                         + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
         String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "test_average"
                         + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
+        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
+                        serviceName, operationName, consumerName);
 
         provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
 
@@ -180,22 +191,24 @@ public class TwoMetricsTwoConsumersForSameOperationAndServiceITCase extends Cass
                         + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
                         + "|test_average|20|true", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
                         new String[] { metricValueKeyTestAvg });
-
     }
 
     @Test
     public void testSaveMetricValues() throws ServiceException {
-        String serviceName = "ServiceA5";
-        String operationName = "operationA5";
+
+        String serviceName = "ServiceX5";
+        String operationName = "operationY5";
+        String consumerName = "consumerZ5";
+
         String ipAddress = provider.getIPAddress();
         long timeSnapshot = System.currentTimeMillis();
-        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollection(serviceName,
-                        operationName);
 
         String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "test_count"
                         + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
         String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "test_average"
                         + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
+        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
+                        serviceName, operationName, consumerName);
 
         provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
 
@@ -209,15 +222,18 @@ public class TwoMetricsTwoConsumersForSameOperationAndServiceITCase extends Cass
 
     @Test
     public void testSaveServiceCallsByTime() throws ServiceException {
-        String serviceName = "ServiceA6";
-        String operationName = "operationA6";
+
+        String serviceName = "ServiceX6";
+        String operationName = "operationY6";
+        String consumerName = "consumerZ6";
+
         String ipAddress = provider.getIPAddress();
-        long timeSnapshot = System.currentTimeMillis();
         Object serviceCallsByTimeKey = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName
                         + CassandraMetricsStorageProvider.KEY_SEPARATOR + true;
+        long timeSnapshot = System.currentTimeMillis();
 
-        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollection(serviceName,
-                        operationName);
+        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
+                        serviceName, operationName, consumerName);
 
         provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
 
@@ -227,16 +243,16 @@ public class TwoMetricsTwoConsumersForSameOperationAndServiceITCase extends Cass
 
     }
 
-    private Collection<MetricValueAggregator> createMetricValueAggregatorsCollection(String serviceName,
-                    String operationName) {
+    private Collection<MetricValueAggregator> createMetricValueAggregatorsCollectionForOneConsumer(String serviceName,
+                    String operationName, String consumerName) {
         Collection<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
         MetricId metricId1 = new MetricId("test_count", serviceName, operationName);
         MetricValue metricValue1 = new LongSumMetricValue(metricId1, 123456);
         MetricId metricId2 = new MetricId("test_average", serviceName, operationName);
         MetricValue metricValue2 = new AverageMetricValue(metricId2, 17, 456854235.123);
 
-        MetricClassifier metricClassifier1 = new MetricClassifier("missing", "sourcedc", "targetdc");
-        MetricClassifier metricClassifier2 = new MetricClassifier("anotherusecase", "sourcedc", "targetdc");
+        MetricClassifier metricClassifier1 = new MetricClassifier(consumerName, "sourcedc", "targetdc");
+        MetricClassifier metricClassifier2 = new MetricClassifier(consumerName, "sourcedc", "targetdc");
 
         Map<MetricClassifier, MetricValue> valuesByClassifier1 = new HashMap<MetricClassifier, MetricValue>();
         valuesByClassifier1.put(metricClassifier1, metricValue1);

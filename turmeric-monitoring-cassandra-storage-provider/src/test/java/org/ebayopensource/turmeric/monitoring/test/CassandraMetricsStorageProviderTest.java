@@ -11,6 +11,7 @@ package org.ebayopensource.turmeric.monitoring.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -37,6 +38,8 @@ import me.prettyprint.hector.api.query.QueryResult;
 import me.prettyprint.hector.api.query.RangeSlicesQuery;
 import me.prettyprint.hector.api.query.RangeSuperSlicesQuery;
 
+import org.apache.cassandra.config.ConfigurationException;
+import org.apache.thrift.transport.TTransportException;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.CassandraMetricsStorageProvider;
 import org.ebayopensource.turmeric.monitoring.utils.CassandraTestHelper;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
@@ -54,14 +57,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
+public class CassandraMetricsStorageProviderTest extends CassandraTestHelper {
     CassandraMetricsStorageProvider provider = null;
 
     @Before
-    public void setUp() {
+    public void setUp() throws TTransportException, IOException, InterruptedException, ConfigurationException {
+    	initialize();
         provider = new CassandraMetricsStorageProvider();
         kspace = new HectorManager().getKeyspace(cluster_name, cassandra_node_ip, keyspace_name, "MetricIdentifier",
-                        false);
+                        false, String.class, String.class);
         Map<String, String> options = createOptions();
         provider.init(options, null, MonitoringSystem.COLLECTION_LOCATION_SERVER, 20);
     }
@@ -136,6 +140,7 @@ public class CassandraMetricsStorageProviderITCase extends CassandraTestHelper {
         options.put("keyspace-name", keyspace_name);
         options.put("cluster-name", cluster_name);
         options.put("storeServiceMetrics", "false");
+        options.put("embedded", "true");
         return options;
     }
 

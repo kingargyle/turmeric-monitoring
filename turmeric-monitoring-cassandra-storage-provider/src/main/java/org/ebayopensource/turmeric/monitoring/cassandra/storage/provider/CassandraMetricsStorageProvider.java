@@ -12,9 +12,18 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import me.prettyprint.cassandra.service.ThriftCfDef;
+import me.prettyprint.hector.api.Cluster;
+import me.prettyprint.hector.api.ddl.ColumnDefinition;
+import me.prettyprint.hector.api.ddl.ColumnFamilyDefinition;
+import me.prettyprint.hector.api.ddl.ColumnType;
+import me.prettyprint.hector.api.ddl.ComparatorType;
+import me.prettyprint.hector.api.factory.HFactory;
 
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricIdentifierDAO;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricsDAO;
@@ -26,6 +35,8 @@ import org.ebayopensource.turmeric.runtime.common.monitoring.MetricId;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricsStorageProvider;
 import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValue;
 import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValueAggregator;
+import org.ebayopensource.turmeric.utils.cassandra.hector.HectorHelper;
+import org.ebayopensource.turmeric.utils.cassandra.hector.HectorManager;
 import org.ebayopensource.turmeric.utils.cassandra.service.CassandraManager;
 
 /**
@@ -69,6 +80,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
      */
     @Override
     public void init(Map<String, String> options, String name, String collectionLocation, Integer snapshotInterval) {
+        System.out.println("collectionLocation = "+collectionLocation);
         this.serverSide = MonitoringSystem.COLLECTION_LOCATION_SERVER.equals(collectionLocation);
         this.storeServiceMetrics = Boolean.parseBoolean(options.get("storeServiceMetrics"));
         this.snapshotInterval = snapshotInterval;
@@ -79,6 +91,25 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
         String embedded = options.get("embedded");
         if (Boolean.valueOf(embedded)) {
             CassandraManager.initialize();
+            try {
+                Cluster cluster = HFactory.getOrCreateCluster(clusterName, host);
+                createCF(s_keyspace, "MetricValuesByIpAndDate", cluster, true, ComparatorType.UTF8TYPE,
+                                ComparatorType.UTF8TYPE, ComparatorType.LONGTYPE, ComparatorType.UTF8TYPE);
+                createCF(s_keyspace, "MetricTimeSeries", cluster, false, ComparatorType.UTF8TYPE,
+                                ComparatorType.UTF8TYPE, ComparatorType.LONGTYPE, ComparatorType.UTF8TYPE);
+                createCF(s_keyspace, "ServiceCallsByTime", cluster, true, ComparatorType.UTF8TYPE,
+                                ComparatorType.UTF8TYPE, ComparatorType.LONGTYPE, ComparatorType.UTF8TYPE);
+                
+                createCF(s_keyspace, "ServiceOperationByIp", cluster, true, ComparatorType.UTF8TYPE,
+                                ComparatorType.UTF8TYPE, ComparatorType.UTF8TYPE, ComparatorType.UTF8TYPE);
+                createCF(s_keyspace, "ServiceConsumerByIp", cluster, true, ComparatorType.UTF8TYPE,
+                                ComparatorType.UTF8TYPE, ComparatorType.UTF8TYPE, ComparatorType.UTF8TYPE);
+                createCF(s_keyspace, "MetricValues", cluster, false, ComparatorType.UTF8TYPE,
+                                ComparatorType.UTF8TYPE, ComparatorType.UTF8TYPE, ComparatorType.UTF8TYPE);
+            }
+            catch (Exception e) {
+
+            }
         }
         metricIdDAO = new MetricIdentifierDAO(clusterName, host, s_keyspace, String.class, MetricIdentifier.class,
                         columnFamilyName);
@@ -273,6 +304,54 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
         catch (UnknownHostException x) {
             throw new ServiceException("Unkonwn host name", x);
         }
+    }
+
+    private void createCF(final String kspace, final String columnFamilyName, final Cluster cluster,
+                    boolean isSuperColumn, final ComparatorType superKeyValidator, final ComparatorType keyValidator,
+                    final ComparatorType superComparator, final ComparatorType comparator) {
+
+        if (isSuperColumn) {
+            ThriftCfDef cfDefinition = (ThriftCfDef) HFactory.createColumnFamilyDefinition(kspace, columnFamilyName,
+                            superComparator, new ArrayList<ColumnDefinition>());
+            cfDefinition.setColumnType(ColumnType.SUPER);
+            cfDefinition.setKeyValidationClass(superKeyValidator.getClassName());
+            cfDefinition.setSubComparatorType(comparator);
+            cluster.addColumnFamily(cfDefinition);
+        }
+        else {
+            ColumnFamilyDefinition cfDefinition = new ThriftCfDef(kspace, columnFamilyName);
+            cfDefinition.setKeyValidationClass(keyValidator.getClassName());
+            if ("MetricValuesByIpAndDate".equals(columnFamilyName) || "MetricTimeSeries".equals(columnFamilyName)
+                            || "ServiceCallsByTime".equals(columnFamilyName)) {
+
+                ComparatorType comparator1 = getComparator(Long.class);
+                cfDefinition.setComparatorType(comparator1);
+            }
+            else {
+                cfDefinition.setComparatorType(comparator);
+            }
+
+            cluster.addColumnFamily(cfDefinition);
+        }
+    }
+
+    private ComparatorType getComparator(Class<?> keyTypeClass) {
+        if (keyTypeClass != null && String.class.isAssignableFrom(keyTypeClass)) {
+            return ComparatorType.UTF8TYPE;
+        }
+        else if (keyTypeClass != null && Integer.class.isAssignableFrom(keyTypeClass)) {
+            return ComparatorType.INTEGERTYPE;
+        }
+        else if (keyTypeClass != null && Long.class.isAssignableFrom(keyTypeClass)) {
+            return ComparatorType.LONGTYPE;
+        }
+        else if (keyTypeClass != null && Date.class.isAssignableFrom(keyTypeClass)) {
+            return ComparatorType.TIMEUUIDTYPE;
+        }
+        else {
+            return ComparatorType.BYTESTYPE; // by default
+        }
+
     }
 
 }

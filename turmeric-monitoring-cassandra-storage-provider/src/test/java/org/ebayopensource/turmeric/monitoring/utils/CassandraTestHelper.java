@@ -12,6 +12,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,24 +31,29 @@ import me.prettyprint.hector.api.query.QueryResult;
 import me.prettyprint.hector.api.query.SliceQuery;
 import me.prettyprint.hector.api.query.SuperColumnQuery;
 
+import org.apache.cassandra.config.ConfigurationException;
+import org.apache.cassandra.service.EmbeddedCassandraService;
+import org.apache.thrift.transport.TTransportException;
 import org.ebayopensource.turmeric.common.v1.types.CommonErrorData;
 import org.ebayopensource.turmeric.common.v1.types.ErrorCategory;
 import org.ebayopensource.turmeric.common.v1.types.ErrorSeverity;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
+import org.ebayopensource.turmeric.utils.cassandra.service.CassandraManager;
 
 public class CassandraTestHelper {
 
     protected static final ObjectSerializer OBJ_SERIALIZER = ObjectSerializer.get();
     protected static final LongSerializer LONG_SERIALIZER = LongSerializer.get();
     protected static final StringSerializer STR_SERIALIZER = StringSerializer.get();
-    protected static final String cluster_name = "Test Cluster";
+    protected static final String cluster_name = "TestCluster";
     protected static final String keyspace_name = "TurmericMonitoring";
     protected static final String cassandra_node_ip = "127.0.0.1";
     public Keyspace kspace = null;
 
     public void assertValues(ColumnSlice<Object, Object> columnSlice, Object... columnPairs) {
 
-        // the asserts are done in this way: assert(columnPairs[0], columnPairs[1]);, assert(columnPairs[2],
+        // the asserts are done in this way: assert(columnPairs[0],
+        // columnPairs[1]);, assert(columnPairs[2],
         // columnPairs[3]), ...;
         for (int i = 0; i < columnPairs.length / 2; i++) {
             HColumn<Object, Object> column = columnSlice.getColumnByName(columnPairs[2 * i]);
@@ -58,7 +65,8 @@ public class CassandraTestHelper {
 
     public void assertValues(ColumnSlice<Object, Object> columnSlice, Object[] columnNames, Object[] columnValues) {
 
-        // the asserts are done in this way: assert(columnPairs[0], columnPairs[1]);, assert(columnPairs[2],
+        // the asserts are done in this way: assert(columnPairs[0],
+        // columnPairs[1]);, assert(columnPairs[2],
         // columnPairs[3]), ...;
         for (int i = 0; i < columnNames.length; i++) {
             HColumn<Object, Object> column = columnSlice.getColumnByName(columnNames[i]);
@@ -145,4 +153,46 @@ public class CassandraTestHelper {
         assertColumnValueFromSuperColumn(serviceOperationColumnSlice, columnsToAssert, columnValues);
     }
 
+    public static void initialize() throws TTransportException, IOException, InterruptedException,
+                    ConfigurationException {
+        cleanUpCassandraDirs();
+        loadConfig();
+        CassandraManager.initialize();
+
+    }
+
+    private static void cleanUpCassandraDirs() {
+        if (CassandraManager.getEmbeddedService() == null) {
+            System.out.println("Cleaning cassandra dirs ? = " + deleteDir(new File("target/cassandra")));
+        }
+    }
+
+    // Deletes all files and subdirectories under dir.
+    // Returns true if all deletions were successful.
+    // If a deletion fails, the method stops attempting to delete and returns false.
+    private static boolean deleteDir(File dir) {
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+
+        }
+        // The directory is now empty so delete it
+        return dir.delete();
+
+    }
+
+    /**
+     * Load config.
+     */
+    private static void loadConfig() {
+        // use particular test properties, maybe with copy method
+        System.setProperty("log4j.configuration", "META-INF/config/cassandra/log4j.properties");
+
+        System.setProperty("cassandra.config", "META-INF/config/cassandra/cassandra-test.yaml");
+    }
 }
