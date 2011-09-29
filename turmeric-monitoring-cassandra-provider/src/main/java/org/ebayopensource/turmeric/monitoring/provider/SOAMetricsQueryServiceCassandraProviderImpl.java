@@ -18,15 +18,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import org.ebayopensource.turmeric.common.v1.types.ErrorCategory;
 import org.ebayopensource.turmeric.common.v1.types.ErrorSeverity;
 
-import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricIdentifierDAO;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.model.MetricIdentifier;
-
+import org.ebayopensource.turmeric.runtime.error.model.Error;
 import org.ebayopensource.turmeric.monitoring.provider.dao.BaseMetricsErrorsByFilterDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricServiceCallsByTimeDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricTimeSeriesDAO;
@@ -60,7 +58,6 @@ import org.ebayopensource.turmeric.monitoring.v1.services.PolicyMetricData;
 import org.ebayopensource.turmeric.monitoring.v1.services.PolicyMetricGraphData;
 import org.ebayopensource.turmeric.monitoring.v1.services.ReportCriteria;
 import org.ebayopensource.turmeric.monitoring.v1.services.ResourceEntity;
-import org.ebayopensource.turmeric.monitoring.v1.services.ResourceEntityRequest;
 import org.ebayopensource.turmeric.monitoring.v1.services.SortOrderType;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.MonitoringSystem;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.SystemMetricDefs;
@@ -879,7 +876,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
             case OPERATION:
                 return metricsServiceOperationByIpDAO.findMetricOperationNames(resourceEntityName);
             case CONSUMER: {
-                // return metricsDAO.findMetricConsumerNames(resourceEntityName);
+                 return metricsServiceConsumerByIpDAO.findMetricConsumerNames(resourceEntityName);
             }
             default:
                 throw new IllegalArgumentException("Unsupported output ResourceEntity " + resourceEntityResponseType);

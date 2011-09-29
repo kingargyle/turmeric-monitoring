@@ -23,7 +23,7 @@ public interface MetricsServiceOperationByIpDAO<SK, K>  {
      * @param serviceNames the service names
      * @return the list
      */
-    List<String> findMetricOperationNames(List<String> operationNames);
+    List<String> findMetricOperationNames(List<String> serviceNames);
     
     /**
      * Find metric service admin names.

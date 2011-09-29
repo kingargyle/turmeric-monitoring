@@ -15,5 +15,5 @@ import org.ebayopensource.turmeric.runtime.error.model.Error;
  * @author jose alvarez muguerza
  */
 public interface MetricsErrorByIdDAO<K> {
-	Error find(K key);
+	org.ebayopensource.turmeric.runtime.error.model.Error find(K key); 
 }

@@ -17,5 +17,13 @@ import java.util.List;
  */
 public interface MetricsServiceConsumerByIpDAO<SK, K>  {
 
+	/**
+	 * Find metric consumer names.
+	 *
+	 * @param serviceNames the service names
+	 * @return the list
+	 */
+	List<String> findMetricConsumerNames(List<String> serviceNames);
+    
 
 }

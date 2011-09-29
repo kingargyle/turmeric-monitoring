@@ -81,29 +81,31 @@ public class MetricsServiceOperationByIpDaoTest extends BaseTest {
 		saveServiceOperationByIp(serviceNames, operationNames);
 		
 		
-		List<String> findMetricOperationNames = metricsServiceOperationByIpDAO.findMetricOperationNames(operationNames);
+		List<String> findMetricOperationNames = metricsServiceOperationByIpDAO.findMetricOperationNames(serviceNames);
 		assertNotNull(findMetricOperationNames);
 		assertEquals(1, findMetricOperationNames.size());
 		assertTrue("ServiceX1.operationY1".equals(findMetricOperationNames.get(0)));
 	}
 
-//	@Test
-//	public void testTwoServiceOneOperation() throws ServiceException {
-//		List<String> operationNames = new ArrayList<String>();
-//		operationNames.add("operationY1");
-//		
-//		List<String> serviceNames = new ArrayList<String>();
-//		serviceNames.add("ServiceX1");
-//		serviceNames.add("ServiceX2");
-//		saveServiceOperationByIp(serviceNames, operationNames);
-//		
-//		
-//		List<String> findMetricOperationNames = metricsServiceOperationByIpDAO.findMetricOperationNames(operationNames);
-//		assertNotNull(findMetricOperationNames);
-//		assertEquals(2, findMetricOperationNames.size());
-//		assertTrue("ServiceX1.operationY1".equals(findMetricOperationNames.get(0)));
-//		assertTrue("ServiceX2.operationY1".equals(findMetricOperationNames.get(1)));
-//	}
+	@Test
+	public void testTwoServiceOneOperation() throws ServiceException {
+		List<String> operationNames = new ArrayList<String>();
+		operationNames.add("operationY1");
+
+		List<String> serviceNames = new ArrayList<String>();
+		serviceNames.add("ServiceX1");
+		serviceNames.add("ServiceX2");
+		saveServiceOperationByIp(serviceNames, operationNames);
+
+		List<String> findMetricOperationNames = metricsServiceOperationByIpDAO
+				.findMetricOperationNames(serviceNames);
+		assertNotNull(findMetricOperationNames);
+		assertEquals(2, findMetricOperationNames.size());
+		assertTrue("ServiceX1.operationY1".equals(findMetricOperationNames
+				.get(0)));
+		assertTrue("ServiceX2.operationY1".equals(findMetricOperationNames
+				.get(1)));
+	}
 
 	
     

@@ -9,23 +9,21 @@
 package org.ebayopensource.turmeric.monitoring.provider.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsServiceOperationByIpDAO;
 import org.ebayopensource.turmeric.monitoring.provider.model.BasicModel;
 import org.ebayopensource.turmeric.monitoring.provider.model.SuperModel;
-import org.ebayopensource.turmeric.runtime.common.monitoring.MetricDef;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractSuperColumnFamilyDao;
 
-import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * The Class MetricsServiceOperationByIpDAOImpl.
@@ -55,13 +53,15 @@ public class MetricsServiceOperationByIpDAOImpl<SK, K> extends
 	}
 
 	@Override
-	public List<String> findMetricOperationNames(List<String> operationNames) {
+	public List<String> findMetricOperationNames(final List<String> serviceAdminNames) {
 		Set<String> resultSet = new TreeSet<String>();
 
 		List<SK> keys = new ArrayList<SK>();
 		keys.add((SK)"All");
+		String[] serviceNames = new String[serviceAdminNames.size()];
+		serviceNames = serviceAdminNames.toArray(serviceNames);
 		
-		Map<SK, SuperModel> findItems = findItems(keys,null	);
+		Map<SK, SuperModel> findItems = findItems(keys, serviceNames);
 
 		for (Map.Entry<SK, SuperModel> findItem : findItems.entrySet()) {
 			SK key = findItem.getKey(); //IP, in this case ALL
@@ -70,10 +70,12 @@ public class MetricsServiceOperationByIpDAOImpl<SK, K> extends
 			if(superModel != null) {
 				Map<String, BasicModel> columns = superModel.getColumns();
 				
-				for (BasicModel<K> column : columns.values()) {
-					String serviceName = (String) column.getKey();		
-					Map<String, Object> operations  = column.getColumns();
-					Set<String> keySet = operations.keySet();
+				
+				
+				for (String column : columns.keySet()) {
+					String serviceName = column;		
+					BasicModel<?> operations  = columns.get(column);
+					Set<String> keySet = operations.getColumns().keySet();
 					
 					for (String operationName : keySet) {
 						resultSet.add(serviceName + "." + operationName);
@@ -84,13 +86,39 @@ public class MetricsServiceOperationByIpDAOImpl<SK, K> extends
 		}
 
 	    List<String> resultList = new ArrayList<String>(resultSet);
+	    Collections.sort(resultList);
+	    
 	    return resultList;
 	}
 
 	@Override
-	public List<String> findMetricServiceAdminNames(List<String> serviceNameList) {
-		return null;
-	}
-	
+	public List<String> findMetricServiceAdminNames(final List<String> serviceAdminNames) {
+		Set<String> resultSet = new TreeSet<String>();
+
+		List<SK> keys = new ArrayList<SK>();
+		keys.add((SK)"All");
+		String[] serviceNames = new String[serviceAdminNames.size()];
+		serviceNames = serviceAdminNames.toArray(serviceNames);
+		
+		Map<SK, SuperModel> findItems = findItems(keys, serviceNames);
+
+		for (Map.Entry<SK, SuperModel> findItem : findItems.entrySet()) {
+			SK key = findItem.getKey(); //IP, in this case ALL
+			
+			SuperModel superModel = findItem.getValue();
+			if(superModel != null) {
+				Map<String, BasicModel> columns = superModel.getColumns();
+								
+				for (String serviceName : columns.keySet()) {
+						resultSet.add(serviceName);
+				}
+			}
+		}
+
+	    List<String> resultList = new ArrayList<String>(resultSet);
+	    Collections.sort(resultList);
+	    
+	    return resultList;
+	}	
 
 }
