@@ -13,8 +13,7 @@ package org.ebayopensource.turmeric.monitoring.provider.dao.impl;
 
 
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricTimeSeriesDAO;
-import org.ebayopensource.turmeric.monitoring.provider.model.BasicModel;
-import org.ebayopensource.turmeric.monitoring.provider.model.SuperModel;
+import org.ebayopensource.turmeric.monitoring.provider.model.Model;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
 
 
@@ -25,7 +24,7 @@ import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
  * @author jamuguerza
  */
 public class MetricTimeSeriesDAOImpl<K> extends
-		AbstractColumnFamilyDao<K, String>
+		AbstractColumnFamilyDao<K, Model>
 		implements MetricTimeSeriesDAO<K> {
 
 	/**
@@ -43,7 +42,7 @@ public class MetricTimeSeriesDAOImpl<K> extends
 	public MetricTimeSeriesDAOImpl(final String clusterName, final String host,
 			final String s_keyspace, final String columnFamilyName,  final Class<K> kTypeClass) {
 		super(clusterName, host, s_keyspace, kTypeClass, 
-				String.class,  columnFamilyName);
+				Model.class,  columnFamilyName);
 	}
 
 }

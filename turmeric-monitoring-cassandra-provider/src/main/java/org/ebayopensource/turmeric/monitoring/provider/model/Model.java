@@ -5,43 +5,52 @@
  * You may obtain a copy of the License at 
  *
  *    http://www.apache.org/licenses/LICENSE-2.0
- *    
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.model;
 
 import java.util.Map;
 
-
-
 /**
- * The Class ModelSuper.
+ * The Class Model.
+ * 
  * @author jamuguerza
  */
-public class SuperModel<SK, K>  {
+public class Model<K> {
 
-	public SuperModel(SK superKeyType, K keyType){
+	public Model(K keyType) {
 	}
-		
-	/** The key data. */
-	private SK key;
-	
-	private Map<K, Model> columns ;
 
-	public void setKey(SK key) {
+	/** The key. */
+	private K key;
+
+	/** The operation name List. */
+	private Map<String, Object> columns;
+
+	/**
+	 * Sets the key.
+	 * 
+	 * @param key
+	 *            the new key
+	 */
+	public void setKey(K key) {
 		this.key = key;
 	}
 
-	public SK getKey() {
+	/**
+	 * Gets the key.
+	 * 
+	 * @return the key
+	 */
+	public K getKey() {
 		return key;
 	}
 
-	public void setColumns(Map<K, Model> columns) {
+	public void setColumns(Map<String, Object> columns) {
 		this.columns = columns;
 	}
 
-	public Map<K, Model> getColumns() {
+	public Map<String, Object> getColumns() {
 		return columns;
 	}
 
-		
 }

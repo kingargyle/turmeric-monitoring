@@ -49,6 +49,10 @@
 						org.ebayopensource.turmeric.runtime
 					</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>logging-handler-jpa</artifactId>
+					<groupId>org.ebayopensource.turmeric.runtime</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>

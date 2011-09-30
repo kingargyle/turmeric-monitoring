@@ -46,7 +46,7 @@ public  class BaseMetricsErrorsByFiltersDAOImpl<K>  extends AbstractColumnFamily
 		// agregationpPeriod not used
 		// IP or ServerName for improvement, for now we just use ALL-
 
-		final List<K> errorKeys =  (List<K>) KeyGeneratorUtil.generateStringKeys( serverSide,
+		final List<K> errorKeys =  (List<K>) KeyGeneratorUtil.generateErrorValuesKeys( serverSide,
 				filters, filter);
 		Set<K> errorValuesIds = (Set<K>) findItems(errorKeys, String.valueOf(beginTime), String.valueOf(endTime));
 		Set<ErrorValue> errorValues = errorValuesDaoImpl.findItems(
