@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import me.prettyprint.cassandra.service.ThriftCfDef;
 import me.prettyprint.hector.api.Cluster;
@@ -28,6 +27,13 @@ import me.prettyprint.hector.api.factory.HFactory;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricIdentifierDAO;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricsDAO;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.model.MetricIdentifier;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricIdentifierDAOImpl;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricServiceCallsByTimeDAOImpl;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricTimeSeriesDAOImpl;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricValuesByIpAndDateDAOImpl;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricValuesDAOImpl;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceConsumerByIpDAOImpl;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceOperationByIpDAOImpl;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.MonitoringSystem;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricClassifier;
@@ -35,8 +41,6 @@ import org.ebayopensource.turmeric.runtime.common.monitoring.MetricId;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricsStorageProvider;
 import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValue;
 import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValueAggregator;
-import org.ebayopensource.turmeric.utils.cassandra.hector.HectorHelper;
-import org.ebayopensource.turmeric.utils.cassandra.hector.HectorManager;
 import org.ebayopensource.turmeric.utils.cassandra.service.CassandraManager;
 
 /**
@@ -64,6 +68,20 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
 
     private Collection<MetricValueAggregator> previousSnapshot;
 
+    private MetricIdentifierDAOImpl<String> metricIdentifierDAO;
+
+    private MetricTimeSeriesDAOImpl<String> metricTimeSeriesDAO;
+
+    private MetricsServiceConsumerByIpDAOImpl<String, String> metricsServiceConsumerByIpDAO;
+
+    private MetricValuesDAOImpl<String> metricValuesDAO;
+
+    private MetricsServiceOperationByIpDAOImpl<String, String> metricsServiceOperationByIpDAO;
+
+    private MetricServiceCallsByTimeDAOImpl<String, Long> metricServiceCallsByTimeDAO;
+
+    private MetricValuesByIpAndDateDAOImpl<String, Long> metricValuesByIpAndDateDAO;
+
     /**
      * Inits the.
      * 
@@ -80,7 +98,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
      */
     @Override
     public void init(Map<String, String> options, String name, String collectionLocation, Integer snapshotInterval) {
-        System.out.println("collectionLocation = "+collectionLocation);
+        System.out.println("collectionLocation = " + collectionLocation);
         this.serverSide = MonitoringSystem.COLLECTION_LOCATION_SERVER.equals(collectionLocation);
         this.storeServiceMetrics = Boolean.parseBoolean(options.get("storeServiceMetrics"));
         this.snapshotInterval = snapshotInterval;
@@ -91,29 +109,12 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
         String embedded = options.get("embedded");
         if (Boolean.valueOf(embedded)) {
             CassandraManager.initialize();
-            try {
-                Cluster cluster = HFactory.getOrCreateCluster(clusterName, host);
-                createCF(s_keyspace, "MetricValuesByIpAndDate", cluster, true, ComparatorType.UTF8TYPE,
-                                null, ComparatorType.LONGTYPE, ComparatorType.UTF8TYPE);
-                createCF(s_keyspace, "MetricTimeSeries", cluster, false, ComparatorType.UTF8TYPE,
-                                ComparatorType.UTF8TYPE, ComparatorType.LONGTYPE, ComparatorType.UTF8TYPE);
-                createCF(s_keyspace, "ServiceCallsByTime", cluster, true, ComparatorType.UTF8TYPE,
-                                null, ComparatorType.LONGTYPE, ComparatorType.UTF8TYPE);
-                
-                createCF(s_keyspace, "ServiceOperationByIp", cluster, true, ComparatorType.UTF8TYPE,
-                                ComparatorType.UTF8TYPE, ComparatorType.UTF8TYPE, ComparatorType.UTF8TYPE);
-                createCF(s_keyspace, "ServiceConsumerByIp", cluster, true, ComparatorType.UTF8TYPE,
-                                ComparatorType.UTF8TYPE, ComparatorType.UTF8TYPE, ComparatorType.UTF8TYPE);
-                createCF(s_keyspace, "MetricValues", cluster, false, ComparatorType.UTF8TYPE,
-                                ComparatorType.UTF8TYPE, ComparatorType.UTF8TYPE, ComparatorType.UTF8TYPE);
-            }
-            catch (Exception e) {
-
-            }
         }
+        this.initDAO(clusterName, host, s_keyspace);
         metricIdDAO = new MetricIdentifierDAO(clusterName, host, s_keyspace, String.class, MetricIdentifier.class,
                         columnFamilyName);
         metricsDAO = new MetricsDAO(clusterName, host, s_keyspace);
+
     }
 
     /**
@@ -146,8 +147,9 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
                                 .getMetricId();
                 if (metricId.getOperationName() == null) {
                     // Service-level metric, should we skip it ?
-                    if (!storeServiceMetrics)
+                    if (!storeServiceMetrics) {
                         continue;
+                    }
                 }
 
                 metricValueAggregator = resolve(metricValueAggregator);
@@ -284,8 +286,9 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
                     org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricComponentValue[] metricComponentValues) {
         for (org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricComponentValue metricComponentValue : metricComponentValues) {
             Number value = (Number) metricComponentValue.getValue();
-            if (value.longValue() != 0L)
+            if (value.longValue() != 0L) {
                 return true;
+            }
         }
         return false;
     }
@@ -352,6 +355,22 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
             return ComparatorType.BYTESTYPE; // by default
         }
 
+    }
+
+    private void initDAO(String clusterName, String host, String keyspace) {
+        metricIdentifierDAO = new MetricIdentifierDAOImpl<String>(clusterName, host, keyspace, "MetricIdentifier",
+                        String.class);
+        metricTimeSeriesDAO = new MetricTimeSeriesDAOImpl<String>(clusterName, host, keyspace, "MetricTimeSeries",
+                        String.class);
+        metricsServiceConsumerByIpDAO = new MetricsServiceConsumerByIpDAOImpl<String, String>(clusterName, host,
+                        keyspace, "ServiceConsumerByIp", String.class, String.class);
+        metricValuesDAO = new MetricValuesDAOImpl<String>(clusterName, host, keyspace, "MetricValues", String.class);
+        metricsServiceOperationByIpDAO = new MetricsServiceOperationByIpDAOImpl<String, String>(clusterName, host,
+                        keyspace, "ServiceOperationByIp", String.class, String.class);
+        metricServiceCallsByTimeDAO = new MetricServiceCallsByTimeDAOImpl<String, Long>(clusterName, host, keyspace,
+                        "ServiceCallsByTime", String.class, Long.class);
+        metricValuesByIpAndDateDAO = new MetricValuesByIpAndDateDAOImpl<String, Long>(clusterName, host, keyspace,
+                        "MetricValuesByIpAndDate", String.class, Long.class);
     }
 
 }
