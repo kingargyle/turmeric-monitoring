@@ -81,8 +81,8 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
     private final MetricTimeSeriesDAO<String> metricTimeSeriesDAO;
     private final MetricsServiceConsumerByIpDAO<String, String> metricsServiceConsumerByIpDAO;
     private final MetricValuesDAO<String> metricValuesDAO;
-    private final MetricServiceCallsByTimeDAO<String, String> metricServiceCallsByTimeDAO;
-    private final MetricValuesByIpAndDateDAO<String, String> metricValuesByIpAndDateDAO;
+    private final MetricServiceCallsByTimeDAO<String, Long> metricServiceCallsByTimeDAO;
+    private final MetricValuesByIpAndDateDAO<String, Long> metricValuesByIpAndDateDAO;
 
     /** The Constant cassandraPropFilePath. */
     private static final String cassandraPropFilePath = "META-INF/config/cassandra/cassandra.properties";
@@ -182,10 +182,10 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
         metricValuesDAO = new MetricValuesDAOImpl<String>(clusterName, host, keyspace, metricValuesCF, String.class);
         metricsServiceOperationByIpDAO = new MetricsServiceOperationByIpDAOImpl<String, String>(clusterName, host,
                         keyspace, metricServiceOperationByIpCF, String.class, String.class);
-        metricServiceCallsByTimeDAO = new MetricServiceCallsByTimeDAOImpl<String, String>(clusterName, host, keyspace,
-                        metricServiceCallsByTimeCF, String.class, String.class);
-        metricValuesByIpAndDateDAO = new MetricValuesByIpAndDateDAOImpl<String, String>(clusterName, host, keyspace,
-                        metricValuesByIpAndDateCF, String.class, String.class);
+        metricServiceCallsByTimeDAO = new MetricServiceCallsByTimeDAOImpl<String, Long>(clusterName, host, keyspace,
+                        metricServiceCallsByTimeCF, String.class, Long.class);
+        metricValuesByIpAndDateDAO = new MetricValuesByIpAndDateDAOImpl<String, Long>(clusterName, host, keyspace,
+                        metricValuesByIpAndDateCF, String.class, Long.class);
 
     }
 

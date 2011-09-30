@@ -38,10 +38,10 @@ public class MetricsServiceOperationByIpDaoTest extends BaseTest {
 	
 	private static MetricsServiceOperationByIpDAO<String, String> metricsServiceOperationByIpDAO ;
 	private static MetricsServiceConsumerByIpDAO<String, String> metricsServiceConsumerByIpDAO ;
-	private static MetricValuesByIpAndDateDAO<String, String> metricValuesByIpAndDateDAO ;
+	private static MetricValuesByIpAndDateDAO<String, Long> metricValuesByIpAndDateDAO ;
 	private static MetricTimeSeriesDAO<String> metricTimeSeriesDAO ;
 	private static MetricValuesDAO<String> metricValuesDAO ;
-	private static MetricServiceCallsByTimeDAO<String, String> serviceCallsByTimeDAO;
+	private static MetricServiceCallsByTimeDAO<String, Long> serviceCallsByTimeDAO;
 
 	private static CassandraMetricsStorageProvider storageProvider;
 
@@ -59,10 +59,10 @@ public class MetricsServiceOperationByIpDaoTest extends BaseTest {
 		CassandraTestManager.initialize();
 		metricsServiceOperationByIpDAO = new MetricsServiceOperationByIpDAOImpl<String, String>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "ServiceOperationByIp", String.class, String.class);
 		metricsServiceConsumerByIpDAO = new MetricsServiceConsumerByIpDAOImpl<String, String>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "ServiceConsumerByIp", String.class, String.class);
-		metricValuesByIpAndDateDAO = new MetricValuesByIpAndDateDAOImpl<String, String>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "MetricValuesByIpAndDate", String.class, String.class);
+		metricValuesByIpAndDateDAO = new MetricValuesByIpAndDateDAOImpl<String, Long>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "MetricValuesByIpAndDate", String.class, Long.class);
 		metricTimeSeriesDAO = new MetricTimeSeriesDAOImpl<String>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "MetricTimeSeries", String.class);
 		metricValuesDAO = new MetricValuesDAOImpl<String>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "MetricValues", String.class);
-		serviceCallsByTimeDAO = new MetricServiceCallsByTimeDAOImpl<String, String>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "ServiceCallsByTime", String.class, String.class);
+		serviceCallsByTimeDAO = new MetricServiceCallsByTimeDAOImpl<String, Long>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "ServiceCallsByTime", String.class, Long.class);
 		
 		storageProvider = new CassandraMetricsStorageProvider();
 		Map<String, String> options = createOptions();

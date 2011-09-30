@@ -94,11 +94,11 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
             try {
                 Cluster cluster = HFactory.getOrCreateCluster(clusterName, host);
                 createCF(s_keyspace, "MetricValuesByIpAndDate", cluster, true, ComparatorType.UTF8TYPE,
-                                ComparatorType.UTF8TYPE, ComparatorType.LONGTYPE, ComparatorType.UTF8TYPE);
+                                null, ComparatorType.LONGTYPE, ComparatorType.UTF8TYPE);
                 createCF(s_keyspace, "MetricTimeSeries", cluster, false, ComparatorType.UTF8TYPE,
                                 ComparatorType.UTF8TYPE, ComparatorType.LONGTYPE, ComparatorType.UTF8TYPE);
                 createCF(s_keyspace, "ServiceCallsByTime", cluster, true, ComparatorType.UTF8TYPE,
-                                ComparatorType.UTF8TYPE, ComparatorType.LONGTYPE, ComparatorType.UTF8TYPE);
+                                null, ComparatorType.LONGTYPE, ComparatorType.UTF8TYPE);
                 
                 createCF(s_keyspace, "ServiceOperationByIp", cluster, true, ComparatorType.UTF8TYPE,
                                 ComparatorType.UTF8TYPE, ComparatorType.UTF8TYPE, ComparatorType.UTF8TYPE);
