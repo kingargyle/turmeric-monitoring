@@ -8,244 +8,133 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
+import org.ebayopensource.turmeric.common.v1.types.CommonErrorData;
 import org.ebayopensource.turmeric.common.v1.types.ErrorCategory;
 import org.ebayopensource.turmeric.common.v1.types.ErrorSeverity;
-import org.ebayopensource.turmeric.monitoring.v1.services.MetricCriteria;
-import org.ebayopensource.turmeric.monitoring.v1.services.MetricGraphData;
+import org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.CassandraMetricsStorageProvider;
+import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorByIdDAO;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorByIdDAOImpl;
+import org.ebayopensource.turmeric.monitoring.v1.services.ErrorInfos;
+import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
+import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.MonitoringSystem;
+import org.ebayopensource.turmeric.runtime.common.pipeline.LoggingHandler.InitContext;
+import org.ebayopensource.turmeric.runtime.error.cassandra.handler.CassandraErrorLoggingHandler;
+import org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorById;
+import org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
  * The Class SOAMetricsQueryServiceCassandraProviderTest.
+ * 
  * @author jamuguerza
  */
-public class SOAMetricsQueryServiceCassandraProviderTest {
+public class SOAMetricsQueryServiceCassandraProviderTest extends BaseTest {
 
-    /** The now. */
-    private long now = 0l;
-    
-    /** The sixty mins ago. */
-    private long sixtyMinsAgo = 0l;
-    
-    /** The sixty one mins ago. */
-    private long sixtyOneMinsAgo = 0l;
-    
-    /** The sixty two mins ago. */
-    private long sixtyTwoMinsAgo = 0l;
-    
-    /** The one minute ago. */
-    private long oneMinuteAgo = 0l;
-    
-    /** The two minutes ago. */
-    private long twoMinutesAgo = 0l;
-    
-    /** The provider. */
-    private SOAMetricsQueryServiceProvider provider;
+	private Long now = -1l;
+	private ErrorById errorToSave = null;
+	private ErrorValue errorValue = null;
+	private List<CommonErrorData> errorsToStore = null;
+	private String serverName = "localhost";
+	private boolean serverSide = true;
+	private String srvcAdminName = "ServiceAdminName1";
+	private String opName = "Operation1";
+	private String consumerName = "ConsumerName1";
 
-    
-    /**
-     * Setup.
-     *
-     * @throws Exception the exception
-     */
-    @Before
-    public void setup() throws Exception {
-    	  now = System.currentTimeMillis();
-          sixtyMinsAgo = now - TimeUnit.SECONDS.toMillis(3600);
-          sixtyOneMinsAgo = sixtyMinsAgo - TimeUnit.SECONDS.toMillis(60);
-          sixtyTwoMinsAgo = sixtyOneMinsAgo - TimeUnit.SECONDS.toMillis(60);
-          oneMinuteAgo = now - TimeUnit.SECONDS.toMillis(60);
-          twoMinutesAgo = oneMinuteAgo - TimeUnit.SECONDS.toMillis(60);
-          createData();
-//         provider = new SOAMetricsQueryServiceCassandraProviderImpl();
-     
-    }
+	private MetricsErrorByIdDAO<Long> metricsErrorByIdDAOImpl;
 
-    @After
-	public void tearDown() {
-	    provider = null;
+	@Before
+	public void setUp() throws Exception {
+		super.setUp();
+
+		metricsErrorByIdDAOImpl = new MetricsErrorByIdDAOImpl<Long>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE,
+				"ErrorsById", Long.class);
+		queryprovider = new SOAMetricsQueryServiceCassandraProviderImpl();
+		errorStorageProvider = new CassandraErrorLoggingHandler();
+		metricsStorageProvider = new CassandraMetricsStorageProvider();
+
+		InitContext ctx = new MockInitContext(options);
+		errorStorageProvider.init(ctx);
+		metricsStorageProvider.init(options, null, MonitoringSystem.COLLECTION_LOCATION_SERVER, 20);
+		createData();
+
 	}
 
+	@After
+	public void tearDown() {
+		super.tearDown();
+	}
 
 	/**
 	 * Creates the data.
 	 */
 	private void createData() {
+		now = System.currentTimeMillis();
+		errorToSave = new ErrorById();
+		errorToSave.setCategory(ErrorCategory.REQUEST.toString());
+		errorToSave.setSeverity(ErrorSeverity.ERROR.toString());
+		errorToSave.setDomain("TestDomain");
+		errorToSave.setErrorId(Long.valueOf(123));
+		errorToSave.setName("TestError1");
+		errorToSave.setOrganization("TestOrg1");
+		errorToSave.setSubDomain("TestSubDomain");
 
-//		org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorById error1 = new org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorById();
-//		error1.setErrorId(1L);
-//		error1.setCategory( ErrorCategory.SYSTEM.value());
-//		error1.setDomain("domain_1");
-//		error1.setSubDomain("sub_domain_1");
-//		error1.setOrganization("organization");
-//		error1.setSeverity(ErrorSeverity.ERROR.value());
-//		error1.setName("error_1");
-//		error1.setTimestamp();
-//		error1.setConsumerName();
-//        entityManager.persist(error1);
-//        ErrorValue errorValue1 = new ErrorValue(error1, "message1", "service_3", "operation_3_1", "consumer_3",
-//                        oneMinuteAgo, true, 0);
-//        entityManager.persist(errorValue1);
-/////////////
-//        org.ebayopensource.turmeric.runtime.error.cassandra.model.Error error2 = new org.ebayopensource.turmeric.runtime.error.cassandra.model.Error();
-//		error2.setErrorId(2L);
-//		error2.setCategory( ErrorCategory.SYSTEM.value());
-//		error2.setDomain("domain_1");
-//		error2.setSubDomain("sub_domain_1");
-//		error2.setOrganization("organization");
-//		error2.setSeverity(ErrorSeverity.ERROR.value());
-//		error2.setName("error_2");
-//        entityManager.persist(error2);
-//        ErrorValue errorValue2 = new ErrorValue(error2, "message1", "service_3", "operation_3_1", "consumer_3",
-//                        oneMinuteAgo, true, 0);
-//        entityManager.persist(errorValue2);
-///////////////
-//        org.ebayopensource.turmeric.runtime.error.cassandra.model.Error error3 = new org.ebayopensource.turmeric.runtime.error.cassandra.model.Error();
-//		error3.setErrorId(3L);
-//		error3.setCategory( ErrorCategory.SYSTEM.value());
-//		error3.setDomain("domain_1");
-//		error3.setSubDomain("sub_domain_1");
-//		error3.setOrganization("organization");
-//		error3.setSeverity(ErrorSeverity.ERROR.value());
-//		error3.setName("error_2");
-//		
-//        ErrorValue errorValue3 = new ErrorValue(error2, "message2", "service_3", "operation_3_1", "consumer_3",
-//                        twoMinutesAgo, true, 0);
-//        entityManager.persist(errorValue3);
-//
-///////////////
-//        org.ebayopensource.turmeric.runtime.error.cassandra.model.Error error4 = new org.ebayopensource.turmeric.runtime.error.cassandra.model.Error();
-//		error4.setErrorId(4L);
-//		error4.setCategory( ErrorCategory.SYSTEM.value());
-//		error4.setDomain("domain_1");
-//		error4.setSubDomain("sub_domain_1");
-//		error4.setOrganization("organization");
-//		error4.setSeverity(ErrorSeverity.ERROR.value());
-//		error4.setName("error_2");
-//		
-///////////////
-//		  org.ebayopensource.turmeric.runtime.error.cassandra.model.Error error5 = new org.ebayopensource.turmeric.runtime.error.cassandra.model.Error();
-//			error5.setErrorId(5L);
-//			error5.setCategory( ErrorCategory.APPLICATION.value());
-//			error5.setDomain("domain_1");
-//			error5.setSubDomain("sub_domain_1");
-//			error5.setOrganization("organization");
-//			error5.setSeverity(ErrorSeverity.ERROR.value());
-//			error5.setName("error_3");
-//        
-//         ErrorValue errorValue5 = new ErrorValue(error3, "message4", "service_2", "operation_3_1", "consumer_3",
-//                        oneMinuteAgo, true, 0);
-//        entityManager.persist(errorValue5);
-//
-//        /////////////
-//		  org.ebayopensource.turmeric.runtime.error.cassandra.model.Error error6 = new org.ebayopensource.turmeric.runtime.error.cassandra.model.Error();
-//			error6.setErrorId(6L);
-//			error6.setCategory( ErrorCategory.APPLICATION.value());
-//			error6.setDomain("domain_1");
-//			error6.setSubDomain("sub_domain_1");
-//			error6.setOrganization("organization");
-//			error6.setSeverity(ErrorSeverity.ERROR.value());
-//			error6.setName("error_3");
-//            
-//        ErrorValue errorValue6 = new ErrorValue(error3, "message5", "service_2", "operation_3_1", "consumer_3",
-//                        twoMinutesAgo, true, 0);
-//
-//        cassandra.persist and commit();
-    
-	    
+		errorValue = new ErrorValue();
+		errorValue.setErrorId(Long.valueOf(123));
+		errorValue.setConsumerName("theTestConsumer");
+		errorValue.setErrorMessage("The actual message");
+		errorValue.setOperationName("Op1");
+		errorValue.setServerName("TheServerName");
+		errorValue.setServerSide(true);
+		errorValue.setServiceAdminName("TheServiceAdminName");
+		errorValue.setTimeStamp(now);
+
+		errorsToStore = createTestCommonErrorDataList(3);
 	}
-    
-	/**
-	 * Test nothing.
-	 */
+
 	@Test
-	public void testNothing() {
+	public void testErrorMetricsMetadata() throws ServiceException {
+		errorStorageProvider.persistErrors(errorsToStore, serverName, srvcAdminName, opName, serverSide, consumerName,
+				now);
+
+		ErrorInfos errorMetricsMetadata = queryprovider.getErrorMetricsMetadata("1", "TestErrorName",
+				"ServiceAdminName1");
 		assertNull(null);
-		
+		// assertNotNull(errorMetricsMetadata);
+		// assertEquals(ErrorCategory.APPLICATION,
+		// errorMetricsMetadata.getCategory());
+		// assertEquals(ErrorSeverity.ERROR,
+		// errorMetricsMetadata.getSeverity());
+		// assertEquals("TestDomain", errorMetricsMetadata.getDomain());
+		// assertEquals("1", errorMetricsMetadata.getId());
+		// assertEquals("TestErrorName", errorMetricsMetadata.getName());
+		// assertEquals("TestSubdomain", errorMetricsMetadata.getSubDomain());
+
 	}
 
-	   /**
-     * Test get error graph for empty category.
-     */
-//    @Test
-    public void testGetErrorGraphForEmptyCategory() {
-        long duration = 3600;// in secs
-        int aggregationPeriod = 60;// in secs
-        MetricCriteria metricCriteria = new MetricCriteria();
-        metricCriteria.setFirstStartTime(twoMinutesAgo);
-        metricCriteria.setDuration(duration);
-        metricCriteria.setAggregationPeriod(aggregationPeriod);
-        metricCriteria.setRoleType("server");
+	public List<CommonErrorData> createTestCommonErrorDataList(int errorQuantity) {
+		List<CommonErrorData> commonErrorDataList = new ArrayList<CommonErrorData>();
+		for (int i = 0; i < errorQuantity; i++) {
+			CommonErrorData e = new CommonErrorData();
+			e.setCategory(ErrorCategory.APPLICATION);
+			e.setSeverity(ErrorSeverity.ERROR);
+			e.setCause("TestCause");
+			e.setDomain("TestDomain");
+			e.setSubdomain("TestSubdomain");
+			e.setErrorName("TestErrorName");
+			e.setErrorId(Long.valueOf(i));
+			e.setMessage("Error Message " + i);
+			e.setOrganization("TestOrganization");
+			commonErrorDataList.add(e);
+		}
+		return commonErrorDataList;
 
-        List<MetricGraphData> result = provider.getErrorGraph("service_3", null, null, null,
-                        ErrorCategory.REQUEST.value(), null, metricCriteria);
+	}
 
-        assertNotNull(result);
-        assertEquals(duration / aggregationPeriod, result.size());
-        // there must be duration/aggregationPeriod elements. The first
-        assertEquals(duration / aggregationPeriod, result.size());
-        // must not be any value > 0.0
-        for (int i = 0; i < duration / aggregationPeriod; i++) {
-            assertEquals(0.0d, result.get(0).getCount(), 0.0d);
-        }
-
-    }
-    
-    /**
-     * Test get application error graph for service one minute ago.
-     */
-//    @Test
-    public void testGetApplicationErrorGraphForServiceOneMinuteAgo() {
-        long duration = 120;// in secs
-        int aggregationPeriod = 60;// in secs
-        MetricCriteria metricCriteria = new MetricCriteria();
-        metricCriteria.setFirstStartTime(oneMinuteAgo);
-        metricCriteria.setDuration(duration);
-        metricCriteria.setAggregationPeriod(aggregationPeriod);
-        metricCriteria.setRoleType("server");
-
-        List<MetricGraphData> result = provider.getErrorGraph("service_2", null, null, null,
-                        ErrorCategory.APPLICATION.value(), null, metricCriteria);
-
-        assertNotNull(result);
-        assertEquals(duration / aggregationPeriod, result.size());
-        // there must be duration/aggregationPeriod elements. The first
-        assertEquals(duration / aggregationPeriod, result.size());
-        assertEquals(1.0d, result.get(0).getCount(), 0.0d);// first element must be 1
-        assertEquals(0.0d, result.get(1).getCount(), 0.0d);// second element must be 0
-    }
-    
-    /**
-     * Test get application error graph for service two minutes ago.
-     */
-//    @Test
-    public void testGetApplicationErrorGraphForServiceTwoMinutesAgo() {
-        long duration = 180;// in secs
-        int aggregationPeriod = 60;// in secs
-        MetricCriteria metricCriteria = new MetricCriteria();
-        metricCriteria.setFirstStartTime(twoMinutesAgo);
-        metricCriteria.setDuration(duration);
-        metricCriteria.setAggregationPeriod(aggregationPeriod);
-        metricCriteria.setRoleType("server");
-
-        List<MetricGraphData> result = provider.getErrorGraph("service_2", null, null, null,
-                        ErrorCategory.APPLICATION.value(), null, metricCriteria);
-
-        assertNotNull(result);
-        assertEquals(duration / aggregationPeriod, result.size());
-        // there must be duration/aggregationPeriod elements. The first
-        assertEquals(duration / aggregationPeriod, result.size());
-        assertEquals(1.0d, result.get(0).getCount(), 0.0d);// first element must be 1
-        assertEquals(1.0d, result.get(1).getCount(), 0.0d);// second element must be 1
-        assertEquals(0.0d, result.get(2).getCount(), 0.0d);// third element must be 0
-
-    }
 }

@@ -8,12 +8,14 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.dao;
 
-import org.ebayopensource.turmeric.runtime.error.model.Error;
+import org.ebayopensource.turmeric.monitoring.provider.model.Model;
+
+
 
 /**
  * The Interface MetricsErrorDAO.
  * @author jose alvarez muguerza
  */
 public interface MetricsErrorByIdDAO<K> {
-	org.ebayopensource.turmeric.runtime.error.model.Error find(K key); 
+	Model<?>  find(K key );
 }

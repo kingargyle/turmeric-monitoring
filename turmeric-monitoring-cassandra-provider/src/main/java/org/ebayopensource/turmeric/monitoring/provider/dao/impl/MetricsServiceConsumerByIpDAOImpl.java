@@ -17,9 +17,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsServiceConsumerByIpDAO;
-import org.ebayopensource.turmeric.monitoring.provider.model.BasicModel;
+import org.ebayopensource.turmeric.monitoring.provider.model.Model;
 import org.ebayopensource.turmeric.monitoring.provider.model.SuperModel;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractSuperColumnFamilyDao;
+
 
 import edu.emory.mathcs.backport.java.util.Collections;
 
@@ -31,7 +32,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * @author jamuguerza
  */
 public class MetricsServiceConsumerByIpDAOImpl<SK, K> extends
-		AbstractSuperColumnFamilyDao<SK, SuperModel, String, BasicModel>
+		AbstractSuperColumnFamilyDao<SK, SuperModel, K, Model>
 		implements MetricsServiceConsumerByIpDAO<SK, K> {
 
 	/**
@@ -49,7 +50,7 @@ public class MetricsServiceConsumerByIpDAOImpl<SK, K> extends
 	public MetricsServiceConsumerByIpDAOImpl(String clusterName, String host,
 			String s_keyspace, String columnFamilyName, final Class<SK> sKTypeClass, final Class<K> kTypeClass) {
 		super(clusterName, host, s_keyspace, sKTypeClass, SuperModel.class,
-				String.class, BasicModel.class, columnFamilyName);
+				kTypeClass, Model.class, columnFamilyName);
 	}
 
 	@Override
@@ -58,17 +59,19 @@ public class MetricsServiceConsumerByIpDAOImpl<SK, K> extends
 
 			List<SK> keys = new ArrayList<SK>();
 			keys.add((SK)"All");
-			String[] serviceNames = new String[serviceAdminNames.size()];
-			serviceNames = serviceAdminNames.toArray(serviceNames);
-			
-			Map<SK, SuperModel> findItems = findItems(keys, serviceNames);
+			String[] serviceNames = null;
+			if(serviceAdminNames != null && !serviceAdminNames.isEmpty()) {
+				serviceNames = new String[serviceAdminNames.size()];
+				serviceNames = serviceAdminNames.toArray(serviceNames);
+			}
+			Map<SK, SuperModel> findItems = findItems(keys, (K[]) serviceNames);
 
 			for (Map.Entry<SK, SuperModel> findItem : findItems.entrySet()) {
 				SK key = findItem.getKey(); //IP, in this case ALL
 				
 				SuperModel superModel = findItem.getValue();
 				if(superModel != null) {
-					Map<String, BasicModel> columns = superModel.getColumns();
+					Map<String, Model> columns = superModel.getColumns();
 									
 					for (String consumerName : columns.keySet()) {
 							resultSet.add(consumerName);

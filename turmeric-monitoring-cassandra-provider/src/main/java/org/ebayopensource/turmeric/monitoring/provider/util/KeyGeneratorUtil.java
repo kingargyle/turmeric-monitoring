@@ -31,7 +31,7 @@ public class KeyGeneratorUtil {
 	 * @param param1 Category or Severity filter, One of them, never both
 	 * @return the list
 	 */
-	public static List<String> generateStringKeys(final boolean serverSide,
+	public static List<String> generateErrorValuesKeys(final boolean serverSide,
 			final Map<String, List<String>> filters, final String param1) {
 		final List<String> errorKeys = new ArrayList<String>();
 

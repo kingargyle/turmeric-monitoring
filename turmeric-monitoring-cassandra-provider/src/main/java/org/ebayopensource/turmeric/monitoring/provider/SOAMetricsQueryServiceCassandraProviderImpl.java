@@ -11,20 +11,22 @@ package org.ebayopensource.turmeric.monitoring.provider;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.ebayopensource.turmeric.common.v1.types.ErrorCategory;
 import org.ebayopensource.turmeric.common.v1.types.ErrorSeverity;
 
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.model.MetricIdentifier;
-import org.ebayopensource.turmeric.runtime.error.model.Error;
 import org.ebayopensource.turmeric.monitoring.provider.dao.BaseMetricsErrorsByFilterDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricServiceCallsByTimeDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricTimeSeriesDAO;
@@ -46,6 +48,7 @@ import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorsByS
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceConsumerByIpDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceOperationByIpDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.model.ExtendedErrorViewData;
+import org.ebayopensource.turmeric.monitoring.provider.model.Model;
 import org.ebayopensource.turmeric.monitoring.v1.services.CriteriaInfo;
 import org.ebayopensource.turmeric.monitoring.v1.services.ErrorInfos;
 import org.ebayopensource.turmeric.monitoring.v1.services.ErrorViewData;
@@ -71,7 +74,7 @@ import org.ebayopensource.turmeric.utils.cassandra.service.CassandraManager;
  */
 public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQueryServiceProvider {
 
-    private final MetricsErrorByIdDAO<String> metricsErrorByIdDAO;
+    private final MetricsErrorByIdDAO<Long> metricsErrorByIdDAO;
     private final MetricsErrorValuesDAO<String> metricsErrorValuesDAO;
     private final BaseMetricsErrorsByFilterDAO<String> metricsErrorsByCategoryDAO;
     private final BaseMetricsErrorsByFilterDAO<String> metricsErrorsBySeverityDAO;
@@ -88,7 +91,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
     private static final String cassandraPropFilePath = "META-INF/config/cassandra/cassandra.properties";
 
     /** The Constant c_hostIp. */
-    private static final String c_clusterName = "cassandra-rl-cluster-name";
+    private static final String c_clusterName = "cassandra-cluster-name";
 
     /** The Constant c_hostIp. */
     private static final String c_hostIp = "cassandra-host-ip";
@@ -153,21 +156,18 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
     private static String metricServiceCallsByTimeCF;
     private static String metricValuesByIpAndDateCF;
 
-    {
-        getCassandraConfig();
-        if (Boolean.valueOf(embeed)) {
-            CassandraManager.initialize();
-        }
-
-    }
-
     /**
      * Instantiates a new Metrics Query Service cassandra provider impl.
      */
     public SOAMetricsQueryServiceCassandraProviderImpl() {
-
-        metricsErrorByIdDAO = new MetricsErrorByIdDAOImpl<String>(clusterName, host, keyspace, errorByIdCF,
-                        String.class);
+	 
+        getCassandraConfig();
+        if (Boolean.valueOf(embeed)) {
+            CassandraManager.initialize();
+        }
+    	    
+        metricsErrorByIdDAO = new MetricsErrorByIdDAOImpl<Long>(clusterName, host, keyspace, errorByIdCF,
+                        Long.class);
         metricsErrorValuesDAO = new MetricsErrorValuesDAOImpl<String>(clusterName, host, keyspace, errorValuesCF,
                         String.class);
         metricsErrorsByCategoryDAO = new MetricsErrorsByCategoryDAOImpl<String>(clusterName, host, keyspace,
@@ -194,7 +194,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
      * 
      * @return the cassandra config
      */
-    private static void getCassandraConfig() {
+    private  void getCassandraConfig() {
         ClassLoader classLoader = ContextUtils.getClassLoader();
         InputStream inStream = classLoader.getResourceAsStream(cassandraPropFilePath);
 
@@ -579,21 +579,36 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
         return filters;
     }
 
-    @Override
-    public ErrorInfos getErrorMetricsMetadata(String errorId, String errorName, String serviceName) {
-        org.ebayopensource.turmeric.runtime.error.model.Error error = metricsErrorByIdDAO.find(errorId);
-        if (error != null) {
-            ErrorInfos result = new ErrorInfos();
-            result.setId(String.valueOf(error.getErrorId()));
-            result.setName(error.getName());
-            result.setCategory(error.getCategory().value());
-            result.setSeverity(error.getSeverity().value());
-            result.setDomain(error.getDomain());
-            result.setSubDomain(error.getSubDomain());
-            return result;
-        }
-        return null;
-    }
+	@Override
+	public ErrorInfos getErrorMetricsMetadata(String errorId, String errorName,
+			String serviceName) {
+		long id = Long.parseLong(errorId);
+		Model<?> error = metricsErrorByIdDAO.find(id);
+		if (error != null && !error.getColumns().isEmpty()) {
+			Map<String, Object> columns = error.getColumns();
+
+			ErrorInfos result = new ErrorInfos();
+
+			Field[] fields = result.getClass().getDeclaredFields();
+			for (Field field : fields) {
+				field.setAccessible(true);
+				if (columns.containsKey(field.getName())) {
+					try {
+						field.set(result, columns.get(field.getName()));
+					} catch (IllegalArgumentException e) {
+						throw new IllegalArgumentException(
+								"Unknown column name " + field.getName());
+					} catch (IllegalAccessException e) {
+						throw new IllegalArgumentException(
+								"Unknown field name in Error Info ");
+					}
+				}
+
+			}
+			return result;
+		}
+		return null;
+	}
 
     @Override
     public List<MetricGroupData> getMetricsData(MetricCriteria metricCriteria,
