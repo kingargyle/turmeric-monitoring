@@ -37,104 +37,107 @@ import org.junit.Test;
  */
 public class SOAMetricsQueryServiceCassandraProviderTest extends BaseTest {
 
-	private Long now = -1l;
-	private ErrorById errorToSave = null;
-	private ErrorValue errorValue = null;
-	private List<CommonErrorData> errorsToStore = null;
-	private String serverName = "localhost";
-	private boolean serverSide = true;
-	private String srvcAdminName = "ServiceAdminName1";
-	private String opName = "Operation1";
-	private String consumerName = "ConsumerName1";
+    private Long now = -1l;
+    private ErrorById errorToSave = null;
+    private ErrorValue errorValue = null;
+    private List<CommonErrorData> errorsToStore = null;
+    private final String serverName = "localhost";
+    private final boolean serverSide = true;
+    private final String srvcAdminName = "ServiceAdminName1";
+    private final String opName = "Operation1";
+    private final String consumerName = "ConsumerName1";
 
-	private MetricsErrorByIdDAO<Long> metricsErrorByIdDAOImpl;
+    private MetricsErrorByIdDAO<Long> metricsErrorByIdDAOImpl;
 
-	@Before
-	public void setUp() throws Exception {
-		super.setUp();
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
 
-		metricsErrorByIdDAOImpl = new MetricsErrorByIdDAOImpl<Long>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE,
-				"ErrorsById", Long.class);
-		queryprovider = new SOAMetricsQueryServiceCassandraProviderImpl();
-		errorStorageProvider = new CassandraErrorLoggingHandler();
-		metricsStorageProvider = new CassandraMetricsStorageProvider();
+        metricsErrorByIdDAOImpl = new MetricsErrorByIdDAOImpl<Long>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE,
+                        "ErrorsById", Long.class);
 
-		InitContext ctx = new MockInitContext(options);
-		errorStorageProvider.init(ctx);
-		metricsStorageProvider.init(options, null, MonitoringSystem.COLLECTION_LOCATION_SERVER, 20);
-		createData();
+        errorStorageProvider = new CassandraErrorLoggingHandler();
+        metricsStorageProvider = new CassandraMetricsStorageProvider();
 
-	}
+        InitContext ctx = new MockInitContext(options);
+        errorStorageProvider.init(ctx);
+        metricsStorageProvider.init(options, null, MonitoringSystem.COLLECTION_LOCATION_SERVER, 20);
+        queryprovider = new SOAMetricsQueryServiceCassandraProviderImpl();
+        createData();
 
-	@After
-	public void tearDown() {
-		super.tearDown();
-	}
+    }
 
-	/**
-	 * Creates the data.
-	 */
-	private void createData() {
-		now = System.currentTimeMillis();
-		errorToSave = new ErrorById();
-		errorToSave.setCategory(ErrorCategory.REQUEST.toString());
-		errorToSave.setSeverity(ErrorSeverity.ERROR.toString());
-		errorToSave.setDomain("TestDomain");
-		errorToSave.setErrorId(Long.valueOf(123));
-		errorToSave.setName("TestError1");
-		errorToSave.setOrganization("TestOrg1");
-		errorToSave.setSubDomain("TestSubDomain");
+    @Override
+    @After
+    public void tearDown() {
+        super.tearDown();
+    }
 
-		errorValue = new ErrorValue();
-		errorValue.setErrorId(Long.valueOf(123));
-		errorValue.setConsumerName("theTestConsumer");
-		errorValue.setErrorMessage("The actual message");
-		errorValue.setOperationName("Op1");
-		errorValue.setServerName("TheServerName");
-		errorValue.setServerSide(true);
-		errorValue.setServiceAdminName("TheServiceAdminName");
-		errorValue.setTimeStamp(now);
+    /**
+     * Creates the data.
+     */
+    private void createData() {
+        now = System.currentTimeMillis();
+        errorToSave = new ErrorById();
+        errorToSave.setCategory(ErrorCategory.REQUEST.toString());
+        errorToSave.setSeverity(ErrorSeverity.ERROR.toString());
+        errorToSave.setDomain("TestDomain");
+        errorToSave.setErrorId(Long.valueOf(123));
+        errorToSave.setName("TestError1");
+        errorToSave.setOrganization("TestOrg1");
+        errorToSave.setSubDomain("TestSubDomain");
 
-		errorsToStore = createTestCommonErrorDataList(3);
-	}
+        errorValue = new ErrorValue();
+        errorValue.setErrorId(Long.valueOf(123));
+        errorValue.setConsumerName("theTestConsumer");
+        errorValue.setErrorMessage("The actual message");
+        errorValue.setOperationName("Op1");
+        errorValue.setServerName("TheServerName");
+        errorValue.setServerSide(true);
+        errorValue.setServiceAdminName("TheServiceAdminName");
+        errorValue.setTimeStamp(now);
 
-	@Test
-	public void testErrorMetricsMetadata() throws ServiceException {
-		errorStorageProvider.persistErrors(errorsToStore, serverName, srvcAdminName, opName, serverSide, consumerName,
-				now);
+        errorsToStore = createTestCommonErrorDataList(3);
+    }
 
-		ErrorInfos errorMetricsMetadata = queryprovider.getErrorMetricsMetadata("1", "TestErrorName",
-				"ServiceAdminName1");
-		assertNull(null);
-		// assertNotNull(errorMetricsMetadata);
-		// assertEquals(ErrorCategory.APPLICATION,
-		// errorMetricsMetadata.getCategory());
-		// assertEquals(ErrorSeverity.ERROR,
-		// errorMetricsMetadata.getSeverity());
-		// assertEquals("TestDomain", errorMetricsMetadata.getDomain());
-		// assertEquals("1", errorMetricsMetadata.getId());
-		// assertEquals("TestErrorName", errorMetricsMetadata.getName());
-		// assertEquals("TestSubdomain", errorMetricsMetadata.getSubDomain());
+    @Test
+    public void testErrorMetricsMetadata() throws ServiceException {
+        errorStorageProvider.persistErrors(errorsToStore, serverName, srvcAdminName, opName, serverSide, consumerName,
+                        now);
 
-	}
+        ErrorInfos errorMetricsMetadata = queryprovider.getErrorMetricsMetadata("1", "TestErrorName",
+                        "ServiceAdminName1");
+        assertNull(null);
+        // assertNotNull(errorMetricsMetadata);
+        // assertEquals(ErrorCategory.APPLICATION,
+        // errorMetricsMetadata.getCategory());
+        // assertEquals(ErrorSeverity.ERROR,
+        // errorMetricsMetadata.getSeverity());
+        // assertEquals("TestDomain", errorMetricsMetadata.getDomain());
+        // assertEquals("1", errorMetricsMetadata.getId());
+        // assertEquals("TestErrorName", errorMetricsMetadata.getName());
+        // assertEquals("TestSubdomain", errorMetricsMetadata.getSubDomain());
 
-	public List<CommonErrorData> createTestCommonErrorDataList(int errorQuantity) {
-		List<CommonErrorData> commonErrorDataList = new ArrayList<CommonErrorData>();
-		for (int i = 0; i < errorQuantity; i++) {
-			CommonErrorData e = new CommonErrorData();
-			e.setCategory(ErrorCategory.APPLICATION);
-			e.setSeverity(ErrorSeverity.ERROR);
-			e.setCause("TestCause");
-			e.setDomain("TestDomain");
-			e.setSubdomain("TestSubdomain");
-			e.setErrorName("TestErrorName");
-			e.setErrorId(Long.valueOf(i));
-			e.setMessage("Error Message " + i);
-			e.setOrganization("TestOrganization");
-			commonErrorDataList.add(e);
-		}
-		return commonErrorDataList;
+    }
 
-	}
+    public List<CommonErrorData> createTestCommonErrorDataList(int errorQuantity) {
+        List<CommonErrorData> commonErrorDataList = new ArrayList<CommonErrorData>();
+        for (int i = 0; i < errorQuantity; i++) {
+            CommonErrorData e = new CommonErrorData();
+            e.setCategory(ErrorCategory.APPLICATION);
+            e.setSeverity(ErrorSeverity.ERROR);
+            e.setCause("TestCause");
+            e.setDomain("TestDomain");
+            e.setSubdomain("TestSubdomain");
+            e.setErrorName("TestErrorName");
+            e.setErrorId(Long.valueOf(i));
+            e.setMessage("Error Message " + i);
+            e.setOrganization("TestOrganization");
+            commonErrorDataList.add(e);
+        }
+        return commonErrorDataList;
+
+    }
 
 }
