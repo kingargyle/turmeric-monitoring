@@ -9,6 +9,7 @@
 package org.ebayopensource.turmeric.monitoring.provider.dao.impl;
 
 
+import org.ebayopensource.turmeric.monitoring.cassandra.storage.model.MetricIdentifier;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricIndentifierDAO;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
 
@@ -16,14 +17,14 @@ import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
  * @author jamuguerza
  *
  */
-public class MetricIdentifierDAOImpl<K> extends AbstractColumnFamilyDao<K, String> implements
+public class MetricIdentifierDAOImpl<K> extends AbstractColumnFamilyDao<K, MetricIdentifier> implements
 	MetricIndentifierDAO<K> {
 
 	public MetricIdentifierDAOImpl(String clusterName, String host,
 			String s_keyspace,  String columnFamilyName, final Class<K> kTypeClass) {
-		super(clusterName, host, s_keyspace, kTypeClass, String.class,
+		super(clusterName, host, s_keyspace, kTypeClass, MetricIdentifier.class,
 				columnFamilyName);
+		
 	}
-
 
 }
