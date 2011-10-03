@@ -235,8 +235,8 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
 				metricId.getAdminName(), metricId.getOperationName(),
 				serverSide);
 		String key = model.getKey();
-		metricIdentifierDAO.save(key, model);
-		//this.metricIdDAO.save(key, model);
+		//metricIdentifierDAO.save(key, model);
+		this.metricIdDAO.save(key, model);
 	}
 
 	/**
@@ -247,7 +247,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
 	 * @return the metric identifier
 	 */
 	private MetricIdentifier<String> findMetricId(String keyfromMetricId) {
-		return this.metricIdentifierDAO.find(keyfromMetricId);
+		return this.metricIdDAO.find(keyfromMetricId);
 	}
 
 	/**
