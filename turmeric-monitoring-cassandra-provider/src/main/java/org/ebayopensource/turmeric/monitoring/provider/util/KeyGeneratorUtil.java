@@ -35,14 +35,11 @@ public class KeyGeneratorUtil {
 			final Map<String, List<String>> filters, final String param1) {
 		final List<String> errorKeys = new ArrayList<String>();
 
-		final List<String> serverNames = new ArrayList<String>(
-				filters.get("Server"));
-		final List<String> serviceAdminNames = new ArrayList<String>(
-				filters.get("Service"));
-		final List<String> operationNames = new ArrayList<String>(
-				filters.get("Operation"));
-		final List<String> consumerNames = new ArrayList<String>(
-				filters.get("Consumer"));
+		final List<String> serverNames = (filters.get("Server")!= null ? new ArrayList<String>(filters.get("Server")): new ArrayList<String>()) ;
+		final List<String> serviceAdminNames = (filters.get("Service")!= null ? new ArrayList<String>(filters.get("Service")): new ArrayList<String>()) ;
+		final List<String> operationNames = (filters.get("Operation")!= null ? new ArrayList<String>(filters.get("Operation")): new ArrayList<String>()) ;		
+		final List<String> consumerNames = (filters.get("Consumer")!= null ? new ArrayList<String>(filters.get("Consumer")): new ArrayList<String>()) ;
+				
 
 		if (serverNames == null || serverNames.isEmpty()) {
 			serverNames.add(KEY_ALL );

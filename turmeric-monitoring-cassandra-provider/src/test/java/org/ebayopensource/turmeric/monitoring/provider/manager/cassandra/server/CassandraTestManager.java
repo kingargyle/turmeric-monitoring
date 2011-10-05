@@ -51,7 +51,7 @@ public class CassandraTestManager {
 		System.setProperty("cassandra.config", "META-INF/config/cassandra/cassandra-test.yaml");
 	}
 
-	private static void cleanUpCassandraDirs() {
+	public  static void cleanUpCassandraDirs() {
 		if (CassandraManager.getEmbeddedService() == null) {
 			System.out.println("Cleaning cassandra dirs ? = " + deleteDir(new File("target/cassandra")));
 		}

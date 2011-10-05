@@ -10,6 +10,7 @@ package org.ebayopensource.turmeric.monitoring.provider.dao.impl;
 
 
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorByIdDAO;
+import org.ebayopensource.turmeric.monitoring.provider.model.Error;
 import org.ebayopensource.turmeric.monitoring.provider.model.Model;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
 
@@ -17,7 +18,7 @@ import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
  * @author jamuguerza
  *
  */
-public class MetricsErrorByIdDAOImpl<K> extends AbstractColumnFamilyDao<K, Model> implements
+public class MetricsErrorByIdDAOImpl<K> extends AbstractColumnFamilyDao<K, Error> implements
 		MetricsErrorByIdDAO<K> {
 		
 	/**
@@ -30,7 +31,7 @@ public class MetricsErrorByIdDAOImpl<K> extends AbstractColumnFamilyDao<K, Model
 	 */
 	public MetricsErrorByIdDAOImpl(String clusterName, String host,
 			String s_keyspace,  String columnFamilyName, final Class<K> kTypeClass) {
-		super(clusterName, host, s_keyspace, kTypeClass, Model.class,
+		super(clusterName, host, s_keyspace, kTypeClass, Error.class,
 				columnFamilyName);
 	}
 

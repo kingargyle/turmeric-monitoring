@@ -48,6 +48,7 @@ import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorsByS
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceConsumerByIpDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceOperationByIpDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.model.ExtendedErrorViewData;
+import org.ebayopensource.turmeric.monitoring.provider.model.Error;
 import org.ebayopensource.turmeric.monitoring.provider.model.Model;
 import org.ebayopensource.turmeric.monitoring.v1.services.CriteriaInfo;
 import org.ebayopensource.turmeric.monitoring.v1.services.ErrorInfos;
@@ -204,7 +205,8 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
                 properties.load(inStream);
                 clusterName = properties.getProperty(c_clusterName);
                 host = (String) properties.get(c_hostIp) + ":" + (String) properties.get(c_rpcPort);
-
+                embeed = (String) properties.get(c_hostIp) + ":" + (String) properties.get(c_embeed);
+                
                 keyspace = (String) properties.get(c_keyspace);
 
                 errorByIdCF = (String) properties.get(c_error_by_id_cf);
@@ -300,10 +302,10 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
         String filter = null;
 
         if (errorCategory != null) {
-            filter = ErrorCategory.fromValue(errorCategory).value();
+            filter = ErrorCategory.fromValue(errorCategory).name();
         }
         else if (errorSeverity != null) {
-            filter = ErrorSeverity.fromValue(errorSeverity).value();
+            filter = ErrorSeverity.fromValue(errorSeverity).name();
         }
 
         return filter;
@@ -583,31 +585,20 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
 	public ErrorInfos getErrorMetricsMetadata(String errorId, String errorName,
 			String serviceName) {
 		long id = Long.parseLong(errorId);
-		Model<?> error = metricsErrorByIdDAO.find(id);
-		if (error != null && !error.getColumns().isEmpty()) {
-			Map<String, Object> columns = error.getColumns();
-
-			ErrorInfos result = new ErrorInfos();
-
-			Field[] fields = result.getClass().getDeclaredFields();
-			for (Field field : fields) {
-				field.setAccessible(true);
-				if (columns.containsKey(field.getName())) {
-					try {
-						field.set(result, columns.get(field.getName()));
-					} catch (IllegalArgumentException e) {
-						throw new IllegalArgumentException(
-								"Unknown column name " + field.getName());
-					} catch (IllegalAccessException e) {
-						throw new IllegalArgumentException(
-								"Unknown field name in Error Info ");
-					}
-				}
-
-			}
-			return result;
+		Error<?> found = metricsErrorByIdDAO.find(id);
+		ErrorInfos result = null;
+		
+		if (found != null ) {
+			result = new ErrorInfos();
+			result.setCategory(found.getCategory());
+			result.setSeverity(found.getSeverity());
+			result.setDomain(found.getDomain());
+			result.setSubDomain(found.getSubDomain());
+			result.setId(String.valueOf(found.getErrorId()));
+			result.setName(found.getName());
+			
 		}
-		return null;
+		return result;
 	}
 
     @Override
