@@ -139,7 +139,7 @@ public class SOAMetricsQueryServiceCassandraProviderTest extends BaseTest {
 
     }
     
-    //@Test
+    @Test
     public void testGetErrorGraphOneMinuteAgo() throws ServiceException {
     	createData(oneMinuteAgo);
     	errorStorageProvider.persistErrors(errorsToStore, serverName, srvcAdminName, opName, serverSide, consumerName,
