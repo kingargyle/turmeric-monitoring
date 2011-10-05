@@ -19,7 +19,6 @@ import org.ebayopensource.turmeric.monitoring.provider.dao.BaseMetricsErrorsByFi
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorValuesDAO;
 import org.ebayopensource.turmeric.monitoring.provider.model.Model;
 import org.ebayopensource.turmeric.monitoring.provider.util.KeyGeneratorUtil;
-import org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
 
 /**
@@ -50,6 +49,7 @@ public  class BaseMetricsErrorsByFiltersDAOImpl<K>  extends AbstractColumnFamily
 
 		final List<K> errorKeys =  (List<K>) KeyGeneratorUtil.generateErrorValuesKeys( serverSide,
 				filters, filter);
+		//KEY format: ServerName|ServiceAdminName1|ConsumerName|Operation1|APPLICATION|true
 		Map<K, Map<Long, String>> findItems = findItems(errorKeys, beginTime, endTime);
 
 		List<Map<K, Object>> result = new ArrayList<Map<K, Object>>();

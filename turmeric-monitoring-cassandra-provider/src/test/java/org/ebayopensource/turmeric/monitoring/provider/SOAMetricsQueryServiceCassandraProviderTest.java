@@ -13,6 +13,8 @@ import static org.junit.Assert.assertEquals;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +28,7 @@ import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorByIdDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorByIdDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.manager.cassandra.server.CassandraTestManager;
 import org.ebayopensource.turmeric.monitoring.v1.services.ErrorInfos;
+import org.ebayopensource.turmeric.monitoring.v1.services.ErrorViewData;
 import org.ebayopensource.turmeric.monitoring.v1.services.MetricCriteria;
 import org.ebayopensource.turmeric.monitoring.v1.services.MetricGraphData;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
@@ -45,28 +48,26 @@ import org.junit.Test;
  */
 public class SOAMetricsQueryServiceCassandraProviderTest extends BaseTest {
 
-   
-    private ErrorById errorToSave = null;
-    private ErrorValue errorValue = null;
     private List<CommonErrorData> errorsToStore = null;
-    private final String serverName = "localhost";
+    private final String serverName = "All";
     private final boolean serverSide = true;
     private final String srvcAdminName = "ServiceAdminName1";
     private final String opName = "Operation1";
     private final String consumerName = "ConsumerName1";
     
     private long now = System.currentTimeMillis();
+    private long oneSecond = TimeUnit.SECONDS.toMillis(1);
+    private long fiftyNineSeconds = TimeUnit.SECONDS.toMillis(59);
     private long oneMinuteAgo = now -  TimeUnit.SECONDS.toMillis(60);
+    private long twoMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 2);
+    private long sixMinuteAgo = now -  TimeUnit.SECONDS.toMillis(60 * 6);
 
-    private MetricsErrorByIdDAO<Long> metricsErrorByIdDAOImpl;
 
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
 
-        metricsErrorByIdDAOImpl = new MetricsErrorByIdDAOImpl<Long>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE,
-                        "ErrorsById", Long.class);
 
         errorStorageProvider = new CassandraErrorLoggingHandler();
         metricsStorageProvider = new CassandraMetricsStorageProvider();
@@ -75,51 +76,29 @@ public class SOAMetricsQueryServiceCassandraProviderTest extends BaseTest {
         errorStorageProvider.init(ctx);
         metricsStorageProvider.init(options, null, MonitoringSystem.COLLECTION_LOCATION_SERVER, 20);
         queryprovider = new SOAMetricsQueryServiceCassandraProviderImpl();
-        
 
+        cleanUpTestData();
     }
 
     @Override
     @After
     public void tearDown() {
         super.tearDown();
+        
     }
 
     /**
      * Creates the data.
      * @param time 
      */
-    private void createData(long time) {
-        
-        errorToSave = new ErrorById();
-        errorToSave.setCategory(ErrorCategory.REQUEST.toString());
-        errorToSave.setSeverity(ErrorSeverity.ERROR.toString());
-        errorToSave.setDomain("TestDomain");
-        errorToSave.setErrorId(Long.valueOf(123));
-        errorToSave.setName("TestError1");
-        errorToSave.setOrganization("TestOrg1");
-        errorToSave.setSubDomain("TestSubDomain");
-
-        errorValue = new ErrorValue();
-        errorValue.setErrorId(Long.valueOf(123));
-        errorValue.setConsumerName("theTestConsumer");
-        errorValue.setErrorMessage("The actual message");
-        errorValue.setOperationName("Op1");
-        errorValue.setServerName("TheServerName");
-        errorValue.setServerSide(true);
-        errorValue.setServiceAdminName("TheServiceAdminName");
-        errorValue.setTimeStamp(time);
-
+    private void createData() {
         errorsToStore = createTestCommonErrorDataList(3);
-        }
-
- 
-   
+    }   
     
     
     @Test
     public void testErrorMetricsMetadata() throws ServiceException {
-    	createData(now);
+    	createData();
     	
         errorStorageProvider.persistErrors(errorsToStore, serverName, srvcAdminName, opName, serverSide, consumerName,
                         now);
@@ -139,11 +118,52 @@ public class SOAMetricsQueryServiceCassandraProviderTest extends BaseTest {
 
     }
     
-    //@Test
-    public void testGetErrorGraphOneMinuteAgo() throws ServiceException {
-    	createData(oneMinuteAgo);
+    @Test
+    public void testGetErrorMetricsDataByCategory() throws ServiceException {
+		createData();
+
+		MetricCriteria metricCriteria = new MetricCriteria();
+		metricCriteria.setFirstStartTime(twoMinutesAgo);
+		metricCriteria.setSecondStartTime(oneMinuteAgo);
+		metricCriteria.setDuration(3600);
+
+		List<ErrorViewData> errorData = queryprovider.getErrorMetricsData("Category", Collections.<String> emptyList(),
+				Collections.<String> emptyList(), Collections.<String> emptyList(), null, null, null, null,
+				metricCriteria);
+		assertEquals(0, errorData.size());
+
+    }
+    
+    
+    
+    @Test
+    public void testGetErrorGraphOneMinuteAgoOtherCategory() throws ServiceException {
+    	createData();
     	errorStorageProvider.persistErrors(errorsToStore, serverName, srvcAdminName, opName, serverSide, consumerName,
-                now);
+    			now);
+        
+    	 long duration = 120;// in secs
+         int aggregationPeriod = 60;// in secs
+         MetricCriteria metricCriteria = new MetricCriteria();
+         metricCriteria.setFirstStartTime(oneMinuteAgo);
+         metricCriteria.setDuration(duration);
+         metricCriteria.setAggregationPeriod(aggregationPeriod);
+         metricCriteria.setRoleType("server");
+    	
+		List<MetricGraphData> result = queryprovider.getErrorGraph(srvcAdminName, opName, consumerName, null,
+				ErrorCategory.REQUEST.value(), null, metricCriteria);
+
+		assertNotNull(result);
+		 assertEquals(duration / aggregationPeriod, result.size());
+        assertEquals(0L, result.get(0).getCount(), 0.0d);
+        assertEquals(0L, result.get(1).getCount(), 0.0d);		
+    }
+    
+    @Test
+    public void testGetErrorGraphOneMinuteAgoCategory() throws ServiceException {
+    	createData();
+    	errorStorageProvider.persistErrors(errorsToStore, serverName, srvcAdminName, opName, serverSide, consumerName,
+    			oneMinuteAgo + oneSecond);
         
     	 long duration = 120;// in secs
          int aggregationPeriod = 60;// in secs
@@ -158,11 +178,54 @@ public class SOAMetricsQueryServiceCassandraProviderTest extends BaseTest {
 
 		assertNotNull(result);
 		 assertEquals(duration / aggregationPeriod, result.size());
-        // there must be duration/aggregationPeriod elements. The first
-        assertEquals(duration / aggregationPeriod, result.size());
         assertEquals(1L, result.get(0).getCount(), 0.0d);
-        assertEquals(1L, result.get(1).getCount(), 0.0d);
-		
+        assertEquals(0L, result.get(1).getCount(), 0.0d);		
+    }
+    
+    @Test
+    public void testGetErrorGraphOneMinuteAgoSeverity() throws ServiceException {
+    	createData();
+    	errorStorageProvider.persistErrors(errorsToStore, serverName, srvcAdminName, opName, serverSide, consumerName,
+    			now - fiftyNineSeconds);
+        
+    	 long duration = 120;// in secs
+         int aggregationPeriod = 60;// in secs
+         MetricCriteria metricCriteria = new MetricCriteria();
+         metricCriteria.setFirstStartTime(oneMinuteAgo);
+         metricCriteria.setDuration(duration);
+         metricCriteria.setAggregationPeriod(aggregationPeriod);
+         metricCriteria.setRoleType("server");
+    	
+		List<MetricGraphData> result = queryprovider.getErrorGraph(srvcAdminName, opName, consumerName, null,
+				null, ErrorSeverity.ERROR.value(), metricCriteria);
+
+		assertNotNull(result);
+		 assertEquals(duration / aggregationPeriod, result.size());
+        assertEquals(1L, result.get(0).getCount(), 0.0d);
+        assertEquals(0L, result.get(1).getCount(), 0.0d);		
+    }
+    
+    @Test
+    public void testGetErrorGraphSixMinuteAgoSeverity() throws ServiceException {
+    	createData();
+    	errorStorageProvider.persistErrors(errorsToStore, serverName, srvcAdminName, opName, serverSide, consumerName,
+    			sixMinuteAgo + oneSecond);
+        
+    	 long duration = 120;// in secs
+         int aggregationPeriod = 60;// in secs
+         MetricCriteria metricCriteria = new MetricCriteria();
+         metricCriteria.setFirstStartTime(oneMinuteAgo);
+         metricCriteria.setDuration(duration);
+         metricCriteria.setAggregationPeriod(aggregationPeriod);
+         metricCriteria.setRoleType("server");
+    	
+		List<MetricGraphData> result = queryprovider.getErrorGraph(srvcAdminName, opName, consumerName, null,
+				null, ErrorSeverity.ERROR.value(), metricCriteria);
+
+		assertNotNull(result);
+		 assertEquals(duration / aggregationPeriod, result.size());
+        assertEquals(0L, result.get(0).getCount(), 0.0d);
+        assertEquals(0L, result.get(1).getCount(), 0.0d);		
     }
     
     private List<CommonErrorData> createTestCommonErrorDataList(int errorQuantity) {
