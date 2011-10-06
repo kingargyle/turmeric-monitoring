@@ -15,32 +15,30 @@ import me.prettyprint.hector.api.query.RangeSlicesQuery;
 import org.ebayopensource.turmeric.monitoring.aggregation.CassandraConnectionInfo;
 import org.ebayopensource.turmeric.monitoring.aggregation.ColumnFamilyReader;
 
-public abstract class AbstractErrorCountsReader  extends ColumnFamilyReader{
+public abstract class AbstractErrorCountsReader extends ColumnFamilyReader {
 
-   private static final int MAX_VALUE = 20000000;
    protected String columnFamilyName;
 
    public AbstractErrorCountsReader(Date startTime, Date endTime, CassandraConnectionInfo connectionInfo) {
       super(startTime, endTime, connectionInfo);
-      
+
    }
 
    @Override
    public List<String> retrieveKeysInRange() {
       List<String> rowKeys = new ArrayList<String>();
-   
+
       try {
          RangeSlicesQuery<String, Long, String> rangeSlicesQuery = HFactory.createRangeSlicesQuery(
-                  this.connectionInfo.getKeyspace(), StringSerializer.get(), LongSerializer.get(),
-                  StringSerializer.get());
+                  connectionInfo.getKeyspace(), StringSerializer.get(), LongSerializer.get(), StringSerializer.get());
          rangeSlicesQuery.setColumnFamily(columnFamilyName);
          rangeSlicesQuery.setKeys(null, null);
          rangeSlicesQuery.setReturnKeysOnly();
-         rangeSlicesQuery.setRange(startTime.getTime(), endTime.getTime(), false, MAX_VALUE);
-         rangeSlicesQuery.setRowCount(MAX_VALUE);
+         rangeSlicesQuery.setRange(startTime.getTime(), endTime.getTime(), false, ROWS_NUMBER_MAX_VALUE);
+         rangeSlicesQuery.setRowCount(ROWS_NUMBER_MAX_VALUE);
          QueryResult<OrderedRows<String, Long, String>> result = rangeSlicesQuery.execute();
          OrderedRows<String, Long, String> orderedRows = result.get();
-   
+
          for (Row<String, Long, String> row : orderedRows) {
             if (!row.getColumnSlice().getColumns().isEmpty()) {
                rowKeys.add(row.getKey());
@@ -48,11 +46,11 @@ public abstract class AbstractErrorCountsReader  extends ColumnFamilyReader{
          }
       } catch (Exception e) {
          e.printStackTrace();
-         if(e.getCause()!=null){
+         if (e.getCause() != null) {
             e.getCause().printStackTrace();
          }
       }
-   
+
       return rowKeys;
    }
 
