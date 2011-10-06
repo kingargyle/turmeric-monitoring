@@ -27,6 +27,7 @@ import org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.Cassand
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorByIdDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorByIdDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.manager.cassandra.server.CassandraTestManager;
+import org.ebayopensource.turmeric.monitoring.provider.model.ExtendedErrorViewData;
 import org.ebayopensource.turmeric.monitoring.v1.services.ErrorInfos;
 import org.ebayopensource.turmeric.monitoring.v1.services.ErrorViewData;
 import org.ebayopensource.turmeric.monitoring.v1.services.MetricCriteria;
@@ -118,10 +119,31 @@ public class SOAMetricsQueryServiceCassandraProviderTest extends BaseTest {
 
     }
     
+//    @Test
+//    public void testExtendedErrorMetricsData() throws ServiceException {
+//    	createData();
+//    	errorStorageProvider.persistErrors(errorsToStore, serverName, srvcAdminName, opName, serverSide, consumerName,
+//    			oneMinuteAgo + fiftyNineSeconds);
+//    	
+//    	long duration = 120;// in secs
+//		//according DAOErrorLoggingHandler.persistErrors aggregation period should always be 0
+//    	int aggregationPeriod = 0;// in secs
+//        MetricCriteria metricCriteria = new MetricCriteria();
+//        metricCriteria.setFirstStartTime(oneMinuteAgo);
+//        metricCriteria.setDuration(duration);
+//        metricCriteria.setAggregationPeriod(aggregationPeriod);
+//        metricCriteria.setRoleType("server");
+//   	
+//		List<ExtendedErrorViewData> extendedErrorMetricsData = queryprovider.getExtendedErrorMetricsData("Category", Arrays.asList( srvcAdminName), Arrays.asList( opName), Arrays.asList( consumerName), null, ErrorCategory.APPLICATION.value(), null, null, metricCriteria);
+//		assertNotNull(extendedErrorMetricsData);
+//    }
+    
     @Test
     public void testGetErrorMetricsDataByCategory() throws ServiceException {
 		createData();
-
+    	errorStorageProvider.persistErrors(errorsToStore, serverName, srvcAdminName, opName, serverSide, consumerName,
+    			oneMinuteAgo + fiftyNineSeconds);
+    	
 		MetricCriteria metricCriteria = new MetricCriteria();
 		metricCriteria.setFirstStartTime(twoMinutesAgo);
 		metricCriteria.setSecondStartTime(oneMinuteAgo);

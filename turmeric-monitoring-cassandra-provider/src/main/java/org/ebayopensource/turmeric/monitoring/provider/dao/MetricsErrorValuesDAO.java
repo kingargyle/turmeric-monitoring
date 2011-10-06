@@ -18,6 +18,6 @@ import java.util.Set;
  */
 public interface MetricsErrorValuesDAO<K>  {
 	Set<org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue> findItems(List<K> keys, String rangeFrom, String rangeTo );
-
+	org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue find(K key );
 	
 }
