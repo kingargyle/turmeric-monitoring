@@ -8,6 +8,7 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.dao.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.ebayopensource.turmeric.monitoring.provider.dao.BaseMetricsErrorsByFi
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorValuesDAO;
 import org.ebayopensource.turmeric.monitoring.provider.model.Model;
 import org.ebayopensource.turmeric.monitoring.provider.util.KeyGeneratorUtil;
+import org.ebayopensource.turmeric.monitoring.v1.services.ResourceEntity;
 import org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
 
@@ -50,6 +52,8 @@ public  class BaseMetricsErrorsByFiltersDAOImpl<K>  extends AbstractColumnFamily
 
 		final List<K> errorKeys =  (List<K>) KeyGeneratorUtil.generateErrorValuesKeys( serverSide,
 				filters, filter);
+		//KEY format: ServerName|ServiceAdminName1|ConsumerName|Operation1|APPLICATION|true
+		//looks into ErrorCountsByCategory cf
 		Map<K, Map<Long, String>> findItems = findItems(errorKeys, beginTime, endTime);
 
 		List<Map<K, Object>> result = new ArrayList<Map<K, Object>>();
@@ -59,6 +63,19 @@ public  class BaseMetricsErrorsByFiltersDAOImpl<K>  extends AbstractColumnFamily
 			Set<Entry<Long, String>> entrySet2 = value.entrySet();
 			for (Entry<Long, String> findItemSet2 : entrySet2) {
 				Map<K, Object> row = new HashMap<K, Object>();
+
+				//TODO fix it for getExtendedErrorMetricsData
+//				String errorValueKey = findItemSet2.getValue();
+//				ErrorValue errorValue = errorValuesDaoImpl.find(errorValueKey );
+//				
+//				row.put((K)"errorCount", 666); //TODO read from column family
+//				row.put((K) "errorId", errorValue.getErrorId());
+//				row.put((K)"errorName", errorValue.getName());
+//				if (filters.get(ResourceEntity.CONSUMER.value()) != null  || ! filters.get(ResourceEntity.CONSUMER.value()).isEmpty()){
+//					row.put((K)"consumerName", errorValue.getConsumerName());
+//				}
+//				row.put((K)"serverSide", errorValue.isServerSide());
+//			
 				row.put((K)"timeStamp", findItemSet2.getKey());
 				result.add(row);
 			}

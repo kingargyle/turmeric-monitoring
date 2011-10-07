@@ -50,6 +50,7 @@ import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceOp
 import org.ebayopensource.turmeric.monitoring.provider.model.ExtendedErrorViewData;
 import org.ebayopensource.turmeric.monitoring.provider.model.Error;
 import org.ebayopensource.turmeric.monitoring.provider.model.Model;
+import org.ebayopensource.turmeric.monitoring.provider.model.SuperModel;
 import org.ebayopensource.turmeric.monitoring.v1.services.CriteriaInfo;
 import org.ebayopensource.turmeric.monitoring.v1.services.ErrorInfos;
 import org.ebayopensource.turmeric.monitoring.v1.services.ErrorViewData;
@@ -65,6 +66,7 @@ import org.ebayopensource.turmeric.monitoring.v1.services.ResourceEntity;
 import org.ebayopensource.turmeric.monitoring.v1.services.SortOrderType;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.MonitoringSystem;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.SystemMetricDefs;
+import org.ebayopensource.turmeric.runtime.common.monitoring.value.CountMetricValue;
 import org.ebayopensource.turmeric.utils.ContextUtils;
 import org.ebayopensource.turmeric.utils.cassandra.service.CassandraManager;
 
@@ -255,8 +257,6 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
 
         List<MetricGraphData> result = new ArrayList<MetricGraphData>();
 
-        final String filter = getFilter(errorCategory, errorSeverity);
-
         int aggregationPeriod = metricCriteria.getAggregationPeriod();
         long beginTime = metricCriteria.getFirstStartTime();
         long duration = metricCriteria.getDuration();
@@ -273,10 +273,19 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
         if (consumerName != null && !"".equals(consumerName)) {
             filters.put(ResourceEntity.CONSUMER.value(), Collections.singletonList(consumerName));
         }
-
-        List<Map<String, Object>> queryResult = metricsErrorsByCategoryDAO.findErrorValuesByFilter(beginTime, endTime,
+        
+        List<Map<String, Object>> queryResult = new ArrayList<Map<String, Object>>();
+        
+        if(errorCategory != null) {
+           final String filter = (errorCategory == null ? null :  ErrorCategory.fromValue(errorCategory).name());
+        	queryResult  = metricsErrorsByCategoryDAO.findErrorValuesByFilter(beginTime, endTime,
                         serverSide, aggregationPeriod, null, filter, filters);
-
+        } else  if(errorSeverity != null) {
+        	final String filter = (errorSeverity== null ? null :  ErrorSeverity.fromValue(errorSeverity).name());
+        	queryResult  = metricsErrorsBySeverityDAO.findErrorValuesByFilter(beginTime, endTime,
+                        serverSide, aggregationPeriod, null, filter, filters);
+        }
+        
         for (int i = 0; i < duration / aggregationPeriod; ++i) {
             long startTime = beginTime + TimeUnit.SECONDS.toMillis(i * aggregationPeriod);
             long stopTime = startTime + TimeUnit.SECONDS.toMillis(aggregationPeriod);
@@ -298,25 +307,13 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
 
     }
 
-    private String getFilter(final String errorCategory, final String errorSeverity) {
-        String filter = null;
-
-        if (errorCategory != null) {
-            filter = ErrorCategory.fromValue(errorCategory).name();
-        }
-        else if (errorSeverity != null) {
-            filter = ErrorSeverity.fromValue(errorSeverity).name();
-        }
-
-        return filter;
-    }
 
     @Override
-    @Deprecated
     public List<ErrorViewData> getErrorMetricsData(final String errorType, final List<String> serviceNames,
                     final List<String> operationNames, final List<String> consumerNames, final String errorIdString,
                     final String errorCategory, final String errorSeverity, final String isErrorId,
                     final MetricCriteria metricCriteria) {
+    	
         long firstStartTime = metricCriteria.getFirstStartTime();
         long secondStartTime = metricCriteria.getSecondStartTime();
         long duration = TimeUnit.SECONDS.toMillis(metricCriteria.getDuration());
@@ -326,20 +323,22 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
         // Validate input parameters
         Long errorId = errorIdString == null ? null : Long.parseLong(errorIdString);
 
-        final String filter = getFilter(errorCategory, errorSeverity);
-
         Map<String, List<String>> filters = populateFilters(serviceNames, operationNames, consumerNames);
 
         List<Map<String, Object>> errors1;
         List<Map<String, Object>> errors2;
         if ("Category".equals(errorType)) {
+            final String filter = (errorCategory == null ? null :  ErrorCategory.fromValue(errorCategory).name());
+            
             errors1 = metricsErrorsByCategoryDAO.findErrorValuesByFilter(firstStartTime, firstStartTime + duration,
                             serverSide, aggregationPeriod, errorId, filter, filters);
             errors2 = metricsErrorsByCategoryDAO.findErrorValuesByFilter(secondStartTime, secondStartTime + duration,
                             serverSide, aggregationPeriod, errorId, filter, filters);
         }
         else if ("Severity".equals(errorType)) {
-            errors1 = metricsErrorsBySeverityDAO.findErrorValuesByFilter(firstStartTime, firstStartTime + duration,
+            final String filter = (errorSeverity == null ? null :  ErrorSeverity.fromValue(errorSeverity).name());
+
+        	errors1 = metricsErrorsBySeverityDAO.findErrorValuesByFilter(firstStartTime, firstStartTime + duration,
                             serverSide, aggregationPeriod, errorId, filter, filters);
             errors2 = metricsErrorsBySeverityDAO.findErrorValuesByFilter(secondStartTime, secondStartTime + duration,
                             serverSide, aggregationPeriod, errorId, filter, filters);
@@ -439,44 +438,35 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
         // Validate input parameters
         Long errorId = errorIdString == null ? null : Long.parseLong(errorIdString);
 
-        final String filter = getFilter(errorCategory, errorSeverity);
-
         Map<String, List<String>> filters = populateFilters(serviceNames, operationNames, consumerNames);
 
         List<Map<String, Object>> errors1;
-        double calls1;
+        double calls1= 0L;
         List<Map<String, Object>> errors2;
-        double calls2;
+        double calls2= 0L;
 
         if ("Category".equals(errorType)) {
+            final String filter = (errorCategory == null ? null :  ErrorCategory.fromValue(errorCategory).name());
+            
             errors1 = metricsErrorsByCategoryDAO.findErrorValuesByFilter(firstStartTime, firstStartTime + duration,
                             serverSide, aggregationPeriod, errorId, filter, filters);
-            calls1 = 0L;
-            // calls1 = metricsDAO.findCallsCount(firstStartTime, firstStartTime
-            // + duration, serverSide,
-            // aggregationPeriod);
+            calls1 = retrieveCallCounts(firstStartTime, duration, calls1);
+
             errors2 = metricsErrorsByCategoryDAO.findErrorValuesByFilter(secondStartTime, secondStartTime + duration,
                             serverSide, aggregationPeriod, errorId, filter, filters);
-            calls2 = 0L;
-            // calls2 = metricsDAO.findCallsCount(secondStartTime,
-            // secondStartTime + duration, serverSide,
-            // aggregationPeriod);
-        }
-        else if ("Severity".equals(errorType)) {
-            errors1 = metricsErrorsBySeverityDAO.findErrorValuesByFilter(firstStartTime, firstStartTime + duration,
+            calls2 = retrieveCallCounts(secondStartTime, duration, calls2);
+            
+        }  else if ("Severity".equals(errorType)) {
+            final String filter = (errorSeverity == null ? null :  ErrorSeverity.fromValue(errorSeverity).name());
+
+        	errors1 = metricsErrorsBySeverityDAO.findErrorValuesByFilter(firstStartTime, firstStartTime + duration,
                             serverSide, aggregationPeriod, errorId, filter, filters);
-            calls1 = 0L;
-            // calls1 = metricsDAO.findCallsCount(firstStartTime, firstStartTime
-            // + duration, serverSide,
-            // aggregationPeriod);
+            calls1 = retrieveCallCounts(firstStartTime, duration, calls1);
             errors2 = metricsErrorsBySeverityDAO.findErrorValuesByFilter(secondStartTime, secondStartTime + duration,
                             serverSide, aggregationPeriod, errorId, filter, filters);
-            calls2 = 0L;
-            // calls2 = metricsDAO.findCallsCount(secondStartTime,
-            // secondStartTime + duration, serverSide,
-            // aggregationPeriod);
-        }
-        else {
+            calls2 = retrieveCallCounts(secondStartTime, duration, calls2);
+            
+        } else {
             throw new IllegalArgumentException("Invalid error type " + errorType);
         }
 
@@ -560,6 +550,36 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
 
         return result;
     }
+
+	private double retrieveCallCounts(long startTime, long duration, double calls1) {
+		List<String> metricValuesList = new ArrayList<String>();
+		  List<?> valuesByIpAndDateList = metricValuesByIpAndDateDAO.findByRange(Long.valueOf(startTime),Long.valueOf( startTime + duration));
+        
+		for (Object superModel : valuesByIpAndDateList) {
+			Map<Long, Model> superColumns = ((SuperModel<String, Long>)superModel).getColumns();
+			
+			for (Entry<Long, Model> superColumn: superColumns.entrySet()) {
+				Model<String> model = superColumn.getValue();
+				Map<String, Object> columns = model.getColumns();
+				for (Entry<String, Object> column: columns.entrySet()) {	
+					if(column.getKey().contains( SystemMetricDefs.OP_TIME_TOTAL.getMetricName())){
+						metricValuesList.add(column.getKey());
+					}
+				}
+			}
+		}
+		for (String metricValueKey : metricValuesList) {
+			Model<String> metricValue = metricValuesDAO.find(metricValueKey);
+			Map<String, Object> columns = metricValue.getColumns();
+			if(columns.containsKey("count")){
+				Object value = columns.get("count");
+				if(value != null ){
+					calls1 = calls1 + Long.valueOf(value.toString());		
+				}
+			}
+		}
+		return calls1;
+	}
 
     private Map<String, List<String>> populateFilters(final List<String> serviceNames,
                     final List<String> operationNames, final List<String> consumerNames) {

@@ -11,7 +11,6 @@ package org.ebayopensource.turmeric.monitoring.provider.dao.impl;
 
 
 
-
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricValuesByIpAndDateDAO;
 import org.ebayopensource.turmeric.monitoring.provider.model.Model;
 import org.ebayopensource.turmeric.monitoring.provider.model.SuperModel;
@@ -46,4 +45,5 @@ public class MetricValuesByIpAndDateDAOImpl<SK, K> extends
 				kTypeClass, Model.class, columnFamilyName);
 	}
 
+	
 }

@@ -3,21 +3,41 @@ package org.ebayopensource.turmeric.monitoring.provider;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.prettyprint.cassandra.serializers.StringSerializer;
+import me.prettyprint.hector.api.Keyspace;
+import me.prettyprint.hector.api.beans.OrderedRows;
+import me.prettyprint.hector.api.beans.OrderedSuperRows;
+import me.prettyprint.hector.api.beans.Row;
+import me.prettyprint.hector.api.beans.SuperRow;
+import me.prettyprint.hector.api.factory.HFactory;
+import me.prettyprint.hector.api.mutation.Mutator;
+import me.prettyprint.hector.api.query.QueryResult;
+import me.prettyprint.hector.api.query.RangeSlicesQuery;
+import me.prettyprint.hector.api.query.RangeSuperSlicesQuery;
+
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.CassandraMetricsStorageProvider;
+import org.ebayopensource.turmeric.monitoring.provider.dao.BaseMetricsErrorsByFilterDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricServiceCallsByTimeDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricTimeSeriesDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricValuesByIpAndDateDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricValuesDAO;
+import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorByIdDAO;
+import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorValuesDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsServiceConsumerByIpDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsServiceOperationByIpDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricServiceCallsByTimeDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricTimeSeriesDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricValuesByIpAndDateDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricValuesDAOImpl;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorByIdDAOImpl;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorValuesDAOImpl;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorsByCategoryDAOImpl;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorsBySeverityDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceConsumerByIpDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceOperationByIpDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.manager.cassandra.server.CassandraTestManager;
 import org.ebayopensource.turmeric.runtime.error.cassandra.handler.CassandraErrorLoggingHandler;
+import org.ebayopensource.turmeric.utils.cassandra.hector.HectorManager;
 import org.junit.After;
 import org.junit.Before;
 
@@ -39,13 +59,17 @@ public abstract class BaseTest {
 	protected SOAMetricsQueryServiceProvider queryprovider;
 	protected CassandraErrorLoggingHandler errorStorageProvider;
 
-	protected MetricsServiceOperationByIpDAO<String, String> metricsServiceOperationByIpDAO;
 	protected MetricsServiceConsumerByIpDAO<String, String> metricsServiceConsumerByIpDAO;
 	protected MetricValuesByIpAndDateDAO<String, Long> metricValuesByIpAndDateDAO;
 	protected MetricTimeSeriesDAO<String> metricTimeSeriesDAO;
 	protected MetricValuesDAO<String> metricValuesDAO;
 	protected MetricServiceCallsByTimeDAO<String, Long> serviceCallsByTimeDAO;
-
+    protected MetricsErrorByIdDAO<Long> metricsErrorByIdDAOImpl;
+    protected MetricsServiceOperationByIpDAO<String, String> metricsServiceOperationByIpDAO;
+    protected BaseMetricsErrorsByFilterDAO<String> metricsErrorsByCategoryDAO;
+    protected BaseMetricsErrorsByFilterDAO<String> metricsErrorsBySeverityDAO;
+    protected MetricsErrorValuesDAO<String> metricsErrorValuesDAO;
+    
 	@Before
 	public void setUp() throws Exception {
 		CassandraTestManager.initialize();
@@ -62,6 +86,15 @@ public abstract class BaseTest {
 				String.class);
 		serviceCallsByTimeDAO = new MetricServiceCallsByTimeDAOImpl<String, Long>(TURMERIC_TEST_CLUSTER, HOST,
 				KEY_SPACE, "ServiceCallsByTime", String.class, Long.class);
+        metricsErrorByIdDAOImpl = new MetricsErrorByIdDAOImpl<Long>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE,
+                        "ErrorsById", Long.class);
+
+        metricsErrorValuesDAO = new MetricsErrorValuesDAOImpl<String>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE,
+        		"ErrorValues", String.class);
+        metricsErrorsByCategoryDAO = new MetricsErrorsByCategoryDAOImpl<String>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE,
+                "ErrorCountsByCategory", String.class, metricsErrorValuesDAO);
+        metricsErrorsBySeverityDAO = new MetricsErrorsBySeverityDAOImpl<String>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE,
+        		"ErrorCountsBySeverity", String.class, metricsErrorValuesDAO);
 	}
 
 	@After
@@ -69,6 +102,46 @@ public abstract class BaseTest {
 		queryprovider = null;
 		errorStorageProvider = null;
 		metricsStorageProvider = null;
+		cleanUpTestData();
+	}
+
+	protected void cleanUpTestData() {
+		System.out.println("######### CLEANING DATA ##############");
+		Keyspace kspace = new HectorManager().getKeyspace(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE,
+				"ServiceOperationByIp", false, String.class, String.class);
+
+		String[] columnFamilies = { "ErrorsById", "MetricTimeSeries", "MetricValues", "ErrorCountsByCategory",
+				"ErrorCountsBySeverity" };
+		String[] superColumnFamilies = { "MetricValuesByIpAndDate", "ServiceCallsByTime", "ServiceConsumerByIp",
+				"ServiceOperationByIp" };
+
+		for (String cf : columnFamilies) {
+			RangeSlicesQuery<String, String, String> rq = HFactory.createRangeSlicesQuery(kspace,
+					StringSerializer.get(), StringSerializer.get(), StringSerializer.get());
+			rq.setColumnFamily(cf);
+			rq.setRange("", "", false, 1000);
+			QueryResult<OrderedRows<String, String, String>> qr = rq.execute();
+			OrderedRows<String, String, String> orderedRows = qr.get();
+			Mutator<String> deleteMutator = HFactory.createMutator(kspace, StringSerializer.get());
+			for (Row<String, String, String> row : orderedRows) {
+				deleteMutator.delete(row.getKey(), cf, null, StringSerializer.get());
+			}
+		}
+
+		for (String scf : superColumnFamilies) {
+			RangeSuperSlicesQuery<String, String, String, String> rq = HFactory.createRangeSuperSlicesQuery(kspace,
+					StringSerializer.get(), StringSerializer.get(), StringSerializer.get(), StringSerializer.get());
+			rq.setColumnFamily(scf);
+			rq.setRange("", "", false, 1000);
+			QueryResult<OrderedSuperRows<String, String, String, String>> qr = rq.execute();
+			OrderedSuperRows<String, String, String, String> orderedRows = qr.get();
+			Mutator<String> deleteMutator = HFactory.createMutator(kspace, StringSerializer.get());
+
+			for (SuperRow<String, String, String, String> row : orderedRows) {
+				deleteMutator.delete(row.getKey(), scf, null, StringSerializer.get());
+			}
+		}
+
 	}
 
 	protected Map<String, String> loadProperties() {

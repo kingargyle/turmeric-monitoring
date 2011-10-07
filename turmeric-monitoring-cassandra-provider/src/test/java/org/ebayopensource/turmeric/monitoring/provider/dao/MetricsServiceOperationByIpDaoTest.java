@@ -12,6 +12,8 @@ import java.util.Map;
 
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.CassandraMetricsStorageProvider;
 import org.ebayopensource.turmeric.monitoring.provider.BaseTest;
+import org.ebayopensource.turmeric.monitoring.provider.SOAMetricsQueryServiceCassandraProviderImpl;
+import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceOperationByIpDAOImpl;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.MonitoringSystem;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricCategory;
@@ -33,7 +35,9 @@ public class MetricsServiceOperationByIpDaoTest extends BaseTest {
 		super.setUp();
 		metricsStorageProvider = new CassandraMetricsStorageProvider();
 		metricsStorageProvider.init(options, null, MonitoringSystem.COLLECTION_LOCATION_SERVER, 20);
-
+		
+		
+		cleanUpTestData();
 	}
 
 	@After

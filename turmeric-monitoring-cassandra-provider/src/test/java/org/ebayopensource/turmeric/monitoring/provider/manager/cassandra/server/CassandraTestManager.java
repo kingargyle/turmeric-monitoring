@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.cassandra.config.ConfigurationException;
+import org.apache.cassandra.config.DatabaseDescriptor;
+import org.apache.cassandra.io.util.FileUtils;
 import org.apache.thrift.transport.TTransportException;
 import org.ebayopensource.turmeric.utils.cassandra.service.CassandraManager;
 
@@ -36,8 +38,8 @@ public class CassandraTestManager {
 	 */
 	public static void initialize() throws TTransportException, IOException, InterruptedException,
 			ConfigurationException {
-		cleanUpCassandraDirs();
 		loadConfig();
+//		cleanUpCassandraDirs();
 		CassandraManager.initialize();
 	}
 
@@ -52,11 +54,28 @@ public class CassandraTestManager {
 	}
 
 	public  static void cleanUpCassandraDirs() {
+		try {
+			cleanupData();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if (CassandraManager.getEmbeddedService() == null) {
-			System.out.println("Cleaning cassandra dirs ? = " + deleteDir(new File("target/cassandra")));
+			System.out.println("Cleaning cassandra dirs ? = " + deleteDir(new File("target/cassandra/data/TestKeyspace")));
 		}
 	}
 
+	private static void cleanupData() throws IOException {
+		String[] allDataFileLocations = DatabaseDescriptor
+				.getAllDataFileLocations();
+		for (String s : allDataFileLocations) {
+			File dirFile = new File(s);
+			if (dirFile.exists() && dirFile.isDirectory()) {
+				FileUtils.delete(dirFile.listFiles());
+			}
+		}
+	}
+	
 	// Deletes all files and subdirectories under dir.
 	// Returns true if all deletions were successful.
 	// If a deletion fails, the method stops attempting to delete and returns

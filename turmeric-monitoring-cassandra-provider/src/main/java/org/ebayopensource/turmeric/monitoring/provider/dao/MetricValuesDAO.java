@@ -8,6 +8,9 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.dao;
 
+import org.ebayopensource.turmeric.monitoring.provider.model.Model;
+
+
 
 
 /**
@@ -15,6 +18,7 @@ package org.ebayopensource.turmeric.monitoring.provider.dao;
  * @author jose alvarez muguerza
  */
 public interface MetricValuesDAO<K> {
+	Model<String> find(K key);
 
 
 }
