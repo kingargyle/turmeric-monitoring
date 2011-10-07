@@ -50,11 +50,11 @@ public  class BaseMetricsErrorsByFiltersDAOImpl<K>  extends AbstractColumnFamily
 		// agregationpPeriod not used
 		// IP or ServerName for improvement, for now we just use All-
 
-		final List<K> errorKeys =  (List<K>) KeyGeneratorUtil.generateErrorValuesKeys( serverSide,
+		final List<String> errorKeys =  KeyGeneratorUtil.generateErrorValuesKeys( serverSide,
 				filters, filter);
 		//KEY format: ServerName|ServiceAdminName1|ConsumerName|Operation1|APPLICATION|true
 		//looks into ErrorCountsByCategory cf
-		Map<K, Map<Long, String>> findItems = findItems(errorKeys, beginTime, endTime);
+		Map<K, Map<Long, String>> findItems = findItems((List<K>) errorKeys, beginTime, endTime);
 
 		List<Map<K, Object>> result = new ArrayList<Map<K, Object>>();
 		Set<Entry<K, Map<Long, String>>> entrySet = findItems.entrySet();
