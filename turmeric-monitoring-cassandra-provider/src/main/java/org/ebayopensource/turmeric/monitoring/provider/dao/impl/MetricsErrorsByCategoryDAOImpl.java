@@ -32,7 +32,7 @@ public class MetricsErrorsByCategoryDAOImpl<K> extends
 	public MetricsErrorsByCategoryDAOImpl(final String clusterName,
 			final String host, final String s_keyspace,
 			final String columnFamilyName, final Class<K> kTypeClass,
-			final MetricsErrorValuesDAO errorValuesDaoImpl) {
+			final MetricsErrorValuesDAO<String> errorValuesDaoImpl) {
 
 		super(clusterName, host, s_keyspace, columnFamilyName, kTypeClass, 
 				errorValuesDaoImpl);

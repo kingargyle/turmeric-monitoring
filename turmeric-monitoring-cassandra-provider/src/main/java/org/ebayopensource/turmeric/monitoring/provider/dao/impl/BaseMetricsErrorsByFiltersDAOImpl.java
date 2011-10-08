@@ -31,10 +31,10 @@ import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
 public  class BaseMetricsErrorsByFiltersDAOImpl<K>  extends AbstractColumnFamilyDao<K, Model>
 	implements	BaseMetricsErrorsByFilterDAO<K> {
 
-    private final MetricsErrorValuesDAO errorValuesDaoImpl ;
+    private final MetricsErrorValuesDAO<String> errorValuesDaoImpl ;
 
 	public BaseMetricsErrorsByFiltersDAOImpl(final String clusterName, final String host,
-			final String s_keyspace,  final String columnFamilyName,final Class<K> kTypeClass,  final MetricsErrorValuesDAO errorValuesDaoImpl) {
+			final String s_keyspace,  final String columnFamilyName,final Class<K> kTypeClass,  final MetricsErrorValuesDAO<String> errorValuesDaoImpl) {
 		super(clusterName, host, s_keyspace, kTypeClass, Model.class, columnFamilyName);
 		this.errorValuesDaoImpl = errorValuesDaoImpl;
 	}
@@ -54,7 +54,8 @@ public  class BaseMetricsErrorsByFiltersDAOImpl<K>  extends AbstractColumnFamily
 				filters, filter);
 		//KEY format: ServerName|ServiceAdminName1|ConsumerName|Operation1|APPLICATION|true
 		//looks into ErrorCountsByCategory cf
-		Map<K, Map<Long, String>> findItems = findItems((List<K>) errorKeys, beginTime, endTime);
+		Map<K, Map<Long, String>> findItems = findItemsWithStringColumnValues((List<K>) errorKeys, beginTime, endTime);
+		//Map<K, Map<Long, Object>> findItems = this.findItemsWithObjectColumnValues((List<K>) errorKeys, beginTime, endTime);
 
 		List<Map<K, Object>> result = new ArrayList<Map<K, Object>>();
 		Set<Entry<K, Map<Long, String>>> entrySet = findItems.entrySet();
@@ -65,17 +66,18 @@ public  class BaseMetricsErrorsByFiltersDAOImpl<K>  extends AbstractColumnFamily
 				Map<K, Object> row = new HashMap<K, Object>();
 
 				//TODO fix it for getExtendedErrorMetricsData
-//				String errorValueKey = findItemSet2.getValue();
-//				ErrorValue errorValue = errorValuesDaoImpl.find(errorValueKey );
-//				
-//				row.put((K)"errorCount", 666); //TODO read from column family
-//				row.put((K) "errorId", errorValue.getErrorId());
-//				row.put((K)"errorName", errorValue.getName());
-//				if (filters.get(ResourceEntity.CONSUMER.value()) != null  || ! filters.get(ResourceEntity.CONSUMER.value()).isEmpty()){
-//					row.put((K)"consumerName", errorValue.getConsumerName());
-//				}
-//				row.put((K)"serverSide", errorValue.isServerSide());
-//			
+				String errorValueKey = findItemSet2.getValue();
+				//the error value must be in format: timestamp|randomnumber
+				ErrorValue errorValue = errorValuesDaoImpl.find(errorValueKey );
+				
+				row.put((K)"errorCount", 200l); //TODO read from column family
+				row.put((K) "errorId", errorValue.getErrorId());
+				row.put((K)"errorName", errorValue.getName());
+				if (filters.get(ResourceEntity.CONSUMER.value()) != null  || ! filters.get(ResourceEntity.CONSUMER.value()).isEmpty()){
+					row.put((K)"consumerName", errorValue.getConsumerName());
+				}
+				row.put((K)"serverSide", errorValue.isServerSide());
+			
 				row.put((K)"timeStamp", findItemSet2.getKey());
 				result.add(row);
 			}
@@ -84,4 +86,6 @@ public  class BaseMetricsErrorsByFiltersDAOImpl<K>  extends AbstractColumnFamily
 		return result;	
 		
 	}
+	
+	
 }

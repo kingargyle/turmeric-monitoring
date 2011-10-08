@@ -12,20 +12,36 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.ebayopensource.turmeric.common.v1.types.CommonErrorData;
 import org.ebayopensource.turmeric.common.v1.types.ErrorCategory;
 import org.ebayopensource.turmeric.common.v1.types.ErrorSeverity;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.CassandraMetricsStorageProvider;
+import org.ebayopensource.turmeric.monitoring.provider.dao.MetricValueAggregatorTestImpl;
+import org.ebayopensource.turmeric.monitoring.provider.model.ExtendedErrorViewData;
 import org.ebayopensource.turmeric.monitoring.v1.services.ErrorInfos;
 import org.ebayopensource.turmeric.monitoring.v1.services.ErrorViewData;
 import org.ebayopensource.turmeric.monitoring.v1.services.MetricCriteria;
 import org.ebayopensource.turmeric.monitoring.v1.services.MetricGraphData;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.MonitoringSystem;
+import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.SystemMetricDefs;
+import org.ebayopensource.turmeric.runtime.common.monitoring.MetricCategory;
+import org.ebayopensource.turmeric.runtime.common.monitoring.MetricClassifier;
+import org.ebayopensource.turmeric.runtime.common.monitoring.MetricDef;
+import org.ebayopensource.turmeric.runtime.common.monitoring.MetricId;
+import org.ebayopensource.turmeric.runtime.common.monitoring.MonitoringLevel;
+import org.ebayopensource.turmeric.runtime.common.monitoring.value.AverageMetricValue;
+import org.ebayopensource.turmeric.runtime.common.monitoring.value.LongSumMetricValue;
+import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValue;
+import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValueAggregator;
 import org.ebayopensource.turmeric.runtime.common.pipeline.LoggingHandler.InitContext;
 import org.ebayopensource.turmeric.runtime.error.cassandra.handler.CassandraErrorLoggingHandler;
 import org.junit.After;
@@ -104,26 +120,40 @@ public class SOAMetricsQueryServiceCassandraProviderTest extends BaseTest {
 
    }
 
-   // @Test
-   // public void testExtendedErrorMetricsData() throws ServiceException {
-   // createData();
-   // errorStorageProvider.persistErrors(errorsToStore, serverName, srvcAdminName, opName, serverSide, consumerName,
-   // oneMinuteAgo + fiftyNineSeconds);
-   //
-   // long duration = 120;// in secs
-   // //according DAOErrorLoggingHandler.persistErrors aggregation period should always be 0
-   // int aggregationPeriod = 0;// in secs
-   // MetricCriteria metricCriteria = new MetricCriteria();
-   // metricCriteria.setFirstStartTime(oneMinuteAgo);
-   // metricCriteria.setDuration(duration);
-   // metricCriteria.setAggregationPeriod(aggregationPeriod);
-   // metricCriteria.setRoleType("server");
-   //
-   // List<ExtendedErrorViewData> extendedErrorMetricsData = queryprovider.getExtendedErrorMetricsData("Category",
-   // Arrays.asList( srvcAdminName), Arrays.asList( opName), Arrays.asList( consumerName), null,
-   // ErrorCategory.APPLICATION.value(), null, null, metricCriteria);
-   // assertNotNull(extendedErrorMetricsData);
-   // }
+   @Test
+   public void testExtendedErrorMetricsData() throws ServiceException {
+      createData();
+      Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
+               srvcAdminName, opName, consumerName);
+
+      metricsStorageProvider.saveMetricSnapshot(oneMinuteAgo, snapshotCollection);
+
+      errorStorageProvider.persistErrors(errorsToStore, serverName, srvcAdminName, opName, serverSide, consumerName,
+               oneMinuteAgo);
+
+      long duration = 120;// in secs
+      // according DAOErrorLoggingHandler.persistErrors aggregation period
+      // should always be 0
+      int aggregationPeriod = 0;// in secs
+      MetricCriteria metricCriteria = new MetricCriteria();
+      metricCriteria.setFirstStartTime(oneMinuteAgo);
+      metricCriteria.setSecondStartTime(now);
+      metricCriteria.setDuration(duration);
+      metricCriteria.setAggregationPeriod(aggregationPeriod);
+      metricCriteria.setRoleType("server");
+
+      List<ExtendedErrorViewData> extendedErrorMetricsData = queryprovider.getExtendedErrorMetricsData("Category",
+               Arrays.asList(srvcAdminName), Arrays.asList(opName), Arrays.asList(consumerName), null,
+               ErrorCategory.APPLICATION.value(), null, null, metricCriteria);
+      assertNotNull(extendedErrorMetricsData);
+      assertEquals(1, extendedErrorMetricsData.size());
+      ExtendedErrorViewData viewData = extendedErrorMetricsData.get(0);
+      assertNotNull(viewData);
+      assertEquals(1, viewData.getErrorCall1(), 0);
+      assertEquals(1, viewData.getErrorCount1(), 0);
+      assertEquals(0, viewData.getErrorCall2(), 0);
+
+   }
 
    @Test
    public void testErrorMetricsMetadata() throws ServiceException {
@@ -253,6 +283,24 @@ public class SOAMetricsQueryServiceCassandraProviderTest extends BaseTest {
                metricCriteria);
       assertEquals(0, errorData.size());
 
+   }
+
+   protected Collection<MetricValueAggregator> createMetricValueAggregatorsForOneConsumerWithTotalMetric(
+            String serviceName, String operationName, String consumerName) {
+      Collection<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
+      MetricId metricId1 = new MetricId(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), serviceName, operationName);
+      MetricValue metricValue1 = new AverageMetricValue(metricId1, 1, 1234.00);
+      MetricClassifier metricClassifier1 = new MetricClassifier(consumerName, "sourcedc", "targetdc");
+
+      Map<MetricClassifier, MetricValue> valuesByClassifier1 = new HashMap<MetricClassifier, MetricValue>();
+      valuesByClassifier1.put(metricClassifier1, metricValue1);
+
+      MetricValueAggregatorTestImpl aggregator1 = new MetricValueAggregatorTestImpl(metricValue1,
+               MetricCategory.Timing, MonitoringLevel.NORMAL, valuesByClassifier1);
+
+      result.add(aggregator1);
+
+      return result;
    }
 
 }
