@@ -75,7 +75,7 @@ public class SOAMetricsQueryServiceCassandraProviderTest extends BaseTest {
     * @param time
     */
    private void createData() {
-      errorsToStore = createTestCommonErrorDataList(3);
+      errorsToStore = createTestCommonErrorDataList(1);
    }
 
    private List<CommonErrorData> createTestCommonErrorDataList(int errorQuantity) {
@@ -121,22 +121,27 @@ public class SOAMetricsQueryServiceCassandraProviderTest extends BaseTest {
    }
 
    @Test
-   public void testExtendedErrorMetricsData() throws ServiceException {
+   public void testExtendedErrorMetricsDataFromTwoMinutesAgoToNowWith60SecsDuration() throws ServiceException {
       createData();
       Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
                srvcAdminName, opName, consumerName);
 
-      metricsStorageProvider.saveMetricSnapshot(oneMinuteAgo, snapshotCollection);
-
+      metricsStorageProvider.saveMetricSnapshot(twoMinutesAgo, snapshotCollection);
+      
       errorStorageProvider.persistErrors(errorsToStore, serverName, srvcAdminName, opName, serverSide, consumerName,
-               oneMinuteAgo);
+               twoMinutesAgo);
+      
+//      metricsStorageProvider.saveMetricSnapshot(now, snapshotCollection);
+//      
+//      errorStorageProvider.persistErrors(errorsToStore, serverName, srvcAdminName, opName, serverSide, consumerName,
+//               now);
 
-      long duration = 120;// in secs
+      long duration = 60;// in secs
       // according DAOErrorLoggingHandler.persistErrors aggregation period
       // should always be 0
       int aggregationPeriod = 0;// in secs
       MetricCriteria metricCriteria = new MetricCriteria();
-      metricCriteria.setFirstStartTime(oneMinuteAgo);
+      metricCriteria.setFirstStartTime(twoMinutesAgo);
       metricCriteria.setSecondStartTime(now);
       metricCriteria.setDuration(duration);
       metricCriteria.setAggregationPeriod(aggregationPeriod);
@@ -151,7 +156,93 @@ public class SOAMetricsQueryServiceCassandraProviderTest extends BaseTest {
       assertNotNull(viewData);
       assertEquals(1, viewData.getErrorCall1(), 0);
       assertEquals(1, viewData.getErrorCount1(), 0);
+      //assertEquals(1, viewData.get, 0);
       assertEquals(0, viewData.getErrorCall2(), 0);
+      assertEquals(0, viewData.getErrorCount2(), 0);
+
+   }
+   
+   @Test
+   public void testExtendedErrorMetricsDataFromTwoMinutesAgoToNowWith60SecsDurationAllOperationsAllConsumers() throws ServiceException {
+      createData();
+      Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
+               srvcAdminName, opName, consumerName);
+
+      metricsStorageProvider.saveMetricSnapshot(twoMinutesAgo, snapshotCollection);
+      
+      errorStorageProvider.persistErrors(errorsToStore, serverName, srvcAdminName, opName, serverSide, consumerName,
+               twoMinutesAgo);
+      
+//      metricsStorageProvider.saveMetricSnapshot(now, snapshotCollection);
+//      
+//      errorStorageProvider.persistErrors(errorsToStore, serverName, srvcAdminName, opName, serverSide, consumerName,
+//               now);
+
+      long duration = 60;// in secs
+      // according DAOErrorLoggingHandler.persistErrors aggregation period
+      // should always be 0
+      int aggregationPeriod = 0;// in secs
+      MetricCriteria metricCriteria = new MetricCriteria();
+      metricCriteria.setFirstStartTime(twoMinutesAgo);
+      metricCriteria.setSecondStartTime(now);
+      metricCriteria.setDuration(duration);
+      metricCriteria.setAggregationPeriod(aggregationPeriod);
+      metricCriteria.setRoleType("server");
+
+      List<ExtendedErrorViewData> extendedErrorMetricsData = queryprovider.getExtendedErrorMetricsData("Category",
+               Arrays.asList(srvcAdminName), null, null, null,
+               ErrorCategory.APPLICATION.value(), null, null, metricCriteria);
+      assertNotNull(extendedErrorMetricsData);
+      assertEquals(1, extendedErrorMetricsData.size());
+      ExtendedErrorViewData viewData = extendedErrorMetricsData.get(0);
+      assertNotNull(viewData);
+      assertEquals(1, viewData.getErrorCall1(), 0);
+      assertEquals(1, viewData.getErrorCount1(), 0);
+      //assertEquals(1, viewData.get, 0);
+      assertEquals(0, viewData.getErrorCall2(), 0);
+      assertEquals(0, viewData.getErrorCount2(), 0);
+
+   }
+   
+   @Test
+   public void testExtendedErrorMetricsDataFromTwoMintuesAgoToNowWith120SecsDuration() throws ServiceException {
+      createData();
+      Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
+               srvcAdminName, opName, consumerName);
+
+      metricsStorageProvider.saveMetricSnapshot(twoMinutesAgo, snapshotCollection);
+      
+      errorStorageProvider.persistErrors(errorsToStore, serverName, srvcAdminName, opName, serverSide, consumerName,
+               twoMinutesAgo);
+      
+      metricsStorageProvider.saveMetricSnapshot(now, snapshotCollection);
+      
+      errorStorageProvider.persistErrors(errorsToStore, serverName, srvcAdminName, opName, serverSide, consumerName,
+               now);
+
+      long duration = 120;// in secs
+      // according DAOErrorLoggingHandler.persistErrors aggregation period
+      // should always be 0
+      int aggregationPeriod = 0;// in secs
+      MetricCriteria metricCriteria = new MetricCriteria();
+      metricCriteria.setFirstStartTime(twoMinutesAgo);
+      metricCriteria.setSecondStartTime(now);
+      metricCriteria.setDuration(duration);
+      metricCriteria.setAggregationPeriod(aggregationPeriod);
+      metricCriteria.setRoleType("server");
+
+      List<ExtendedErrorViewData> extendedErrorMetricsData = queryprovider.getExtendedErrorMetricsData("Category",
+               Arrays.asList(srvcAdminName), Arrays.asList(opName), Arrays.asList(consumerName), null,
+               ErrorCategory.APPLICATION.value(), null, null, metricCriteria);
+      assertNotNull(extendedErrorMetricsData);
+      assertEquals(1, extendedErrorMetricsData.size());
+      ExtendedErrorViewData viewData = extendedErrorMetricsData.get(0);
+      assertNotNull(viewData);
+      assertEquals(2, viewData.getErrorCall1(), 0);
+      assertEquals(2, viewData.getErrorCount1(), 0);
+      //assertEquals(1, viewData.get, 0);
+      assertEquals(1, viewData.getErrorCall2(), 0);
+      assertEquals(1, viewData.getErrorCount2(), 0);
 
    }
 
@@ -163,13 +254,13 @@ public class SOAMetricsQueryServiceCassandraProviderTest extends BaseTest {
                now);
 
       ErrorInfos errorMetricsMetadata = queryprovider
-               .getErrorMetricsMetadata("1", "TestErrorName", "ServiceAdminName1");
+               .getErrorMetricsMetadata("0", "TestErrorName", "ServiceAdminName1");
 
       assertNotNull(errorMetricsMetadata);
       assertEquals(ErrorCategory.APPLICATION.name(), errorMetricsMetadata.getCategory());
       assertEquals(ErrorSeverity.ERROR.name(), errorMetricsMetadata.getSeverity());
       assertEquals("TestDomain", errorMetricsMetadata.getDomain());
-      assertEquals("1", errorMetricsMetadata.getId());
+      assertEquals("0", errorMetricsMetadata.getId());
       assertEquals("TestErrorName", errorMetricsMetadata.getName());
       assertEquals("TestSubdomain", errorMetricsMetadata.getSubDomain());
 

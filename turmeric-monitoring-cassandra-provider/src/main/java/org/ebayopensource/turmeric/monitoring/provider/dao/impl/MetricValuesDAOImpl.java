@@ -69,7 +69,7 @@ public class MetricValuesDAOImpl<K> extends
          }
          return metricValue;
       } catch (Exception e) {
-         throw new RuntimeException("Error creating persistent class", e);
+         throw new RuntimeException("Error finding MetricValue with key ="+key, e);
       }
    }
 

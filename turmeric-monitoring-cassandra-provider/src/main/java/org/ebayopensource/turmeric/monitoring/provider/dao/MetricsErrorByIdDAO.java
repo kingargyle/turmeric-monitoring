@@ -18,5 +18,6 @@ import org.ebayopensource.turmeric.monitoring.provider.model.Model;
  * @author jose alvarez muguerza
  */
 public interface MetricsErrorByIdDAO<K> {
-	Error<?>  find(K key );
+	public Error<?>  find(K key );
+	public Long findCountByTimeRange(K key, Long startTime, Long endTime);
 }

@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.ebayopensource.turmeric.monitoring.provider.dao.BaseMetricsErrorsByFilterDAO;
+import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorByIdDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorValuesDAO;
 import org.ebayopensource.turmeric.monitoring.provider.model.Model;
 import org.ebayopensource.turmeric.monitoring.provider.util.KeyGeneratorUtil;
@@ -32,11 +33,13 @@ public  class BaseMetricsErrorsByFiltersDAOImpl<K>  extends AbstractColumnFamily
 	implements	BaseMetricsErrorsByFilterDAO<K> {
 
     private final MetricsErrorValuesDAO<String> errorValuesDaoImpl ;
+    private final  MetricsErrorByIdDAO<Long> errorByIdDaoImpl; 
 
 	public BaseMetricsErrorsByFiltersDAOImpl(final String clusterName, final String host,
-			final String s_keyspace,  final String columnFamilyName,final Class<K> kTypeClass,  final MetricsErrorValuesDAO<String> errorValuesDaoImpl) {
+			final String s_keyspace,  final String columnFamilyName,final Class<K> kTypeClass,  final MetricsErrorValuesDAO<String> errorValuesDaoImpl, final MetricsErrorByIdDAO<Long> errorByIdDaoImpl) {
 		super(clusterName, host, s_keyspace, kTypeClass, Model.class, columnFamilyName);
 		this.errorValuesDaoImpl = errorValuesDaoImpl;
+		this.errorByIdDaoImpl = errorByIdDaoImpl;
 	}
 	
 	/* (non-Javadoc)
@@ -70,10 +73,10 @@ public  class BaseMetricsErrorsByFiltersDAOImpl<K>  extends AbstractColumnFamily
 				//the error value must be in format: timestamp|randomnumber
 				ErrorValue errorValue = errorValuesDaoImpl.find(errorValueKey );
 				
-				row.put((K)"errorCount", 200l); //TODO read from column family
+				row.put((K)"errorCount", errorByIdDaoImpl.findCountByTimeRange(errorValue.getErrorId(), beginTime, endTime)); //TODO read from column family
 				row.put((K) "errorId", errorValue.getErrorId());
 				row.put((K)"errorName", errorValue.getName());
-				if (filters.get(ResourceEntity.CONSUMER.value()) != null  || ! filters.get(ResourceEntity.CONSUMER.value()).isEmpty()){
+				if (filters.get(ResourceEntity.CONSUMER.value()) != null){
 					row.put((K)"consumerName", errorValue.getConsumerName());
 				}
 				row.put((K)"serverSide", errorValue.isServerSide());

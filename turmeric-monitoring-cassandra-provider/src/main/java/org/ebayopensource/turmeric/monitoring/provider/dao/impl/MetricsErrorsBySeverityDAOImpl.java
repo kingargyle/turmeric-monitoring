@@ -8,6 +8,7 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.dao.impl;
 
+import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorByIdDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorValuesDAO;
 
 
@@ -27,8 +28,8 @@ public class MetricsErrorsBySeverityDAOImpl<K> extends BaseMetricsErrorsByFilter
 	 * @param errorValuesDaoImpl the error values dao impl
 	 */
 	public MetricsErrorsBySeverityDAOImpl(final String clusterName, final String host,
-			final String s_keyspace,  final String columnFamilyName, final Class<K> kTypeClass, final MetricsErrorValuesDAO errorValuesDaoImpl) {
-		super(clusterName, host, s_keyspace, columnFamilyName, kTypeClass, errorValuesDaoImpl);
+			final String s_keyspace,  final String columnFamilyName, final Class<K> kTypeClass, final MetricsErrorValuesDAO errorValuesDaoImpl, MetricsErrorByIdDAO<Long> errorByIdDaoImpl) {
+		super(clusterName, host, s_keyspace, columnFamilyName, kTypeClass, errorValuesDaoImpl, errorByIdDaoImpl);
 	}
 
 }
