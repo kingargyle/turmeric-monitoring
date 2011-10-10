@@ -50,6 +50,9 @@ public class MetricValuesDAOImplTest extends BaseTest {
    private final String srvcAdminName = "ServiceAdminName1";
    private final long twoMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 2);
    private final long threeMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 3);
+   
+   private int accumCount = 0;
+   private double accumResponse = 0.00;
 
    @Before
    public void setUp() throws Exception {
@@ -63,6 +66,8 @@ public class MetricValuesDAOImplTest extends BaseTest {
    @After
    public void tearDown() {
       super.tearDown();
+      accumCount = 0;
+      accumResponse = 0.00;
    }
 
    @Test
@@ -96,7 +101,6 @@ public class MetricValuesDAOImplTest extends BaseTest {
 
    }
 
-   @Ignore
    @Test
    public void testFindMetricValuesByOperationFromThreeMinutesToNow() throws ServiceException {
       Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
@@ -140,14 +144,19 @@ public class MetricValuesDAOImplTest extends BaseTest {
 
    }
 
-   @Ignore
    @Test
    public void testFindMetricValuesByOperationFromOneMinuteToNow() throws ServiceException {
       Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
                srvcAdminName, opName, consumerName);
+      Collection<MetricValueAggregator> snapshotCollection2 = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
+              srvcAdminName, opName, consumerName);
+      Collection<MetricValueAggregator> snapshotCollection3 = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
+              srvcAdminName, opName, consumerName);
+
       metricsStorageProvider.saveMetricSnapshot(twoMinutesAgo, snapshotCollection);
-      metricsStorageProvider.saveMetricSnapshot(oneMinuteAgo, snapshotCollection);
-      metricsStorageProvider.saveMetricSnapshot(now, snapshotCollection);
+      metricsStorageProvider.saveMetricSnapshot(oneMinuteAgo, snapshotCollection2);
+      metricsStorageProvider.saveMetricSnapshot(now, snapshotCollection3);
+      
       Map<String, List<String>> filters = new HashMap<String, List<String>>();
       filters.put("Service", Arrays.asList(srvcAdminName));
       filters.put("Operation", Arrays.asList(opName));
@@ -183,9 +192,11 @@ public class MetricValuesDAOImplTest extends BaseTest {
 
    protected Collection<MetricValueAggregator> createMetricValueAggregatorsForOneConsumerWithTotalMetric(
             String serviceName, String operationName, String consumerName) {
+	  accumCount += 1;
+	  accumResponse += 1234.00;
       Collection<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
       MetricId metricId1 = new MetricId(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), serviceName, operationName);
-      MetricValue metricValue1 = new AverageMetricValue(metricId1, 1, 1234.00);
+      MetricValue metricValue1 = new AverageMetricValue(metricId1, accumCount, accumResponse);
       MetricClassifier metricClassifier1 = new MetricClassifier(consumerName, "sourcedc", "targetdc");
 
       Map<MetricClassifier, MetricValue> valuesByClassifier1 = new HashMap<MetricClassifier, MetricValue>();
