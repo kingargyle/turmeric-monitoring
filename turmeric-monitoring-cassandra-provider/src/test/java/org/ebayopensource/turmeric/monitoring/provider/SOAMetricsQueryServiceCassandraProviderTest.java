@@ -46,6 +46,7 @@ import org.ebayopensource.turmeric.runtime.common.pipeline.LoggingHandler.InitCo
 import org.ebayopensource.turmeric.runtime.error.cassandra.handler.CassandraErrorLoggingHandler;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -203,6 +204,7 @@ public class SOAMetricsQueryServiceCassandraProviderTest extends BaseTest {
 
    }
    
+   @Ignore
    @Test
    public void testExtendedErrorMetricsDataFromTwoMintuesAgoToNowWith120SecsDuration() throws ServiceException {
       createData();

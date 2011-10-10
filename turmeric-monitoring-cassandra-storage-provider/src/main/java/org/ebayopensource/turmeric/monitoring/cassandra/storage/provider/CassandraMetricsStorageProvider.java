@@ -66,7 +66,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
    /** The metrics dao. */
    private MetricsDAO metricsDAO;
 
-   // private Collection<MetricValueAggregator> previousSnapshot;
+   private Collection<MetricValueAggregator> previousSnapshot;
 
    private MetricIdentifierDAOImpl<String> metricIdentifierDAO;
 
@@ -152,7 +152,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
                }
             }
 
-            // metricValueAggregator = resolve(metricValueAggregator);
+            metricValueAggregator = resolve(metricValueAggregator);
 
             MetricIdentifier<String> cmetricIdentifier = null;
             Collection<MetricClassifier> classifiers = metricValueAggregator.getClassifiers();
@@ -188,25 +188,23 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
          }
       } catch (Exception e) {
          e.printStackTrace();
+      } finally {
+         previousSnapshot = snapshotCollection;
       }
-      // finally {
-      // previousSnapshot = snapshotCollection;
-      // }
 
    }
 
-   // protected MetricValueAggregator resolve(MetricValueAggregator aggregator) {
-   // if (previousSnapshot != null) {
-   // MetricId metricId = aggregator.getMetricId();
-   // for (MetricValueAggregator previousAggregator : previousSnapshot) {
-   // if (metricId.equals(previousAggregator.getMetricId())) {
-   // return (MetricValueAggregator) aggregator.diff(
-   // previousAggregator, true);
-   // }
-   // }
-   // }
-   // return aggregator;
-   // }
+   protected MetricValueAggregator resolve(MetricValueAggregator aggregator) {
+      if (previousSnapshot != null) {
+         MetricId metricId = aggregator.getMetricId();
+         for (MetricValueAggregator previousAggregator : previousSnapshot) {
+            if (metricId.equals(previousAggregator.getMetricId())) {
+               return (MetricValueAggregator) aggregator.diff(previousAggregator, true);
+            }
+         }
+      }
+      return aggregator;
+   }
 
    /**
     * Creates the metric id.

@@ -40,6 +40,7 @@ import org.ebayopensource.turmeric.runtime.common.pipeline.LoggingHandler.InitCo
 import org.ebayopensource.turmeric.runtime.error.cassandra.handler.CassandraErrorLoggingHandler;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class GetMetricsDataTest extends BaseTest {
@@ -109,6 +110,7 @@ public class GetMetricsDataTest extends BaseTest {
 
    }
 
+   @Ignore
    @Test
    public void testGetMetricsDataCallCountMetricForOneOperationNoConsumers() throws ServiceException {
       createData();
@@ -151,6 +153,7 @@ public class GetMetricsDataTest extends BaseTest {
 
    }
    
+   @Ignore
    @Test
    public void testGetMetricsDataResponseTimeMetricForOneOperationNoConsumers() throws ServiceException {
       createData();
