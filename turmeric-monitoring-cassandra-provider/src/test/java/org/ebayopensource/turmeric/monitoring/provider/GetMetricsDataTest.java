@@ -208,8 +208,8 @@ public class GetMetricsDataTest extends BaseTest {
    
    protected Collection<MetricValueAggregator> createMetricValueAggregatorsForOneConsumerWithTotalMetric(
             String serviceName, String operationName, String consumerName) {
-      accumCount += 1;
-	  accumResponse += 1234.00; 
+      accumCount = 1;
+	  accumResponse = 1234.00; 
 	   
       Collection<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
       MetricId metricId1 = new MetricId(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), serviceName, operationName);

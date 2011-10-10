@@ -113,7 +113,7 @@ public class CassandraMetricsStorageProviderTest extends CassandraTestHelper {
     @Test
     public void testInit() {
         assertFalse(provider.isStoreServiceMetrics());
-        assertEquals(20, provider.getSnapshotInterval());
+        assertEquals(20, provider.getSnapshotInterval().intValue());
     }
 
     @Test
