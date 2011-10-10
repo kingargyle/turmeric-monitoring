@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -67,6 +68,7 @@ import org.ebayopensource.turmeric.monitoring.v1.services.ReportCriteria;
 import org.ebayopensource.turmeric.monitoring.v1.services.ResourceEntity;
 import org.ebayopensource.turmeric.monitoring.v1.services.ResourceEntityRequest;
 import org.ebayopensource.turmeric.monitoring.v1.services.SortOrderType;
+import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.MonitoringSystem;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.SystemMetricDefs;
 import org.ebayopensource.turmeric.runtime.common.monitoring.value.CountMetricValue;
@@ -358,6 +360,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
          errorViewData.setError(error1);
 
          long count1 = (Long) row1.get("errorCount");
+         // long count1 = row1.size();
          errorViewData.setErrorCount1(count1);
 
          Map<String, Object> row2 = map2.remove(entry.getKey());
@@ -382,6 +385,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
          errorViewData.setError(error2);
 
          long count2 = (Long) row2.get("errorCount");
+         // long count2 = row2.size();
          errorViewData.setErrorCount2(count2);
 
          errorViewData.setErrorCount1(0);
@@ -570,7 +574,8 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
             if (columns.containsKey("count")) {
                Object value = columns.get("count");
                if (value != null) {
-                  calls1 = calls1 + (Long) value;
+                  // calls1 = calls1 + (Long) value;
+                  calls1 += 1;
                }
             }
          }
@@ -760,6 +765,9 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
             double total = 0.0D;
             for (MetricValue<?> metricValue : rows.get(key)) {
                total += (Long) metricValue.getColumns().get("count");
+               // if(metricValue.getColumns().get("count")!=null){
+               // total += 1;
+               // }
             }
             result.put(key, total);
          }
@@ -805,10 +813,54 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
    }
 
    @Override
-   public List<MetricGraphData> getMetricValue(CriteriaInfo criteriaInfo, long startTime, long duration,
+   public List<MetricGraphData> getMetricValue(CriteriaInfo criteriaInfo, long beginTime, long duration,
             int aggregationPeriod, String autoDelay) {
-      // TODO Auto-generated method stub
-      return null;
+      List<MetricGraphData> result = new ArrayList<MetricGraphData>();
+      String encodedMetricName = criteriaInfo.getMetricName();
+      String metricName = decodeMetricName(encodedMetricName);
+
+      long endTime = beginTime + TimeUnit.SECONDS.toMillis(duration);
+      boolean serverSide = MonitoringSystem.COLLECTION_LOCATION_SERVER.equals(criteriaInfo.getRoleType());
+
+      // List<Map<String, Object>> data = metricsDAO.findMetricComponentValuesByTimeStamp(metricName, beginTime,
+      // endTime, serverSide, aggregationPeriod, criteriaInfo.getServiceName(),
+      // criteriaInfo.getOperationName(), criteriaInfo.getConsumerName());
+      Map<String, List<String>> filters = new HashMap<String, List<String>>();
+      if (criteriaInfo.getServiceName() != null)
+         filters.put("Service", Arrays.asList(criteriaInfo.getServiceName().trim()));
+      if (criteriaInfo.getOperationName() != null)
+         filters.put("Operation", Arrays.asList(criteriaInfo.getOperationName().trim()));
+      if (criteriaInfo.getConsumerName() != null)
+         filters.put("Consumer", Arrays.asList(criteriaInfo.getConsumerName().trim()));
+
+      Map<String, List<MetricValue<?>>> metricValuesByOperationName;
+      try {
+         metricValuesByOperationName = metricValuesDAO.findMetricValuesByOperation(metricName, beginTime, endTime,
+                  serverSide, aggregationPeriod, filters);
+         List<MetricValue<?>> metricValues = metricValuesByOperationName.get(criteriaInfo.getOperationName());
+
+         for (int i = 0; i < duration / aggregationPeriod; ++i) {
+            long startTime = beginTime + TimeUnit.SECONDS.toMillis(i * aggregationPeriod);
+            long stopTime = startTime + TimeUnit.SECONDS.toMillis(aggregationPeriod);
+            double value = 0;
+            for (MetricValue<?> metricValue : metricValues) {
+               long time = metricValue.getTimeMiliseconds();
+               if (startTime <= time && time < stopTime) {
+                  value += (Double) metricValue.getValueForMetric(encodedMetricName);
+                  break;
+               }
+            }
+            MetricGraphData metricGraphData = new MetricGraphData();
+            metricGraphData.setCount(value);
+            metricGraphData.setTimeSlot(startTime);
+            metricGraphData.setCriteria(null); // Not supported for now
+            result.add(metricGraphData);
+         }
+      } catch (ServiceException e) {
+         e.printStackTrace();
+      }
+
+      return result;
    }
 
    @Override

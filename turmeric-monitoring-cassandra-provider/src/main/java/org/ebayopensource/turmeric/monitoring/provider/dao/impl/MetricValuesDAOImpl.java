@@ -88,6 +88,7 @@ public class MetricValuesDAOImpl<K> extends
             Object val = column.getValue();
             columns.put(column.getName(), val);
          }
+         metricValue.setKey(key);
          return metricValue;
       } catch (Exception e) {
          throw new RuntimeException("Error finding MetricValue with key =" + key, e);
@@ -142,7 +143,9 @@ public class MetricValuesDAOImpl<K> extends
                metricValuesToGet.add(column.getValue());
             }
          }
+         System.out.printf("findMetricValuesByOperation(%s,%d,%d,%s,%d). Columns found for key=[%s]={"+metricValuesToGet+"}\n", metricName, begin,end, serverSide,aggregationPeriod,metricTimeSeriesKey);
          List<MetricValue<?>> metricValues = this.findByKeys(metricValuesToGet);
+         
          result.put(operation, metricValues);
       }
       return result;
@@ -158,7 +161,9 @@ public class MetricValuesDAOImpl<K> extends
    private List<MetricValue<?>> findByKeys(Set<String> metricValuesToGet) {
       List<MetricValue<?>> result = new ArrayList<MetricValue<?>>();
       for (String key : metricValuesToGet) {
-         result.add(this.find((K) key));
+         MetricValue<?> metricValue = this.find((K) key);
+         System.out.println("findByKeys: metricValue found."+key+"={"+metricValue+"}");
+         result.add(metricValue);
       }
       return result;
    }

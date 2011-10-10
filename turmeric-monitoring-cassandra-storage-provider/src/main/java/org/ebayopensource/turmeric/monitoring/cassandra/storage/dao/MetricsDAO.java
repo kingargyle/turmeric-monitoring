@@ -168,6 +168,8 @@ public class MetricsDAO {
             metricValuesByIpDate = createKeyForMetricValuesByIpAndDate(ipAddress);
             MetricComponentValue[] metricComponentValues = metricValue.getValues();
             for (MetricComponentValue metricComponentValue : metricComponentValues) {
+               System.out.println("saving MetricValues with key="+metricValueKey);
+               System.out.println("  and values={"+metricComponentValue.getName()+":"+metricComponentValue.getValue()+"}");
                 metricValuesMutator.insert(metricValueKey, "MetricValues", HFactory.createColumn(
                                 metricComponentValue.getName(), metricComponentValue.getValue(), STR_SERIALIZER,
                                 OBJ_SERIALIZER));

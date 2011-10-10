@@ -133,7 +133,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
    public void saveMetricSnapshot(long timeSnapshot, Collection<MetricValueAggregator> snapshotCollection)
             throws ServiceException {
       try {
-         System.out.println("snapshotCollection null?" + snapshotCollection);
+         System.out.println("is snapshotCollection null?" + (snapshotCollection!=null));
 
          if (snapshotCollection == null || snapshotCollection.isEmpty()) {
             System.out.println("snapshotCollection empty");
@@ -142,7 +142,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
          List<MetricValue> metricValuesToSave = new ArrayList<MetricValue>();
          System.out.println("snapshotCollection element size = " + snapshotCollection.size());
          for (MetricValueAggregator metricValueAggregator : snapshotCollection) {
-            System.out.println("metricValueAggregator=" + metricValueAggregator);
+            System.out.println("metricValueAggregator != null?" + (metricValueAggregator!=null));
             org.ebayopensource.turmeric.runtime.common.monitoring.MetricId metricId = metricValueAggregator
                      .getMetricId();
             if (metricId.getOperationName() == null) {
@@ -156,7 +156,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
 
             MetricIdentifier<String> cmetricIdentifier = null;
             Collection<MetricClassifier> classifiers = metricValueAggregator.getClassifiers();
-            System.out.println("classifiers.size=" + classifiers.size());
+            System.out.println("classifiers.size =" + classifiers.size());
             for (MetricClassifier metricClassifier : classifiers) {
                org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValue metricValue = metricValueAggregator
                         .getValue(metricClassifier);
@@ -181,6 +181,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
                }
 
             }
+            System.out.println("are there metricValuesToSave? = "+(metricValuesToSave.size()>0));
             metricsDAO.saveMetricValues(getIPAddress(), cmetricIdentifier, timeSnapshot, snapshotInterval, serverSide,
                      metricValuesToSave);
             metricValuesToSave.clear();

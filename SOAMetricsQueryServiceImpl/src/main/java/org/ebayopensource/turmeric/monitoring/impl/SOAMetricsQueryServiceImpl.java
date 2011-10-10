@@ -432,6 +432,7 @@ public class SOAMetricsQueryServiceImpl implements SOAMetricsQueryService {
             response.getReturnData().addAll(result);
         }
         catch (Exception e) {
+           e.printStackTrace();
             response.setErrorMessage(new ErrorMessage());
             response.getErrorMessage()
                             .getError()

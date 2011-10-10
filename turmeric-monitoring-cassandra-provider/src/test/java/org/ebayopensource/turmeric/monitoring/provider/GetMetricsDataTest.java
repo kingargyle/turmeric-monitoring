@@ -58,6 +58,8 @@ public class GetMetricsDataTest extends BaseTest {
    private final long sixMinuteAgo = now - TimeUnit.SECONDS.toMillis(60 * 6);
    private final String srvcAdminName = "ServiceAdminName1";
    private final long twoMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 2);
+   private int accumCount = 0;
+   private double accumResponse = 0;
 
    /**
     * Creates the data.
@@ -107,18 +109,24 @@ public class GetMetricsDataTest extends BaseTest {
    @After
    public void tearDown() {
       super.tearDown();
+      accumCount = 0;
+      accumResponse = 0;
 
    }
+   
 
-   @Ignore
    @Test
    public void testGetMetricsDataCallCountMetricForOneOperationNoConsumers() throws ServiceException {
       createData();
       Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
                srvcAdminName, opName, consumerName);
+      Collection<MetricValueAggregator> snapshotCollection2 = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
+              srvcAdminName, opName, consumerName);  
 
       metricsStorageProvider.saveMetricSnapshot(twoMinutesAgo, snapshotCollection);
-      metricsStorageProvider.saveMetricSnapshot(now, snapshotCollection);
+      metricsStorageProvider.saveMetricSnapshot(now, snapshotCollection2);
+      
+      
 
 
       long duration = 60;// in secs
@@ -153,15 +161,17 @@ public class GetMetricsDataTest extends BaseTest {
 
    }
    
-   @Ignore
    @Test
    public void testGetMetricsDataResponseTimeMetricForOneOperationNoConsumers() throws ServiceException {
       createData();
+      
       Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
                srvcAdminName, opName, consumerName);
+      Collection<MetricValueAggregator> snapshotCollection2 = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
+              srvcAdminName, opName, consumerName);  
 
       metricsStorageProvider.saveMetricSnapshot(twoMinutesAgo, snapshotCollection);
-      metricsStorageProvider.saveMetricSnapshot(now, snapshotCollection);
+      metricsStorageProvider.saveMetricSnapshot(now, snapshotCollection2);
 
 
       long duration = 60;// in secs
@@ -191,16 +201,19 @@ public class GetMetricsDataTest extends BaseTest {
       assertEquals(1, response.size());
       MetricGroupData data = response.get(0);
       assertNotNull(data);
-      assertEquals(1234, data.getCount1(), 0);
-      assertEquals(1234, data.getCount2(), 0);
+      assertEquals("Unexpected value for Count1.", 1234, data.getCount1(), 0);
+      assertEquals("Unexpected value for Count2.", 1234, data.getCount2(), 0);
 
    }
    
    protected Collection<MetricValueAggregator> createMetricValueAggregatorsForOneConsumerWithTotalMetric(
             String serviceName, String operationName, String consumerName) {
+      accumCount += 1;
+	  accumResponse += 1234.00; 
+	   
       Collection<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
       MetricId metricId1 = new MetricId(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), serviceName, operationName);
-      MetricValue metricValue1 = new AverageMetricValue(metricId1, 1, 1234.00);
+      MetricValue metricValue1 = new AverageMetricValue(metricId1, accumCount, accumResponse);
       MetricClassifier metricClassifier1 = new MetricClassifier(consumerName, "sourcedc", "targetdc");
 
       Map<MetricClassifier, MetricValue> valuesByClassifier1 = new HashMap<MetricClassifier, MetricValue>();

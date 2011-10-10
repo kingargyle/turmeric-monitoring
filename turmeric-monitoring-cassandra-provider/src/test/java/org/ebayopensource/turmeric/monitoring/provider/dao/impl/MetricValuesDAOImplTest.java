@@ -51,6 +51,9 @@ public class MetricValuesDAOImplTest extends BaseTest {
    private final long twoMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 2);
    private final long threeMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 3);
 
+   private int accumCount = 0;
+   private double accumResponse = 0.00;
+
    @Before
    public void setUp() throws Exception {
       super.setUp();
@@ -63,6 +66,8 @@ public class MetricValuesDAOImplTest extends BaseTest {
    @After
    public void tearDown() {
       super.tearDown();
+      accumCount = 0;
+      accumResponse = 0.00;
    }
 
    @Test
@@ -70,7 +75,11 @@ public class MetricValuesDAOImplTest extends BaseTest {
       Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
                srvcAdminName, opName, consumerName);
       metricsStorageProvider.saveMetricSnapshot(twoMinutesAgo, snapshotCollection);
-      metricsStorageProvider.saveMetricSnapshot(now, snapshotCollection);
+      
+      Collection<MetricValueAggregator> snapshotCollection2 = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
+               srvcAdminName, opName, consumerName);
+      
+      metricsStorageProvider.saveMetricSnapshot(now, snapshotCollection2);
       Map<String, List<String>> filters = new HashMap<String, List<String>>();
       filters.put("Service", Arrays.asList(srvcAdminName));
       filters.put("Operation", Arrays.asList(opName));
@@ -96,13 +105,12 @@ public class MetricValuesDAOImplTest extends BaseTest {
 
    }
 
-   @Ignore
    @Test
    public void testFindMetricValuesByOperationFromThreeMinutesToNow() throws ServiceException {
       Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
                srvcAdminName, opName, consumerName);
       metricsStorageProvider.saveMetricSnapshot(twoMinutesAgo, snapshotCollection);
-      
+
       Collection<MetricValueAggregator> snapshotCollection2 = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
                srvcAdminName, opName, consumerName);
       metricsStorageProvider.saveMetricSnapshot(oneMinuteAgo, snapshotCollection2);
@@ -139,15 +147,64 @@ public class MetricValuesDAOImplTest extends BaseTest {
       assertEquals(Double.class, totalTime2.getClass());
 
    }
+   
+   @Test
+   public void testFindMetricValuesByOperationFromThreeMinutesToOneHourLater() throws ServiceException {
+      Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
+               srvcAdminName, opName, consumerName);
+      metricsStorageProvider.saveMetricSnapshot(twoMinutesAgo, snapshotCollection);
 
-   @Ignore
+      Collection<MetricValueAggregator> snapshotCollection2 = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
+               srvcAdminName, opName, consumerName);
+      metricsStorageProvider.saveMetricSnapshot(oneMinuteAgo, snapshotCollection2);
+      Map<String, List<String>> filters = new HashMap<String, List<String>>();
+      filters.put("Service", Arrays.asList(srvcAdminName));
+      filters.put("Operation", Arrays.asList(opName));
+      long oneHourLater = now + (60*60*1000);
+      Map<String, List<org.ebayopensource.turmeric.monitoring.provider.model.MetricValue<?>>> result = metricValuesDAO
+               .findMetricValuesByOperation(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), threeMinutesAgo, oneHourLater , true,
+                        20, filters);
+      assertNotNull(result);
+      assertEquals(1, result.size());
+      List<org.ebayopensource.turmeric.monitoring.provider.model.MetricValue<?>> metricValues = result.get(opName);
+      assertNotNull(metricValues);
+      assertEquals(2, metricValues.size());
+      org.ebayopensource.turmeric.monitoring.provider.model.MetricValue<?> metricValue = metricValues.get(0);
+      assertNotNull(metricValue);
+      assertNotNull(metricValue.getColumns());
+      assertEquals(2, metricValue.getColumns().size());
+      Object count = metricValue.getColumns().get("count");
+      assertNotNull(count);
+      assertEquals(Long.class, count.getClass());
+      Object totalTime = metricValue.getColumns().get("totalTime");
+      assertNotNull(totalTime);
+      assertEquals(Double.class, totalTime.getClass());
+      org.ebayopensource.turmeric.monitoring.provider.model.MetricValue<?> metricValue2 = metricValues.get(1);
+      assertNotNull(metricValue2);
+      assertNotNull(metricValue2.getColumns());
+      assertEquals(2, metricValue2.getColumns().size());
+      Object count2 = metricValue2.getColumns().get("count");
+      assertNotNull(count2);
+      assertEquals(Long.class, count2.getClass());
+      Object totalTime2 = metricValue2.getColumns().get("totalTime");
+      assertNotNull(totalTime2);
+      assertEquals(Double.class, totalTime2.getClass());
+
+   }
+
    @Test
    public void testFindMetricValuesByOperationFromOneMinuteToNow() throws ServiceException {
       Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
                srvcAdminName, opName, consumerName);
+      Collection<MetricValueAggregator> snapshotCollection2 = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
+               srvcAdminName, opName, consumerName);
+      Collection<MetricValueAggregator> snapshotCollection3 = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
+               srvcAdminName, opName, consumerName);
+
       metricsStorageProvider.saveMetricSnapshot(twoMinutesAgo, snapshotCollection);
-      metricsStorageProvider.saveMetricSnapshot(oneMinuteAgo, snapshotCollection);
-      metricsStorageProvider.saveMetricSnapshot(now, snapshotCollection);
+      metricsStorageProvider.saveMetricSnapshot(oneMinuteAgo, snapshotCollection2);
+      metricsStorageProvider.saveMetricSnapshot(now, snapshotCollection3);
+
       Map<String, List<String>> filters = new HashMap<String, List<String>>();
       filters.put("Service", Arrays.asList(srvcAdminName));
       filters.put("Operation", Arrays.asList(opName));
@@ -183,9 +240,11 @@ public class MetricValuesDAOImplTest extends BaseTest {
 
    protected Collection<MetricValueAggregator> createMetricValueAggregatorsForOneConsumerWithTotalMetric(
             String serviceName, String operationName, String consumerName) {
+      accumCount += 1;
+      accumResponse += 1234.00;
       Collection<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
       MetricId metricId1 = new MetricId(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), serviceName, operationName);
-      MetricValue metricValue1 = new AverageMetricValue(metricId1, 1, 1234.00);
+      MetricValue metricValue1 = new AverageMetricValue(metricId1, accumCount, accumResponse);
       MetricClassifier metricClassifier1 = new MetricClassifier(consumerName, "sourcedc", "targetdc");
 
       Map<MetricClassifier, MetricValue> valuesByClassifier1 = new HashMap<MetricClassifier, MetricValue>();
