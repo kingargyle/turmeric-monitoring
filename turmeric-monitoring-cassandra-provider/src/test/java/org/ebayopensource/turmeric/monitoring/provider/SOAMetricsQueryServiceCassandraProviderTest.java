@@ -117,7 +117,6 @@ public class SOAMetricsQueryServiceCassandraProviderTest extends BaseTest {
    @After
    public void tearDown() {
       super.tearDown();
-
    }
 
    @Test

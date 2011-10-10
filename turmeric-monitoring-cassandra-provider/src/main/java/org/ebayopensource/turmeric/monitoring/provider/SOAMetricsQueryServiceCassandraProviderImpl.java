@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import org.ebayopensource.turmeric.common.v1.types.ErrorCategory;
@@ -49,6 +50,7 @@ import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceCo
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceOperationByIpDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.model.ExtendedErrorViewData;
 import org.ebayopensource.turmeric.monitoring.provider.model.Error;
+import org.ebayopensource.turmeric.monitoring.provider.model.MetricValue;
 import org.ebayopensource.turmeric.monitoring.provider.model.Model;
 import org.ebayopensource.turmeric.monitoring.provider.model.SuperModel;
 import org.ebayopensource.turmeric.monitoring.v1.services.CriteriaInfo;
@@ -63,6 +65,7 @@ import org.ebayopensource.turmeric.monitoring.v1.services.PolicyMetricData;
 import org.ebayopensource.turmeric.monitoring.v1.services.PolicyMetricGraphData;
 import org.ebayopensource.turmeric.monitoring.v1.services.ReportCriteria;
 import org.ebayopensource.turmeric.monitoring.v1.services.ResourceEntity;
+import org.ebayopensource.turmeric.monitoring.v1.services.ResourceEntityRequest;
 import org.ebayopensource.turmeric.monitoring.v1.services.SortOrderType;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.MonitoringSystem;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.SystemMetricDefs;
@@ -567,7 +570,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
             if (columns.containsKey("count")) {
                Object value = columns.get("count");
                if (value != null) {
-                  calls1 = calls1 + (Long)value;
+                  calls1 = calls1 + (Long) value;
                }
             }
          }
@@ -580,15 +583,15 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
 
       Map<String, List<String>> filters = new HashMap<String, List<String>>();
 
-      if (serviceNames!= null && !serviceNames.isEmpty()) {
+      if (serviceNames != null && !serviceNames.isEmpty()) {
          filters.put(ResourceEntity.SERVICE.value(), serviceNames);
       }
 
-      if (operationNames!=null && !operationNames.isEmpty()) {
+      if (operationNames != null && !operationNames.isEmpty()) {
          filters.put(ResourceEntity.OPERATION.value(), operationNames);
       }
 
-      if (consumerNames!=null && !consumerNames.isEmpty()) {
+      if (consumerNames != null && !consumerNames.isEmpty()) {
          filters.put(ResourceEntity.CONSUMER.value(), consumerNames);
       }
 
@@ -617,149 +620,110 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
    @Override
    public List<MetricGroupData> getMetricsData(MetricCriteria metricCriteria,
             MetricResourceCriteria metricResourceCriteria) {
+      List<MetricGroupData> result = new ArrayList<MetricGroupData>();
+      try {
+         // STEP 1. Decode the input parameters
+         String encodedMetricName = metricCriteria.getMetricName();
+         String metricName = decodeMetricName(encodedMetricName);
 
-      // // STEP 1. Decode the input parameters
-      // String encodedMetricName = metricCriteria.getMetricName();
-      // String metricName = decodeMetricName(encodedMetricName);
-      //
-      // Map<String, List<String>> filters = new HashMap<String,
-      // List<String>>();
-      // for (ResourceEntity resourceEntityType : ResourceEntity.values()) {
-      // List<String> resourceEntityNames = null;
-      // for (ResourceEntityRequest resourceEntityRequest :
-      // metricResourceCriteria
-      // .getResourceRequestEntities()) {
-      // if (resourceEntityRequest.getResourceEntityType() ==
-      // resourceEntityType) {
-      // resourceEntityNames = resourceEntityRequest
-      // .getResourceEntityName();
-      // break;
-      // }
-      // }
-      // if (resourceEntityNames == null)
-      // resourceEntityNames = Collections.emptyList();
-      // if (!resourceEntityNames.isEmpty())
-      // filters.put(resourceEntityType.value(), resourceEntityNames);
-      // }
-      //
-      // String groupBy =
-      // metricResourceCriteria.getResourceEntityResponseType();
-      //
-      // long firstStartTime = metricCriteria.getFirstStartTime();
-      // long secondStartTime = metricCriteria.getSecondStartTime();
-      // long duration =
-      // TimeUnit.SECONDS.toMillis(metricCriteria.getDuration());
-      // int aggregationPeriod = metricCriteria.getAggregationPeriod();
-      // boolean serverSide = !MonitoringSystem.COLLECTION_LOCATION_CLIENT
-      // .equals(metricCriteria.getRoleType());
-      //
-      // // STEP 2. Query the data
-      // List<Map<String, MetricIdentifier>> data1;
-      // List<Map<String, MetricIdentifier>> data2;
-      // if (ResourceEntity.SERVICE.value().equals(groupBy)) {
-      // data1 = metricsDAO.findMetricComponentValuesByService(metricName,
-      // firstStartTime, firstStartTime + duration, serverSide,
-      // aggregationPeriod, filters);
-      // data2 = metricsDAO.findMetricComponentValuesByService(metricName,
-      // secondStartTime, secondStartTime + duration, serverSide,
-      // aggregationPeriod, filters);
-      // } else if (ResourceEntity.OPERATION.value().equals(groupBy)) {
-      // data1 = metricsDAO.findMetricComponentValuesByOperation(metricName,
-      // firstStartTime, firstStartTime + duration, serverSide,
-      // aggregationPeriod, filters);
-      // data2 = metricsDAO.findMetricComponentValuesByOperation(metricName,
-      // secondStartTime, secondStartTime + duration, serverSide,
-      // aggregationPeriod, filters);
-      // } else if (ResourceEntity.CONSUMER.value().equals(groupBy)) {
-      // data1 = metricsDAO.findMetricComponentValuesByConsumer(metricName,
-      // firstStartTime, firstStartTime + duration, serverSide,
-      // aggregationPeriod, filters);
-      // data2 = metricsDAO.findMetricComponentValuesByConsumer(metricName,
-      // secondStartTime, secondStartTime + duration, serverSide,
-      // aggregationPeriod, filters);
-      // } else if ("Error".equals(groupBy)) {
-      // metricName = "SoaFwk.Op.Err.%";
-      // data1 = metricsDAO.findMetricComponentValuesByMetric(metricName,
-      // firstStartTime, firstStartTime + duration, serverSide,
-      // aggregationPeriod, filters);
-      // data2 = metricsDAO.findMetricComponentValuesByMetric(metricName,
-      // secondStartTime, secondStartTime + duration, serverSide,
-      // aggregationPeriod, filters);
-      // } else {
-      // throw new UnsupportedOperationException();
-      // }
-      //
-      // // Move data to a better data structure
-      // Map<String, Map<String, Object>> map1 =
-      // transformAggregatedMetricComponentValues(
-      // encodedMetricName, data1);
-      // Map<String, Map<String, Object>> map2 =
-      // transformAggregatedMetricComponentValues(
-      // encodedMetricName, data2);
-      //
-      // // STEP 3. Create and populate the return values
-      // List<MetricGroupData> result = new ArrayList<MetricGroupData>();
-      // for (Map.Entry<String, Map<String, Object>> entry : map1.entrySet())
-      // {
-      // MetricGroupData metricGroupData = new MetricGroupData();
-      // Map<String, Object> row1 = entry.getValue();
-      // Double count1 = (Double) row1.get("value");
-      // metricGroupData.setCount1(count1);
-      // Map<String, Object> row2 = map2.remove(entry.getKey());
-      // if (row2 != null) {
-      // Double count2 = (Double) row2.get("value");
-      // metricGroupData.setCount2(count2);
-      // } else {
-      // metricGroupData.setCount2(0);
-      // }
-      //
-      // CriteriaInfo criteriaInfo = populateCriteriaInfo(groupBy, row1);
-      // metricGroupData.setCriteriaInfo(criteriaInfo);
-      //
-      // result.add(metricGroupData);
-      // }
-      // for (Map.Entry<String, Map<String, Object>> entry : map2.entrySet())
-      // {
-      // MetricGroupData metricGroupData = new MetricGroupData();
-      // Map<String, Object> row2 = entry.getValue();
-      // Double count2 = (Double) row2.get("value");
-      // metricGroupData.setCount2(count2);
-      // metricGroupData.setCount1(0);
-      //
-      // CriteriaInfo criteriaInfo = populateCriteriaInfo(groupBy, row2);
-      // metricGroupData.setCriteriaInfo(criteriaInfo);
-      //
-      // result.add(metricGroupData);
-      // }
-      //
-      // // Sort the results
-      // final boolean sortAsc = metricCriteria.getSortOrder() ==
-      // SortOrderType.ASCENDING;
-      // Collections.sort(result, new Comparator<MetricGroupData>() {
-      // @Override
-      // public int compare(MetricGroupData mgd1, MetricGroupData mgd2) {
-      // double v1 = Math.max(mgd1.getCount1(), mgd1.getCount2());
-      // double v2 = Math.max(mgd2.getCount1(), mgd2.getCount2());
-      // if (v1 == v2) {
-      // v1 = mgd1.getCount1() + mgd1.getCount2();
-      // v2 = mgd2.getCount1() + mgd2.getCount2();
-      // }
-      // if (v1 == v2) {
-      // v1 = mgd1.getCount2();
-      // v2 = mgd2.getCount2();
-      // }
-      // int result = v1 > v2 ? 1 : v1 < v2 ? -1 : 0;
-      // return sortAsc ? result : -result;
-      // }
-      // });
-      //
-      // // Trim to the number of requested rows
-      // int rows = metricCriteria.getNumRows() == null ? 0 : Integer
-      // .parseInt(metricCriteria.getNumRows());
-      // trimResultList(result, rows);
-      //
-      // return result;
-      return null;
+         Map<String, List<String>> filters = new HashMap<String, List<String>>();
+         for (ResourceEntity resourceEntityType : ResourceEntity.values()) {
+            List<String> resourceEntityNames = null;
+            for (ResourceEntityRequest resourceEntityRequest : metricResourceCriteria.getResourceRequestEntities()) {
+               if (resourceEntityRequest.getResourceEntityType() == resourceEntityType) {
+                  resourceEntityNames = resourceEntityRequest.getResourceEntityName();
+                  break;
+               }
+            }
+            if (resourceEntityNames == null)
+               resourceEntityNames = Collections.emptyList();
+            if (!resourceEntityNames.isEmpty())
+               filters.put(resourceEntityType.value(), resourceEntityNames);
+         }
+
+         String groupBy = metricResourceCriteria.getResourceEntityResponseType();
+
+         long firstStartTime = metricCriteria.getFirstStartTime();
+         long secondStartTime = metricCriteria.getSecondStartTime();
+         long duration = TimeUnit.SECONDS.toMillis(metricCriteria.getDuration());
+         int aggregationPeriod = metricCriteria.getAggregationPeriod();
+         boolean serverSide = !MonitoringSystem.COLLECTION_LOCATION_CLIENT.equals(metricCriteria.getRoleType());
+
+         // STEP 2. Query the data
+         Map<String, List<MetricValue<?>>> data1 = null;
+         Map<String, List<MetricValue<?>>> data2 = null;
+         if (ResourceEntity.SERVICE.value().equals(groupBy)) {
+            // data1 = metricsDAO.findMetricComponentValuesByService(metricName, firstStartTime, firstStartTime +
+            // duration,
+            // serverSide, aggregationPeriod, filters);
+            // data2 = metricsDAO.findMetricComponentValuesByService(metricName, secondStartTime, secondStartTime +
+            // duration,
+            // serverSide, aggregationPeriod, filters);
+         } else if (ResourceEntity.OPERATION.value().equals(groupBy)) {
+            data1 = metricValuesDAO.findMetricValuesByOperation(metricName, firstStartTime, firstStartTime + duration,
+                     serverSide, aggregationPeriod, filters);
+            data2 = metricValuesDAO.findMetricValuesByOperation(metricName, secondStartTime,
+                     secondStartTime + duration, serverSide, aggregationPeriod, filters);
+            // Move data to a better data structure
+            Map<String, Object> map1 = transformAggregatedMetricComponentValues(encodedMetricName, data1);
+            Map<String, Object> map2 = transformAggregatedMetricComponentValues(encodedMetricName, data2);
+            List<String> operationNames = filters.get("Operation");
+            for (String operation : operationNames) {
+               // STEP 3. Create and populate the return values
+               MetricGroupData metricGroupData = new MetricGroupData();
+               metricGroupData.setCount1((Double) map1.get(operation));
+               metricGroupData.setCount2((Double) map2.get(operation));
+               CriteriaInfo criteriaInfo = new CriteriaInfo();
+               criteriaInfo.setOperationName(operation);
+               metricGroupData.setCriteriaInfo(criteriaInfo);
+               result.add(metricGroupData);
+            }
+
+         } else if (ResourceEntity.CONSUMER.value().equals(groupBy)) {
+            // data1 = metricsDAO.findMetricComponentValuesByConsumer(metricName, firstStartTime, firstStartTime +
+            // duration,
+            // serverSide, aggregationPeriod, filters);
+            // data2 = metricsDAO.findMetricComponentValuesByConsumer(metricName, secondStartTime,
+            // secondStartTime + duration, serverSide, aggregationPeriod, filters);
+         } else if ("Error".equals(groupBy)) {
+            // metricName = "SoaFwk.Op.Err.%";
+            // data1 = metricsDAO.findMetricComponentValuesByMetric(metricName, firstStartTime, firstStartTime +
+            // duration,
+            // serverSide, aggregationPeriod, filters);
+            // data2 = metricsDAO.findMetricComponentValuesByMetric(metricName, secondStartTime, secondStartTime +
+            // duration,
+            // serverSide, aggregationPeriod, filters);
+         } else {
+            throw new UnsupportedOperationException();
+         }
+
+         // Sort the results
+         final boolean sortAsc = metricCriteria.getSortOrder() == SortOrderType.ASCENDING;
+         Collections.sort(result, new Comparator<MetricGroupData>() {
+            @Override
+            public int compare(MetricGroupData mgd1, MetricGroupData mgd2) {
+               double v1 = Math.max(mgd1.getCount1(), mgd1.getCount2());
+               double v2 = Math.max(mgd2.getCount1(), mgd2.getCount2());
+               if (v1 == v2) {
+                  v1 = mgd1.getCount1() + mgd1.getCount2();
+                  v2 = mgd2.getCount1() + mgd2.getCount2();
+               }
+               if (v1 == v2) {
+                  v1 = mgd1.getCount2();
+                  v2 = mgd2.getCount2();
+               }
+               int result = v1 > v2 ? 1 : v1 < v2 ? -1 : 0;
+               return sortAsc ? result : -result;
+            }
+         });
+
+         // Trim to the number of requested rows
+         int rows = metricCriteria.getNumRows() == null ? 0 : Integer.parseInt(metricCriteria.getNumRows());
+         trimResultList(result, rows);
+      } catch (Exception e) {
+         e.printStackTrace();
+      }
+      return result;
    }
 
    private CriteriaInfo populateCriteriaInfo(String groupBy, Map<String, Object> row) {
@@ -788,64 +752,37 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       return criteriaInfo;
    }
 
-   private Map<String, Map<String, Object>> transformAggregatedMetricComponentValues(String encodedMetricName,
-            List<Map<String, MetricIdentifier>> rows) {
-      // Map<String, Map<String, MetricIdentifier>> result = new
-      // HashMap<String, Map<String, MetricIdentifier>>();
-      // Double totalCount = 0.0D;
-      // for (Map<String, MetricIdentifier> row : rows) {
-      // // Need to create a key that is the same for the N
-      // // metricComponentDefs
-      // Map<String, MetricIdentifier> keyMap = new TreeMap<String,
-      // MetricIdentifier>(row);
-      // keyMap.remove("value");
-      // keyMap.remove("metricComponentDef");
-      // String key = keyMap.toString();
-      //
-      // Map<String, MetricIdentifier> existingRow = result.get(key);
-      // if (existingRow != null) {
-      // MetricComponentDef metricComponentDef = (MetricComponentDef) row
-      // .get("metricComponentDef");
-      // if ("CallCount".equals(encodedMetricName)) {
-      // if ("count".equals(metricComponentDef.getName())) {
-      // // Overwrite the value from the existing row, we are
-      // // interested in the call count
-      // result.put(key, row);
-      // }
-      // } else if ("ResponseTime".equals(encodedMetricName)) {
-      // if ("count".equals(metricComponentDef.getName())) {
-      // Double count = (Double) row.get("value");
-      // existingRow.put("value", count == 0 ? 0.0D
-      // : (Double) existingRow.get("value"));
-      // totalCount += count;
-      // } else {
-      // Double count = (Double) existingRow.get("value");
-      // existingRow.put("value", count == 0 ? 0.0D
-      // : (Double) row.get("value"));
-      // totalCount += count;
-      // }
-      // } else {
-      // throw new IllegalArgumentException("Unknown metric name "
-      // + encodedMetricName);
-      // }
-      // } else {
-      // result.put(key, row);
-      // }
-      // }
-      // if (("ResponseTime".equals(encodedMetricName) && totalCount > 0.0d))
-      // {
-      // // need to avg each element by the total Count, for the
-      // // getMetricValue case
-      // for (Map<String, Object> mapToAvg : result.values()) {
-      // Double valueToAvg = (Double) mapToAvg.get("value");
-      // if (valueToAvg != null) {
-      // valueToAvg = valueToAvg / totalCount;
-      // mapToAvg.put("value", valueToAvg);
-      // }
-      // }
-      // }
-      // return result;
-      return null;
+   private Map<String, Object> transformAggregatedMetricComponentValues(String encodedMetricName,
+            Map<String, List<MetricValue<?>>> rows) {
+      Map<String, Object> result = new TreeMap<String, Object>();
+      if ("CallCount".equals(encodedMetricName)) {
+         for (String key : rows.keySet()) {
+            double total = 0.0D;
+            for (MetricValue<?> metricValue : rows.get(key)) {
+               total += (Long) metricValue.getColumns().get("count");
+            }
+            result.put(key, total);
+         }
+      } else if ("ResponseTime".equals(encodedMetricName)) {
+         for (String key : rows.keySet()) {
+            double total = 0.0D;
+            for (MetricValue<?> metricValue : rows.get(key)) {
+               total += (Double) metricValue.getColumns().get("totalTime");
+            }
+            result.put(key, total);
+         }
+      } else {
+         for (String key : rows.keySet()) {
+            double total = 0.0D;
+            for (MetricValue<?> metricValue : rows.get(key)) {
+               total += (Double) metricValue.getColumns().get("value");
+            }
+            result.put(key, total);
+         }
+      }
+
+      return result;
+
    }
 
    private String decodeMetricName(String encodedMetricName) {

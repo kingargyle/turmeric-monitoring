@@ -8,7 +8,12 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.dao;
 
+import java.util.List;
+import java.util.Map;
+
+import org.ebayopensource.turmeric.monitoring.cassandra.storage.model.MetricIdentifier;
 import org.ebayopensource.turmeric.monitoring.provider.model.MetricValue;
+import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
 
 /**
  * The Interface MetricValuesDAO.
@@ -17,5 +22,8 @@ import org.ebayopensource.turmeric.monitoring.provider.model.MetricValue;
  */
 public interface MetricValuesDAO<K> {
    public MetricValue<?> find(K key);
+
+   public Map<String, List<MetricValue<?>>> findMetricValuesByOperation(String metricName, long firstStartTime,
+            long l, boolean serverSide, int aggregationPeriod, Map<String, List<String>> filters) throws ServiceException;
 
 }

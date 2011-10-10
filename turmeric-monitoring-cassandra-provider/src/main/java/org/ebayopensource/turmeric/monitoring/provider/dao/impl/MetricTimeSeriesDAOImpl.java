@@ -44,5 +44,4 @@ public class MetricTimeSeriesDAOImpl<K> extends
 		super(clusterName, host, s_keyspace, kTypeClass, 
 				Model.class,  columnFamilyName);
 	}
-
 }
