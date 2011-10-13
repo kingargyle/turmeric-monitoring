@@ -26,6 +26,7 @@ import me.prettyprint.hector.api.factory.HFactory;
 
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricIdentifierDAO;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricsDAO;
+import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.impl.IpPerDayAndServiceNameDAOImpl;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.impl.MetricIdentifierDAOImpl;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.impl.MetricServiceCallsByTimeDAOImpl;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.impl.MetricTimeSeriesDAOImpl;
@@ -81,6 +82,8 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
    private MetricServiceCallsByTimeDAOImpl<String, Long> metricServiceCallsByTimeDAO;
 
    private MetricValuesByIpAndDateDAOImpl<String, Long> metricValuesByIpAndDateDAO;
+   
+   private IpPerDayAndServiceNameDAOImpl<String, String> ipPerDayAndServiceNameDAOImpl;
 
    /**
     * Inits the.
@@ -133,7 +136,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
    public void saveMetricSnapshot(long timeSnapshot, Collection<MetricValueAggregator> snapshotCollection)
             throws ServiceException {
       try {
-         System.out.println("is snapshotCollection null?" + (snapshotCollection!=null));
+         System.out.println("is snapshotCollection null?" + (snapshotCollection != null));
 
          if (snapshotCollection == null || snapshotCollection.isEmpty()) {
             System.out.println("snapshotCollection empty");
@@ -142,7 +145,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
          List<MetricValue> metricValuesToSave = new ArrayList<MetricValue>();
          System.out.println("snapshotCollection element size = " + snapshotCollection.size());
          for (MetricValueAggregator metricValueAggregator : snapshotCollection) {
-            System.out.println("metricValueAggregator != null?" + (metricValueAggregator!=null));
+            System.out.println("metricValueAggregator != null?" + (metricValueAggregator != null));
             org.ebayopensource.turmeric.runtime.common.monitoring.MetricId metricId = metricValueAggregator
                      .getMetricId();
             if (metricId.getOperationName() == null) {
@@ -181,7 +184,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
                }
 
             }
-            System.out.println("are there metricValuesToSave? = "+(metricValuesToSave.size()>0));
+            System.out.println("are there metricValuesToSave? = " + (metricValuesToSave.size() > 0));
             metricsDAO.saveMetricValues(getIPAddress(), cmetricIdentifier, timeSnapshot, snapshotInterval, serverSide,
                      metricValuesToSave);
             metricValuesToSave.clear();
@@ -310,48 +313,6 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
       }
    }
 
-   private void createCF(final String kspace, final String columnFamilyName, final Cluster cluster,
-            boolean isSuperColumn, final ComparatorType superKeyValidator, final ComparatorType keyValidator,
-            final ComparatorType superComparator, final ComparatorType comparator) {
-
-      if (isSuperColumn) {
-         ThriftCfDef cfDefinition = (ThriftCfDef) HFactory.createColumnFamilyDefinition(kspace, columnFamilyName,
-                  superComparator, new ArrayList<ColumnDefinition>());
-         cfDefinition.setColumnType(ColumnType.SUPER);
-         cfDefinition.setKeyValidationClass(superKeyValidator.getClassName());
-         cfDefinition.setSubComparatorType(comparator);
-         cluster.addColumnFamily(cfDefinition);
-      } else {
-         ColumnFamilyDefinition cfDefinition = new ThriftCfDef(kspace, columnFamilyName);
-         cfDefinition.setKeyValidationClass(keyValidator.getClassName());
-         if ("MetricValuesByIpAndDate".equals(columnFamilyName) || "MetricTimeSeries".equals(columnFamilyName)
-                  || "ServiceCallsByTime".equals(columnFamilyName)) {
-
-            ComparatorType comparator1 = getComparator(Long.class);
-            cfDefinition.setComparatorType(comparator1);
-         } else {
-            cfDefinition.setComparatorType(comparator);
-         }
-
-         cluster.addColumnFamily(cfDefinition);
-      }
-   }
-
-   private ComparatorType getComparator(Class<?> keyTypeClass) {
-      if (keyTypeClass != null && String.class.isAssignableFrom(keyTypeClass)) {
-         return ComparatorType.UTF8TYPE;
-      } else if (keyTypeClass != null && Integer.class.isAssignableFrom(keyTypeClass)) {
-         return ComparatorType.INTEGERTYPE;
-      } else if (keyTypeClass != null && Long.class.isAssignableFrom(keyTypeClass)) {
-         return ComparatorType.LONGTYPE;
-      } else if (keyTypeClass != null && Date.class.isAssignableFrom(keyTypeClass)) {
-         return ComparatorType.TIMEUUIDTYPE;
-      } else {
-         return ComparatorType.BYTESTYPE; // by default
-      }
-
-   }
-
    private void initDAO(String clusterName, String host, String keyspace) {
       metricIdentifierDAO = new MetricIdentifierDAOImpl<String>(clusterName, host, keyspace, "MetricIdentifier",
                String.class);
@@ -366,6 +327,6 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
                "ServiceCallsByTime", String.class, Long.class);
       metricValuesByIpAndDateDAO = new MetricValuesByIpAndDateDAOImpl<String, Long>(clusterName, host, keyspace,
                "MetricValuesByIpAndDate", String.class, Long.class);
+      ipPerDayAndServiceNameDAOImpl = new IpPerDayAndServiceNameDAOImpl<String,String>(clusterName , host, keyspace, "IpPerDayAndServiceName", String.class, String.class);
    }
-
 }

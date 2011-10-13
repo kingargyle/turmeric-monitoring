@@ -14,6 +14,7 @@ import static org.junit.Assert.assertFalse;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -175,6 +176,19 @@ public class CassandraMetricsStorageProviderTest extends CassandraTestHelper {
 
         assertCassandraSuperColumnValues("ServiceOperationByIp", ipAddress, "service2", STR_SERIALIZER, STR_SERIALIZER,
                         STR_SERIALIZER, new String[] { "operation2" }, new String[] { "" });
+
+    }
+    
+    @Test
+    public void testSaveIpByDateAndOperationName() throws ServiceException {
+        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollection();
+        long timeSnapshot = System.currentTimeMillis();
+        String ipByDateAndOperationNameKey = new SimpleDateFormat("ddMMyyyy").format(System.currentTimeMillis());
+
+        provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
+
+        assertCassandraSuperColumnValues("IpPerDayAndServiceName", ipByDateAndOperationNameKey, "service1", STR_SERIALIZER, STR_SERIALIZER,
+                        STR_SERIALIZER, new String[] { provider.getIPAddress() }, new String[] { "" });
 
     }
 

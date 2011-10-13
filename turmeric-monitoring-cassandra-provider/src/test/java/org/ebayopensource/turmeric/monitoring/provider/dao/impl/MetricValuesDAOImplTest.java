@@ -50,6 +50,7 @@ public class MetricValuesDAOImplTest extends BaseTest {
    private final String srvcAdminName = "ServiceAdminName1";
    private final long twoMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 2);
    private final long threeMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 3);
+   String ipAddress = null;
 
    private int accumCount = 0;
    private double accumResponse = 0.00;
@@ -60,6 +61,7 @@ public class MetricValuesDAOImplTest extends BaseTest {
       metricsStorageProvider = new CassandraMetricsStorageProvider();
       metricsStorageProvider.init(options, null, MonitoringSystem.COLLECTION_LOCATION_SERVER, 20);
       queryprovider = new SOAMetricsQueryServiceCassandraProviderImpl();
+      ipAddress = metricsStorageProvider.getIPAddress();
       cleanUpTestData();
    }
 
@@ -72,20 +74,21 @@ public class MetricValuesDAOImplTest extends BaseTest {
 
    @Test
    public void testFindMetricValuesByOperation() throws ServiceException {
+
       Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
                srvcAdminName, opName, consumerName);
       metricsStorageProvider.saveMetricSnapshot(twoMinutesAgo, snapshotCollection);
-      
+
       Collection<MetricValueAggregator> snapshotCollection2 = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
                srvcAdminName, opName, consumerName);
-      
+
       metricsStorageProvider.saveMetricSnapshot(now, snapshotCollection2);
       Map<String, List<String>> filters = new HashMap<String, List<String>>();
       filters.put("Service", Arrays.asList(srvcAdminName));
       filters.put("Operation", Arrays.asList(opName));
       Map<String, List<org.ebayopensource.turmeric.monitoring.provider.model.MetricValue<?>>> result = metricValuesDAO
-               .findMetricValuesByOperation(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), threeMinutesAgo,
-                        oneMinuteAgo, true, 20, filters);
+               .findMetricValuesByOperation(Arrays.asList(ipAddress), SystemMetricDefs.OP_TIME_TOTAL.getMetricName(),
+                        threeMinutesAgo, oneMinuteAgo, true, 20, filters);
       assertNotNull(result);
       assertEquals(1, result.size());
       assertTrue(result.keySet().contains(opName));
@@ -118,8 +121,8 @@ public class MetricValuesDAOImplTest extends BaseTest {
       filters.put("Service", Arrays.asList(srvcAdminName));
       filters.put("Operation", Arrays.asList(opName));
       Map<String, List<org.ebayopensource.turmeric.monitoring.provider.model.MetricValue<?>>> result = metricValuesDAO
-               .findMetricValuesByOperation(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), threeMinutesAgo, now, true,
-                        20, filters);
+               .findMetricValuesByOperation(Arrays.asList(ipAddress), SystemMetricDefs.OP_TIME_TOTAL.getMetricName(),
+                        threeMinutesAgo, now, true, 20, filters);
       assertNotNull(result);
       assertEquals(1, result.size());
       List<org.ebayopensource.turmeric.monitoring.provider.model.MetricValue<?>> metricValues = result.get(opName);
@@ -147,7 +150,7 @@ public class MetricValuesDAOImplTest extends BaseTest {
       assertEquals(Double.class, totalTime2.getClass());
 
    }
-   
+
    @Test
    public void testFindMetricValuesByOperationFromThreeMinutesToOneHourLater() throws ServiceException {
       Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
@@ -160,10 +163,10 @@ public class MetricValuesDAOImplTest extends BaseTest {
       Map<String, List<String>> filters = new HashMap<String, List<String>>();
       filters.put("Service", Arrays.asList(srvcAdminName));
       filters.put("Operation", Arrays.asList(opName));
-      long oneHourLater = now + (60*60*1000);
+      long oneHourLater = now + (60 * 60 * 1000);
       Map<String, List<org.ebayopensource.turmeric.monitoring.provider.model.MetricValue<?>>> result = metricValuesDAO
-               .findMetricValuesByOperation(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), threeMinutesAgo, oneHourLater , true,
-                        20, filters);
+               .findMetricValuesByOperation(Arrays.asList(ipAddress), SystemMetricDefs.OP_TIME_TOTAL.getMetricName(),
+                        threeMinutesAgo, oneHourLater, true, 20, filters);
       assertNotNull(result);
       assertEquals(1, result.size());
       List<org.ebayopensource.turmeric.monitoring.provider.model.MetricValue<?>> metricValues = result.get(opName);
@@ -209,8 +212,8 @@ public class MetricValuesDAOImplTest extends BaseTest {
       filters.put("Service", Arrays.asList(srvcAdminName));
       filters.put("Operation", Arrays.asList(opName));
       Map<String, List<org.ebayopensource.turmeric.monitoring.provider.model.MetricValue<?>>> result = metricValuesDAO
-               .findMetricValuesByOperation(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), oneMinuteAgo, now, true,
-                        20, filters);
+               .findMetricValuesByOperation(Arrays.asList(ipAddress), SystemMetricDefs.OP_TIME_TOTAL.getMetricName(),
+                        oneMinuteAgo, now, true, 20, filters);
       assertNotNull(result);
       assertEquals(1, result.size());
       List<org.ebayopensource.turmeric.monitoring.provider.model.MetricValue<?>> metricValues = result.get(opName);

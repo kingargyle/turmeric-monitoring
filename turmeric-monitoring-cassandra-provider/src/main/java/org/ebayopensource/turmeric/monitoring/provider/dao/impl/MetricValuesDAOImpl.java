@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import me.prettyprint.cassandra.serializers.BytesArraySerializer;
 import me.prettyprint.cassandra.serializers.DoubleSerializer;
@@ -119,35 +120,48 @@ public class MetricValuesDAOImpl<K> extends
     * {@inheritDoc}
     */
    @Override
-   public Map<String, List<MetricValue<?>>> findMetricValuesByOperation(String metricName, long begin, long end,
-            boolean serverSide, int aggregationPeriod, Map<String, List<String>> filters) throws ServiceException {
+   public Map<String, List<MetricValue<?>>> findMetricValuesByOperation(List<String> ipAddressList, String metricName,
+            long begin, long end, boolean serverSide, int aggregationPeriod, Map<String, List<String>> filters)
+            throws ServiceException {
       Map<String, List<MetricValue<?>>> result = new HashMap<String, List<MetricValue<?>>>();
 
       List<String> serviceAdminNames = filters.get("Service");
       List<String> operationNames = filters.get("Operation");
       List<String> consumerNames = filters.get("Consumer");
       String serviceName = serviceAdminNames.get(0);
+      Map<Long, MetricValue<?>> metricValuesByTime = new TreeMap<Long, MetricValue<?>>();
       for (String operation : operationNames) {
-         Set<String> metricValuesToGet = new HashSet<String>();
-         SliceQuery<String, Long, String> q = HFactory.createSliceQuery(keySpace, StringSerializer.get(),
-                  LongSerializer.get(), StringSerializer.get());
-         q.setColumnFamily("MetricTimeSeries");
-         String metricTimeSeriesKey = createMetricTimeSeriesKey(metricName, serviceName, operation, aggregationPeriod,
-                  serverSide);
-         q.setKey(metricTimeSeriesKey);
-         q.setRange(begin, end, false, 100000000);
-         QueryResult<ColumnSlice<Long, String>> r = q.execute();
-         ColumnSlice<Long, String> columnSlice = r.get();
-         for (HColumn<Long, String> column : columnSlice.getColumns()) {
-            if (column.getValue() != null && column.getValue().contains(metricName)) {
-               metricValuesToGet.add(column.getValue());
+         for (String ipAddress : ipAddressList) {
+
+            Set<String> metricValuesToGet = new HashSet<String>();
+            SliceQuery<String, Long, String> q = HFactory.createSliceQuery(keySpace, StringSerializer.get(),
+                     LongSerializer.get(), StringSerializer.get());
+            q.setColumnFamily("MetricTimeSeries");
+            String metricTimeSeriesKey = createMetricTimeSeriesKey(ipAddress, metricName, serviceName, operation,
+                     aggregationPeriod, serverSide);
+            q.setKey(metricTimeSeriesKey);
+            q.setRange(begin, end, false, 100000000);
+            QueryResult<ColumnSlice<Long, String>> r = q.execute();
+            ColumnSlice<Long, String> columnSlice = r.get();
+            for (HColumn<Long, String> column : columnSlice.getColumns()) {
+               if (column.getValue() != null && column.getValue().contains(metricName)) {
+                  metricValuesToGet.add(column.getValue());
+               }
+            }
+            System.out.printf("findMetricValuesByOperation(%s,%d,%d,%s,%d). Columns found for key=[%s]={"
+                     + metricValuesToGet + "}\n", metricName, begin, end, serverSide, aggregationPeriod,
+                     metricTimeSeriesKey);
+            List<MetricValue<?>> metricValues = this.findByKeys(metricValuesToGet);
+            //now, I add them ordered by timestamp
+            for (MetricValue<?> metricValue : metricValues) {
+               metricValuesByTime.put(metricValue.getTimeMiliseconds(), metricValue);
             }
          }
-         System.out.printf("findMetricValuesByOperation(%s,%d,%d,%s,%d). Columns found for key=[%s]={"+metricValuesToGet+"}\n", metricName, begin,end, serverSide,aggregationPeriod,metricTimeSeriesKey);
-         List<MetricValue<?>> metricValues = this.findByKeys(metricValuesToGet);
-         
-         result.put(operation, metricValues);
+         List<MetricValue<?>> theList =  new ArrayList<MetricValue<?>>();
+         theList.addAll(metricValuesByTime.values());
+         result.put(operation,theList);
       }
+
       return result;
    }
 
@@ -162,7 +176,7 @@ public class MetricValuesDAOImpl<K> extends
       List<MetricValue<?>> result = new ArrayList<MetricValue<?>>();
       for (String key : metricValuesToGet) {
          MetricValue<?> metricValue = this.find((K) key);
-         System.out.println("findByKeys: metricValue found."+key+"={"+metricValue+"}");
+         System.out.println("findByKeys: metricValue found." + key + "={" + metricValue + "}");
          result.add(metricValue);
       }
       return result;
@@ -185,9 +199,9 @@ public class MetricValuesDAOImpl<K> extends
     * @throws ServiceException
     *            the service exception
     */
-   private String createMetricTimeSeriesKey(String metricName, String serviceName, String operationName,
-            int snapshotInterval, boolean isServerSide) throws ServiceException {
-      String ipAddress = getIPAddress();
+   private String createMetricTimeSeriesKey(String ipAddress, String metricName, String serviceName,
+            String operationName, int snapshotInterval, boolean isServerSide) throws ServiceException {
+
       return ipAddress + KEY_SEPARATOR + serviceName + KEY_SEPARATOR + operationName + KEY_SEPARATOR + metricName
                + KEY_SEPARATOR + snapshotInterval + KEY_SEPARATOR + isServerSide;
 

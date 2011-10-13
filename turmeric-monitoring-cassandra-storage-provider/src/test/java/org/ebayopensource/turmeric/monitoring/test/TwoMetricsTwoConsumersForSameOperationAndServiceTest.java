@@ -1,6 +1,7 @@
 package org.ebayopensource.turmeric.monitoring.test;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -229,6 +230,24 @@ public class TwoMetricsTwoConsumersForSameOperationAndServiceTest extends Cassan
         assertCassandraSuperColumnValues("ServiceCallsByTime", serviceCallsByTimeKey, Long.valueOf(timeSnapshot),
                         LONG_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER, new String[] { operationName },
                         new String[] { "" });
+
+    }
+    
+    @Test
+    public void testSaveIpByDateAndOperationName() throws ServiceException {
+       
+       String serviceName = "ServiceX7";
+       String operationName = "operationY7";
+       Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollection(
+                       serviceName, operationName);
+       
+        long timeSnapshot = System.currentTimeMillis();
+        String ipByDateAndOperationNameKey = new SimpleDateFormat("ddMMyyyy").format(System.currentTimeMillis());
+
+        provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
+
+        assertCassandraSuperColumnValues("IpPerDayAndServiceName", ipByDateAndOperationNameKey, serviceName, STR_SERIALIZER, STR_SERIALIZER,
+                        STR_SERIALIZER, new String[] { provider.getIPAddress() }, new String[] { "" });
 
     }
 
