@@ -446,7 +446,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       double calls1 = 0L;
       List<Map<String, Object>> errors2;
       double calls2 = 0L;
-      
+
       if ("Category".equals(errorType)) {
          final String filter = (errorCategory == null ? null : ErrorCategory.fromValue(errorCategory).name());
 
@@ -724,11 +724,40 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
             }
 
          } else if (ResourceEntity.CONSUMER.value().equals(groupBy)) {
-            // data1 = metricsDAO.findMetricComponentValuesByConsumer(metricName, firstStartTime, firstStartTime +
-            // duration,
-            // serverSide, aggregationPeriod, filters);
-            // data2 = metricsDAO.findMetricComponentValuesByConsumer(metricName, secondStartTime,
-            // secondStartTime + duration, serverSide, aggregationPeriod, filters);
+            List<String> operationNames = filters.get("Operation");
+            List<String> serviceNames = filters.get("Service");
+            // get the operation names for the service
+            if (operationNames == null || operationNames.isEmpty()) {
+               operationNames = metricsServiceOperationByIpDAO.findMetricOperationNames(serviceNames);
+               operationNames = removeServiceNamePrefix(operationNames);
+            }
+            List<String> consumerNames = metricsServiceConsumerByIpDAO.findMetricConsumerNames(serviceNames);
+            filters.put("Consumer", consumerNames);
+            for (String serviceName : serviceNames) {
+               List<String> ipAddressList = this.ipPerDayAndServiceNameDAO.findByDateAndServiceName(
+                        System.currentTimeMillis(), serviceName);
+               data1 = metricValuesDAO.findMetricValuesByConsumer(ipAddressList, metricName, firstStartTime,
+                        firstStartTime + duration, serverSide, aggregationPeriod, serviceName, operationNames,
+                        consumerNames);
+               data2 = metricValuesDAO.findMetricValuesByConsumer(ipAddressList, metricName, secondStartTime,
+                        secondStartTime + duration, serverSide, aggregationPeriod, serviceName, operationNames,
+                        consumerNames);
+               // Move data to a better data structure
+               Map<String, Object> map1 = transformAggregatedMetricComponentValues(encodedMetricName, data1);
+               Map<String, Object> map2 = transformAggregatedMetricComponentValues(encodedMetricName, data2);
+               for (String consumerName : consumerNames) {
+                  // STEP 3. Create and populate the return values
+                  MetricGroupData metricGroupData = new MetricGroupData();
+                  metricGroupData.setCount1((Double) map1.get(consumerName));
+                  metricGroupData.setCount2((Double) map2.get(consumerName));
+                  CriteriaInfo criteriaInfo = new CriteriaInfo();
+                  criteriaInfo.setConsumerName(consumerName);
+                  metricGroupData.setCriteriaInfo(criteriaInfo);
+                  result.add(metricGroupData);
+               }
+
+            }
+
          } else if ("Error".equals(groupBy)) {
             // metricName = "SoaFwk.Op.Err.%";
             // data1 = metricsDAO.findMetricComponentValuesByMetric(metricName, firstStartTime, firstStartTime +
@@ -831,7 +860,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
          for (String key : rows.keySet()) {
             double total = 0.0D;
             for (MetricValue<?> metricValue : rows.get(key)) {
-               total += (Double) metricValue.getColumns().get("value");
+               total += (Long) metricValue.getColumns().get("value");
             }
             result.put(key, total);
          }

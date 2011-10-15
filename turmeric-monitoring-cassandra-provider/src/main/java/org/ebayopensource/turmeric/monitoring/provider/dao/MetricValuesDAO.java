@@ -23,7 +23,12 @@ import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
 public interface MetricValuesDAO<K> {
    public MetricValue<?> find(K key);
 
-   public Map<String, List<MetricValue<?>>> findMetricValuesByOperation(List<String> ipaddressList, String metricName, long firstStartTime,
-            long l, boolean serverSide, int aggregationPeriod, Map<String, List<String>> filters) throws ServiceException;
+   public Map<String, List<MetricValue<?>>> findMetricValuesByOperation(List<String> ipaddressList, String metricName,
+            long firstStartTime, long l, boolean serverSide, int aggregationPeriod, Map<String, List<String>> filters)
+            throws ServiceException;
+
+   Map<String, List<MetricValue<?>>> findMetricValuesByConsumer(List<String> ipAddressList, String metricName,
+            long begin, long end, boolean serverSide, int aggregationPeriod, String serviceName,
+            List<String> operationNames, List<String> consumerNames) throws ServiceException;
 
 }

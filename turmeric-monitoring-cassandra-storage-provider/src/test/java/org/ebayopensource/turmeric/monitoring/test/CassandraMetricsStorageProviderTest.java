@@ -218,17 +218,27 @@ public class CassandraMetricsStorageProviderTest extends CassandraTestHelper {
                         + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
         String metricSeriesKeyForTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
                         + "service1|operation1|test_count|20|true";
+        String metricSeriesKeyForTestCountByConsumer = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
+                 + "service1|operation1|missing|test_count|20|true";
         String metricSeriesKeyForTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
                         + "service2|operation2|test_average|20|true";
+        String metricSeriesKeyForTestAvgByConsumer = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
+                 + "service2|operation2|anotherusecase|test_average|20|true";
         Long[] metricSeriesColumn = new Long[] { timeSnapshot };
 
         provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
 
         assertCassandraColumnValues("MetricTimeSeries", metricSeriesKeyForTestCount, LONG_SERIALIZER, STR_SERIALIZER,
                         metricSeriesColumn, new String[] { metricValueKeyTestCount });
+        
+        assertCassandraColumnValues("MetricTimeSeries", metricSeriesKeyForTestCountByConsumer, LONG_SERIALIZER, STR_SERIALIZER,
+                 metricSeriesColumn, new String[] { metricValueKeyTestCount });
 
         assertCassandraColumnValues("MetricTimeSeries", metricSeriesKeyForTestAvg, LONG_SERIALIZER, STR_SERIALIZER,
                         metricSeriesColumn, new String[] { metricValueKeyTestAvg });
+        
+        assertCassandraColumnValues("MetricTimeSeries", metricSeriesKeyForTestAvgByConsumer, LONG_SERIALIZER, STR_SERIALIZER,
+                 metricSeriesColumn, new String[] { metricValueKeyTestAvg });
 
     }
 

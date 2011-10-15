@@ -82,7 +82,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
    private MetricServiceCallsByTimeDAOImpl<String, Long> metricServiceCallsByTimeDAO;
 
    private MetricValuesByIpAndDateDAOImpl<String, Long> metricValuesByIpAndDateDAO;
-   
+
    private IpPerDayAndServiceNameDAOImpl<String, String> ipPerDayAndServiceNameDAOImpl;
 
    /**
@@ -142,7 +142,6 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
             System.out.println("snapshotCollection empty");
             return;
          }
-         List<MetricValue> metricValuesToSave = new ArrayList<MetricValue>();
          System.out.println("snapshotCollection element size = " + snapshotCollection.size());
          for (MetricValueAggregator metricValueAggregator : snapshotCollection) {
             System.out.println("metricValueAggregator != null?" + (metricValueAggregator != null));
@@ -176,18 +175,14 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
                   // now, store the service stats for the
                   // getMetricsMetadata calls
                   metricsDAO.saveServiceOperationByIpCF(getIPAddress(), cmetricIdentifier);
-                  // now, store the service stats for the
-                  // getMetricsMetadata calls for consumers
+                  // now, store the service stats for the getMetricsMetadata calls for consumers
                   metricsDAO
                            .saveServiceConsumerByIpCF(getIPAddress(), cmetricIdentifier, metricClassifier.getUseCase());
-                  metricValuesToSave.add(metricValue);
                }
-
+               metricsDAO.saveMetricValues(getIPAddress(), cmetricIdentifier, timeSnapshot, snapshotInterval,
+                        serverSide, metricValue, metricClassifier.getUseCase());
             }
-            System.out.println("are there metricValuesToSave? = " + (metricValuesToSave.size() > 0));
-            metricsDAO.saveMetricValues(getIPAddress(), cmetricIdentifier, timeSnapshot, snapshotInterval, serverSide,
-                     metricValuesToSave);
-            metricValuesToSave.clear();
+
             cmetricIdentifier = null;
          }
       } catch (Exception e) {
@@ -327,6 +322,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
                "ServiceCallsByTime", String.class, Long.class);
       metricValuesByIpAndDateDAO = new MetricValuesByIpAndDateDAOImpl<String, Long>(clusterName, host, keyspace,
                "MetricValuesByIpAndDate", String.class, Long.class);
-      ipPerDayAndServiceNameDAOImpl = new IpPerDayAndServiceNameDAOImpl<String,String>(clusterName , host, keyspace, "IpPerDayAndServiceName", String.class, String.class);
+      ipPerDayAndServiceNameDAOImpl = new IpPerDayAndServiceNameDAOImpl<String, String>(clusterName, host, keyspace,
+               "IpPerDayAndServiceName", String.class, String.class);
    }
 }

@@ -140,61 +140,65 @@ public class MetricsDAO {
     *           the snapshot interval
     * @param serverSide
     *           the server side
+    * @param consumerName
     * @param metricValuesToSave
     *           the metric values to save
     */
    @SuppressWarnings("unchecked")
    public void saveMetricValues(String ipAddress, MetricIdentifier cmetricIdentifier, long now, int snapshotInterval,
-            boolean serverSide, List<MetricValue> metricValuesToSave) {
-      if (metricValuesToSave == null || metricValuesToSave.isEmpty()) {
+            boolean serverSide, MetricValue metricValue, String consumerName) {
+      if (metricValue == null || cmetricIdentifier==null) {
          return;
       }
       String timeSeriesKey = createKeyForTimeSeries(ipAddress, cmetricIdentifier, snapshotInterval);
-      String metricValueKey = null;
-      String metricValuesByIpDate = null;
-      String ipByDateAndServiceName = null;
+      String timeSeriesKeyByConsumer = createKeyForTimeSeriesByConsumer(ipAddress, cmetricIdentifier, snapshotInterval,
+               consumerName);
+
+      String metricValueKey = createKeyForMetricValue(ipAddress, cmetricIdentifier, now);
+      String metricValuesByIpDate = createKeyForMetricValuesByIpAndDate(ipAddress);
+      String ipByDateAndServiceName = createKeyForIpDateAndServiceName();
 
       Mutator<String> metricValuesMutator = HFactory.createMutator(keySpace, STR_SERIALIZER);
       Mutator<String> metricValuesByIpAndDateMutator = HFactory.createMutator(keySpace, STR_SERIALIZER);
       Mutator<String> metricTimeSeriesMutator = HFactory.createMutator(keySpace, STR_SERIALIZER);
       Mutator<String> serviceCallsByTimeMutator = HFactory.createMutator(keySpace, STR_SERIALIZER);
       Mutator<String> ipByDateAndServiceNameMutator = HFactory.createMutator(keySpace, STR_SERIALIZER);
-      ipByDateAndServiceName = createKeyForIpDateAndServiceName();
+      
 
-      for (MetricValue metricValue : metricValuesToSave) {
+      
+      
+      
+      MetricComponentValue[] metricComponentValues = metricValue.getValues();
+      for (MetricComponentValue metricComponentValue : metricComponentValues) {
+         System.out.println("saving MetricValues with key=" + metricValueKey);
+         System.out.println("  and values={" + metricComponentValue.getName() + ":" + metricComponentValue.getValue()
+                  + "}");
+         metricValuesMutator.insert(metricValueKey, "MetricValues", HFactory.createColumn(
+                  metricComponentValue.getName(), metricComponentValue.getValue(), STR_SERIALIZER, OBJ_SERIALIZER));
 
-         metricValueKey = createKeyForMetricValue(ipAddress, cmetricIdentifier, now);
-         metricValuesByIpDate = createKeyForMetricValuesByIpAndDate(ipAddress);
-         MetricComponentValue[] metricComponentValues = metricValue.getValues();
-         for (MetricComponentValue metricComponentValue : metricComponentValues) {
-            System.out.println("saving MetricValues with key=" + metricValueKey);
-            System.out.println("  and values={" + metricComponentValue.getName() + ":"
-                     + metricComponentValue.getValue() + "}");
-            metricValuesMutator.insert(metricValueKey, "MetricValues", HFactory.createColumn(
-                     metricComponentValue.getName(), metricComponentValue.getValue(), STR_SERIALIZER, OBJ_SERIALIZER));
+         List<HColumn<String, String>> metricValuesColumns = Arrays.asList(HFactory.createColumn(metricValueKey, "",
+                  STR_SERIALIZER, STR_SERIALIZER));
 
-            List<HColumn<String, String>> metricValuesColumns = Arrays.asList(HFactory.createColumn(metricValueKey, "",
-                     STR_SERIALIZER, STR_SERIALIZER));
+         HSuperColumn<Long, String, String> serviceOperationCallsByTimeColumn = HFactory.createSuperColumn(now,
+                  metricValuesColumns, LNG_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER);
 
-            HSuperColumn<Long, String, String> serviceOperationCallsByTimeColumn = HFactory.createSuperColumn(now,
-                     metricValuesColumns, LNG_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER);
+         metricValuesByIpAndDateMutator.insert(metricValuesByIpDate, "MetricValuesByIpAndDate",
+                  serviceOperationCallsByTimeColumn);
 
-            metricValuesByIpAndDateMutator.insert(metricValuesByIpDate, "MetricValuesByIpAndDate",
-                     serviceOperationCallsByTimeColumn);
+         List<HColumn<String, String>> ipByDateAndServiceNameColumns = Arrays.asList(HFactory.createColumn(ipAddress,
+                  "", STR_SERIALIZER, STR_SERIALIZER));
 
-            List<HColumn<String, String>> ipByDateAndServiceNameColumns = Arrays.asList(HFactory.createColumn(
-                     ipAddress, "", STR_SERIALIZER, STR_SERIALIZER));
+         HSuperColumn<String, String, String> ipByDateAndServiceNameColumn = HFactory.createSuperColumn(
+                  cmetricIdentifier.getServiceAdminName(), ipByDateAndServiceNameColumns, STR_SERIALIZER,
+                  STR_SERIALIZER, STR_SERIALIZER);
 
-            HSuperColumn<String, String, String> ipByDateAndServiceNameColumn = HFactory.createSuperColumn(
-                     cmetricIdentifier.getServiceAdminName(), ipByDateAndServiceNameColumns, STR_SERIALIZER, STR_SERIALIZER,
-                     STR_SERIALIZER);
-
-            ipByDateAndServiceNameMutator.insert(ipByDateAndServiceName, "IpPerDayAndServiceName",
-                     ipByDateAndServiceNameColumn);
-
-         }
+         ipByDateAndServiceNameMutator.insert(ipByDateAndServiceName, "IpPerDayAndServiceName",
+                  ipByDateAndServiceNameColumn);
 
          metricTimeSeriesMutator.insert(timeSeriesKey, "MetricTimeSeries",
+                  HFactory.createColumn(now, metricValueKey, LNG_SERIALIZER, STR_SERIALIZER));
+
+         metricTimeSeriesMutator.insert(timeSeriesKeyByConsumer, "MetricTimeSeries",
                   HFactory.createColumn(now, metricValueKey, LNG_SERIALIZER, STR_SERIALIZER));
       }
 
@@ -207,6 +211,14 @@ public class MetricsDAO {
                serviceOperationCallsByTimeColumn);
 
       // metricTimeSeriesMutator.execute();
+   }
+
+   private String createKeyForTimeSeriesByConsumer(String ipAddress, MetricIdentifier cmetricIdentifier,
+            int snapshotInterval, String consumerName) {
+      return ipAddress + KEY_SEPARATOR + cmetricIdentifier.getServiceAdminName() + KEY_SEPARATOR
+               + cmetricIdentifier.getOperationName() + KEY_SEPARATOR + consumerName + KEY_SEPARATOR
+               + cmetricIdentifier.getMetricName() + KEY_SEPARATOR + snapshotInterval + KEY_SEPARATOR
+               + cmetricIdentifier.isServerSide();
    }
 
    public String createKeyForIpDateAndServiceName() {
