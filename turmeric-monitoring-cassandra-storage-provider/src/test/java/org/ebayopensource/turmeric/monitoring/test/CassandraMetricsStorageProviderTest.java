@@ -10,6 +10,7 @@ package org.ebayopensource.turmeric.monitoring.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -20,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import me.prettyprint.cassandra.model.CqlQuery;
 import me.prettyprint.cassandra.model.CqlRows;
@@ -56,6 +58,7 @@ import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValueAg
 import org.ebayopensource.turmeric.utils.cassandra.hector.HectorManager;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class CassandraMetricsStorageProviderTest extends CassandraTestHelper {
@@ -212,10 +215,10 @@ public class CassandraMetricsStorageProviderTest extends CassandraTestHelper {
         Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollection();
         long timeSnapshot = System.currentTimeMillis();
         String ipAddress = provider.getIPAddress();
-        String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "test_count"
-                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
-        String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "test_average"
-                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
+        String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "service1" + CassandraMetricsStorageProvider.KEY_SEPARATOR + "operation1" + CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_count"
+                 + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
+        String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "service2" + CassandraMetricsStorageProvider.KEY_SEPARATOR + "operation2" + CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_average"
+                 + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
         String metricSeriesKeyForTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
                         + "service1|operation1|test_count|20|true";
         String metricSeriesKeyForTestCountByConsumer = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
@@ -247,10 +250,10 @@ public class CassandraMetricsStorageProviderTest extends CassandraTestHelper {
         Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollection();
         long timeSnapshot = System.currentTimeMillis();
         String ipAddress = provider.getIPAddress();
-        String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "test_count"
-                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
-        String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "test_average"
-                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
+        String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "service1" + CassandraMetricsStorageProvider.KEY_SEPARATOR + "operation1" + CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_count"
+                 + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
+        String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "service2" + CassandraMetricsStorageProvider.KEY_SEPARATOR + "operation2" + CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_average"
+                 + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
 
         provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
 
@@ -281,6 +284,52 @@ public class CassandraMetricsStorageProviderTest extends CassandraTestHelper {
                         LONG_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER, new String[] { "operation2" },
                         new String[] { "" });
     }
+    
+    @Ignore
+    @Test
+    public void testSnapshotsAreSubtracted() throws Exception {
+        long timeStamp = System.currentTimeMillis();
+
+        MetricId metricId1 = new MetricId("test_count", "service1", "operation1");
+        MetricValue metricValue1 = new LongSumMetricValue(metricId1);
+        MetricValueAggregatorTestImpl aggregator1 = new MetricValueAggregatorTestImpl(metricValue1, MetricCategory.Timing, MonitoringLevel.NORMAL);
+
+        MetricId metricId2 = new MetricId("test_average", "service2", "operation2");
+        MetricValue metricValue2 = new AverageMetricValue(metricId2);
+        MetricValueAggregatorTestImpl aggregator2 = new MetricValueAggregatorTestImpl(metricValue2, MetricCategory.Timing, MonitoringLevel.NORMAL);
+
+        // Simulate first call
+        MetricClassifier metricClassifier1 = new MetricClassifier("consumer1", "sourceDC1", "targetDC1");
+        aggregator1.update(metricClassifier1, 1L);
+        aggregator2.update(metricClassifier1, 2L);
+
+        List<MetricValueAggregator> aggregators = deepCopyAggregators(aggregator1, aggregator2);
+
+        // First save
+        provider.saveMetricSnapshot(timeStamp, aggregators);
+
+        // Simulate second call
+        long countDelta = 1L;
+        long timeDelta = 3L;
+        aggregator1.update(metricClassifier1, countDelta);
+        aggregator2.update(metricClassifier1, timeDelta);
+
+        // Second save
+        timeStamp += TimeUnit.SECONDS.toMillis(60);
+        aggregators = deepCopyAggregators(aggregator1, aggregator2);
+        provider.saveMetricSnapshot(timeStamp, aggregators);
+        fail("Test not yet implemented");
+        
+    }
+    
+    private List<MetricValueAggregator> deepCopyAggregators(MetricValueAggregator... aggregators) {
+       // The aggregator list passed to the storage provider is always a deep copy of the aggregators
+       List<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
+       for (MetricValueAggregator aggregator : aggregators) {
+           result.add((MetricValueAggregator) aggregator.deepCopy(false));
+       }
+       return result;
+   }
 
     private Collection<MetricValueAggregator> createMetricValueAggregatorsCollection() {
         Collection<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
@@ -310,33 +359,7 @@ public class CassandraMetricsStorageProviderTest extends CassandraTestHelper {
         return result;
     }
 
-    private Collection<MetricValueAggregator> createMetricValueAggregatorsCollection(String serviceName,
-                    String operationName) {
-        Collection<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
-        MetricId metricId1 = new MetricId("test_count", serviceName, operationName);
-        MetricValue metricValue1 = new LongSumMetricValue(metricId1, 123456);
-        MetricId metricId2 = new MetricId("test_average", serviceName, operationName);
-        MetricValue metricValue2 = new AverageMetricValue(metricId2, 17, 456854235.123);
-
-        MetricClassifier metricClassifier1 = new MetricClassifier("missing", "sourcedc", "targetdc");
-        MetricClassifier metricClassifier2 = new MetricClassifier("anotherusecase", "sourcedc", "targetdc");
-
-        Map<MetricClassifier, MetricValue> valuesByClassifier1 = new HashMap<MetricClassifier, MetricValue>();
-        valuesByClassifier1.put(metricClassifier1, metricValue1);
-
-        MetricValueAggregatorTestImpl aggregator1 = new MetricValueAggregatorTestImpl(metricValue1,
-                        MetricCategory.Timing, MonitoringLevel.NORMAL, valuesByClassifier1);
-
-        result.add(aggregator1);
-
-        Map<MetricClassifier, MetricValue> valuesByClassifier2 = new HashMap<MetricClassifier, MetricValue>();
-        valuesByClassifier2.put(metricClassifier2, metricValue2);
-        MetricValueAggregatorTestImpl aggregator2 = new MetricValueAggregatorTestImpl(metricValue2,
-                        MetricCategory.Timing, MonitoringLevel.NORMAL, valuesByClassifier2);
-
-        result.add(aggregator2);
-
-        return result;
-    }
+    
+    
 
 }

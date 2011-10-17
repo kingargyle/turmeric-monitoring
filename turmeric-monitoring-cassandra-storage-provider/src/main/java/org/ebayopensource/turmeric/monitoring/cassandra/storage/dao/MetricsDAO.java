@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.ObjectSerializer;
@@ -266,7 +267,7 @@ public class MetricsDAO {
     * @return the string
     */
    public String createKeyForMetricValue(String ipAddress, MetricIdentifier cmetricIdentifier, long now) {
-      return ipAddress + KEY_SEPARATOR + cmetricIdentifier.getMetricName() + KEY_SEPARATOR + now;
+      return ipAddress + KEY_SEPARATOR +cmetricIdentifier.getServiceAdminName() +KEY_SEPARATOR+cmetricIdentifier.getOperationName() + KEY_SEPARATOR +cmetricIdentifier.getMetricName() + KEY_SEPARATOR + now;
    }
 
    /**
