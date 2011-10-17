@@ -178,9 +178,10 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
                   // now, store the service stats for the getMetricsMetadata calls for consumers
                   metricsDAO
                            .saveServiceConsumerByIpCF(getIPAddress(), cmetricIdentifier, metricClassifier.getUseCase());
+                  metricsDAO.saveMetricValues(getIPAddress(), cmetricIdentifier, timeSnapshot, snapshotInterval,
+                           serverSide, metricValue, metricClassifier.getUseCase());
                }
-               metricsDAO.saveMetricValues(getIPAddress(), cmetricIdentifier, timeSnapshot, snapshotInterval,
-                        serverSide, metricValue, metricClassifier.getUseCase());
+
             }
 
             cmetricIdentifier = null;

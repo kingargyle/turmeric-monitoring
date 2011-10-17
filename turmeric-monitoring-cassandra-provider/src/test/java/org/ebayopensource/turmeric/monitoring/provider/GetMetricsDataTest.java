@@ -113,7 +113,6 @@ public class GetMetricsDataTest extends BaseTest {
       accumResponse = 0;
 
    }
-   
 
    @Test
    public void testGetMetricsDataCallCountMetricForOneOperationNoConsumers() throws ServiceException {
@@ -121,13 +120,10 @@ public class GetMetricsDataTest extends BaseTest {
       Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
                srvcAdminName, opName, consumerName);
       Collection<MetricValueAggregator> snapshotCollection2 = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
-              srvcAdminName, opName, consumerName);  
+               srvcAdminName, opName, consumerName);
 
       metricsStorageProvider.saveMetricSnapshot(twoMinutesAgo, snapshotCollection);
       metricsStorageProvider.saveMetricSnapshot(now, snapshotCollection2);
-      
-      
-
 
       long duration = 60;// in secs
       // according DAOErrorLoggingHandler.persistErrors aggregation period
@@ -146,12 +142,12 @@ public class GetMetricsDataTest extends BaseTest {
       ResourceEntityRequest rer1 = new ResourceEntityRequest();
       rer1.setResourceEntityType(ResourceEntity.OPERATION);
       rer1.getResourceEntityName().add(opName);
-      metricResourceCriteria.getResourceRequestEntities().add(rer1 );
+      metricResourceCriteria.getResourceRequestEntities().add(rer1);
       ResourceEntityRequest rer2 = new ResourceEntityRequest();
       rer2.setResourceEntityType(ResourceEntity.SERVICE);
       rer2.getResourceEntityName().add(srvcAdminName);
-      metricResourceCriteria.getResourceRequestEntities().add(rer2 );
-      List<MetricGroupData> response = queryprovider.getMetricsData(metricCriteria, metricResourceCriteria );
+      metricResourceCriteria.getResourceRequestEntities().add(rer2);
+      List<MetricGroupData> response = queryprovider.getMetricsData(metricCriteria, metricResourceCriteria);
       assertNotNull(response);
       assertEquals(1, response.size());
       MetricGroupData data = response.get(0);
@@ -160,19 +156,18 @@ public class GetMetricsDataTest extends BaseTest {
       assertEquals(1, data.getCount2(), 0);
 
    }
-   
+
    @Test
    public void testGetMetricsDataResponseTimeMetricForOneOperationNoConsumers() throws ServiceException {
       createData();
-      
+
       Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
                srvcAdminName, opName, consumerName);
       Collection<MetricValueAggregator> snapshotCollection2 = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
-              srvcAdminName, opName, consumerName);  
+               srvcAdminName, opName, consumerName);
 
       metricsStorageProvider.saveMetricSnapshot(twoMinutesAgo, snapshotCollection);
       metricsStorageProvider.saveMetricSnapshot(now, snapshotCollection2);
-
 
       long duration = 60;// in secs
       // according DAOErrorLoggingHandler.persistErrors aggregation period
@@ -191,12 +186,12 @@ public class GetMetricsDataTest extends BaseTest {
       ResourceEntityRequest rer1 = new ResourceEntityRequest();
       rer1.setResourceEntityType(ResourceEntity.OPERATION);
       rer1.getResourceEntityName().add(opName);
-      metricResourceCriteria.getResourceRequestEntities().add(rer1 );
+      metricResourceCriteria.getResourceRequestEntities().add(rer1);
       ResourceEntityRequest rer2 = new ResourceEntityRequest();
       rer2.setResourceEntityType(ResourceEntity.SERVICE);
       rer2.getResourceEntityName().add(srvcAdminName);
-      metricResourceCriteria.getResourceRequestEntities().add(rer2 );
-      List<MetricGroupData> response = queryprovider.getMetricsData(metricCriteria, metricResourceCriteria );
+      metricResourceCriteria.getResourceRequestEntities().add(rer2);
+      List<MetricGroupData> response = queryprovider.getMetricsData(metricCriteria, metricResourceCriteria);
       assertNotNull(response);
       assertEquals(1, response.size());
       MetricGroupData data = response.get(0);
@@ -205,12 +200,12 @@ public class GetMetricsDataTest extends BaseTest {
       assertEquals("Unexpected value for Count2.", 1234, data.getCount2(), 0);
 
    }
-   
+
    protected Collection<MetricValueAggregator> createMetricValueAggregatorsForOneConsumerWithTotalMetric(
             String serviceName, String operationName, String consumerName) {
       accumCount += 1;
-	  accumResponse += 1234.00; 
-	   
+      accumResponse += 1234.00;
+
       Collection<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
       MetricId metricId1 = new MetricId(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), serviceName, operationName);
       MetricValue metricValue1 = new AverageMetricValue(metricId1, accumCount, accumResponse);

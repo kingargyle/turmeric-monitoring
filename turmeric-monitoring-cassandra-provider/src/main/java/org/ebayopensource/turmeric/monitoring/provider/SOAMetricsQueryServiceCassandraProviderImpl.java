@@ -898,10 +898,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
 
       long endTime = beginTime + TimeUnit.SECONDS.toMillis(duration);
       boolean serverSide = MonitoringSystem.COLLECTION_LOCATION_SERVER.equals(criteriaInfo.getRoleType());
-
-      // List<Map<String, Object>> data = metricsDAO.findMetricComponentValuesByTimeStamp(metricName, beginTime,
-      // endTime, serverSide, aggregationPeriod, criteriaInfo.getServiceName(),
-      // criteriaInfo.getOperationName(), criteriaInfo.getConsumerName());
+      boolean totalizeResultsPerService = false;
       Map<String, List<String>> filters = new HashMap<String, List<String>>();
       if (criteriaInfo.getServiceName() != null)
          filters.put("Service", Arrays.asList(criteriaInfo.getServiceName().trim()));
@@ -910,45 +907,79 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       if (criteriaInfo.getConsumerName() != null)
          filters.put("Consumer", Arrays.asList(criteriaInfo.getConsumerName().trim()));
 
-      Map<String, List<MetricValue<?>>> metricValuesByOperationName;
+      Map<String, List<MetricValue<?>>> metricValuesMap;
       try {
          List<String> serviceNames = filters.get("Service");
          List<String> operationNames = filters.get("Operation");
+         List<String> consumerNames = filters.get("Consumer");
          if (operationNames == null || operationNames.isEmpty()) {
             // get the operation names for the service
             operationNames = metricsServiceOperationByIpDAO.findMetricOperationNames(serviceNames);
             operationNames = removeServiceNamePrefix(operationNames);
             filters.put("Operation", operationNames);
+            totalizeResultsPerService = true;
          }
-         for (String serviceName : serviceNames) {
-            // get the ipaddress for the service name
-            List<String> ipAddressList = this.ipPerDayAndServiceNameDAO.findByDateAndServiceName(
-                     System.currentTimeMillis(), serviceName);
-            metricValuesByOperationName = metricValuesDAO.findMetricValuesByOperation(ipAddressList, metricName,
-                     beginTime, endTime, serverSide, aggregationPeriod, filters);
-            operationNames = filters.get("Operation");
-            for (String opName : operationNames) {
-               List<MetricValue<?>> metricValues = metricValuesByOperationName.get(opName);
+         if(consumerNames!=null && !consumerNames.isEmpty()){//iterate by consumer
+            for (String serviceName : serviceNames) {
+               // get the ipaddress for the service name
+               List<String> ipAddressList = this.ipPerDayAndServiceNameDAO.findByDateAndServiceName(
+                        System.currentTimeMillis(), serviceName);
+               metricValuesMap = metricValuesDAO.findMetricValuesByConsumer(ipAddressList, metricName,
+                        beginTime, endTime, serverSide, aggregationPeriod, serviceName, operationNames, consumerNames);
+               for (String consumerName : consumerNames) {
+                  List<MetricValue<?>> metricValues = metricValuesMap.get(consumerName);
 
-               for (int i = 0; i < duration / aggregationPeriod; ++i) {
-                  long startTime = beginTime + TimeUnit.SECONDS.toMillis(i * aggregationPeriod);
-                  long stopTime = startTime + TimeUnit.SECONDS.toMillis(aggregationPeriod);
-                  double value = 0;
-                  for (MetricValue<?> metricValue : metricValues) {
-                     long time = metricValue.getTimeMiliseconds();
-                     if (startTime <= time && time < stopTime) {
-                        value += (Double) metricValue.getValueForMetric(encodedMetricName);
-                        break;
+                  for (int i = 0; i < duration / aggregationPeriod; ++i) {
+                     long startTime = beginTime + TimeUnit.SECONDS.toMillis(i * aggregationPeriod);
+                     long stopTime = startTime + TimeUnit.SECONDS.toMillis(aggregationPeriod);
+                     double value = 0;
+                     for (MetricValue<?> metricValue : metricValues) {
+                        long time = metricValue.getTimeMiliseconds();
+                        if (startTime <= time && time < stopTime) {
+                           value += (Double) metricValue.getValueForMetric(encodedMetricName);
+                           break;
+                        }
                      }
+                     MetricGraphData metricGraphData = new MetricGraphData();
+                     metricGraphData.setCount(value);
+                     metricGraphData.setTimeSlot(startTime);
+                     metricGraphData.setCriteria(null); // Not supported for now
+                     result.add(metricGraphData);
                   }
-                  MetricGraphData metricGraphData = new MetricGraphData();
-                  metricGraphData.setCount(value);
-                  metricGraphData.setTimeSlot(startTime);
-                  metricGraphData.setCriteria(null); // Not supported for now
-                  result.add(metricGraphData);
+               }
+            }
+         }else{//go by operations instead
+            for (String serviceName : serviceNames) {
+               // get the ipaddress for the service name
+               List<String> ipAddressList = this.ipPerDayAndServiceNameDAO.findByDateAndServiceName(
+                        System.currentTimeMillis(), serviceName);
+               metricValuesMap = metricValuesDAO.findMetricValuesByOperation(ipAddressList, metricName,
+                        beginTime, endTime, serverSide, aggregationPeriod, filters);
+               operationNames = filters.get("Operation");
+               for (String opName : operationNames) {
+                  List<MetricValue<?>> metricValues = metricValuesMap.get(opName);
+
+                  for (int i = 0; i < duration / aggregationPeriod; ++i) {
+                     long startTime = beginTime + TimeUnit.SECONDS.toMillis(i * aggregationPeriod);
+                     long stopTime = startTime + TimeUnit.SECONDS.toMillis(aggregationPeriod);
+                     double value = 0;
+                     for (MetricValue<?> metricValue : metricValues) {
+                        long time = metricValue.getTimeMiliseconds();
+                        if (startTime <= time && time < stopTime) {
+                           value += (Double) metricValue.getValueForMetric(encodedMetricName);
+                           break;
+                        }
+                     }
+                     MetricGraphData metricGraphData = new MetricGraphData();
+                     metricGraphData.setCount(value);
+                     metricGraphData.setTimeSlot(startTime);
+                     metricGraphData.setCriteria(null); // Not supported for now
+                     result.add(metricGraphData);
+                  }
                }
             }
          }
+         
 
       } catch (ServiceException e) {
          e.printStackTrace();
