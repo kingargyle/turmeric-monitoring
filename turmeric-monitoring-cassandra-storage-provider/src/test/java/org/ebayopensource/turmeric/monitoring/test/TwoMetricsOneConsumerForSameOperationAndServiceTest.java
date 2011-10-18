@@ -174,9 +174,9 @@ public class TwoMetricsOneConsumerForSameOperationAndServiceTest extends Cassand
         String ipAddress = provider.getIPAddress();
         long timeSnapshot = System.currentTimeMillis();
 
-        String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName + CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_count"
+        String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName + CassandraMetricsStorageProvider.KEY_SEPARATOR +consumerName+ CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_count"
                         + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
-        String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName + CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_average"
+        String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName + CassandraMetricsStorageProvider.KEY_SEPARATOR +consumerName+ CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_average"
                  + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
         Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
                         serviceName, operationName, consumerName);
@@ -204,9 +204,9 @@ public class TwoMetricsOneConsumerForSameOperationAndServiceTest extends Cassand
         String ipAddress = provider.getIPAddress();
         long timeSnapshot = System.currentTimeMillis();
 
-        String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName + CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_count"
+        String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName + CassandraMetricsStorageProvider.KEY_SEPARATOR +consumerName+ CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_count"
                  + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
-        String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName + CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_average"
+        String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName + CassandraMetricsStorageProvider.KEY_SEPARATOR +consumerName+ CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_average"
                  + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
         Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
                         serviceName, operationName, consumerName);

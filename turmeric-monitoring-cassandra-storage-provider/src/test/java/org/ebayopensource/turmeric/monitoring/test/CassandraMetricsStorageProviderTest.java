@@ -215,9 +215,9 @@ public class CassandraMetricsStorageProviderTest extends CassandraTestHelper {
         Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollection();
         long timeSnapshot = System.currentTimeMillis();
         String ipAddress = provider.getIPAddress();
-        String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "service1" + CassandraMetricsStorageProvider.KEY_SEPARATOR + "operation1" + CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_count"
+        String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "service1" + CassandraMetricsStorageProvider.KEY_SEPARATOR + "operation1" + CassandraMetricsStorageProvider.KEY_SEPARATOR +"missing"+ CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_count"
                  + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
-        String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "service2" + CassandraMetricsStorageProvider.KEY_SEPARATOR + "operation2" + CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_average"
+        String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "service2" + CassandraMetricsStorageProvider.KEY_SEPARATOR + "operation2" + CassandraMetricsStorageProvider.KEY_SEPARATOR +"anotherusecase"+ CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_average"
                  + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
         String metricSeriesKeyForTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
                         + "service1|operation1|test_count|20|true";
@@ -250,9 +250,9 @@ public class CassandraMetricsStorageProviderTest extends CassandraTestHelper {
         Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollection();
         long timeSnapshot = System.currentTimeMillis();
         String ipAddress = provider.getIPAddress();
-        String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "service1" + CassandraMetricsStorageProvider.KEY_SEPARATOR + "operation1" + CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_count"
+        String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "service1" + CassandraMetricsStorageProvider.KEY_SEPARATOR + "operation1" + CassandraMetricsStorageProvider.KEY_SEPARATOR + "missing"+ CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_count"
                  + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
-        String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "service2" + CassandraMetricsStorageProvider.KEY_SEPARATOR + "operation2" + CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_average"
+        String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + "service2" + CassandraMetricsStorageProvider.KEY_SEPARATOR + "operation2" + CassandraMetricsStorageProvider.KEY_SEPARATOR + "anotherusecase"+ CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_average"
                  + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
 
         provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);

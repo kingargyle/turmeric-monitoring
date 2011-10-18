@@ -151,11 +151,12 @@ public class MetricsDAO {
       if (metricValue == null || cmetricIdentifier==null) {
          return;
       }
+      System.out.println("==================== begin of saveMetricValues on "+now+". Consumer = "+consumerName+"========================");
       String timeSeriesKey = createKeyForTimeSeries(ipAddress, cmetricIdentifier, snapshotInterval);
       String timeSeriesKeyByConsumer = createKeyForTimeSeriesByConsumer(ipAddress, cmetricIdentifier, snapshotInterval,
                consumerName);
 
-      String metricValueKey = createKeyForMetricValue(ipAddress, cmetricIdentifier, now);
+      String metricValueKey = createKeyForMetricValue(ipAddress, cmetricIdentifier, consumerName, now);
       String metricValuesByIpDate = createKeyForMetricValuesByIpAndDate(ipAddress);
       String ipByDateAndServiceName = createKeyForIpDateAndServiceName();
 
@@ -164,10 +165,6 @@ public class MetricsDAO {
       Mutator<String> metricTimeSeriesMutator = HFactory.createMutator(keySpace, STR_SERIALIZER);
       Mutator<String> serviceCallsByTimeMutator = HFactory.createMutator(keySpace, STR_SERIALIZER);
       Mutator<String> ipByDateAndServiceNameMutator = HFactory.createMutator(keySpace, STR_SERIALIZER);
-      
-
-      
-      
       
       MetricComponentValue[] metricComponentValues = metricValue.getValues();
       for (MetricComponentValue metricComponentValue : metricComponentValues) {
@@ -183,6 +180,9 @@ public class MetricsDAO {
          HSuperColumn<Long, String, String> serviceOperationCallsByTimeColumn = HFactory.createSuperColumn(now,
                   metricValuesColumns, LNG_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER);
 
+         System.out.println("saving MetricValuesByIpAndDate SCF with key=" + metricValuesByIpDate);
+         System.out.println(", super column key = "+now);
+         System.out.println(", column key = "+metricValueKey);
          metricValuesByIpAndDateMutator.insert(metricValuesByIpDate, "MetricValuesByIpAndDate",
                   serviceOperationCallsByTimeColumn);
 
@@ -196,9 +196,15 @@ public class MetricsDAO {
          ipByDateAndServiceNameMutator.insert(ipByDateAndServiceName, "IpPerDayAndServiceName",
                   ipByDateAndServiceNameColumn);
 
+         System.out.println("saving MetricTimeSeries CF with key=" + timeSeriesKey);
+         System.out.println(", column key = "+now);
+         System.out.println(", column value = "+metricValueKey);
          metricTimeSeriesMutator.insert(timeSeriesKey, "MetricTimeSeries",
                   HFactory.createColumn(now, metricValueKey, LNG_SERIALIZER, STR_SERIALIZER));
 
+         System.out.println("saving MetricTimeSeries CF with key=" + timeSeriesKeyByConsumer);
+         System.out.println(", column key = "+now);
+         System.out.println(", column value = "+metricValueKey);
          metricTimeSeriesMutator.insert(timeSeriesKeyByConsumer, "MetricTimeSeries",
                   HFactory.createColumn(now, metricValueKey, LNG_SERIALIZER, STR_SERIALIZER));
       }
@@ -211,7 +217,7 @@ public class MetricsDAO {
       serviceCallsByTimeMutator.insert(serviceOperationCallsByTimeKey, "ServiceCallsByTime",
                serviceOperationCallsByTimeColumn);
 
-      // metricTimeSeriesMutator.execute();
+      System.out.println("==================== end of saveMetricValues on "+now+". Consumer = "+consumerName+"===========================");
    }
 
    private String createKeyForTimeSeriesByConsumer(String ipAddress, MetricIdentifier cmetricIdentifier,
@@ -266,8 +272,8 @@ public class MetricsDAO {
     *           the now
     * @return the string
     */
-   public String createKeyForMetricValue(String ipAddress, MetricIdentifier cmetricIdentifier, long now) {
-      return ipAddress + KEY_SEPARATOR +cmetricIdentifier.getServiceAdminName() +KEY_SEPARATOR+cmetricIdentifier.getOperationName() + KEY_SEPARATOR +cmetricIdentifier.getMetricName() + KEY_SEPARATOR + now;
+   public String createKeyForMetricValue(String ipAddress, MetricIdentifier cmetricIdentifier, String consumerName, long now) {
+      return ipAddress + KEY_SEPARATOR +cmetricIdentifier.getServiceAdminName() +KEY_SEPARATOR+cmetricIdentifier.getOperationName() + KEY_SEPARATOR +consumerName+ KEY_SEPARATOR +cmetricIdentifier.getMetricName() + KEY_SEPARATOR + now;
    }
 
    /**
