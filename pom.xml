@@ -54,6 +54,7 @@
         <module>monitoring-dist</module>
         <module>turmeric-monitoring-cassandra-storage-provider</module>
         <module>turmeric-monitoring-cassandra-provider</module>
+        <module>monitoring-service-war</module>
     <module>sqms-cassandra</module>
   </modules>
 
