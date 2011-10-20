@@ -1,4 +1,4 @@
-package org.ebayopensource.turmeric.monitoring.provider;
+package org.ebayopensource.turmeric.monitoring.provider.operations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -16,6 +16,9 @@ import org.ebayopensource.turmeric.common.v1.types.CommonErrorData;
 import org.ebayopensource.turmeric.common.v1.types.ErrorCategory;
 import org.ebayopensource.turmeric.common.v1.types.ErrorSeverity;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.CassandraMetricsStorageProvider;
+import org.ebayopensource.turmeric.monitoring.provider.BaseTest;
+import org.ebayopensource.turmeric.monitoring.provider.MockInitContext;
+import org.ebayopensource.turmeric.monitoring.provider.SOAMetricsQueryServiceCassandraProviderImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricValueAggregatorTestImpl;
 import org.ebayopensource.turmeric.monitoring.provider.model.ExtendedErrorViewData;
 import org.ebayopensource.turmeric.monitoring.v1.services.ErrorInfos;

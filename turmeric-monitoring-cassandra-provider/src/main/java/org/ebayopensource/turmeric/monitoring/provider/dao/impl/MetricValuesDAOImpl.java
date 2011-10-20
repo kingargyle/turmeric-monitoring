@@ -35,6 +35,7 @@ import me.prettyprint.hector.api.query.SuperSliceQuery;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricValuesDAO;
 import org.ebayopensource.turmeric.monitoring.provider.model.MetricValue;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
+import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.SystemMetricDefs;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
 
 // TODO: Auto-generated Javadoc
@@ -190,7 +191,7 @@ public class MetricValuesDAOImpl<K> extends
                for (MetricValue<?> metricValue : metricValues) {
                   if (metricValuesByTime.containsKey(metricValue.getTimeMiliseconds())) {
                      MetricValue<?> oldMetricValue = metricValuesByTime.get(metricValue.getTimeMiliseconds());
-                     if ("CallCount".equals(metricName)) {
+                     if (SystemMetricDefs.OP_TIME_TOTAL.getMetricName().equals(metricName)) {
                         Long count = (Long) oldMetricValue.getColumns().get("count");
                         count += (Long) metricValue.getColumns().get("count");
                         oldMetricValue.getColumns().put("count", count);
@@ -258,12 +259,27 @@ public class MetricValuesDAOImpl<K> extends
             List<MetricValue<?>> metricValues = this.findByKeys(metricValuesToGet);
             // now, I add them ordered by timestamp
             for (MetricValue<?> metricValue : metricValues) {
-               metricValuesByTime.put(metricValue.getTimeMiliseconds(), metricValue);
+               if (metricValuesByTime.containsKey(metricValue.getTimeMiliseconds())) {
+                  MetricValue<?> oldMetricValue = metricValuesByTime.get(metricValue.getTimeMiliseconds());
+                  if (SystemMetricDefs.OP_TIME_TOTAL.getMetricName().equals(metricName)) {
+                     Long count = (Long) oldMetricValue.getColumns().get("count");
+                     count += (Long) metricValue.getColumns().get("count");
+                     oldMetricValue.getColumns().put("count", count);
+                  }
+               } else {
+                  metricValuesByTime.put(metricValue.getTimeMiliseconds(), metricValue);
+               }
             }
          }
-         List<MetricValue<?>> theList = new ArrayList<MetricValue<?>>();
-         theList.addAll(metricValuesByTime.values());
-         result.put(operation, theList);
+         if (result.get(operation) != null) {
+            result.get(operation).addAll(metricValuesByTime.values());
+         } else {
+            List<MetricValue<?>> theList = new ArrayList<MetricValue<?>>();
+            theList.addAll(metricValuesByTime.values());
+            result.put(operation, theList);
+         }
+
+         metricValuesByTime.clear();
       }
 
       return result;
