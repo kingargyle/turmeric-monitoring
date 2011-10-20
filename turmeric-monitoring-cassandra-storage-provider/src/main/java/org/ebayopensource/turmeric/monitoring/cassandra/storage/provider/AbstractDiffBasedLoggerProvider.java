@@ -18,6 +18,7 @@ import org.ebayopensource.turmeric.runtime.common.monitoring.DiffBasedMetricsSto
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricId;
 import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValueAggregator;
 
+// TODO: Auto-generated Javadoc
 /**
  * This is an abstract implementation for a Diff Based logger.  It extends the abstract implementation
  * for a SnapshotLogger for metrics.   Implementors should extend this and implement the saveMetricValue
@@ -30,17 +31,34 @@ import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValueAg
 
 public abstract class AbstractDiffBasedLoggerProvider extends SnapshotLogger implements DiffBasedMetricsStorageProvider {
 
+	/** The m_previous snapshot. */
 	private Collection<MetricValueAggregator> m_previousSnapshot;
+	
+	/** The snapshot interval. */
 	private Integer snapshotInterval;
 	
+	/**
+	 * Gets the snapshot interval.
+	 *
+	 * @return the snapshot interval
+	 */
 	protected Integer getSnapshotInterval() {
 		return snapshotInterval;
 	}
 
+	/**
+	 * Record snapshot.
+	 *
+	 * @param snapshotTime the snapshot time
+	 * @param snapshot the snapshot
+	 */
 	protected void recordSnapshot(long snapshotTime, Collection<MetricValueAggregator> snapshot) {
 		m_previousSnapshot = snapshot;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void init(Map<String, String> options, String name,
 			String collectionLocation, Integer snapshotInterval) {

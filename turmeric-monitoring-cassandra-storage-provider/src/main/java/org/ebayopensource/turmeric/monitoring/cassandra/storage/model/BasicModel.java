@@ -11,13 +11,20 @@ package org.ebayopensource.turmeric.monitoring.cassandra.storage.model;
 import java.util.List;
 import java.util.Map;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class Model.
- * 
+ *
+ * @param <K> the key type
  * @author jamuguerza
  */
 public class BasicModel<K> {
 		
+		/**
+		 * Instantiates a new basic model.
+		 *
+		 * @param keyType the key type
+		 */
 		public BasicModel(K keyType){
 		}		
 		
@@ -52,10 +59,20 @@ public class BasicModel<K> {
 			return key;
 		}
 
+		/**
+		 * Sets the columns.
+		 *
+		 * @param columns the columns
+		 */
 		public void setColumns(Map<String, Object> columns) {
 			this.columns = columns;
 		}
 
+		/**
+		 * Gets the columns.
+		 *
+		 * @return the columns
+		 */
 		public Map<String, Object> getColumns() {
 			return columns;
 		}

@@ -19,9 +19,12 @@ import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractSuperColumnFamily
 
 
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class MetricValuesByIpAndDateDAOImpl.
- * 
+ *
+ * @param <SK> the generic type
+ * @param <K> the key type
  * @author jamuguerza
  */
 public class MetricValuesByIpAndDateDAOImpl<SK, K> extends
@@ -30,15 +33,13 @@ public class MetricValuesByIpAndDateDAOImpl<SK, K> extends
 
 	/**
 	 * Instantiates a new metrics error values dao impl.
-	 * 
-	 * @param clusterName
-	 *            the cluster name
-	 * @param host
-	 *            the host
-	 * @param s_keyspace
-	 *            the s_keyspace
-	 * @param columnFamilyName
-	 *            the column family name
+	 *
+	 * @param clusterName the cluster name
+	 * @param host the host
+	 * @param s_keyspace the s_keyspace
+	 * @param columnFamilyName the column family name
+	 * @param sKTypeClass the s k type class
+	 * @param kTypeClass the k type class
 	 */
 	public MetricValuesByIpAndDateDAOImpl(final String clusterName, final String host,
 			final String s_keyspace, final String columnFamilyName, final Class<SK> sKTypeClass, final Class<K> kTypeClass) {

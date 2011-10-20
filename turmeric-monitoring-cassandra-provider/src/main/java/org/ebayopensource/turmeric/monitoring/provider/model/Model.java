@@ -17,23 +17,46 @@ import java.util.Map;
  */
 public class Model<K> {
 
-   public Model(K keyType) {
-   }
+   /** The operation name List. */
+   protected Map<String, Object> columns;
 
    /** The key. */
    protected K key;
 
-   /** The operation name List. */
-   protected Map<String, Object> columns;
+   public Model(K keyType) {
+   }
 
-   /**
-    * Sets the key.
-    * 
-    * @param key
-    *           the new key
-    */
-   public void setKey(K key) {
-      this.key = key;
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+         return true;
+      }
+      if (obj == null) {
+         return false;
+      }
+      if (getClass() != obj.getClass()) {
+         return false;
+      }
+      Model other = (Model) obj;
+      if (columns == null) {
+         if (other.columns != null) {
+            return false;
+         }
+      } else if (!columns.equals(other.columns)) {
+         return false;
+      }
+      if (key == null) {
+         if (other.key != null) {
+            return false;
+         }
+      } else if (!key.equals(other.key)) {
+         return false;
+      }
+      return true;
+   }
+
+   public Map<String, Object> getColumns() {
+      return columns;
    }
 
    /**
@@ -45,14 +68,6 @@ public class Model<K> {
       return key;
    }
 
-   public void setColumns(Map<String, Object> columns) {
-      this.columns = columns;
-   }
-
-   public Map<String, Object> getColumns() {
-      return columns;
-   }
-
    @Override
    public int hashCode() {
       final int prime = 31;
@@ -62,26 +77,22 @@ public class Model<K> {
       return result;
    }
 
-   @Override
-   public boolean equals(Object obj) {
-      if (this == obj)
-         return true;
-      if (obj == null)
-         return false;
-      if (getClass() != obj.getClass())
-         return false;
-      Model other = (Model) obj;
-//      if (columns == null) {
-//         if (other.columns != null)
-//            return false;
-//      } else if (!columns.equals(other.columns))
-//         return false;
-      if (key == null) {
-         if (other.key != null)
-            return false;
-      } else if (!key.equals(other.key))
-         return false;
-      return true;
+   public void setColumns(Map<String, Object> columns) {
+      this.columns = columns;
+   }
+
+   /**
+    * Sets the key.
+    * 
+    * @param key
+    *           the new key
+    */
+   public void setKey(K key) {
+      this.key = key;
+   }
+
+   public void setKey(String key) {
+      this.key = (K) key;
    }
 
 }

@@ -14,6 +14,8 @@ import java.util.Set;
 
 /**
  * The Interface MetricIndentifierDAO.
+ *
+ * @param <K> the key type
  * @author jose alvarez muguerza
  */
 public interface MetricIndentifierDAO<K>  {

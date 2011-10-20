@@ -16,12 +16,7 @@ import org.ebayopensource.turmeric.common.v1.types.ErrorSeverity;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.CassandraMetricsStorageProvider;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricValueAggregatorTestImpl;
 import org.ebayopensource.turmeric.monitoring.v1.services.CriteriaInfo;
-import org.ebayopensource.turmeric.monitoring.v1.services.MetricCriteria;
 import org.ebayopensource.turmeric.monitoring.v1.services.MetricGraphData;
-import org.ebayopensource.turmeric.monitoring.v1.services.MetricGroupData;
-import org.ebayopensource.turmeric.monitoring.v1.services.MetricResourceCriteria;
-import org.ebayopensource.turmeric.monitoring.v1.services.ResourceEntity;
-import org.ebayopensource.turmeric.monitoring.v1.services.ResourceEntityRequest;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.MonitoringSystem;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.SystemMetricDefs;
@@ -41,23 +36,23 @@ import org.junit.Test;
 
 public class GetMetricValueTest extends BaseTest {
 
+   private int accumCount = 0;
+   private double accumResponse = 0;
+   private final long now = System.currentTimeMillis();
    private final String consumerName = "ConsumerName1";
    private List<CommonErrorData> errorsToStore = null;
    private final long fiftyNineSeconds = TimeUnit.SECONDS.toMillis(59);
-   private final long now = System.currentTimeMillis();
+   private final long fourMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 4);
+
    private final long oneMinuteAgo = now - TimeUnit.SECONDS.toMillis(60);
    private final long oneSecond = TimeUnit.SECONDS.toMillis(1);
-
    private final String opName = "Operation1";
    private final String serverName = "All";
    private final boolean serverSide = true;
    private final long sixMinuteAgo = now - TimeUnit.SECONDS.toMillis(60 * 6);
    private final String srvcAdminName = "ServiceAdminName1";
-   private final long twoMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 2);
    private final long threeMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 3);
-   private final long fourMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 4);
-   private int accumCount = 0;
-   private double accumResponse = 0;
+   private final long twoMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 2);
 
    /**
     * Creates the data.
@@ -66,6 +61,46 @@ public class GetMetricValueTest extends BaseTest {
     */
    private void createData() {
       errorsToStore = createTestCommonErrorDataList(1);
+   }
+
+   protected Collection<MetricValueAggregator> createMetricValueAggregatorsForOneConsumerWithTotalMetric(
+            String serviceName, String operationName, String consumerName) {
+      accumCount += 1;
+      accumResponse += 1234.00;
+
+      Collection<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
+      MetricId metricId1 = new MetricId(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), serviceName, operationName);
+      MetricValue metricValue1 = new AverageMetricValue(metricId1, accumCount, accumResponse);
+      MetricClassifier metricClassifier1 = new MetricClassifier(consumerName, "sourcedc", "targetdc");
+
+      Map<MetricClassifier, MetricValue> valuesByClassifier1 = new HashMap<MetricClassifier, MetricValue>();
+      valuesByClassifier1.put(metricClassifier1, metricValue1);
+
+      MetricValueAggregatorTestImpl aggregator1 = new MetricValueAggregatorTestImpl(metricValue1,
+               MetricCategory.Timing, MonitoringLevel.NORMAL, valuesByClassifier1);
+
+      result.add(aggregator1);
+
+      return result;
+   }
+
+   protected Collection<MetricValueAggregator> createMetricValueAggregatorsWithTotalMetric(String serviceName,
+            String operationName, String consumerName) {
+
+      Collection<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
+      MetricId metricId1 = new MetricId(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), serviceName, operationName);
+      MetricValue metricValue1 = new AverageMetricValue(metricId1, 1, 1234.0d);
+      MetricClassifier metricClassifier1 = new MetricClassifier(consumerName, "sourcedc", "targetdc");
+
+      Map<MetricClassifier, MetricValue> valuesByClassifier1 = new HashMap<MetricClassifier, MetricValue>();
+      valuesByClassifier1.put(metricClassifier1, metricValue1);
+
+      MetricValueAggregatorTestImpl aggregator1 = new MetricValueAggregatorTestImpl(metricValue1,
+               MetricCategory.Timing, MonitoringLevel.NORMAL, valuesByClassifier1);
+
+      result.add(aggregator1);
+
+      return result;
    }
 
    private List<CommonErrorData> createTestCommonErrorDataList(int errorQuantity) {
@@ -102,7 +137,7 @@ public class GetMetricValueTest extends BaseTest {
 
       cleanUpTestData();
    }
-   
+
    @Override
    @After
    public void tearDown() {
@@ -111,14 +146,14 @@ public class GetMetricValueTest extends BaseTest {
       accumResponse = 0;
 
    }
-   
+
    @Test
    public void testGetMetricValueCallCountMetricForOneService() throws ServiceException {
       createData();
       Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
                srvcAdminName, opName, consumerName);
       Collection<MetricValueAggregator> snapshotCollection2 = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
-              srvcAdminName, opName, consumerName);  
+               srvcAdminName, opName, consumerName);
 
       metricsStorageProvider.saveMetricSnapshot(twoMinutesAgo, snapshotCollection);
       metricsStorageProvider.saveMetricSnapshot(oneMinuteAgo, snapshotCollection2);
@@ -129,23 +164,25 @@ public class GetMetricValueTest extends BaseTest {
       criteriaInfo.setMetricName("CallCount");
       criteriaInfo.setServiceName(srvcAdminName);
       criteriaInfo.setRoleType("server");
-      List<MetricGraphData> response = queryprovider.getMetricValue(criteriaInfo , twoMinutesAgo, duration, aggregationPeriod, "false");
+      List<MetricGraphData> response = queryprovider.getMetricValue(criteriaInfo, twoMinutesAgo, duration,
+               aggregationPeriod, "false");
       assertNotNull(response);
-      assertEquals("The response must contain always duration/aggregationPeriod elements",duration/aggregationPeriod, response.size());
+      assertEquals("The response must contain always duration/aggregationPeriod elements",
+               duration / aggregationPeriod, response.size());
       int sum = 0;
       for (MetricGraphData metricGraphData : response) {
          sum += metricGraphData.getCount();
       }
-      assertEquals("The sum of the MetricGraphData collection must be 2",2, sum);
+      assertEquals("The sum of the MetricGraphData collection must be 2", 2, sum);
    }
-   
+
    @Test
    public void testGetMetricValueCallCountMetricForOneServiceOneConsumer() throws ServiceException {
       createData();
       Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
                srvcAdminName, opName, consumerName);
       Collection<MetricValueAggregator> snapshotCollection2 = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
-              srvcAdminName, opName, consumerName);  
+               srvcAdminName, opName, consumerName);
 
       metricsStorageProvider.saveMetricSnapshot(twoMinutesAgo, snapshotCollection);
       metricsStorageProvider.saveMetricSnapshot(oneMinuteAgo, snapshotCollection2);
@@ -157,59 +194,32 @@ public class GetMetricValueTest extends BaseTest {
       criteriaInfo.setServiceName(srvcAdminName);
       criteriaInfo.setRoleType("server");
       criteriaInfo.setConsumerName(consumerName);
-      List<MetricGraphData> response = queryprovider.getMetricValue(criteriaInfo , twoMinutesAgo, duration, aggregationPeriod, "false");
+      List<MetricGraphData> response = queryprovider.getMetricValue(criteriaInfo, twoMinutesAgo, duration,
+               aggregationPeriod, "false");
       assertNotNull(response);
-      assertEquals("The response must contain always duration/aggregationPeriod elements",duration/aggregationPeriod, response.size());
+      assertEquals("The response must contain always duration/aggregationPeriod elements",
+               duration / aggregationPeriod, response.size());
       int sum = 0;
       for (MetricGraphData metricGraphData : response) {
          sum += metricGraphData.getCount();
       }
-      assertEquals("The sum of the MetricGraphData collection must be 2",2, sum);
+      assertEquals("The sum of the MetricGraphData collection must be 2", 2, sum);
    }
-   
-   @Ignore
-   @Test
-   public void testGetMetricValueCallCountMetricForOneServiceTwoConsumers() throws ServiceException {
-      createData();
-      Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsWithTotalMetric(
-               srvcAdminName, opName, consumerName);
-      Collection<MetricValueAggregator> snapshotCollection2 = createMetricValueAggregatorsWithTotalMetric(
-               srvcAdminName, "anotherOperation", "anotherConsumer");  
 
-      metricsStorageProvider.saveMetricSnapshot(oneMinuteAgo, snapshotCollection);
-      metricsStorageProvider.saveMetricSnapshot(oneMinuteAgo, snapshotCollection2);
-
-      long duration = 120;// in secs
-      int aggregationPeriod = 20;// in secs
-      CriteriaInfo criteriaInfo = new CriteriaInfo();
-      criteriaInfo.setMetricName("CallCount");
-      criteriaInfo.setServiceName(srvcAdminName);
-      criteriaInfo.setRoleType("server");
-      criteriaInfo.setConsumerName("anotherConsumer");
-      List<MetricGraphData> response = queryprovider.getMetricValue(criteriaInfo , twoMinutesAgo, duration, aggregationPeriod, "false");
-      assertNotNull(response);
-      assertEquals("The response must contain always duration/aggregationPeriod elements",duration/aggregationPeriod, response.size());
-      int sum = 0;
-      for (MetricGraphData metricGraphData : response) {
-         sum += metricGraphData.getCount();
-      }
-      assertEquals("The sum of the MetricGraphData collection must be 1",1, sum);
-   }
-   
    @Ignore
    @Test
    public void testGetMetricValueCallCountMetricForOneServiceThreeOperationsTwoConsumers() throws ServiceException {
       createData();
-      Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsWithTotalMetric(
-               srvcAdminName, opName, consumerName);
+      Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsWithTotalMetric(srvcAdminName,
+               opName, consumerName);
       Collection<MetricValueAggregator> snapshotCollection2 = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
-               srvcAdminName, "anotherOperation", "anotherConsumer");  
+               srvcAdminName, "anotherOperation", "anotherConsumer");
       Collection<MetricValueAggregator> snapshotCollection3 = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
-               srvcAdminName, "anotherOperation2", "anotherConsumer");  
+               srvcAdminName, "anotherOperation2", "anotherConsumer");
       Collection<MetricValueAggregator> snapshotCollection4 = createMetricValueAggregatorsForOneConsumerWithTotalMetric(
-               srvcAdminName, "anotherOperation2", "anotherConsumer");  
+               srvcAdminName, "anotherOperation2", "anotherConsumer");
 
-      metricsStorageProvider.saveMetricSnapshot(this.sixMinuteAgo, snapshotCollection);
+      metricsStorageProvider.saveMetricSnapshot(sixMinuteAgo, snapshotCollection);
       metricsStorageProvider.saveMetricSnapshot(threeMinutesAgo, snapshotCollection2);
       metricsStorageProvider.saveMetricSnapshot(twoMinutesAgo, snapshotCollection3);
       metricsStorageProvider.saveMetricSnapshot(oneMinuteAgo, snapshotCollection4);
@@ -221,55 +231,46 @@ public class GetMetricValueTest extends BaseTest {
       criteriaInfo.setServiceName(srvcAdminName);
       criteriaInfo.setRoleType("server");
       criteriaInfo.setConsumerName("anotherConsumer");
-      List<MetricGraphData> response = queryprovider.getMetricValue(criteriaInfo , twoMinutesAgo, duration, aggregationPeriod, "false");
+      List<MetricGraphData> response = queryprovider.getMetricValue(criteriaInfo, twoMinutesAgo, duration,
+               aggregationPeriod, "false");
       assertNotNull(response);
-      assertEquals("The response must contain always duration/aggregationPeriod elements",duration/aggregationPeriod, response.size());
+      assertEquals("The response must contain always duration/aggregationPeriod elements",
+               duration / aggregationPeriod, response.size());
       int sum = 0;
       for (MetricGraphData metricGraphData : response) {
          sum += metricGraphData.getCount();
       }
-      assertEquals("The sum of the MetricGraphData collection must be 2",2, sum);
+      assertEquals("The sum of the MetricGraphData collection must be 2", 2, sum);
    }
-   
-   protected Collection<MetricValueAggregator> createMetricValueAggregatorsForOneConsumerWithTotalMetric(
-            String serviceName, String operationName, String consumerName) {
-      accumCount += 1;
-      accumResponse += 1234.00;
 
-      Collection<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
-      MetricId metricId1 = new MetricId(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), serviceName, operationName);
-      MetricValue metricValue1 = new AverageMetricValue(metricId1, accumCount, accumResponse);
-      MetricClassifier metricClassifier1 = new MetricClassifier(consumerName, "sourcedc", "targetdc");
+   @Test
+   public void testGetMetricValueCallCountMetricForOneServiceTwoConsumers() throws ServiceException {
+      createData();
+      Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsWithTotalMetric(srvcAdminName,
+               opName, consumerName);
+      Collection<MetricValueAggregator> snapshotCollection2 = createMetricValueAggregatorsWithTotalMetric(
+               srvcAdminName, "anotherOperation", "anotherConsumer");
 
-      Map<MetricClassifier, MetricValue> valuesByClassifier1 = new HashMap<MetricClassifier, MetricValue>();
-      valuesByClassifier1.put(metricClassifier1, metricValue1);
+      metricsStorageProvider.saveMetricSnapshot(oneMinuteAgo, snapshotCollection);
+      metricsStorageProvider.saveMetricSnapshot(oneMinuteAgo, snapshotCollection2);
 
-      MetricValueAggregatorTestImpl aggregator1 = new MetricValueAggregatorTestImpl(metricValue1,
-               MetricCategory.Timing, MonitoringLevel.NORMAL, valuesByClassifier1);
-
-      result.add(aggregator1);
-
-      return result;
-   }
-   
-   protected Collection<MetricValueAggregator> createMetricValueAggregatorsWithTotalMetric(
-            String serviceName, String operationName, String consumerName) {
-      
-
-      Collection<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
-      MetricId metricId1 = new MetricId(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), serviceName, operationName);
-      MetricValue metricValue1 = new AverageMetricValue(metricId1, 1, 1234.0d);
-      MetricClassifier metricClassifier1 = new MetricClassifier(consumerName, "sourcedc", "targetdc");
-
-      Map<MetricClassifier, MetricValue> valuesByClassifier1 = new HashMap<MetricClassifier, MetricValue>();
-      valuesByClassifier1.put(metricClassifier1, metricValue1);
-
-      MetricValueAggregatorTestImpl aggregator1 = new MetricValueAggregatorTestImpl(metricValue1,
-               MetricCategory.Timing, MonitoringLevel.NORMAL, valuesByClassifier1);
-
-      result.add(aggregator1);
-
-      return result;
+      long duration = 120;// in secs
+      int aggregationPeriod = 20;// in secs
+      CriteriaInfo criteriaInfo = new CriteriaInfo();
+      criteriaInfo.setMetricName("CallCount");
+      criteriaInfo.setServiceName(srvcAdminName);
+      criteriaInfo.setRoleType("server");
+      criteriaInfo.setConsumerName("anotherConsumer");
+      List<MetricGraphData> response = queryprovider.getMetricValue(criteriaInfo, twoMinutesAgo, duration,
+               aggregationPeriod, "false");
+      assertNotNull(response);
+      assertEquals("The response must contain always duration/aggregationPeriod elements",
+               duration / aggregationPeriod, response.size());
+      int sum = 0;
+      for (MetricGraphData metricGraphData : response) {
+         sum += metricGraphData.getCount();
+      }
+      assertEquals("The sum of the MetricGraphData collection must be 1", 1, sum);
    }
 
 }

@@ -9,7 +9,6 @@
 package org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,9 +21,14 @@ import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractSuperColumnFamily
 
 import edu.emory.mathcs.backport.java.util.Collections;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class MetricsServiceOperationByIpDAOImpl.
  * 
+ * @param <SK>
+ *           the generic type
+ * @param <K>
+ *           the key type
  * @author jamuguerza
  */
 public class MetricsServiceOperationByIpDAOImpl<SK, K> extends
@@ -42,6 +46,10 @@ public class MetricsServiceOperationByIpDAOImpl<SK, K> extends
     *           the s_keyspace
     * @param columnFamilyName
     *           the column family name
+    * @param sKTypeClass
+    *           the s k type class
+    * @param kTypeClass
+    *           the k type class
     */
    public MetricsServiceOperationByIpDAOImpl(String clusterName, String host, String s_keyspace,
             String columnFamilyName, final Class<SK> sKTypeClass, final Class<K> kTypeClass) {
@@ -49,10 +57,13 @@ public class MetricsServiceOperationByIpDAOImpl<SK, K> extends
                columnFamilyName);
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public List<String> findMetricOperationNames(final List<String> serviceAdminNames) {
       List<String> resultList = new ArrayList<String>();
-      if(serviceAdminNames == null || serviceAdminNames.isEmpty()){
+      if (serviceAdminNames == null || serviceAdminNames.isEmpty()) {
          return resultList;
       }
 
@@ -91,6 +102,9 @@ public class MetricsServiceOperationByIpDAOImpl<SK, K> extends
       return resultList;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public List<String> findMetricServiceAdminNames(final List<String> serviceAdminNames) {
       Set<String> resultSet = new TreeSet<String>();

@@ -11,8 +11,12 @@ package org.ebayopensource.turmeric.monitoring.cassandra.storage.dao;
 import java.util.List;
 
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface MetricsServiceOperationByIpDAO.
+ *
+ * @param <SK> the generic type
+ * @param <K> the key type
  * @author jose alvarez muguerza
  */
 public interface MetricsServiceOperationByIpDAO<SK, K>  {

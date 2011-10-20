@@ -12,14 +12,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+// TODO: Auto-generated Javadoc
 /**
+ * The Class KeyGeneratorUtil.
+ *
  * @author jamuguerza
- * 
  */
 public class KeyGeneratorUtil {
 
+	/** The Constant KEY_TOKEN. */
 	private static final String KEY_TOKEN = "|"; 
 
+	/** The Constant KEY_ALL. */
 	private static final String KEY_ALL = "All"; 
 
 

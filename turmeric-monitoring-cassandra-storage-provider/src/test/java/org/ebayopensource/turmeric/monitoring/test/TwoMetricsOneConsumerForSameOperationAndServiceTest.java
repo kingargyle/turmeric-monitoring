@@ -37,260 +37,273 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TwoMetricsOneConsumerForSameOperationAndServiceTest extends CassandraTestHelper {
-    CassandraMetricsStorageProvider provider = null;
+   CassandraMetricsStorageProvider provider = null;
 
-    @Before
-    public void setUp() throws TTransportException, IOException, InterruptedException, ConfigurationException {
-    	initialize();
-        provider = new CassandraMetricsStorageProvider();
-        kspace = new HectorManager().getKeyspace(cluster_name, cassandra_node_ip, keyspace_name, "MetricIdentifier",
-                        false, String.class, String.class);
-        Map<String, String> options = createOptions();
-        provider.init(options, null, MonitoringSystem.COLLECTION_LOCATION_SERVER, 20);
-    }
+   private void cleanUpTestData() {
+      String[] columnFamilies = { "MetricIdentifier", "MetricValues" };
+      String[] superColumnFamilies = { "MetricTimeSeries", "ServiceCallsByTime", "ServiceConsumerByIp",
+               "ServiceOperationByIp" };
 
-    private Map<String, String> createOptions() {
-        Map<String, String> options = new HashMap<String, String>();
-        options.put("host-address", cassandra_node_ip);
-        options.put("keyspace-name", keyspace_name);
-        options.put("cluster-name", cluster_name);
-        options.put("storeServiceMetrics", "false");
-        options.put("embedded", "true");
-        return options;
-    }
+      for (String cf : columnFamilies) {
+         RangeSlicesQuery<String, String, String> rq = HFactory.createRangeSlicesQuery(kspace, STR_SERIALIZER,
+                  STR_SERIALIZER, STR_SERIALIZER);
+         rq.setColumnFamily(cf);
+         rq.setRange("", "", false, 1000);
+         QueryResult<OrderedRows<String, String, String>> qr = rq.execute();
+         OrderedRows<String, String, String> orderedRows = qr.get();
+         Mutator<String> deleteMutator = HFactory.createMutator(kspace, STR_SERIALIZER);
+         for (Row<String, String, String> row : orderedRows) {
+            deleteMutator.delete(row.getKey(), cf, null, STR_SERIALIZER);
+         }
+      }
 
-    @After
-    public void tearDown() {
-        cleanUpTestData();
-        provider = null;
-        kspace = null;
-    }
+      for (String scf : superColumnFamilies) {
+         RangeSuperSlicesQuery<String, String, String, String> rq = HFactory.createRangeSuperSlicesQuery(kspace,
+                  STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER);
+         rq.setColumnFamily(scf);
+         rq.setRange("", "", false, 1000);
+         QueryResult<OrderedSuperRows<String, String, String, String>> qr = rq.execute();
+         OrderedSuperRows<String, String, String, String> orderedRows = qr.get();
+         Mutator<String> deleteMutator = HFactory.createMutator(kspace, STR_SERIALIZER);
 
-    private void cleanUpTestData() {
-        String[] columnFamilies = { "MetricTimeSeries", "MetricIdentifier", "MetricValues" };
-        String[] superColumnFamilies = { "ServiceCallsByTime", "ServiceConsumerByIp", "ServiceOperationByIp" };
+         for (SuperRow<String, String, String, String> row : orderedRows) {
+            deleteMutator.delete(row.getKey(), scf, null, STR_SERIALIZER);
+         }
+      }
 
-        for (String cf : columnFamilies) {
-            RangeSlicesQuery<String, String, String> rq = HFactory.createRangeSlicesQuery(kspace, STR_SERIALIZER,
-                            STR_SERIALIZER, STR_SERIALIZER);
-            rq.setColumnFamily(cf);
-            rq.setRange("", "", false, 1000);
-            QueryResult<OrderedRows<String, String, String>> qr = rq.execute();
-            OrderedRows<String, String, String> orderedRows = qr.get();
-            Mutator<String> deleteMutator = HFactory.createMutator(kspace, STR_SERIALIZER);
-            for (Row<String, String, String> row : orderedRows) {
-                deleteMutator.delete(row.getKey(), cf, null, STR_SERIALIZER);
-            }
-        }
+   }
 
-        for (String scf : superColumnFamilies) {
-            RangeSuperSlicesQuery<String, String, String, String> rq = HFactory.createRangeSuperSlicesQuery(kspace,
-                            STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER);
-            rq.setColumnFamily(scf);
-            rq.setRange("", "", false, 1000);
-            QueryResult<OrderedSuperRows<String, String, String, String>> qr = rq.execute();
-            OrderedSuperRows<String, String, String, String> orderedRows = qr.get();
-            Mutator<String> deleteMutator = HFactory.createMutator(kspace, STR_SERIALIZER);
+   private Collection<MetricValueAggregator> createMetricValueAggregatorsCollectionForOneConsumer(String serviceName,
+            String operationName, String consumerName) {
+      Collection<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
+      MetricId metricId1 = new MetricId("test_count", serviceName, operationName);
+      MetricValue metricValue1 = new LongSumMetricValue(metricId1, 123456);
+      MetricId metricId2 = new MetricId("test_average", serviceName, operationName);
+      MetricValue metricValue2 = new AverageMetricValue(metricId2, 17, 456854235.123);
 
-            for (SuperRow<String, String, String, String> row : orderedRows) {
-                deleteMutator.delete(row.getKey(), scf, null, STR_SERIALIZER);
-            }
-        }
+      MetricClassifier metricClassifier1 = new MetricClassifier(consumerName, "sourcedc", "targetdc");
+      MetricClassifier metricClassifier2 = new MetricClassifier(consumerName, "sourcedc", "targetdc");
 
-    }
+      Map<MetricClassifier, MetricValue> valuesByClassifier1 = new HashMap<MetricClassifier, MetricValue>();
+      valuesByClassifier1.put(metricClassifier1, metricValue1);
 
-    @Test
-    public void testSaveMetricsIdentifier() throws ServiceException {
+      MetricValueAggregatorTestImpl aggregator1 = new MetricValueAggregatorTestImpl(metricValue1,
+               MetricCategory.Timing, MonitoringLevel.NORMAL, valuesByClassifier1);
 
-        String serviceName = "ServiceX1";
-        String operationName = "operationY1";
-        String consumerName = "consumerZ1";
-        long timeSnapshot = System.currentTimeMillis();
+      result.add(aggregator1);
 
-        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
-                        serviceName, operationName, consumerName);
+      Map<MetricClassifier, MetricValue> valuesByClassifier2 = new HashMap<MetricClassifier, MetricValue>();
+      valuesByClassifier2.put(metricClassifier2, metricValue2);
+      MetricValueAggregatorTestImpl aggregator2 = new MetricValueAggregatorTestImpl(metricValue2,
+               MetricCategory.Timing, MonitoringLevel.NORMAL, valuesByClassifier2);
 
-        provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
+      result.add(aggregator2);
 
-        assertCassandraColumnValues("MetricIdentifier", "test_count|" + serviceName
-                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
-                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + "true", STR_SERIALIZER, STR_SERIALIZER,
-                        new String[] { "metricName", "serviceAdminName", "operationName" }, new String[] {
-                                "test_count", serviceName, operationName });
+      return result;
+   }
 
-        assertCassandraColumnValues("MetricIdentifier", "test_average|" + serviceName
-                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
-                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + "true", STR_SERIALIZER, STR_SERIALIZER,
-                        new String[] { "metricName", "serviceAdminName", "operationName" }, new String[] {
-                                "test_average", serviceName, operationName });
+   private Map<String, String> createOptions() {
+      Map<String, String> options = new HashMap<String, String>();
+      options.put("host-address", cassandra_node_ip);
+      options.put("keyspace-name", keyspace_name);
+      options.put("cluster-name", cluster_name);
+      options.put("storeServiceMetrics", "false");
+      options.put("embedded", "true");
+      return options;
+   }
 
-    }
+   @Before
+   public void setUp() throws TTransportException, IOException, InterruptedException, ConfigurationException {
+      initialize();
+      provider = new CassandraMetricsStorageProvider();
+      kspace = new HectorManager().getKeyspace(cluster_name, cassandra_node_ip, keyspace_name, "MetricIdentifier",
+               false, String.class, String.class);
+      Map<String, String> options = createOptions();
+      provider.init(options, null, MonitoringSystem.COLLECTION_LOCATION_SERVER, 20);
+   }
 
-    @Test
-    public void testSaveServiceOperationByIp() throws ServiceException {
+   @After
+   public void tearDown() {
+      cleanUpTestData();
+      provider = null;
+      kspace = null;
+   }
 
-        String serviceName = "ServiceX2";
-        String operationName = "operationY2";
-        String consumerName = "consumerZ2";
-        long timeSnapshot = System.currentTimeMillis();
+   @Test
+   public void testSaveIpByDateAndOperationName() throws ServiceException {
 
-        String ipAddress = provider.getIPAddress();
-        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
-                        serviceName, operationName, consumerName);
+      String serviceName = "ServiceX7";
+      String operationName = "operationY7";
+      String consumerName = "consumerZ7";
 
-        provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
+      Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
+               serviceName, operationName, consumerName);
 
-        assertCassandraSuperColumnValues("ServiceOperationByIp", ipAddress, serviceName, STR_SERIALIZER,
-                        STR_SERIALIZER, STR_SERIALIZER, new String[] { operationName }, new String[] { "" });
+      long timeSnapshot = System.currentTimeMillis();
+      String ipByDateAndOperationNameKey = new SimpleDateFormat("ddMMyyyy").format(System.currentTimeMillis());
 
-    }
+      provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
 
-    @Test
-    public void testSaveServiceConsumerByIp() throws ServiceException {
+      assertCassandraSuperColumnValues("IpPerDayAndServiceName", ipByDateAndOperationNameKey, "ServiceX7",
+               STR_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER, new String[] { provider.getIPAddress() },
+               new String[] { "" });
 
-        String serviceName = "ServiceX3";
-        String operationName = "operationY3";
-        String consumerName = "consumerZ3";
-        long timeSnapshot = System.currentTimeMillis();
+   }
 
-        String ipAddress = provider.getIPAddress();
-        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
-                        serviceName, operationName, consumerName);
+   @Test
+   public void testSaveMetricsIdentifier() throws ServiceException {
 
-        provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
+      String serviceName = "ServiceX1";
+      String operationName = "operationY1";
+      String consumerName = "consumerZ1";
+      long timeSnapshot = System.currentTimeMillis();
 
-        assertCassandraSuperColumnValues("ServiceConsumerByIp", ipAddress, serviceName, STR_SERIALIZER, STR_SERIALIZER,
-                        STR_SERIALIZER, new String[] { consumerName }, new String[] { "" });
+      Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
+               serviceName, operationName, consumerName);
 
-    }
+      provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
 
-    @Test
-    public void testSaveMetricTimeSeries() throws ServiceException {
+      assertCassandraColumnValues("MetricIdentifier", "test_count|" + serviceName
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + "true", STR_SERIALIZER, STR_SERIALIZER, new String[] {
+               "metricName", "serviceAdminName", "operationName" }, new String[] { "test_count", serviceName,
+               operationName });
 
-        String serviceName = "ServiceX4";
-        String operationName = "operationY4";
-        String consumerName = "consumerZ4";
+      assertCassandraColumnValues("MetricIdentifier", "test_average|" + serviceName
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + "true", STR_SERIALIZER, STR_SERIALIZER, new String[] {
+               "metricName", "serviceAdminName", "operationName" }, new String[] { "test_average", serviceName,
+               operationName });
 
-        String ipAddress = provider.getIPAddress();
-        long timeSnapshot = System.currentTimeMillis();
+   }
 
-        String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName + CassandraMetricsStorageProvider.KEY_SEPARATOR +consumerName+ CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_count"
-                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
-        String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName + CassandraMetricsStorageProvider.KEY_SEPARATOR +consumerName+ CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_average"
-                 + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
-        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
-                        serviceName, operationName, consumerName);
+   @Test
+   public void testSaveMetricTimeSeries() throws ServiceException {
 
-        provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
+      String serviceName = "ServiceX4";
+      String operationName = "operationY4";
+      String consumerName = "consumerZ4";
 
-        assertCassandraColumnValues("MetricTimeSeries", ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
-                        + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
-                        + "|test_count|20|true", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
-                        new String[] { metricValueKeyTestCount });
+      String ipAddress = provider.getIPAddress();
+      long timeSnapshot = System.currentTimeMillis();
 
-        assertCassandraColumnValues("MetricTimeSeries", ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
-                        + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
-                        + "|test_average|20|true", LONG_SERIALIZER, STR_SERIALIZER, new Long[] { timeSnapshot },
-                        new String[] { metricValueKeyTestAvg });
-    }
+      String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + consumerName
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + "test_count"
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
+      String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + consumerName
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + "test_average"
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
+      Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
+               serviceName, operationName, consumerName);
 
-    @Test
-    public void testSaveMetricValues() throws ServiceException {
+      provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
 
-        String serviceName = "ServiceX5";
-        String operationName = "operationY5";
-        String consumerName = "consumerZ5";
+      assertCassandraSuperColumnValues("MetricTimeSeries", ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
+               + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName + "|test_count|20|true",
+               timeSnapshot, LONG_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER, new String[] { metricValueKeyTestCount },
+               new String[] { "" });
 
-        String ipAddress = provider.getIPAddress();
-        long timeSnapshot = System.currentTimeMillis();
+      assertCassandraSuperColumnValues("MetricTimeSeries", ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR
+               + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName + "|test_average|20|true",
+               timeSnapshot, LONG_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER, new String[] { metricValueKeyTestAvg },
+               new String[] { "" });
 
-        String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName + CassandraMetricsStorageProvider.KEY_SEPARATOR +consumerName+ CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_count"
-                 + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
-        String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName + CassandraMetricsStorageProvider.KEY_SEPARATOR +consumerName+ CassandraMetricsStorageProvider.KEY_SEPARATOR +"test_average"
-                 + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
-        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
-                        serviceName, operationName, consumerName);
+   }
 
-        provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
+   @Test
+   public void testSaveMetricValues() throws ServiceException {
 
-        assertCassandraColumnValues("MetricValues", metricValueKeyTestCount, STR_SERIALIZER, OBJ_SERIALIZER,
-                        new String[] { "value" }, new Object[] { 123456l });
+      String serviceName = "ServiceX5";
+      String operationName = "operationY5";
+      String consumerName = "consumerZ5";
 
-        assertCassandraColumnValues("MetricValues", metricValueKeyTestAvg, STR_SERIALIZER, OBJ_SERIALIZER,
-                        new String[] { "count", "totalTime" }, new Object[] { 17l, 456854235.123d });
+      String ipAddress = provider.getIPAddress();
+      long timeSnapshot = System.currentTimeMillis();
 
-    }
+      String metricValueKeyTestCount = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + consumerName
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + "test_count"
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
+      String metricValueKeyTestAvg = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + operationName
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + consumerName
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + "test_average"
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + timeSnapshot;
+      Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
+               serviceName, operationName, consumerName);
 
-    @Test
-    public void testSaveServiceCallsByTime() throws ServiceException {
+      provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
 
-        String serviceName = "ServiceX6";
-        String operationName = "operationY6";
-        String consumerName = "consumerZ6";
+      assertCassandraColumnValues("MetricValues", metricValueKeyTestCount, STR_SERIALIZER, OBJ_SERIALIZER,
+               new String[] { "value" }, new Object[] { 123456l });
 
-        String ipAddress = provider.getIPAddress();
-        Object serviceCallsByTimeKey = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName
-                        + CassandraMetricsStorageProvider.KEY_SEPARATOR + true;
-        long timeSnapshot = System.currentTimeMillis();
+      assertCassandraColumnValues("MetricValues", metricValueKeyTestAvg, STR_SERIALIZER, OBJ_SERIALIZER, new String[] {
+               "count", "totalTime" }, new Object[] { 17l, 456854235.123d });
 
-        Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
-                        serviceName, operationName, consumerName);
+   }
 
-        provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
+   @Test
+   public void testSaveServiceCallsByTime() throws ServiceException {
 
-        assertCassandraSuperColumnValues("ServiceCallsByTime", serviceCallsByTimeKey, Long.valueOf(timeSnapshot),
-                        LONG_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER, new String[] { operationName },
-                        new String[] { "" });
+      String serviceName = "ServiceX6";
+      String operationName = "operationY6";
+      String consumerName = "consumerZ6";
 
-    }
-    
-    @Test
-    public void testSaveIpByDateAndOperationName() throws ServiceException {
-       
-       String serviceName = "ServiceX7";
-       String operationName = "operationY7";
-       String consumerName = "consumerZ7";
+      String ipAddress = provider.getIPAddress();
+      Object serviceCallsByTimeKey = ipAddress + CassandraMetricsStorageProvider.KEY_SEPARATOR + serviceName
+               + CassandraMetricsStorageProvider.KEY_SEPARATOR + true;
+      long timeSnapshot = System.currentTimeMillis();
 
-       
-       Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
-                       serviceName, operationName, consumerName);
-       
-        long timeSnapshot = System.currentTimeMillis();
-        String ipByDateAndOperationNameKey = new SimpleDateFormat("ddMMyyyy").format(System.currentTimeMillis());
+      Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
+               serviceName, operationName, consumerName);
 
-        provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
+      provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
 
-        assertCassandraSuperColumnValues("IpPerDayAndServiceName", ipByDateAndOperationNameKey, "ServiceX7", STR_SERIALIZER, STR_SERIALIZER,
-                        STR_SERIALIZER, new String[] { provider.getIPAddress() }, new String[] { "" });
+      assertCassandraSuperColumnValues("ServiceCallsByTime", serviceCallsByTimeKey, Long.valueOf(timeSnapshot),
+               LONG_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER, new String[] { operationName }, new String[] { "" });
 
-    }
+   }
 
-    private Collection<MetricValueAggregator> createMetricValueAggregatorsCollectionForOneConsumer(String serviceName,
-                    String operationName, String consumerName) {
-        Collection<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
-        MetricId metricId1 = new MetricId("test_count", serviceName, operationName);
-        MetricValue metricValue1 = new LongSumMetricValue(metricId1, 123456);
-        MetricId metricId2 = new MetricId("test_average", serviceName, operationName);
-        MetricValue metricValue2 = new AverageMetricValue(metricId2, 17, 456854235.123);
+   @Test
+   public void testSaveServiceConsumerByIp() throws ServiceException {
 
-        MetricClassifier metricClassifier1 = new MetricClassifier(consumerName, "sourcedc", "targetdc");
-        MetricClassifier metricClassifier2 = new MetricClassifier(consumerName, "sourcedc", "targetdc");
+      String serviceName = "ServiceX3";
+      String operationName = "operationY3";
+      String consumerName = "consumerZ3";
+      long timeSnapshot = System.currentTimeMillis();
 
-        Map<MetricClassifier, MetricValue> valuesByClassifier1 = new HashMap<MetricClassifier, MetricValue>();
-        valuesByClassifier1.put(metricClassifier1, metricValue1);
+      String ipAddress = provider.getIPAddress();
+      Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
+               serviceName, operationName, consumerName);
 
-        MetricValueAggregatorTestImpl aggregator1 = new MetricValueAggregatorTestImpl(metricValue1,
-                        MetricCategory.Timing, MonitoringLevel.NORMAL, valuesByClassifier1);
+      provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
 
-        result.add(aggregator1);
+      assertCassandraSuperColumnValues("ServiceConsumerByIp", ipAddress, serviceName, STR_SERIALIZER, STR_SERIALIZER,
+               STR_SERIALIZER, new String[] { consumerName }, new String[] { "" });
 
-        Map<MetricClassifier, MetricValue> valuesByClassifier2 = new HashMap<MetricClassifier, MetricValue>();
-        valuesByClassifier2.put(metricClassifier2, metricValue2);
-        MetricValueAggregatorTestImpl aggregator2 = new MetricValueAggregatorTestImpl(metricValue2,
-                        MetricCategory.Timing, MonitoringLevel.NORMAL, valuesByClassifier2);
+   }
 
-        result.add(aggregator2);
+   @Test
+   public void testSaveServiceOperationByIp() throws ServiceException {
 
-        return result;
-    }
+      String serviceName = "ServiceX2";
+      String operationName = "operationY2";
+      String consumerName = "consumerZ2";
+      long timeSnapshot = System.currentTimeMillis();
+
+      String ipAddress = provider.getIPAddress();
+      Collection<MetricValueAggregator> snapshotCollection = createMetricValueAggregatorsCollectionForOneConsumer(
+               serviceName, operationName, consumerName);
+
+      provider.saveMetricSnapshot(timeSnapshot, snapshotCollection);
+
+      assertCassandraSuperColumnValues("ServiceOperationByIp", ipAddress, serviceName, STR_SERIALIZER, STR_SERIALIZER,
+               STR_SERIALIZER, new String[] { operationName }, new String[] { "" });
+
+   }
 }

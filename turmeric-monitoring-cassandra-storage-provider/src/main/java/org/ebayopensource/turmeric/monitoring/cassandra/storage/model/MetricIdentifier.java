@@ -10,8 +10,11 @@ package org.ebayopensource.turmeric.monitoring.cassandra.storage.model;
 
 import static org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.CassandraMetricsStorageProvider.KEY_SEPARATOR;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class MetricId.
+ *
+ * @param <K> the key type
  */
 public class MetricIdentifier<K> {
 
@@ -24,8 +27,14 @@ public class MetricIdentifier<K> {
     /** The operation name. */
     private String operationName;
 
+    /** The server side. */
     private boolean serverSide;
 
+    /**
+     * Instantiates a new metric identifier.
+     *
+     * @param keyType the key type
+     */
     public MetricIdentifier(K keyType) {
 
     }
@@ -60,6 +69,9 @@ public class MetricIdentifier<K> {
      * (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -73,6 +85,9 @@ public class MetricIdentifier<K> {
     /*
      * (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
+     */
+    /**
+     * {@inheritDoc}
      */
     @Override
     public boolean equals(Object obj) {

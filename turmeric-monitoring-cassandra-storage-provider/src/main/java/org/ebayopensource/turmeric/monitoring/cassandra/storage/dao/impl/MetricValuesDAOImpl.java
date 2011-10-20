@@ -20,9 +20,11 @@ import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractSuperColumnFamily
 
 
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class MetricValuesDAOImpl.
- * 
+ *
+ * @param <K> the key type
  * @author jamuguerza
  */
 public class MetricValuesDAOImpl<K> extends
@@ -36,6 +38,7 @@ public class MetricValuesDAOImpl<K> extends
 	 * @param host the host
 	 * @param s_keyspace the s_keyspace
 	 * @param columnFamilyName the column family name
+	 * @param kTypeClass the k type class
 	 */
 	public MetricValuesDAOImpl(final String clusterName, final String host,
 			final String s_keyspace, final String columnFamilyName, final Class<K> kTypeClass) {

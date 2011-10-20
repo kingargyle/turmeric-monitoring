@@ -8,40 +8,38 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.dao.impl;
 
-
-
-
-
+import org.ebayopensource.turmeric.monitoring.cassandra.storage.model.BasicModel;
+import org.ebayopensource.turmeric.monitoring.cassandra.storage.model.SuperModel;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricTimeSeriesDAO;
-import org.ebayopensource.turmeric.monitoring.provider.model.Model;
-import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
-
-
+import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractSuperColumnFamilyDao;
 
 /**
  * The Class MetricsTimeSeriesDAOImpl.
  * 
  * @author jamuguerza
  */
-public class MetricTimeSeriesDAOImpl<K> extends
-		AbstractColumnFamilyDao<K, Model>
-		implements MetricTimeSeriesDAO<K> {
+public class MetricTimeSeriesDAOImpl<SK, K> extends AbstractSuperColumnFamilyDao<SK, SuperModel, Long, BasicModel>
+         implements MetricTimeSeriesDAO<SK, K> {
 
-	/**
-	 * Instantiates a new metrics error values dao impl.
-	 * 
-	 * @param clusterName
-	 *            the cluster name
-	 * @param host
-	 *            the host
-	 * @param s_keyspace
-	 *            the s_keyspace
-	 * @param columnFamilyName
-	 *            the column family name
-	 */
-	public MetricTimeSeriesDAOImpl(final String clusterName, final String host,
-			final String s_keyspace, final String columnFamilyName,  final Class<K> kTypeClass) {
-		super(clusterName, host, s_keyspace, kTypeClass, 
-				Model.class,  columnFamilyName);
-	}
+   /**
+    * Instantiates a new metrics error values dao impl.
+    * 
+    * @param clusterName
+    *           the cluster name
+    * @param host
+    *           the host
+    * @param s_keyspace
+    *           the s_keyspace
+    * @param columnFamilyName
+    *           the column family name
+    * @param sKTypeClass
+    *           the s k type class
+    * @param kTypeClass
+    *           the k type class
+    */
+   public MetricTimeSeriesDAOImpl(final String clusterName, final String host, final String s_keyspace,
+            final String columnFamilyName, Class<SK> sKTypeClass, final Class<K> kTypeClass) {
+      super(clusterName, host, s_keyspace, sKTypeClass, SuperModel.class, Long.class, BasicModel.class,
+               columnFamilyName);
+   }
 }

@@ -10,19 +10,8 @@ package org.ebayopensource.turmeric.monitoring.cassandra.storage.provider;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
-
-import me.prettyprint.cassandra.service.ThriftCfDef;
-import me.prettyprint.hector.api.Cluster;
-import me.prettyprint.hector.api.ddl.ColumnDefinition;
-import me.prettyprint.hector.api.ddl.ColumnFamilyDefinition;
-import me.prettyprint.hector.api.ddl.ColumnType;
-import me.prettyprint.hector.api.ddl.ComparatorType;
-import me.prettyprint.hector.api.factory.HFactory;
 
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricIdentifierDAO;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricsDAO;
@@ -40,10 +29,10 @@ import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.Monit
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricClassifier;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricId;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricsStorageProvider;
-import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValue;
 import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValueAggregator;
 import org.ebayopensource.turmeric.utils.cassandra.service.CassandraManager;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class CassandraMetricsStorageProvider.
  */
@@ -52,38 +41,114 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
    /** The Constant KEY_SEPARATOR. */
    public static final String KEY_SEPARATOR = "|";
 
-   /** The snapshot interval. */
-   private int snapshotInterval;
-
-   /** The server side. */
-   private boolean serverSide;
-
-   /** The store service metrics. */
-   private boolean storeServiceMetrics;
+   /** The ip per day and service name dao impl. */
+   private IpPerDayAndServiceNameDAOImpl<String, String> ipPerDayAndServiceNameDAOImpl;
 
    /** The metric id dao. */
    private MetricIdentifierDAO metricIdDAO;
 
+   /** The metric identifier dao. */
+   private MetricIdentifierDAOImpl<String> metricIdentifierDAO;
+
    /** The metrics dao. */
    private MetricsDAO metricsDAO;
 
-   private Collection<MetricValueAggregator> previousSnapshot;
-
-   private MetricIdentifierDAOImpl<String> metricIdentifierDAO;
-
-   private MetricTimeSeriesDAOImpl<String> metricTimeSeriesDAO;
-
-   private MetricsServiceConsumerByIpDAOImpl<String, String> metricsServiceConsumerByIpDAO;
-
-   private MetricValuesDAOImpl<String> metricValuesDAO;
-
-   private MetricsServiceOperationByIpDAOImpl<String, String> metricsServiceOperationByIpDAO;
-
+   /** The metric service calls by time dao. */
    private MetricServiceCallsByTimeDAOImpl<String, Long> metricServiceCallsByTimeDAO;
 
+   /** The metrics service consumer by ip dao. */
+   private MetricsServiceConsumerByIpDAOImpl<String, String> metricsServiceConsumerByIpDAO;
+
+   /** The metrics service operation by ip dao. */
+   private MetricsServiceOperationByIpDAOImpl<String, String> metricsServiceOperationByIpDAO;
+
+   /** The metric time series dao. */
+   private MetricTimeSeriesDAOImpl<String, Long> metricTimeSeriesDAO;
+
+   /** The metric values by ip and date dao. */
    private MetricValuesByIpAndDateDAOImpl<String, Long> metricValuesByIpAndDateDAO;
 
-   private IpPerDayAndServiceNameDAOImpl<String, String> ipPerDayAndServiceNameDAOImpl;
+   /** The metric values dao. */
+   private MetricValuesDAOImpl<String> metricValuesDAO;
+
+   /** The previous snapshot. */
+   private Collection<MetricValueAggregator> previousSnapshot;
+
+   /** The server side. */
+   private boolean serverSide;
+
+   /** The snapshot interval. */
+   private int snapshotInterval;
+
+   /** The store service metrics. */
+   private boolean storeServiceMetrics;
+
+   /**
+    * Creates the metric id.
+    * 
+    * @param metricId
+    *           the metric id
+    * @param metricValueAggregator
+    *           the metric value aggregator
+    */
+   private void createMetricId(org.ebayopensource.turmeric.runtime.common.monitoring.MetricId metricId,
+            MetricValueAggregator metricValueAggregator) {
+      MetricIdentifier<String> model = new MetricIdentifier<String>(metricId.getMetricName(), metricId.getAdminName(),
+               metricId.getOperationName(), serverSide);
+      String key = model.getKey();
+      // metricIdentifierDAO.save(key, model);
+      metricIdDAO.save(key, model);
+   }
+
+   /**
+    * Find metric id.
+    * 
+    * @param keyfromMetricId
+    *           the keyfrom metric id
+    * @return the metric identifier
+    */
+   private MetricIdentifier<String> findMetricId(String keyfromMetricId) {
+      return metricIdDAO.find(keyfromMetricId);
+   }
+
+   /**
+    * Gets the inet address.
+    * 
+    * @return the inet address
+    * @throws ServiceException
+    *            the service exception
+    */
+   public String getIPAddress() throws ServiceException {
+      try {
+         return InetAddress.getLocalHost().getCanonicalHostName();
+      } catch (UnknownHostException x) {
+         throw new ServiceException("Unkonwn host name", x);
+      }
+   }
+
+   /**
+    * Gets the key from the metric id.
+    * 
+    * @param metricId
+    *           the metric id
+    * @param serverSide
+    *           the server side
+    * @return the keyfrom metric id
+    */
+   public String getKeyfromMetricId(org.ebayopensource.turmeric.runtime.common.monitoring.MetricId metricId,
+            boolean serverSide) {
+      return metricId.getMetricName() + KEY_SEPARATOR + metricId.getAdminName() + KEY_SEPARATOR
+               + metricId.getOperationName() + KEY_SEPARATOR + serverSide;
+   }
+
+   /**
+    * Gets the snapshot interval.
+    * 
+    * @return the snapshot interval
+    */
+   public int getSnapshotInterval() {
+      return snapshotInterval;
+   }
 
    /**
     * Inits the.
@@ -102,8 +167,8 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
    @Override
    public void init(Map<String, String> options, String name, String collectionLocation, Integer snapshotInterval) {
       System.out.println("collectionLocation = " + collectionLocation);
-      this.serverSide = MonitoringSystem.COLLECTION_LOCATION_SERVER.equals(collectionLocation);
-      this.storeServiceMetrics = Boolean.parseBoolean(options.get("storeServiceMetrics"));
+      serverSide = MonitoringSystem.COLLECTION_LOCATION_SERVER.equals(collectionLocation);
+      storeServiceMetrics = Boolean.parseBoolean(options.get("storeServiceMetrics"));
       this.snapshotInterval = snapshotInterval;
       String host = options.get("host-address");
       String s_keyspace = options.get("keyspace-name");
@@ -113,11 +178,72 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
       if (Boolean.valueOf(embedded)) {
          CassandraManager.initialize();
       }
-      this.initDAO(clusterName, host, s_keyspace);
+      initDAO(clusterName, host, s_keyspace);
       metricIdDAO = new MetricIdentifierDAO(clusterName, host, s_keyspace, String.class, MetricIdentifier.class,
                columnFamilyName);
       metricsDAO = new MetricsDAO(clusterName, host, s_keyspace);
 
+   }
+
+   /**
+    * Inits the dao.
+    *
+    * @param clusterName the cluster name
+    * @param host the host
+    * @param keyspace the keyspace
+    */
+   private void initDAO(String clusterName, String host, String keyspace) {
+      metricIdentifierDAO = new MetricIdentifierDAOImpl<String>(clusterName, host, keyspace, "MetricIdentifier",
+               String.class);
+      metricTimeSeriesDAO = new MetricTimeSeriesDAOImpl<String, Long>(clusterName, host, keyspace, "MetricTimeSeries",
+               String.class, Long.class);
+      metricsServiceConsumerByIpDAO = new MetricsServiceConsumerByIpDAOImpl<String, String>(clusterName, host,
+               keyspace, "ServiceConsumerByIp", String.class, String.class);
+      metricValuesDAO = new MetricValuesDAOImpl<String>(clusterName, host, keyspace, "MetricValues", String.class);
+      metricsServiceOperationByIpDAO = new MetricsServiceOperationByIpDAOImpl<String, String>(clusterName, host,
+               keyspace, "ServiceOperationByIp", String.class, String.class);
+      metricServiceCallsByTimeDAO = new MetricServiceCallsByTimeDAOImpl<String, Long>(clusterName, host, keyspace,
+               "ServiceCallsByTime", String.class, Long.class);
+      metricValuesByIpAndDateDAO = new MetricValuesByIpAndDateDAOImpl<String, Long>(clusterName, host, keyspace,
+               "MetricValuesByIpAndDate", String.class, Long.class);
+      ipPerDayAndServiceNameDAOImpl = new IpPerDayAndServiceNameDAOImpl<String, String>(clusterName, host, keyspace,
+               "IpPerDayAndServiceName", String.class, String.class);
+   }
+
+   /**
+    * Checks if is server side.
+    * 
+    * @return true, if is server side
+    */
+   public boolean isServerSide() {
+      return serverSide;
+   }
+
+   /**
+    * Checks if is store service metrics.
+    * 
+    * @return true, if is store service metrics
+    */
+   public boolean isStoreServiceMetrics() {
+      return storeServiceMetrics;
+   }
+
+   /**
+    * Resolve.
+    *
+    * @param aggregator the aggregator
+    * @return the metric value aggregator
+    */
+   protected MetricValueAggregator resolve(MetricValueAggregator aggregator) {
+      if (previousSnapshot != null) {
+         MetricId metricId = aggregator.getMetricId();
+         for (MetricValueAggregator previousAggregator : previousSnapshot) {
+            if (metricId.equals(previousAggregator.getMetricId())) {
+               return (MetricValueAggregator) aggregator.diff(previousAggregator, true);
+            }
+         }
+      }
+      return aggregator;
    }
 
    /**
@@ -136,7 +262,7 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
    public void saveMetricSnapshot(long timeSnapshot, Collection<MetricValueAggregator> snapshotCollection)
             throws ServiceException {
       try {
-         
+
          if (snapshotCollection == null || snapshotCollection.isEmpty()) {
             return;
          }
@@ -189,88 +315,6 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
 
    }
 
-   protected MetricValueAggregator resolve(MetricValueAggregator aggregator) {
-      if (previousSnapshot != null) {
-         MetricId metricId = aggregator.getMetricId();
-         for (MetricValueAggregator previousAggregator : previousSnapshot) {
-            if (metricId.equals(previousAggregator.getMetricId())) {
-               return (MetricValueAggregator) aggregator.diff(previousAggregator, true);
-            }
-         }
-      }
-      return aggregator;
-   }
-
-   /**
-    * Creates the metric id.
-    * 
-    * @param metricId
-    *           the metric id
-    * @param metricValueAggregator
-    *           the metric value aggregator
-    */
-   private void createMetricId(org.ebayopensource.turmeric.runtime.common.monitoring.MetricId metricId,
-            MetricValueAggregator metricValueAggregator) {
-      MetricIdentifier<String> model = new MetricIdentifier<String>(metricId.getMetricName(), metricId.getAdminName(),
-               metricId.getOperationName(), serverSide);
-      String key = model.getKey();
-      // metricIdentifierDAO.save(key, model);
-      this.metricIdDAO.save(key, model);
-   }
-
-   /**
-    * Find metric id.
-    * 
-    * @param keyfromMetricId
-    *           the keyfrom metric id
-    * @return the metric identifier
-    */
-   private MetricIdentifier<String> findMetricId(String keyfromMetricId) {
-      return this.metricIdDAO.find(keyfromMetricId);
-   }
-
-   /**
-    * Gets the key from the metric id.
-    * 
-    * @param metricId
-    *           the metric id
-    * @param serverSide
-    *           the server side
-    * @return the keyfrom metric id
-    */
-   public String getKeyfromMetricId(org.ebayopensource.turmeric.runtime.common.monitoring.MetricId metricId,
-            boolean serverSide) {
-      return metricId.getMetricName() + KEY_SEPARATOR + metricId.getAdminName() + KEY_SEPARATOR
-               + metricId.getOperationName() + KEY_SEPARATOR + serverSide;
-   }
-
-   /**
-    * Checks if is server side.
-    * 
-    * @return true, if is server side
-    */
-   public boolean isServerSide() {
-      return serverSide;
-   }
-
-   /**
-    * Checks if is store service metrics.
-    * 
-    * @return true, if is store service metrics
-    */
-   public boolean isStoreServiceMetrics() {
-      return storeServiceMetrics;
-   }
-
-   /**
-    * Gets the snapshot interval.
-    * 
-    * @return the snapshot interval
-    */
-   public int getSnapshotInterval() {
-      return snapshotInterval;
-   }
-
    /**
     * Values are non zero.
     * 
@@ -287,38 +331,5 @@ public class CassandraMetricsStorageProvider implements MetricsStorageProvider {
          }
       }
       return false;
-   }
-
-   /**
-    * Gets the inet address.
-    * 
-    * @return the inet address
-    * @throws ServiceException
-    *            the service exception
-    */
-   public String getIPAddress() throws ServiceException {
-      try {
-         return InetAddress.getLocalHost().getCanonicalHostName();
-      } catch (UnknownHostException x) {
-         throw new ServiceException("Unkonwn host name", x);
-      }
-   }
-
-   private void initDAO(String clusterName, String host, String keyspace) {
-      metricIdentifierDAO = new MetricIdentifierDAOImpl<String>(clusterName, host, keyspace, "MetricIdentifier",
-               String.class);
-      metricTimeSeriesDAO = new MetricTimeSeriesDAOImpl<String>(clusterName, host, keyspace, "MetricTimeSeries",
-               String.class);
-      metricsServiceConsumerByIpDAO = new MetricsServiceConsumerByIpDAOImpl<String, String>(clusterName, host,
-               keyspace, "ServiceConsumerByIp", String.class, String.class);
-      metricValuesDAO = new MetricValuesDAOImpl<String>(clusterName, host, keyspace, "MetricValues", String.class);
-      metricsServiceOperationByIpDAO = new MetricsServiceOperationByIpDAOImpl<String, String>(clusterName, host,
-               keyspace, "ServiceOperationByIp", String.class, String.class);
-      metricServiceCallsByTimeDAO = new MetricServiceCallsByTimeDAOImpl<String, Long>(clusterName, host, keyspace,
-               "ServiceCallsByTime", String.class, Long.class);
-      metricValuesByIpAndDateDAO = new MetricValuesByIpAndDateDAOImpl<String, Long>(clusterName, host, keyspace,
-               "MetricValuesByIpAndDate", String.class, Long.class);
-      ipPerDayAndServiceNameDAOImpl = new IpPerDayAndServiceNameDAOImpl<String, String>(clusterName, host, keyspace,
-               "IpPerDayAndServiceName", String.class, String.class);
    }
 }

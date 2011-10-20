@@ -10,7 +10,6 @@ package org.ebayopensource.turmeric.monitoring.provider.dao.impl;
 
 import static org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.CassandraMetricsStorageProvider.KEY_SEPARATOR;
 
-import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -21,32 +20,22 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import me.prettyprint.cassandra.serializers.BytesArraySerializer;
-import me.prettyprint.cassandra.serializers.DoubleSerializer;
 import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.ObjectSerializer;
-import me.prettyprint.cassandra.serializers.SerializerTypeInferer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.HColumn;
 import me.prettyprint.hector.api.beans.HSuperColumn;
-import me.prettyprint.hector.api.beans.OrderedRows;
 import me.prettyprint.hector.api.beans.SuperSlice;
 import me.prettyprint.hector.api.factory.HFactory;
 import me.prettyprint.hector.api.query.QueryResult;
-import me.prettyprint.hector.api.query.RangeSlicesQuery;
 import me.prettyprint.hector.api.query.SliceQuery;
 import me.prettyprint.hector.api.query.SuperSliceQuery;
 
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricValuesDAO;
 import org.ebayopensource.turmeric.monitoring.provider.model.MetricValue;
-import org.ebayopensource.turmeric.monitoring.provider.model.Model;
-import org.ebayopensource.turmeric.monitoring.provider.model.SuperModel;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
-import org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
-import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractSuperColumnFamilyDao;
-import org.ebayopensource.turmeric.utils.cassandra.hector.HectorHelper;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -59,6 +48,57 @@ import org.ebayopensource.turmeric.utils.cassandra.hector.HectorHelper;
 public class MetricValuesDAOImpl<K> extends
          AbstractColumnFamilyDao<K, org.ebayopensource.turmeric.monitoring.provider.model.MetricValue> implements
          MetricValuesDAO<K> {
+
+   /**
+    * Instantiates a new metric values dao impl.
+    * 
+    * @param clusterName
+    *           the cluster name
+    * @param host
+    *           the host
+    * @param s_keyspace
+    *           the s_keyspace
+    * @param columnFamilyName
+    *           the column family name
+    * @param kTypeClass
+    *           the k type class
+    */
+   public MetricValuesDAOImpl(final String clusterName, final String host, final String s_keyspace,
+            final String columnFamilyName, final Class<K> kTypeClass) {
+      super(clusterName, host, s_keyspace, kTypeClass,
+               org.ebayopensource.turmeric.monitoring.provider.model.MetricValue.class, columnFamilyName);
+   }
+
+   /**
+    * Creates the metric time series key.
+    * 
+    * @param metricName
+    *           the metric name
+    * @param serviceName
+    *           the service name
+    * @param operationName
+    *           the operation name
+    * @param snapshotInterval
+    *           the snapshot interval
+    * @param isServerSide
+    *           the is server side
+    * @return the string
+    * @throws ServiceException
+    *            the service exception
+    */
+   private String createMetricTimeSeriesKey(String ipAddress, String metricName, String serviceName,
+            String operationName, int snapshotInterval, boolean isServerSide) throws ServiceException {
+
+      return ipAddress + KEY_SEPARATOR + serviceName + KEY_SEPARATOR + operationName + KEY_SEPARATOR + metricName
+               + KEY_SEPARATOR + snapshotInterval + KEY_SEPARATOR + isServerSide;
+
+   }
+
+   private String createMetricTimeSeriesKeyByConsumer(String ipAddress, String metricName, String serviceName,
+            String operationName, String consumerName, int aggregationPeriod, boolean serverSide) {
+      return ipAddress + KEY_SEPARATOR + serviceName + KEY_SEPARATOR + operationName + KEY_SEPARATOR + consumerName
+               + KEY_SEPARATOR + metricName + KEY_SEPARATOR + aggregationPeriod + KEY_SEPARATOR + serverSide;
+   }
 
    /**
     * {@inheritDoc}
@@ -97,23 +137,84 @@ public class MetricValuesDAOImpl<K> extends
    }
 
    /**
-    * Instantiates a new metric values dao impl.
+    * Find by keys.
     * 
-    * @param clusterName
-    *           the cluster name
-    * @param host
-    *           the host
-    * @param s_keyspace
-    *           the s_keyspace
-    * @param columnFamilyName
-    *           the column family name
-    * @param kTypeClass
-    *           the k type class
+    * @param metricValuesToGet
+    *           the metric values to get
+    * @return the list
     */
-   public MetricValuesDAOImpl(final String clusterName, final String host, final String s_keyspace,
-            final String columnFamilyName, final Class<K> kTypeClass) {
-      super(clusterName, host, s_keyspace, kTypeClass,
-               org.ebayopensource.turmeric.monitoring.provider.model.MetricValue.class, columnFamilyName);
+   private List<MetricValue<?>> findByKeys(Set<String> metricValuesToGet) {
+      List<MetricValue<?>> result = new ArrayList<MetricValue<?>>();
+      for (String key : metricValuesToGet) {
+         MetricValue<?> metricValue = this.find((K) key);
+         metricValue.setKey(key);
+         System.out.println("findByKeys: metricValue found." + key + "={" + metricValue + "}");
+         result.add(metricValue);
+      }
+      return result;
+   }
+
+   @Override
+   public Map<String, List<MetricValue<?>>> findMetricValuesByConsumer(List<String> ipAddressList, String metricName,
+            long begin, long end, boolean serverSide, int aggregationPeriod, String serviceName,
+            List<String> operationNames, List<String> consumerNames) throws ServiceException {
+      Map<String, List<MetricValue<?>>> result = new HashMap<String, List<MetricValue<?>>>();
+      Map<Long, MetricValue<?>> metricValuesByTime = new TreeMap<Long, MetricValue<?>>();
+      for (String operationName : operationNames) {
+         for (String consumerName : consumerNames) {
+            for (String ipAddress : ipAddressList) {
+               Set<String> metricValuesToGet = new HashSet<String>();
+               SuperSliceQuery<String, Long, String, String> q = HFactory.createSuperSliceQuery(keySpace,
+                        StringSerializer.get(), LongSerializer.get(), StringSerializer.get(), StringSerializer.get());
+               q.setColumnFamily("MetricTimeSeries");
+               String metricTimeSeriesKey = createMetricTimeSeriesKeyByConsumer(ipAddress, metricName, serviceName,
+                        operationName, consumerName, aggregationPeriod, serverSide);
+               q.setKey(metricTimeSeriesKey);
+               q.setRange(begin, end, false, 100000000);
+               QueryResult<SuperSlice<Long, String, String>> r = q.execute();
+               SuperSlice<Long, String, String> columnSlice = r.get();
+               for (HSuperColumn<Long, String, String> column : columnSlice.getSuperColumns()) {
+                  for (HColumn<String, String> metricValueCol : column.getColumns()) {
+                     if (metricValueCol.getName() != null && metricValueCol.getName().contains(metricName)
+                              && metricValueCol.getName().contains(consumerName)) {
+                        metricValuesToGet.add(metricValueCol.getName());
+                     }
+                  }
+
+               }
+               System.out.printf("findMetricValuesByConsumer(%s,%d,%d,%s,%d). Columns found for key=[%s]={"
+                        + metricValuesToGet + "}\n", metricName, begin, end, serverSide, aggregationPeriod,
+                        metricTimeSeriesKey);
+               List<MetricValue<?>> metricValues = this.findByKeys(metricValuesToGet);
+               // now, I add them ordered by timestamp
+               for (MetricValue<?> metricValue : metricValues) {
+                  if (metricValuesByTime.containsKey(metricValue.getTimeMiliseconds())) {
+                     MetricValue<?> oldMetricValue = metricValuesByTime.get(metricValue.getTimeMiliseconds());
+                     if ("CallCount".equals(metricName)) {
+                        Long count = (Long) oldMetricValue.getColumns().get("count");
+                        count += (Long) metricValue.getColumns().get("count");
+                        oldMetricValue.getColumns().put("count", count);
+                     }
+                  } else {
+                     metricValuesByTime.put(metricValue.getTimeMiliseconds(), metricValue);
+                  }
+
+               }
+
+               if (result.get(consumerName) != null) {
+                  result.get(consumerName).addAll(metricValuesByTime.values());
+               } else {
+                  List<MetricValue<?>> theList = new ArrayList<MetricValue<?>>();
+                  theList.addAll(metricValuesByTime.values());
+                  result.put(consumerName, theList);
+               }
+
+               metricValuesByTime.clear();
+            }
+         }
+      }
+
+      return result;
    }
 
    /**
@@ -134,19 +235,22 @@ public class MetricValuesDAOImpl<K> extends
          for (String ipAddress : ipAddressList) {
 
             Set<String> metricValuesToGet = new HashSet<String>();
-            SliceQuery<String, Long, String> q = HFactory.createSliceQuery(keySpace, StringSerializer.get(),
-                     LongSerializer.get(), StringSerializer.get());
+            SuperSliceQuery<String, Long, String, String> q = HFactory.createSuperSliceQuery(keySpace,
+                     StringSerializer.get(), LongSerializer.get(), StringSerializer.get(), StringSerializer.get());
             q.setColumnFamily("MetricTimeSeries");
             String metricTimeSeriesKey = createMetricTimeSeriesKey(ipAddress, metricName, serviceName, operation,
                      aggregationPeriod, serverSide);
             q.setKey(metricTimeSeriesKey);
             q.setRange(begin, end, false, 100000000);
-            QueryResult<ColumnSlice<Long, String>> r = q.execute();
-            ColumnSlice<Long, String> columnSlice = r.get();
-            for (HColumn<Long, String> column : columnSlice.getColumns()) {
-               if (column.getValue() != null && column.getValue().contains(metricName)) {
-                  metricValuesToGet.add(column.getValue());
+            QueryResult<SuperSlice<Long, String, String>> r = q.execute();
+            SuperSlice<Long, String, String> columnSlice = r.get();
+            for (HSuperColumn<Long, String, String> column : columnSlice.getSuperColumns()) {
+               for (HColumn<String, String> metricValuesKey : column.getColumns()) {
+                  if (metricValuesKey.getName() != null && metricValuesKey.getName().contains(metricName)) {
+                     metricValuesToGet.add(metricValuesKey.getName());
+                  }
                }
+
             }
             System.out.printf("findMetricValuesByOperation(%s,%d,%d,%s,%d). Columns found for key=[%s]={"
                      + metricValuesToGet + "}\n", metricName, begin, end, serverSide, aggregationPeriod,
@@ -163,100 +267,6 @@ public class MetricValuesDAOImpl<K> extends
       }
 
       return result;
-   }
-
-   @Override
-   public Map<String, List<MetricValue<?>>> findMetricValuesByConsumer(List<String> ipAddressList, String metricName,
-            long begin, long end, boolean serverSide, int aggregationPeriod, String serviceName,
-            List<String> operationNames, List<String> consumerNames) throws ServiceException {
-      Map<String, List<MetricValue<?>>> result = new HashMap<String, List<MetricValue<?>>>();
-      Map<Long, MetricValue<?>> metricValuesByTime = new TreeMap<Long, MetricValue<?>>();
-      for (String operationName : operationNames) {
-         for (String consumerName : consumerNames) {
-            for (String ipAddress : ipAddressList) {
-               Set<String> metricValuesToGet = new HashSet<String>();
-               SliceQuery<String, Long, String> q = HFactory.createSliceQuery(keySpace, StringSerializer.get(),
-                        LongSerializer.get(), StringSerializer.get());
-               q.setColumnFamily("MetricTimeSeries");
-               String metricTimeSeriesKey = createMetricTimeSeriesKeyByConsumer(ipAddress, metricName, serviceName,
-                        operationName, consumerName, aggregationPeriod, serverSide);
-               q.setKey(metricTimeSeriesKey);
-               q.setRange(begin, end, false, 100000000);
-               QueryResult<ColumnSlice<Long, String>> r = q.execute();
-               ColumnSlice<Long, String> columnSlice = r.get();
-               for (HColumn<Long, String> column : columnSlice.getColumns()) {
-                  if (column.getValue() != null && column.getValue().contains(metricName)) {
-                     metricValuesToGet.add(column.getValue());
-                  }
-               }
-               System.out.printf("findMetricValuesByConsumer(%s,%d,%d,%s,%d). Columns found for key=[%s]={"
-                        + metricValuesToGet + "}\n", metricName, begin, end, serverSide, aggregationPeriod,
-                        metricTimeSeriesKey);
-               List<MetricValue<?>> metricValues = this.findByKeys(metricValuesToGet);
-               // now, I add them ordered by timestamp
-               for (MetricValue<?> metricValue : metricValues) {
-                  metricValuesByTime.put(metricValue.getTimeMiliseconds(), metricValue);
-               }
-
-               List<MetricValue<?>> theList = new ArrayList<MetricValue<?>>();
-               theList.addAll(metricValuesByTime.values());
-               if(result.get(consumerName)!=null){
-                  result.get(consumerName).addAll(theList);
-               }
-               result.put(consumerName, theList);
-            }
-         }
-      }
-
-      return result;
-   }
-
-   private String createMetricTimeSeriesKeyByConsumer(String ipAddress, String metricName, String serviceName,
-            String operationName, String consumerName, int aggregationPeriod, boolean serverSide) {
-      return ipAddress + KEY_SEPARATOR + serviceName + KEY_SEPARATOR + operationName + KEY_SEPARATOR + consumerName
-               + KEY_SEPARATOR + metricName + KEY_SEPARATOR + aggregationPeriod + KEY_SEPARATOR + serverSide;
-   }
-
-   /**
-    * Find by keys.
-    * 
-    * @param metricValuesToGet
-    *           the metric values to get
-    * @return the list
-    */
-   private List<MetricValue<?>> findByKeys(Set<String> metricValuesToGet) {
-      List<MetricValue<?>> result = new ArrayList<MetricValue<?>>();
-      for (String key : metricValuesToGet) {
-         MetricValue<?> metricValue = this.find((K) key);
-         System.out.println("findByKeys: metricValue found." + key + "={" + metricValue + "}");
-         result.add(metricValue);
-      }
-      return result;
-   }
-
-   /**
-    * Creates the metric time series key.
-    * 
-    * @param metricName
-    *           the metric name
-    * @param serviceName
-    *           the service name
-    * @param operationName
-    *           the operation name
-    * @param snapshotInterval
-    *           the snapshot interval
-    * @param isServerSide
-    *           the is server side
-    * @return the string
-    * @throws ServiceException
-    *            the service exception
-    */
-   private String createMetricTimeSeriesKey(String ipAddress, String metricName, String serviceName,
-            String operationName, int snapshotInterval, boolean isServerSide) throws ServiceException {
-
-      return ipAddress + KEY_SEPARATOR + serviceName + KEY_SEPARATOR + operationName + KEY_SEPARATOR + metricName
-               + KEY_SEPARATOR + snapshotInterval + KEY_SEPARATOR + isServerSide;
-
    }
 
    /**

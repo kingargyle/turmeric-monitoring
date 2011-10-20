@@ -11,7 +11,6 @@ package org.ebayopensource.turmeric.monitoring.provider;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,18 +20,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import org.ebayopensource.turmeric.common.v1.types.ErrorCategory;
 import org.ebayopensource.turmeric.common.v1.types.ErrorSeverity;
-
-import org.ebayopensource.turmeric.monitoring.cassandra.storage.model.MetricIdentifier;
 import org.ebayopensource.turmeric.monitoring.provider.dao.BaseMetricsErrorsByFilterDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.IpPerDayAndServiceNameDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricServiceCallsByTimeDAO;
-import org.ebayopensource.turmeric.monitoring.provider.dao.MetricTimeSeriesDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricValuesByIpAndDateDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricValuesDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorByIdDAO;
@@ -50,8 +45,8 @@ import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorsByC
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorsBySeverityDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceConsumerByIpDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceOperationByIpDAOImpl;
-import org.ebayopensource.turmeric.monitoring.provider.model.ExtendedErrorViewData;
 import org.ebayopensource.turmeric.monitoring.provider.model.Error;
+import org.ebayopensource.turmeric.monitoring.provider.model.ExtendedErrorViewData;
 import org.ebayopensource.turmeric.monitoring.provider.model.MetricValue;
 import org.ebayopensource.turmeric.monitoring.provider.model.Model;
 import org.ebayopensource.turmeric.monitoring.provider.model.SuperModel;
@@ -72,7 +67,6 @@ import org.ebayopensource.turmeric.monitoring.v1.services.SortOrderType;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.MonitoringSystem;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.SystemMetricDefs;
-import org.ebayopensource.turmeric.runtime.common.monitoring.value.CountMetricValue;
 import org.ebayopensource.turmeric.utils.ContextUtils;
 import org.ebayopensource.turmeric.utils.cassandra.service.CassandraManager;
 
@@ -83,67 +77,53 @@ import org.ebayopensource.turmeric.utils.cassandra.service.CassandraManager;
  */
 public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQueryServiceProvider {
 
-   private final MetricsErrorByIdDAO<Long> metricsErrorByIdDAO;
-   private final MetricsErrorValuesDAO<String> metricsErrorValuesDAO;
-   private final BaseMetricsErrorsByFilterDAO<String> metricsErrorsByCategoryDAO;
-   private final BaseMetricsErrorsByFilterDAO<String> metricsErrorsBySeverityDAO;
-   private final MetricIdentifierDAOImpl<String> metricIdentifierDAO;
-
-   private final MetricsServiceOperationByIpDAO<String, String> metricsServiceOperationByIpDAO;
-   private final MetricTimeSeriesDAO<String> metricTimeSeriesDAO;
-   private final MetricsServiceConsumerByIpDAO<String, String> metricsServiceConsumerByIpDAO;
-   private final MetricValuesDAO<String> metricValuesDAO;
-   private final MetricServiceCallsByTimeDAO<String, Long> metricServiceCallsByTimeDAO;
-   private final MetricValuesByIpAndDateDAO<String, Long> metricValuesByIpAndDateDAO;
-   private final IpPerDayAndServiceNameDAO<String, String> ipPerDayAndServiceNameDAO;
-
-   /** The Constant cassandraPropFilePath. */
-   private static final String cassandraPropFilePath = "META-INF/config/cassandra/cassandra.properties";
-
    /** The Constant c_hostIp. */
    private static final String c_clusterName = "cassandra-cluster-name";
-
    /** The Constant c_hostIp. */
-   private static final String c_hostIp = "cassandra-host-ip";
-
-   /** The Constant c_rpcPort. */
-   private static final String c_rpcPort = "cassandra-rpc-port";
-
-   /** The Constant c_keyspace. */
-   private static final String c_keyspace = "cassandra-monitoring-keyspace";
-
+   private static final String c_embeed = "cassandra-embeed";
    /** The Constant c_error_by_id_cf. */
    private static final String c_error_by_id_cf = "cassandra-error-by-id-cf";
-
    /** The Constant c_error_values_cf. */
    private static final String c_error_values_cf = "cassandra-error-values-cf";
-
    /** The Constant c_errors_by_category_cf. */
    private static final String c_errors_by_category_cf = "cassandra-errors-by-category-cf";
 
    /** The Constant c_errors_by_severity_cf. */
    private static final String c_errors_by_severity_cf = "cassandra-errors-by-severity-cf";
+   /** The Constant c_hostIp. */
+   private static final String c_hostIp = "cassandra-host-ip";
+   /** The Constant c_keyspace. */
+   private static final String c_keyspace = "cassandra-monitoring-keyspace";
+   private static final String c_metric_consumer_by_ip_cf = "cassandra-metric-consumer-by-ip-cf";
+   private static final String c_metric_service_calls_by_time_cf = "cassandra-metric-service-calls-by-time-cf";
+   private static final String c_metric_service_operation_by_ip_cf = "cassandra-metric-service-operation-by-ip-cf";
+   private static final String c_metric_timeseries_cf = "cassandra-metric-timeseries-cf";
+
+   private static final String c_metric_values_by_ip_and_date_cf = "cassandra-metric-values-by-ip-and-date-cf";
+
+   private static final String c_metric_values_cf = "cassandra-metric-values-cf";
 
    /** The Constant c_metrics_cf. */
    private static final String c_metrics_cf = "cassandra-metrics-cf";
 
-   private static final String c_metric_timeseries_cf = "cassandra-metric-timeseries-cf";
+   /** The Constant c_rpcPort. */
+   private static final String c_rpcPort = "cassandra-rpc-port";
 
-   private static final String c_metric_consumer_by_ip_cf = "cassandra-metric-consumer-by-ip-cf";
+   /** The Constant cassandraPropFilePath. */
+   private static final String cassandraPropFilePath = "META-INF/config/cassandra/cassandra.properties";
 
-   private static final String c_metric_values_cf = "cassandra-metric-values-cf";
-
-   private static final String c_metric_service_operation_by_ip_cf = "cassandra-metric-service-operation-by-ip-cf";
-
-   private static final String c_metric_service_calls_by_time_cf = "cassandra-metric-service-calls-by-time-cf";
-
-   private static final String c_metric_values_by_ip_and_date_cf = "cassandra-metric-values-by-ip-and-date-cf";
-
-   /** The Constant c_hostIp. */
-   private static final String c_embeed = "cassandra-embeed";
+   private static String clusterName;
 
    /** The host. */
    private static String embeed;
+
+   private static String errorByIdCF;
+
+   private static String errorsByCategoryCF;
+
+   private static String errorsBySeverityCF;
+
+   private static String errorValuesCF;
 
    /** The host. */
    private static String host;
@@ -151,20 +131,34 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
    /** The keyspace. */
    private static String keyspace;
 
-   private static String clusterName;
-
-   private static String errorByIdCF;
-
-   private static String errorValuesCF;
-   private static String errorsByCategoryCF;
-   private static String errorsBySeverityCF;
-   private static String metricsCF;
    private static String metricByTimeSeriesCF;
+
    private static String metricConsumerByIpCF;
-   private static String metricValuesCF;
-   private static String metricServiceOperationByIpCF;
+
+   private static String metricsCF;
+
    private static String metricServiceCallsByTimeCF;
+
+   private static String metricServiceOperationByIpCF;
+
    private static String metricValuesByIpAndDateCF;
+
+   private static String metricValuesCF;
+
+   private final IpPerDayAndServiceNameDAO<String, String> ipPerDayAndServiceNameDAO;
+
+   private final MetricIdentifierDAOImpl<String> metricIdentifierDAO;
+
+   private final MetricsErrorByIdDAO<Long> metricsErrorByIdDAO;
+   private final BaseMetricsErrorsByFilterDAO<String> metricsErrorsByCategoryDAO;
+   private final BaseMetricsErrorsByFilterDAO<String> metricsErrorsBySeverityDAO;
+   private final MetricsErrorValuesDAO<String> metricsErrorValuesDAO;
+   private final MetricServiceCallsByTimeDAO<String, Long> metricServiceCallsByTimeDAO;
+   private final MetricsServiceConsumerByIpDAO<String, String> metricsServiceConsumerByIpDAO;
+   private final MetricsServiceOperationByIpDAO<String, String> metricsServiceOperationByIpDAO;
+   private final MetricTimeSeriesDAOImpl<String, Long> metricTimeSeriesDAO;
+   private final MetricValuesByIpAndDateDAO<String, Long> metricValuesByIpAndDateDAO;
+   private final MetricValuesDAO<String> metricValuesDAO;
 
    /**
     * Instantiates a new Metrics Query Service cassandra provider impl.
@@ -183,8 +177,8 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       metricsErrorsBySeverityDAO = new MetricsErrorsBySeverityDAOImpl<String>(clusterName, host, keyspace,
                errorsBySeverityCF, String.class, metricsErrorValuesDAO, metricsErrorByIdDAO);
       metricIdentifierDAO = new MetricIdentifierDAOImpl<String>(clusterName, host, keyspace, metricsCF, String.class);
-      metricTimeSeriesDAO = new MetricTimeSeriesDAOImpl<String>(clusterName, host, keyspace, metricByTimeSeriesCF,
-               String.class);
+      metricTimeSeriesDAO = new MetricTimeSeriesDAOImpl<String, Long>(clusterName, host, keyspace,
+               metricByTimeSeriesCF, String.class, Long.class);
       metricsServiceConsumerByIpDAO = new MetricsServiceConsumerByIpDAOImpl<String, String>(clusterName, host,
                keyspace, metricConsumerByIpCF, String.class, String.class);
       metricValuesDAO = new MetricValuesDAOImpl<String>(clusterName, host, keyspace, metricValuesCF, String.class);
@@ -197,6 +191,20 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       ipPerDayAndServiceNameDAO = new org.ebayopensource.turmeric.monitoring.provider.dao.impl.IpPerDayAndServiceNameDAOImpl<String, String>(
                clusterName, host, keyspace, "IpPerDayAndServiceName", String.class, String.class);
 
+   }
+
+   private String decodeMetricName(String encodedMetricName) {
+      String metricName;
+      if ("CallCount".equals(encodedMetricName)) {
+         metricName = SystemMetricDefs.OP_TIME_TOTAL.getMetricName();
+      } else if ("ResponseTime".equals(encodedMetricName)) {
+         metricName = SystemMetricDefs.OP_TIME_TOTAL.getMetricName();
+      } else if ("ErrorCount".equals(encodedMetricName)) {
+         metricName = SystemMetricDefs.OP_ERR_TOTAL.getMetricName();
+      } else {
+         throw new IllegalArgumentException("Unknown metric name " + encodedMetricName);
+      }
+      return metricName;
    }
 
    /**
@@ -428,6 +436,25 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
    }
 
    @Override
+   public ErrorInfos getErrorMetricsMetadata(String errorId, String errorName, String serviceName) {
+      long id = Long.parseLong(errorId);
+      Error<?> found = metricsErrorByIdDAO.find(id);
+      ErrorInfos result = null;
+
+      if (found != null) {
+         result = new ErrorInfos();
+         result.setCategory(found.getCategory());
+         result.setSeverity(found.getSeverity());
+         result.setDomain(found.getDomain());
+         result.setSubDomain(found.getSubDomain());
+         result.setId(String.valueOf(found.getErrorId()));
+         result.setName(found.getName());
+
+      }
+      return result;
+   }
+
+   @Override
    public List<ExtendedErrorViewData> getExtendedErrorMetricsData(String errorType, List<String> serviceNames,
             List<String> operationNames, List<String> consumerNames, String errorIdString, String errorCategory,
             String errorSeverity, String errorNameParam, MetricCriteria metricCriteria) {
@@ -552,84 +579,11 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       return result;
    }
 
-   private double retrieveCallCounts(long startTime, long duration, double calls1) {
-      List<String> metricValuesList = new ArrayList<String>();
-      List<?> valuesByIpAndDateList = metricValuesByIpAndDateDAO.findByRange(Long.valueOf(startTime),
-               Long.valueOf(startTime + duration));
-
-      for (Object superModel : valuesByIpAndDateList) {
-         Map<Long, Model> superColumns = ((SuperModel<String, Long>) superModel).getColumns();
-
-         for (Entry<Long, Model> superColumn : superColumns.entrySet()) {
-            Model<String> model = superColumn.getValue();
-            Map<String, Object> columns = model.getColumns();
-            for (Entry<String, Object> column : columns.entrySet()) {
-               if (column.getKey().contains(SystemMetricDefs.OP_TIME_TOTAL.getMetricName())) {
-                  metricValuesList.add(column.getKey());
-               }
-            }
-         }
-      }
-      for (String metricValueKey : metricValuesList) {
-         org.ebayopensource.turmeric.monitoring.provider.model.MetricValue<?> metricValue = metricValuesDAO
-                  .find(metricValueKey);
-         Map<String, Object> columns = metricValue.getColumns();
-         if (columns != null && !columns.isEmpty()) {
-            if (columns.containsKey("count")) {
-               Object value = columns.get("count");
-               if (value != null) {
-                  // calls1 = calls1 + (Long) value;
-                  calls1 += 1;
-               }
-            }
-         }
-      }
-      return calls1;
-   }
-
-   private Map<String, List<String>> populateFilters(final List<String> serviceNames,
-            final List<String> operationNames, final List<String> consumerNames) {
-
-      Map<String, List<String>> filters = new HashMap<String, List<String>>();
-
-      if (serviceNames != null && !serviceNames.isEmpty()) {
-         filters.put(ResourceEntity.SERVICE.value(), serviceNames);
-      }
-
-      if (operationNames != null && !operationNames.isEmpty()) {
-         filters.put(ResourceEntity.OPERATION.value(), operationNames);
-      }
-
-      if (consumerNames != null && !consumerNames.isEmpty()) {
-         filters.put(ResourceEntity.CONSUMER.value(), consumerNames);
-      }
-
-      return filters;
-   }
-
-   @Override
-   public ErrorInfos getErrorMetricsMetadata(String errorId, String errorName, String serviceName) {
-      long id = Long.parseLong(errorId);
-      Error<?> found = metricsErrorByIdDAO.find(id);
-      ErrorInfos result = null;
-
-      if (found != null) {
-         result = new ErrorInfos();
-         result.setCategory(found.getCategory());
-         result.setSeverity(found.getSeverity());
-         result.setDomain(found.getDomain());
-         result.setSubDomain(found.getSubDomain());
-         result.setId(String.valueOf(found.getErrorId()));
-         result.setName(found.getName());
-
-      }
-      return result;
-   }
-
    @Override
    public List<MetricGroupData> getMetricsData(MetricCriteria metricCriteria,
             MetricResourceCriteria metricResourceCriteria) {
       List<MetricGroupData> result = new ArrayList<MetricGroupData>();
+      Map<Long, MetricGraphData> metricGraphDataByTime = new TreeMap<Long, MetricGraphData>();
       try {
          // STEP 1. Decode the input parameters
          String encodedMetricName = metricCriteria.getMetricName();
@@ -644,10 +598,12 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
                   break;
                }
             }
-            if (resourceEntityNames == null)
+            if (resourceEntityNames == null) {
                resourceEntityNames = Collections.emptyList();
-            if (!resourceEntityNames.isEmpty())
+            }
+            if (!resourceEntityNames.isEmpty()) {
                filters.put(resourceEntityType.value(), resourceEntityNames);
+            }
          }
 
          String groupBy = metricResourceCriteria.getResourceEntityResponseType();
@@ -666,7 +622,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
             List<String> serviceNames = filters.get("Service");
             for (String serviceName : serviceNames) {
                // get the ipaddress for the service name
-               List<String> ipAddressList = this.ipPerDayAndServiceNameDAO.findByDateAndServiceName(
+               List<String> ipAddressList = ipPerDayAndServiceNameDAO.findByDateAndServiceName(
                         System.currentTimeMillis(), serviceName);
                List<String> operationNames = metricsServiceOperationByIpDAO.findMetricOperationNames(serviceNames);
                operationNames = removeServiceNamePrefix(operationNames);
@@ -700,7 +656,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
                filters.put("Operation", operationNames);
             }
             for (String serviceName : serviceNames) {
-               List<String> ipAddressList = this.ipPerDayAndServiceNameDAO.findByDateAndServiceName(
+               List<String> ipAddressList = ipPerDayAndServiceNameDAO.findByDateAndServiceName(
                         System.currentTimeMillis(), serviceName);
                data1 = metricValuesDAO.findMetricValuesByOperation(ipAddressList, metricName, firstStartTime,
                         firstStartTime + duration, serverSide, aggregationPeriod, filters);
@@ -734,7 +690,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
             List<String> consumerNames = metricsServiceConsumerByIpDAO.findMetricConsumerNames(serviceNames);
             filters.put("Consumer", consumerNames);
             for (String serviceName : serviceNames) {
-               List<String> ipAddressList = this.ipPerDayAndServiceNameDAO.findByDateAndServiceName(
+               List<String> ipAddressList = ipPerDayAndServiceNameDAO.findByDateAndServiceName(
                         System.currentTimeMillis(), serviceName);
                data1 = metricValuesDAO.findMetricValuesByConsumer(ipAddressList, metricName, firstStartTime,
                         firstStartTime + duration, serverSide, aggregationPeriod, serviceName, operationNames,
@@ -799,13 +755,179 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       return result;
    }
 
-   private List<String> removeServiceNamePrefix(List<String> operationNames) {
-      List<String> result = new ArrayList<String>();
-      for (String operationName : operationNames) {
-         result.add(operationName.substring(operationName.indexOf(".") + 1));
+   @Override
+   public List<String> getMetricsMetadata(String resourceEntityType, List<String> resourceEntityName,
+            String resourceEntityResponseType) {
+      ResourceEntity resourceEntity = ResourceEntity.fromValue(resourceEntityType);
+      if (resourceEntity != ResourceEntity.SERVICE) {
+         throw new IllegalArgumentException("Unsupported input ResourceEntity " + resourceEntityType);
+      }
+
+      ResourceEntity responseEntity = ResourceEntity.fromValue(resourceEntityResponseType);
+      switch (responseEntity) {
+         case SERVICE:
+            return metricsServiceOperationByIpDAO.findMetricServiceAdminNames(resourceEntityName);
+         case OPERATION:
+            return metricsServiceOperationByIpDAO.findMetricOperationNames(resourceEntityName);
+         case CONSUMER: {
+            return metricsServiceConsumerByIpDAO.findMetricConsumerNames(resourceEntityName);
+         }
+         default:
+            throw new IllegalArgumentException("Unsupported output ResourceEntity " + resourceEntityResponseType);
+      }
+
+   }
+
+   @Override
+   public MetricData getMetricSummaryData(String dc, MetricCriteria metricCriteria,
+            MetricResourceCriteria metricResourceCriteria) {
+      return null;
+   }
+
+   @Override
+   public List<MetricGraphData> getMetricValue(CriteriaInfo criteriaInfo, long beginTime, long duration,
+            int aggregationPeriod, String autoDelay) {
+      List<MetricGraphData> result = new ArrayList<MetricGraphData>();
+      Map<Long, MetricGraphData> metricGraphDataByTime = new TreeMap<Long, MetricGraphData>();
+      String encodedMetricName = criteriaInfo.getMetricName();
+      String metricName = decodeMetricName(encodedMetricName);
+
+      long endTime = beginTime + TimeUnit.SECONDS.toMillis(duration);
+      boolean serverSide = MonitoringSystem.COLLECTION_LOCATION_SERVER.equals(criteriaInfo.getRoleType());
+      boolean totalizeResultsPerService = false;
+      Map<String, List<String>> filters = new HashMap<String, List<String>>();
+      if (criteriaInfo.getServiceName() != null) {
+         filters.put("Service", Arrays.asList(criteriaInfo.getServiceName().trim()));
+      }
+      if (criteriaInfo.getOperationName() != null) {
+         filters.put("Operation", Arrays.asList(criteriaInfo.getOperationName().trim()));
+      }
+      if (criteriaInfo.getConsumerName() != null) {
+         filters.put("Consumer", Arrays.asList(criteriaInfo.getConsumerName().trim()));
+      }
+
+      Map<String, List<MetricValue<?>>> metricValuesMap;
+      try {
+         List<String> serviceNames = filters.get("Service");
+         List<String> operationNames = filters.get("Operation");
+         List<String> consumerNames = filters.get("Consumer");
+         if (operationNames == null || operationNames.isEmpty()) {
+            // get the operation names for the service
+            operationNames = metricsServiceOperationByIpDAO.findMetricOperationNames(serviceNames);
+            operationNames = removeServiceNamePrefix(operationNames);
+            filters.put("Operation", operationNames);
+            totalizeResultsPerService = true;
+         }
+         if (consumerNames != null && !consumerNames.isEmpty()) {// iterate by consumer
+            for (String serviceName : serviceNames) {
+               // get the ipaddress for the service name
+               List<String> ipAddressList = ipPerDayAndServiceNameDAO.findByDateAndServiceName(
+                        System.currentTimeMillis(), serviceName);
+               metricValuesMap = metricValuesDAO.findMetricValuesByConsumer(ipAddressList, metricName, beginTime,
+                        endTime, serverSide, aggregationPeriod, serviceName, operationNames, consumerNames);
+               for (String consumerName : consumerNames) {
+                  List<MetricValue<?>> metricValues = metricValuesMap.get(consumerName);
+
+                  for (int i = 0; i < duration / aggregationPeriod; ++i) {
+                     long startTime = beginTime + TimeUnit.SECONDS.toMillis(i * aggregationPeriod);
+                     long stopTime = startTime + TimeUnit.SECONDS.toMillis(aggregationPeriod);
+                     double value = 0;
+                     for (MetricValue<?> metricValue : metricValues) {
+                        long time = metricValue.getTimeMiliseconds();
+                        if (startTime <= time && time < stopTime) {
+                           value += metricValue.getValueForMetric(encodedMetricName);
+                           break;
+                        }
+                     }
+                     MetricGraphData metricGraphData = new MetricGraphData();
+                     metricGraphData.setCount(value);
+                     metricGraphData.setTimeSlot(startTime);
+                     metricGraphData.setCriteria(null); // Not supported for now
+                     if (totalizeResultsPerService) {
+                        MetricGraphData alreadyStoredMetricGraph = null;
+                        if (metricGraphDataByTime.containsKey(startTime)) {
+                           alreadyStoredMetricGraph = metricGraphDataByTime.get(startTime);
+                           alreadyStoredMetricGraph.setCount(metricGraphData.getCount()
+                                    + alreadyStoredMetricGraph.getCount());
+                        } else {
+                           result.add(metricGraphData);
+                           metricGraphDataByTime.put(startTime, metricGraphData);
+                        }
+                     } else {
+                        result.add(metricGraphData);
+                     }
+                  }
+               }
+            }
+         } else {// go by operations instead
+            for (String serviceName : serviceNames) {
+               // get the ipaddress for the service name
+               List<String> ipAddressList = ipPerDayAndServiceNameDAO.findByDateAndServiceName(
+                        System.currentTimeMillis(), serviceName);
+               metricValuesMap = metricValuesDAO.findMetricValuesByOperation(ipAddressList, metricName, beginTime,
+                        endTime, serverSide, aggregationPeriod, filters);
+               operationNames = filters.get("Operation");
+               for (String opName : operationNames) {
+                  List<MetricValue<?>> metricValues = metricValuesMap.get(opName);
+
+                  for (int i = 0; i < duration / aggregationPeriod; ++i) {
+                     long startTime = beginTime + TimeUnit.SECONDS.toMillis(i * aggregationPeriod);
+                     long stopTime = startTime + TimeUnit.SECONDS.toMillis(aggregationPeriod);
+                     double value = 0;
+                     for (MetricValue<?> metricValue : metricValues) {
+                        long time = metricValue.getTimeMiliseconds();
+                        if (startTime <= time && time < stopTime) {
+                           value += metricValue.getValueForMetric(encodedMetricName);
+                           break;
+                        }
+                     }
+                     MetricGraphData metricGraphData = new MetricGraphData();
+                     metricGraphData.setCount(value);
+                     metricGraphData.setTimeSlot(startTime);
+                     metricGraphData.setCriteria(null); // Not supported for now
+                     if (totalizeResultsPerService) {
+                        MetricGraphData alreadyStoredMetricGraph = null;
+                        if (metricGraphDataByTime.containsKey(startTime)) {
+                           alreadyStoredMetricGraph = metricGraphDataByTime.get(startTime);
+                           alreadyStoredMetricGraph.setCount(metricGraphData.getCount()
+                                    + alreadyStoredMetricGraph.getCount());
+                        } else {
+                           result.add(metricGraphData);
+                           metricGraphDataByTime.put(startTime, metricGraphData);
+                        }
+                     } else {
+                        result.add(metricGraphData);
+                     }
+
+                  }
+               }
+            }
+         }
+
+      } catch (ServiceException e) {
+         e.printStackTrace();
       }
 
       return result;
+   }
+
+   @Override
+   public List<PolicyMetricData> getPolicyMetricData(long startTime, long endTime, String policyType,
+            String policyName, String serviceName, String operationName, String subjectTypeName, String subjectValue,
+            String effect) {
+      return null;
+   }
+
+   @Override
+   public List<PolicyMetricGraphData> getPolicyMetricDetailData(String policyName, String serviceName,
+            String operationName, String subjectTypeName, String subjectValue, String listType, long startTime,
+            long endTime) {
+      return null;
+   }
+
+   @Override
+   public List<MetricData> getStandardReportData(String reportType, MetricCriteria metricCriteria) {
+      return null;
    }
 
    private CriteriaInfo populateCriteriaInfo(String groupBy, Map<String, Object> row) {
@@ -817,21 +939,99 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       criteriaInfo.setRoleType(serverSide ? MonitoringSystem.COLLECTION_LOCATION_SERVER
                : MonitoringSystem.COLLECTION_LOCATION_CLIENT);
       String consumerName = (String) row.get("consumerName");
-      if (consumerName != null)
+      if (consumerName != null) {
          criteriaInfo.setConsumerName(consumerName);
+      }
       String serviceAdminName = (String) row.get("serviceAdminName");
-      if (serviceAdminName != null)
+      if (serviceAdminName != null) {
          criteriaInfo.setServiceName(serviceAdminName);
+      }
       String operationName = (String) row.get("operationName");
-      if (operationName != null)
+      if (operationName != null) {
          criteriaInfo.setOperationName(operationName);
+      }
       String machineName = (String) row.get("machineName");
-      if (machineName != null)
+      if (machineName != null) {
          criteriaInfo.setMachineName(machineName);
+      }
       String machineGroupName = (String) row.get("machineGroupName");
-      if (machineGroupName != null)
+      if (machineGroupName != null) {
          criteriaInfo.setPoolName(machineGroupName);
+      }
       return criteriaInfo;
+   }
+
+   private Map<String, List<String>> populateFilters(final List<String> serviceNames,
+            final List<String> operationNames, final List<String> consumerNames) {
+
+      Map<String, List<String>> filters = new HashMap<String, List<String>>();
+
+      if (serviceNames != null && !serviceNames.isEmpty()) {
+         filters.put(ResourceEntity.SERVICE.value(), serviceNames);
+      }
+
+      if (operationNames != null && !operationNames.isEmpty()) {
+         filters.put(ResourceEntity.OPERATION.value(), operationNames);
+      }
+
+      if (consumerNames != null && !consumerNames.isEmpty()) {
+         filters.put(ResourceEntity.CONSUMER.value(), consumerNames);
+      }
+
+      return filters;
+   }
+
+   private List<String> removeServiceNamePrefix(List<String> operationNames) {
+      List<String> result = new ArrayList<String>();
+      for (String operationName : operationNames) {
+         result.add(operationName.substring(operationName.indexOf(".") + 1));
+      }
+
+      return result;
+   }
+
+   private double retrieveCallCounts(long startTime, long duration, double calls1) {
+      List<String> metricValuesList = new ArrayList<String>();
+      List<?> valuesByIpAndDateList = metricValuesByIpAndDateDAO.findByRange(Long.valueOf(startTime),
+               Long.valueOf(startTime + duration));
+
+      for (Object superModel : valuesByIpAndDateList) {
+         Map<Long, Model> superColumns = ((SuperModel<String, Long>) superModel).getColumns();
+
+         for (Entry<Long, Model> superColumn : superColumns.entrySet()) {
+            Model<String> model = superColumn.getValue();
+            Map<String, Object> columns = model.getColumns();
+            for (Entry<String, Object> column : columns.entrySet()) {
+               if (column.getKey().contains(SystemMetricDefs.OP_TIME_TOTAL.getMetricName())) {
+                  metricValuesList.add(column.getKey());
+               }
+            }
+         }
+      }
+      for (String metricValueKey : metricValuesList) {
+         org.ebayopensource.turmeric.monitoring.provider.model.MetricValue<?> metricValue = metricValuesDAO
+                  .find(metricValueKey);
+         Map<String, Object> columns = metricValue.getColumns();
+         if (columns != null && !columns.isEmpty()) {
+            if (columns.containsKey("count")) {
+               Object value = columns.get("count");
+               if (value != null) {
+                  // calls1 = calls1 + (Long) value;
+                  calls1 += 1;
+               }
+            }
+         }
+      }
+      return calls1;
+   }
+
+   private Map<String, Map<String, Object>> transformAggregatedErrorValues(List<Map<String, Object>> rows) {
+      Map<String, Map<String, Object>> result = new HashMap<String, Map<String, Object>>();
+      for (Map<String, Object> row : rows) {
+         long errorId = (Long) row.get("errorId");
+         result.put(String.valueOf(errorId), row);
+      }
+      return result;
    }
 
    private Map<String, Object> transformAggregatedMetricComponentValues(String encodedMetricName,
@@ -870,178 +1070,10 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
 
    }
 
-   private String decodeMetricName(String encodedMetricName) {
-      String metricName;
-      if ("CallCount".equals(encodedMetricName))
-         metricName = SystemMetricDefs.OP_TIME_TOTAL.getMetricName();
-      else if ("ResponseTime".equals(encodedMetricName))
-         metricName = SystemMetricDefs.OP_TIME_TOTAL.getMetricName();
-      else if ("ErrorCount".equals(encodedMetricName))
-         metricName = SystemMetricDefs.OP_ERR_TOTAL.getMetricName();
-      else
-         throw new IllegalArgumentException("Unknown metric name " + encodedMetricName);
-      return metricName;
-   }
-
-   @Override
-   public MetricData getMetricSummaryData(String dc, MetricCriteria metricCriteria,
-            MetricResourceCriteria metricResourceCriteria) {
-      return null;
-   }
-
-   @Override
-   public List<MetricGraphData> getMetricValue(CriteriaInfo criteriaInfo, long beginTime, long duration,
-            int aggregationPeriod, String autoDelay) {
-      List<MetricGraphData> result = new ArrayList<MetricGraphData>();
-      String encodedMetricName = criteriaInfo.getMetricName();
-      String metricName = decodeMetricName(encodedMetricName);
-
-      long endTime = beginTime + TimeUnit.SECONDS.toMillis(duration);
-      boolean serverSide = MonitoringSystem.COLLECTION_LOCATION_SERVER.equals(criteriaInfo.getRoleType());
-      boolean totalizeResultsPerService = false;
-      Map<String, List<String>> filters = new HashMap<String, List<String>>();
-      if (criteriaInfo.getServiceName() != null)
-         filters.put("Service", Arrays.asList(criteriaInfo.getServiceName().trim()));
-      if (criteriaInfo.getOperationName() != null)
-         filters.put("Operation", Arrays.asList(criteriaInfo.getOperationName().trim()));
-      if (criteriaInfo.getConsumerName() != null)
-         filters.put("Consumer", Arrays.asList(criteriaInfo.getConsumerName().trim()));
-
-      Map<String, List<MetricValue<?>>> metricValuesMap;
-      try {
-         List<String> serviceNames = filters.get("Service");
-         List<String> operationNames = filters.get("Operation");
-         List<String> consumerNames = filters.get("Consumer");
-         if (operationNames == null || operationNames.isEmpty()) {
-            // get the operation names for the service
-            operationNames = metricsServiceOperationByIpDAO.findMetricOperationNames(serviceNames);
-            operationNames = removeServiceNamePrefix(operationNames);
-            filters.put("Operation", operationNames);
-            totalizeResultsPerService = true;
-         }
-         if(consumerNames!=null && !consumerNames.isEmpty()){//iterate by consumer
-            for (String serviceName : serviceNames) {
-               // get the ipaddress for the service name
-               List<String> ipAddressList = this.ipPerDayAndServiceNameDAO.findByDateAndServiceName(
-                        System.currentTimeMillis(), serviceName);
-               metricValuesMap = metricValuesDAO.findMetricValuesByConsumer(ipAddressList, metricName,
-                        beginTime, endTime, serverSide, aggregationPeriod, serviceName, operationNames, consumerNames);
-               for (String consumerName : consumerNames) {
-                  List<MetricValue<?>> metricValues = metricValuesMap.get(consumerName);
-
-                  for (int i = 0; i < duration / aggregationPeriod; ++i) {
-                     long startTime = beginTime + TimeUnit.SECONDS.toMillis(i * aggregationPeriod);
-                     long stopTime = startTime + TimeUnit.SECONDS.toMillis(aggregationPeriod);
-                     double value = 0;
-                     for (MetricValue<?> metricValue : metricValues) {
-                        long time = metricValue.getTimeMiliseconds();
-                        if (startTime <= time && time < stopTime) {
-                           value += (Double) metricValue.getValueForMetric(encodedMetricName);
-                           break;
-                        }
-                     }
-                     MetricGraphData metricGraphData = new MetricGraphData();
-                     metricGraphData.setCount(value);
-                     metricGraphData.setTimeSlot(startTime);
-                     metricGraphData.setCriteria(null); // Not supported for now
-                     result.add(metricGraphData);
-                  }
-               }
-            }
-         }else{//go by operations instead
-            for (String serviceName : serviceNames) {
-               // get the ipaddress for the service name
-               List<String> ipAddressList = this.ipPerDayAndServiceNameDAO.findByDateAndServiceName(
-                        System.currentTimeMillis(), serviceName);
-               metricValuesMap = metricValuesDAO.findMetricValuesByOperation(ipAddressList, metricName,
-                        beginTime, endTime, serverSide, aggregationPeriod, filters);
-               operationNames = filters.get("Operation");
-               for (String opName : operationNames) {
-                  List<MetricValue<?>> metricValues = metricValuesMap.get(opName);
-
-                  for (int i = 0; i < duration / aggregationPeriod; ++i) {
-                     long startTime = beginTime + TimeUnit.SECONDS.toMillis(i * aggregationPeriod);
-                     long stopTime = startTime + TimeUnit.SECONDS.toMillis(aggregationPeriod);
-                     double value = 0;
-                     for (MetricValue<?> metricValue : metricValues) {
-                        long time = metricValue.getTimeMiliseconds();
-                        if (startTime <= time && time < stopTime) {
-                           value += (Double) metricValue.getValueForMetric(encodedMetricName);
-                           break;
-                        }
-                     }
-                     MetricGraphData metricGraphData = new MetricGraphData();
-                     metricGraphData.setCount(value);
-                     metricGraphData.setTimeSlot(startTime);
-                     metricGraphData.setCriteria(null); // Not supported for now
-                     result.add(metricGraphData);
-                  }
-               }
-            }
-         }
-         
-
-      } catch (ServiceException e) {
-         e.printStackTrace();
-      }
-
-      return result;
-   }
-
-   @Override
-   public List<PolicyMetricData> getPolicyMetricData(long startTime, long endTime, String policyType,
-            String policyName, String serviceName, String operationName, String subjectTypeName, String subjectValue,
-            String effect) {
-      return null;
-   }
-
-   @Override
-   public List<PolicyMetricGraphData> getPolicyMetricDetailData(String policyName, String serviceName,
-            String operationName, String subjectTypeName, String subjectValue, String listType, long startTime,
-            long endTime) {
-      return null;
-   }
-
-   @Override
-   public List<MetricData> getStandardReportData(String reportType, MetricCriteria metricCriteria) {
-      return null;
-   }
-
-   @Override
-   public List<String> getMetricsMetadata(String resourceEntityType, List<String> resourceEntityName,
-            String resourceEntityResponseType) {
-      ResourceEntity resourceEntity = ResourceEntity.fromValue(resourceEntityType);
-      if (resourceEntity != ResourceEntity.SERVICE) {
-         throw new IllegalArgumentException("Unsupported input ResourceEntity " + resourceEntityType);
-      }
-
-      ResourceEntity responseEntity = ResourceEntity.fromValue(resourceEntityResponseType);
-      switch (responseEntity) {
-         case SERVICE:
-            return metricsServiceOperationByIpDAO.findMetricServiceAdminNames(resourceEntityName);
-         case OPERATION:
-            return metricsServiceOperationByIpDAO.findMetricOperationNames(resourceEntityName);
-         case CONSUMER: {
-            return metricsServiceConsumerByIpDAO.findMetricConsumerNames(resourceEntityName);
-         }
-         default:
-            throw new IllegalArgumentException("Unsupported output ResourceEntity " + resourceEntityResponseType);
-      }
-
-   }
-
-   private Map<String, Map<String, Object>> transformAggregatedErrorValues(List<Map<String, Object>> rows) {
-      Map<String, Map<String, Object>> result = new HashMap<String, Map<String, Object>>();
-      for (Map<String, Object> row : rows) {
-         long errorId = (Long) row.get("errorId");
-         result.put(String.valueOf(errorId), row);
-      }
-      return result;
-   }
-
    private void trimResultList(List<?> list, int maxRows) {
-      if (maxRows > 0 && list.size() > maxRows)
+      if (maxRows > 0 && list.size() > maxRows) {
          list.subList(0, maxRows);
+      }
    }
 
 }

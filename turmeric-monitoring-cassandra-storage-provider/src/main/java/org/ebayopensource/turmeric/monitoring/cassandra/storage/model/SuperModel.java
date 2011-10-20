@@ -11,38 +11,71 @@ package org.ebayopensource.turmeric.monitoring.cassandra.storage.model;
 
 import java.util.Map;
 
-import java.util.Map;
-
-
+// TODO: Auto-generated Javadoc
 /**
  * The Class ModelSuper.
+ * 
+ * @param <SK>
+ *           the generic type
+ * @param <K>
+ *           the key type
  * @author jamuguerza
  */
-public class SuperModel<SK, K>  {
+public class SuperModel<SK, K> {
 
-	public SuperModel(SK superKeyType, K keyType){
-	}
-		
-	/** The key data. */
-	private SK key;
-	
-	private Map<K, BasicModel> columns ;
+   /** The key data. */
+   private SK key;
 
-	public void setKey(SK key) {
-		this.key = key;
-	}
+   /** The columns. */
+   private Map<K, BasicModel> columns;
 
-	public SK getKey() {
-		return key;
-	}
+   /**
+    * Instantiates a new super model.
+    * 
+    * @param superKeyType
+    *           the super key type
+    * @param keyType
+    *           the key type
+    */
+   public SuperModel(SK superKeyType, K keyType) {
+   }
 
-	public void setColumns(Map<K, BasicModel> columns) {
-		this.columns = columns;
-	}
+   /**
+    * Gets the columns.
+    * 
+    * @return the columns
+    */
+   public Map<K, BasicModel> getColumns() {
+      return columns;
+   }
 
-	public Map<K, BasicModel> getColumns() {
-		return columns;
-	}
+   /**
+    * Gets the key.
+    * 
+    * @return the key
+    */
+   public SK getKey() {
+      return key;
+   }
 
-		
+   /**
+    * Sets the columns.
+    * 
+    * @param columns
+    *           the columns
+    */
+   public void setColumns(Map<K, BasicModel> columns) {
+      this.columns = columns;
+   }
+
+   /**
+    * Sets the key.
+    * 
+    * @param key
+    *           the new key
+    */
+   public void setKey(SK key) {
+      this.key = key;
+   }
+
 }

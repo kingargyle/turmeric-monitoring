@@ -54,77 +54,41 @@ import org.junit.Before;
 
 public abstract class BaseTest {
 
-   /** The Constant TURMERIC_TEST_CLUSTER. */
-   protected static final String TURMERIC_TEST_CLUSTER = "TestCluster";
+   /** The Constant HOST. */
+   protected static final String HOST = "127.0.1.10:9160";
 
    /** The Constant KEY_SPACE. */
    protected static final String KEY_SPACE = "TestKeyspace";
 
-   /** The Constant HOST. */
-   protected static final String HOST = "127.0.1.10:9160";
+   /** The Constant TURMERIC_TEST_CLUSTER. */
+   protected static final String TURMERIC_TEST_CLUSTER = "TestCluster";
 
-   protected final Map<String, String> options = loadProperties();
-
-   /** The providers. */
-   protected CassandraMetricsStorageProvider metricsStorageProvider;
-   protected SOAMetricsQueryServiceProvider queryprovider;
    protected CassandraErrorLoggingHandler errorStorageProvider;
 
-   protected MetricsServiceConsumerByIpDAO<String, String> metricsServiceConsumerByIpDAO;
-   protected MetricValuesByIpAndDateDAO<String, Long> metricValuesByIpAndDateDAO;
-   protected MetricTimeSeriesDAO<String> metricTimeSeriesDAO;
-   protected MetricValuesDAO<String> metricValuesDAO;
-   protected MetricServiceCallsByTimeDAO<String, Long> serviceCallsByTimeDAO;
    protected MetricsErrorByIdDAO<Long> metricsErrorByIdDAOImpl;
-   protected MetricsServiceOperationByIpDAO<String, String> metricsServiceOperationByIpDAO;
    protected BaseMetricsErrorsByFilterDAO<String> metricsErrorsByCategoryDAO;
    protected BaseMetricsErrorsByFilterDAO<String> metricsErrorsBySeverityDAO;
+
    protected MetricsErrorValuesDAO<String> metricsErrorValuesDAO;
-
-   @Before
-   public void setUp() throws Exception {
-      CassandraTestManager.initialize();
-
-      metricsServiceOperationByIpDAO = new MetricsServiceOperationByIpDAOImpl<String, String>(TURMERIC_TEST_CLUSTER,
-               HOST, KEY_SPACE, "ServiceOperationByIp", String.class, String.class);
-      metricsServiceConsumerByIpDAO = new MetricsServiceConsumerByIpDAOImpl<String, String>(TURMERIC_TEST_CLUSTER,
-               HOST, KEY_SPACE, "ServiceConsumerByIp", String.class, String.class);
-      metricValuesByIpAndDateDAO = new MetricValuesByIpAndDateDAOImpl<String, Long>(TURMERIC_TEST_CLUSTER, HOST,
-               KEY_SPACE, "MetricValuesByIpAndDate", String.class, Long.class);
-      metricTimeSeriesDAO = new MetricTimeSeriesDAOImpl<String>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE,
-               "MetricTimeSeries", String.class);
-      metricValuesDAO = new MetricValuesDAOImpl<String>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "MetricValues",
-               String.class);
-      serviceCallsByTimeDAO = new MetricServiceCallsByTimeDAOImpl<String, Long>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE,
-               "ServiceCallsByTime", String.class, Long.class);
-      metricsErrorByIdDAOImpl = new MetricsErrorByIdDAOImpl<Long>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "ErrorsById",
-               Long.class);
-
-      metricsErrorValuesDAO = new MetricsErrorValuesDAOImpl(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "ErrorValues",
-               String.class);
-      metricsErrorsByCategoryDAO = new MetricsErrorsByCategoryDAOImpl<String>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE,
-               "ErrorCountsByCategory", String.class, metricsErrorValuesDAO, metricsErrorByIdDAOImpl);
-      metricsErrorsBySeverityDAO = new MetricsErrorsBySeverityDAOImpl<String>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE,
-               "ErrorCountsBySeverity", String.class, metricsErrorValuesDAO, metricsErrorByIdDAOImpl);
-   }
-
-   @After
-   public void tearDown() {
-      queryprovider = null;
-      errorStorageProvider = null;
-      metricsStorageProvider = null;
-      cleanUpTestData();
-   }
+   protected MetricsServiceConsumerByIpDAO<String, String> metricsServiceConsumerByIpDAO;
+   protected MetricsServiceOperationByIpDAO<String, String> metricsServiceOperationByIpDAO;
+   /** The providers. */
+   protected CassandraMetricsStorageProvider metricsStorageProvider;
+   protected MetricTimeSeriesDAO<String, Long> metricTimeSeriesDAO;
+   protected MetricValuesByIpAndDateDAO<String, Long> metricValuesByIpAndDateDAO;
+   protected MetricValuesDAO<String> metricValuesDAO;
+   protected final Map<String, String> options = loadProperties();
+   protected SOAMetricsQueryServiceProvider queryprovider;
+   protected MetricServiceCallsByTimeDAO<String, Long> serviceCallsByTimeDAO;
 
    protected void cleanUpTestData() {
       System.out.println("######### CLEANING DATA ##############");
       Keyspace kspace = new HectorManager().getKeyspace(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "ServiceOperationByIp",
                false, String.class, String.class);
 
-      String[] columnFamilies = { "ErrorsById", "MetricTimeSeries", "MetricValues", "ErrorCountsByCategory",
-               "ErrorCountsBySeverity" };
-      String[] superColumnFamilies = { "MetricValuesByIpAndDate", "ServiceCallsByTime", "ServiceConsumerByIp",
-               "ServiceOperationByIp" };
+      String[] columnFamilies = { "ErrorsById", "MetricValues", "ErrorCountsByCategory", "ErrorCountsBySeverity" };
+      String[] superColumnFamilies = { "MetricTimeSeries", "MetricValuesByIpAndDate", "ServiceCallsByTime",
+               "ServiceConsumerByIp", "ServiceOperationByIp" };
 
       for (String cf : columnFamilies) {
          RangeSlicesQuery<String, String, String> rq = HFactory.createRangeSlicesQuery(kspace, StringSerializer.get(),
@@ -155,16 +119,6 @@ public abstract class BaseTest {
 
    }
 
-   protected Map<String, String> loadProperties() {
-      Map<String, String> options = new HashMap<String, String>();
-      options.put("host-address", HOST);
-      options.put("keyspace-name", KEY_SPACE);
-      options.put("cluster-name", TURMERIC_TEST_CLUSTER);
-      options.put("storeServiceMetrics", "false");
-      options.put("embedded", "true");
-      return options;
-   }
-
    protected Collection<MetricValueAggregator> createMetricValueAggregatorsCollectionForOneConsumer(String serviceName,
             String operationName, String consumerName) {
       Collection<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
@@ -192,6 +146,51 @@ public abstract class BaseTest {
       result.add(aggregator2);
 
       return result;
+   }
+
+   protected Map<String, String> loadProperties() {
+      Map<String, String> options = new HashMap<String, String>();
+      options.put("host-address", HOST);
+      options.put("keyspace-name", KEY_SPACE);
+      options.put("cluster-name", TURMERIC_TEST_CLUSTER);
+      options.put("storeServiceMetrics", "false");
+      options.put("embedded", "true");
+      return options;
+   }
+
+   @Before
+   public void setUp() throws Exception {
+      CassandraTestManager.initialize();
+
+      metricsServiceOperationByIpDAO = new MetricsServiceOperationByIpDAOImpl<String, String>(TURMERIC_TEST_CLUSTER,
+               HOST, KEY_SPACE, "ServiceOperationByIp", String.class, String.class);
+      metricsServiceConsumerByIpDAO = new MetricsServiceConsumerByIpDAOImpl<String, String>(TURMERIC_TEST_CLUSTER,
+               HOST, KEY_SPACE, "ServiceConsumerByIp", String.class, String.class);
+      metricValuesByIpAndDateDAO = new MetricValuesByIpAndDateDAOImpl<String, Long>(TURMERIC_TEST_CLUSTER, HOST,
+               KEY_SPACE, "MetricValuesByIpAndDate", String.class, Long.class);
+      metricTimeSeriesDAO = new MetricTimeSeriesDAOImpl<String, Long>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE,
+               "MetricTimeSeries", String.class, Long.class);
+      metricValuesDAO = new MetricValuesDAOImpl<String>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "MetricValues",
+               String.class);
+      serviceCallsByTimeDAO = new MetricServiceCallsByTimeDAOImpl<String, Long>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE,
+               "ServiceCallsByTime", String.class, Long.class);
+      metricsErrorByIdDAOImpl = new MetricsErrorByIdDAOImpl<Long>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "ErrorsById",
+               Long.class);
+
+      metricsErrorValuesDAO = new MetricsErrorValuesDAOImpl(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "ErrorValues",
+               String.class);
+      metricsErrorsByCategoryDAO = new MetricsErrorsByCategoryDAOImpl<String>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE,
+               "ErrorCountsByCategory", String.class, metricsErrorValuesDAO, metricsErrorByIdDAOImpl);
+      metricsErrorsBySeverityDAO = new MetricsErrorsBySeverityDAOImpl<String>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE,
+               "ErrorCountsBySeverity", String.class, metricsErrorValuesDAO, metricsErrorByIdDAOImpl);
+   }
+
+   @After
+   public void tearDown() {
+      queryprovider = null;
+      errorStorageProvider = null;
+      metricsStorageProvider = null;
+      cleanUpTestData();
    }
 
 }

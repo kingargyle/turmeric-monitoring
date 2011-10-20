@@ -12,6 +12,9 @@ package org.ebayopensource.turmeric.monitoring.cassandra.storage.dao;
 
 /**
  * The Interface MetricValuesByIpAndDateDAO.
+ *
+ * @param <SK> the generic type
+ * @param <K> the key type
  * @author jose alvarez muguerza
  */
 public interface MetricValuesByIpAndDateDAO<SK, K>  {

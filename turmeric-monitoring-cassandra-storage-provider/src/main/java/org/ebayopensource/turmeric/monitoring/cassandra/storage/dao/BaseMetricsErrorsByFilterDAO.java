@@ -13,8 +13,11 @@ import java.util.Map;
 
 
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface BaseMetricsErrorsByFilterDAO.
+ *
+ * @param <K> the key type
  * @author jose alvarez muguerza
  */
 public interface BaseMetricsErrorsByFilterDAO<K> {
