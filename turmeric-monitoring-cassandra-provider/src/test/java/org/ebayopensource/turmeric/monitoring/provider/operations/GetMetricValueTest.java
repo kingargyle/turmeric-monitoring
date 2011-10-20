@@ -4,15 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.ebayopensource.turmeric.common.v1.types.CommonErrorData;
-import org.ebayopensource.turmeric.common.v1.types.ErrorCategory;
-import org.ebayopensource.turmeric.common.v1.types.ErrorSeverity;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.CassandraMetricsStorageProvider;
 import org.ebayopensource.turmeric.monitoring.provider.BaseTest;
 import org.ebayopensource.turmeric.monitoring.provider.MockInitContext;
@@ -38,76 +32,15 @@ import org.junit.Test;
 
 public class GetMetricValueTest extends BaseTest {
 
-   private int accumCount = 0;
-   private double accumResponse = 0;
-   private final long now = System.currentTimeMillis();
-   private final String consumerName = "ConsumerName1";
-   private final List<CommonErrorData> errorsToStore = null;
+   private long now = 0;
+   private String consumerName = null;
 
-   private final long oneMinuteAgo = now - TimeUnit.SECONDS.toMillis(60);
-   private final String opName = "Operation1";
-   private final long sixMinuteAgo = now - TimeUnit.SECONDS.toMillis(60 * 6);
-   private final String srvcAdminName = "ServiceAdminName1";
-   private final long threeMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 3);
-   private final long twoMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 2);
-
-   protected Collection<MetricValueAggregator> createMetricValueAggregatorsForOneConsumerWithTotalMetric(
-            String serviceName, String operationName, String consumerName) {
-      accumCount += 1;
-      accumResponse += 1234.00;
-
-      Collection<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
-      MetricId metricId1 = new MetricId(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), serviceName, operationName);
-      MetricValue metricValue1 = new AverageMetricValue(metricId1, accumCount, accumResponse);
-      MetricClassifier metricClassifier1 = new MetricClassifier(consumerName, "sourcedc", "targetdc");
-
-      Map<MetricClassifier, MetricValue> valuesByClassifier1 = new HashMap<MetricClassifier, MetricValue>();
-      valuesByClassifier1.put(metricClassifier1, metricValue1);
-
-      MetricValueAggregatorTestImpl aggregator1 = new MetricValueAggregatorTestImpl(metricValue1,
-               MetricCategory.Timing, MonitoringLevel.NORMAL, valuesByClassifier1);
-
-      return deepCopyAggregators(aggregator1);
-
-   }
-
-   protected Collection<MetricValueAggregator> createMetricValueAggregatorsWithTotalMetric(String serviceName,
-            String operationName, String consumerName) {
-
-      Collection<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
-      MetricId metricId1 = new MetricId(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), serviceName, operationName);
-      MetricValue metricValue1 = new AverageMetricValue(metricId1, 1, 1234.0d);
-      MetricClassifier metricClassifier1 = new MetricClassifier(consumerName, "sourcedc", "targetdc");
-
-      Map<MetricClassifier, MetricValue> valuesByClassifier1 = new HashMap<MetricClassifier, MetricValue>();
-      valuesByClassifier1.put(metricClassifier1, metricValue1);
-
-      MetricValueAggregatorTestImpl aggregator1 = new MetricValueAggregatorTestImpl(metricValue1,
-               MetricCategory.Timing, MonitoringLevel.NORMAL, valuesByClassifier1);
-
-      result.add(aggregator1);
-
-      return result;
-   }
-
-   private List<CommonErrorData> createTestCommonErrorDataList(int errorQuantity) {
-      List<CommonErrorData> commonErrorDataList = new ArrayList<CommonErrorData>();
-      for (int i = 0; i < errorQuantity; i++) {
-         CommonErrorData e = new CommonErrorData();
-         e.setCategory(ErrorCategory.APPLICATION);
-         e.setSeverity(ErrorSeverity.ERROR);
-         e.setCause("TestCause");
-         e.setDomain("TestDomain");
-         e.setSubdomain("TestSubdomain");
-         e.setErrorName("TestErrorName");
-         e.setErrorId(Long.valueOf(i));
-         e.setMessage("Error Message " + i);
-         e.setOrganization("TestOrganization");
-         commonErrorDataList.add(e);
-      }
-      return commonErrorDataList;
-
-   }
+   private long oneMinuteAgo = 0;
+   private String opName = null;
+   private long sixMinuteAgo = 0;
+   private String srvcAdminName = null;
+   private long threeMinutesAgo = 0;
+   private long twoMinutesAgo = 0;
 
    public void createTestData() throws ServiceException {
       MetricId metricId1 = new MetricId(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), srvcAdminName, opName);
@@ -162,6 +95,17 @@ public class GetMetricValueTest extends BaseTest {
    @Before
    public void setUp() throws Exception {
       super.setUp();
+
+      now = System.currentTimeMillis();
+      consumerName = "ConsumerName1";
+
+      oneMinuteAgo = now - TimeUnit.SECONDS.toMillis(60);
+      opName = "Operation1";
+      sixMinuteAgo = now - TimeUnit.SECONDS.toMillis(60 * 6);
+      srvcAdminName = "ServiceAdminName1";
+      threeMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 3);
+      twoMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 2);
+
       errorStorageProvider = new CassandraErrorLoggingHandler();
       metricsStorageProvider = new CassandraMetricsStorageProvider();
       InitContext ctx = new MockInitContext(options);
@@ -175,12 +119,10 @@ public class GetMetricValueTest extends BaseTest {
    @After
    public void tearDown() {
       super.tearDown();
-      accumCount = 0;
-      accumResponse = 0;
    }
 
    @Test
-   public void testGetMetricValueCallCountMetricForOneServiceNoOperationOneConsumer() throws ServiceException {// validated
+   public void testCallCountOneServiceNoOperationOneConsumer() throws ServiceException {// validated
       long duration = 60 * 7;// in secs
       int aggregationPeriod = 20;// in secs
       int expectedSum = 9;
@@ -202,7 +144,7 @@ public class GetMetricValueTest extends BaseTest {
    }
 
    @Test
-   public void testGetMetricValueCallCountMetricForOneServiceNoOperationNoConsumer() throws ServiceException {// validated
+   public void testCallCountOneServiceNoOperationNoConsumer() throws ServiceException {// validated
 
       long duration = 60 * 6;// in secs
       int aggregationPeriod = 20;// in secs
@@ -225,7 +167,7 @@ public class GetMetricValueTest extends BaseTest {
    }
 
    @Test
-   public void testGetMetricValueCallCountMetricForOneServiceNoOperationAnotherConsumer() throws ServiceException {// validated
+   public void testCallCountOneServiceNoOperationAnotherConsumer() throws ServiceException {// validated
 
       long duration = 60 * 6;// in secs
       int aggregationPeriod = 20;// in secs
@@ -249,7 +191,7 @@ public class GetMetricValueTest extends BaseTest {
    }
 
    @Test
-   public void testGetMetricValueCallCountMetricOneServiceOneOperationOneConsumer() throws ServiceException {// validated
+   public void testCallCountOneServiceOneOperationOneConsumer() throws ServiceException {// validated
 
       long duration = 60 * 3;// in secs
       int aggregationPeriod = 20;// in secs
