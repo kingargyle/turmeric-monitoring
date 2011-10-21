@@ -31,7 +31,6 @@ import org.ebayopensource.turmeric.runtime.common.pipeline.LoggingHandler.InitCo
 import org.ebayopensource.turmeric.runtime.error.cassandra.handler.CassandraErrorLoggingHandler;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class GetMetricsDataTest extends BaseTest {
@@ -40,7 +39,7 @@ public class GetMetricsDataTest extends BaseTest {
    private final long now = System.currentTimeMillis();
    private final long oneMinuteAgo = now - TimeUnit.SECONDS.toMillis(60);
    private final String opName = "Operation1";
-   private final long sixMinuteAgo = now - TimeUnit.SECONDS.toMillis(60 * 6);
+   private final long sixMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 6);
    private final String srvcAdminName = "ServiceAdminName1";
    private final long twoMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 2);
    private final long threeMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 3);
@@ -73,13 +72,20 @@ public class GetMetricsDataTest extends BaseTest {
       MetricValueAggregatorTestImpl aggregator1 = new MetricValueAggregatorTestImpl(metricValue1,
                MetricCategory.Timing, MonitoringLevel.NORMAL);
 
+      MetricId metricId2 = new MetricId(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), srvcAdminName,
+               "anotherOperation");
+      MetricValue metricValue2 = new AverageMetricValue(metricId2);
+      MetricValueAggregatorTestImpl aggregator2 = new MetricValueAggregatorTestImpl(metricValue2,
+               MetricCategory.Timing, MonitoringLevel.NORMAL);
+
       MetricClassifier metricClassifier1 = new MetricClassifier(consumerName, "sourceDC1", "targetDC1");
       MetricClassifier metricClassifier2 = new MetricClassifier("anotherConsumer", "sourceDC1", "targetDC1");
       aggregator1.update(metricClassifier1, 1L);
       aggregator1.update(metricClassifier2, 1L);
+      aggregator2.update(metricClassifier2, 1L);
 
-      List<MetricValueAggregator> aggregators = deepCopyAggregators(aggregator1);
-      metricsStorageProvider.saveMetricSnapshot(sixMinuteAgo, aggregators);
+      List<MetricValueAggregator> aggregators = deepCopyAggregators(aggregator1, aggregator2);
+      metricsStorageProvider.saveMetricSnapshot(sixMinutesAgo, aggregators);
 
       // // now, the second call
       aggregator1.update(metricClassifier1, 1L);
@@ -119,12 +125,10 @@ public class GetMetricsDataTest extends BaseTest {
    @Test
    public void testCallCountOneOperationNoConsumer() throws ServiceException {
 
-      long duration = 60;// in secs
-      // according DAOErrorLoggingHandler.persistErrors aggregation period
-      // should always be 0
+      long duration = 60 * 6;// in secs
       int aggregationPeriod = 20;// in secs
       MetricCriteria metricCriteria = new MetricCriteria();
-      metricCriteria.setFirstStartTime(twoMinutesAgo);
+      metricCriteria.setFirstStartTime(sixMinutesAgo);
       metricCriteria.setSecondStartTime(now);
       metricCriteria.setDuration(duration);
       metricCriteria.setAggregationPeriod(aggregationPeriod);
@@ -146,12 +150,43 @@ public class GetMetricsDataTest extends BaseTest {
       assertEquals(1, response.size());
       MetricGroupData data = response.get(0);
       assertNotNull(data);
-      assertEquals(9, data.getCount1(), 0);
+      assertEquals(13, data.getCount1(), 0);
       assertEquals(0, data.getCount2(), 0);
 
    }
 
-   @Ignore
+   @Test
+   public void testCallCountNoOperationNoConsumer() throws ServiceException {
+
+      long duration = 60 * 6;// in secs
+      int aggregationPeriod = 20;// in secs
+      MetricCriteria metricCriteria = new MetricCriteria();
+      metricCriteria.setFirstStartTime(threeMinutesAgo);
+      metricCriteria.setSecondStartTime(now);
+      metricCriteria.setDuration(duration);
+      metricCriteria.setAggregationPeriod(aggregationPeriod);
+      metricCriteria.setRoleType("server");
+      metricCriteria.setMetricName("CallCount");
+
+      MetricResourceCriteria metricResourceCriteria = new MetricResourceCriteria();
+      metricResourceCriteria.setResourceEntityResponseType("Operation");
+      ResourceEntityRequest rer1 = new ResourceEntityRequest();
+      rer1.setResourceEntityType(ResourceEntity.OPERATION);
+      metricResourceCriteria.getResourceRequestEntities().add(rer1);
+      ResourceEntityRequest rer2 = new ResourceEntityRequest();
+      rer2.setResourceEntityType(ResourceEntity.SERVICE);
+      rer2.getResourceEntityName().add(srvcAdminName);
+      metricResourceCriteria.getResourceRequestEntities().add(rer2);
+      List<MetricGroupData> response = queryprovider.getMetricsData(metricCriteria, metricResourceCriteria);
+      assertNotNull(response);
+      assertEquals(1, response.size());
+      MetricGroupData data = response.get(0);
+      assertNotNull(data);
+      assertEquals(11, data.getCount1(), 0);
+      assertEquals(0, data.getCount2(), 0);
+
+   }
+
    @Test
    public void testResponseTimeOneOperationNoConsumer() throws ServiceException {
       long duration = 60;// in secs

@@ -193,8 +193,11 @@ public class MetricValuesDAOImpl<K> extends
                      MetricValue<?> oldMetricValue = metricValuesByTime.get(metricValue.getTimeMiliseconds());
                      if (SystemMetricDefs.OP_TIME_TOTAL.getMetricName().equals(metricName)) {
                         Long count = (Long) oldMetricValue.getColumns().get("count");
+                        Double total = (Double) oldMetricValue.getColumns().get("totalTime");
                         count += (Long) metricValue.getColumns().get("count");
+                        total += (Double) metricValue.getColumns().get("totalTime");
                         oldMetricValue.getColumns().put("count", count);
+                        oldMetricValue.getColumns().put("totalTime", total);
                      }
                   } else {
                      metricValuesByTime.put(metricValue.getTimeMiliseconds(), metricValue);
@@ -263,8 +266,11 @@ public class MetricValuesDAOImpl<K> extends
                   MetricValue<?> oldMetricValue = metricValuesByTime.get(metricValue.getTimeMiliseconds());
                   if (SystemMetricDefs.OP_TIME_TOTAL.getMetricName().equals(metricName)) {
                      Long count = (Long) oldMetricValue.getColumns().get("count");
+                     Double total = (Double) oldMetricValue.getColumns().get("totalTime");
                      count += (Long) metricValue.getColumns().get("count");
+                     total += (Double) metricValue.getColumns().get("totalTime");
                      oldMetricValue.getColumns().put("count", count);
+                     oldMetricValue.getColumns().put("totalTime", total);
                   }
                } else {
                   metricValuesByTime.put(metricValue.getTimeMiliseconds(), metricValue);

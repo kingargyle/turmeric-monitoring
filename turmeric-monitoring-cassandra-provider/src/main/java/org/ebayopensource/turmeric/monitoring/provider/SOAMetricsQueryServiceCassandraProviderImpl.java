@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -749,10 +750,21 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
          // Trim to the number of requested rows
          int rows = metricCriteria.getNumRows() == null ? 0 : Integer.parseInt(metricCriteria.getNumRows());
          trimResultList(result, rows);
+         removeZeroRowsFromList(result);
       } catch (Exception e) {
          e.printStackTrace();
       }
       return result;
+   }
+
+   private void removeZeroRowsFromList(List<MetricGroupData> result) {
+      Iterator<MetricGroupData> iterator = result.iterator();
+      while (iterator.hasNext()) {
+         MetricGroupData metricGroupData = iterator.next();
+         if (metricGroupData.getCount1() == metricGroupData.getCount2() && metricGroupData.getCount2() == 0) {
+            iterator.remove();
+         }
+      }
    }
 
    @Override
