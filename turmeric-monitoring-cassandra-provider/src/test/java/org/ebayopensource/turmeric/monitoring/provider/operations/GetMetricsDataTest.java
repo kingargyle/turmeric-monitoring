@@ -31,7 +31,6 @@ import org.ebayopensource.turmeric.runtime.common.pipeline.LoggingHandler.InitCo
 import org.ebayopensource.turmeric.runtime.error.cassandra.handler.CassandraErrorLoggingHandler;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class GetMetricsDataTest extends BaseTest {
@@ -157,6 +156,40 @@ public class GetMetricsDataTest extends BaseTest {
    }
 
    @Test
+   public void testCallCountOneServiceNoOperationOneConsumer() throws ServiceException {
+
+      long duration = 60 * 6;// in secs
+      int aggregationPeriod = 20;// in secs
+      MetricCriteria metricCriteria = new MetricCriteria();
+      metricCriteria.setFirstStartTime(sixMinutesAgo);
+      metricCriteria.setSecondStartTime(now);
+      metricCriteria.setDuration(duration);
+      metricCriteria.setAggregationPeriod(aggregationPeriod);
+      metricCriteria.setRoleType("server");
+      metricCriteria.setMetricName("CallCount");
+
+      MetricResourceCriteria metricResourceCriteria = new MetricResourceCriteria();
+      metricResourceCriteria.setResourceEntityResponseType("Service");
+      ResourceEntityRequest rer1 = new ResourceEntityRequest();
+      rer1.setResourceEntityType(ResourceEntity.SERVICE);
+      rer1.getResourceEntityName().add(srvcAdminName);
+      metricResourceCriteria.getResourceRequestEntities().add(rer1);
+      ResourceEntityRequest rer2 = new ResourceEntityRequest();
+      rer2.setResourceEntityType(ResourceEntity.CONSUMER);
+      rer2.getResourceEntityName().add(consumerName);
+      metricResourceCriteria.getResourceRequestEntities().add(rer2);
+      List<MetricGroupData> response = queryprovider.getMetricsData(metricCriteria, metricResourceCriteria);
+      assertNotNull(response);
+      assertEquals(1, response.size());
+      MetricGroupData data = response.get(0);
+      assertNotNull(data);
+      assertEquals(9, data.getCount1(), 0);
+      assertEquals(0, data.getCount2(), 0);
+      assertEquals("The response should have the data grouped by service.", srvcAdminName, data.getCriteriaInfo()
+               .getServiceName());
+   }
+
+   @Test
    public void testCallCountNoOperationNoConsumer() throws ServiceException {
 
       long duration = 60 * 6;// in secs
@@ -185,6 +218,8 @@ public class GetMetricsDataTest extends BaseTest {
       assertNotNull(data);
       assertEquals(11, data.getCount1(), 0);
       assertEquals(0, data.getCount2(), 0);
+      assertEquals("The response should have the data grouped by operation.", opName, data.getCriteriaInfo()
+               .getOperationName());
 
    }
 
@@ -217,6 +252,8 @@ public class GetMetricsDataTest extends BaseTest {
       assertNotNull(data);
       assertEquals("Unexpected value for Count1.", 9, data.getCount1(), 0);
       assertEquals("Unexpected value for Count2.", 0, data.getCount2(), 0);
+      assertEquals("The response should have the data grouped by operation.", opName, data.getCriteriaInfo()
+               .getOperationName());
 
    }
 
@@ -248,10 +285,11 @@ public class GetMetricsDataTest extends BaseTest {
       assertNotNull(data);
       assertEquals("Unexpected value for Count1.", 9, data.getCount1(), 0);
       assertEquals("Unexpected value for Count2.", 0, data.getCount2(), 0);
+      assertEquals("The response should have the data grouped by operation.", opName, data.getCriteriaInfo()
+               .getOperationName());
 
    }
 
-   @Ignore
    @Test
    public void testResponseTimeNoOperationOneConsumerConsumerResponse() throws ServiceException {
       long duration = 60 * 6;// in secs
@@ -281,6 +319,8 @@ public class GetMetricsDataTest extends BaseTest {
       assertNotNull(data);
       assertEquals("Unexpected value for Count1.", 9, data.getCount1(), 0);
       assertEquals("Unexpected value for Count2.", 0, data.getCount2(), 0);
+      assertEquals("The response should have the data grouped by consumerName.", consumerName, data.getCriteriaInfo()
+               .getConsumerName());
 
    }
 }

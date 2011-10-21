@@ -71,6 +71,7 @@ import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.Syste
 import org.ebayopensource.turmeric.utils.ContextUtils;
 import org.ebayopensource.turmeric.utils.cassandra.service.CassandraManager;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class SOAMetricsQueryServiceCassandraProviderImpl.
  * 
@@ -95,13 +96,23 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
    private static final String c_hostIp = "cassandra-host-ip";
    /** The Constant c_keyspace. */
    private static final String c_keyspace = "cassandra-monitoring-keyspace";
+
+   /** The Constant c_metric_consumer_by_ip_cf. */
    private static final String c_metric_consumer_by_ip_cf = "cassandra-metric-consumer-by-ip-cf";
+
+   /** The Constant c_metric_service_calls_by_time_cf. */
    private static final String c_metric_service_calls_by_time_cf = "cassandra-metric-service-calls-by-time-cf";
+
+   /** The Constant c_metric_service_operation_by_ip_cf. */
    private static final String c_metric_service_operation_by_ip_cf = "cassandra-metric-service-operation-by-ip-cf";
+
+   /** The Constant c_metric_timeseries_cf. */
    private static final String c_metric_timeseries_cf = "cassandra-metric-timeseries-cf";
 
+   /** The Constant c_metric_values_by_ip_and_date_cf. */
    private static final String c_metric_values_by_ip_and_date_cf = "cassandra-metric-values-by-ip-and-date-cf";
 
+   /** The Constant c_metric_values_cf. */
    private static final String c_metric_values_cf = "cassandra-metric-values-cf";
 
    /** The Constant c_metrics_cf. */
@@ -113,17 +124,22 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
    /** The Constant cassandraPropFilePath. */
    private static final String cassandraPropFilePath = "META-INF/config/cassandra/cassandra.properties";
 
+   /** The cluster name. */
    private static String clusterName;
 
    /** The host. */
    private static String embeed;
 
+   /** The error by id cf. */
    private static String errorByIdCF;
 
+   /** The errors by category cf. */
    private static String errorsByCategoryCF;
 
+   /** The errors by severity cf. */
    private static String errorsBySeverityCF;
 
+   /** The error values cf. */
    private static String errorValuesCF;
 
    /** The host. */
@@ -132,33 +148,61 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
    /** The keyspace. */
    private static String keyspace;
 
+   /** The metric by time series cf. */
    private static String metricByTimeSeriesCF;
 
+   /** The metric consumer by ip cf. */
    private static String metricConsumerByIpCF;
 
+   /** The metrics cf. */
    private static String metricsCF;
 
+   /** The metric service calls by time cf. */
    private static String metricServiceCallsByTimeCF;
 
+   /** The metric service operation by ip cf. */
    private static String metricServiceOperationByIpCF;
 
+   /** The metric values by ip and date cf. */
    private static String metricValuesByIpAndDateCF;
 
+   /** The metric values cf. */
    private static String metricValuesCF;
 
+   /** The ip per day and service name dao. */
    private final IpPerDayAndServiceNameDAO<String, String> ipPerDayAndServiceNameDAO;
 
+   /** The metric identifier dao. */
    private final MetricIdentifierDAOImpl<String> metricIdentifierDAO;
 
+   /** The metrics error by id dao. */
    private final MetricsErrorByIdDAO<Long> metricsErrorByIdDAO;
+
+   /** The metrics errors by category dao. */
    private final BaseMetricsErrorsByFilterDAO<String> metricsErrorsByCategoryDAO;
+
+   /** The metrics errors by severity dao. */
    private final BaseMetricsErrorsByFilterDAO<String> metricsErrorsBySeverityDAO;
+
+   /** The metrics error values dao. */
    private final MetricsErrorValuesDAO<String> metricsErrorValuesDAO;
+
+   /** The metric service calls by time dao. */
    private final MetricServiceCallsByTimeDAO<String, Long> metricServiceCallsByTimeDAO;
+
+   /** The metrics service consumer by ip dao. */
    private final MetricsServiceConsumerByIpDAO<String, String> metricsServiceConsumerByIpDAO;
+
+   /** The metrics service operation by ip dao. */
    private final MetricsServiceOperationByIpDAO<String, String> metricsServiceOperationByIpDAO;
+
+   /** The metric time series dao. */
    private final MetricTimeSeriesDAOImpl<String, Long> metricTimeSeriesDAO;
+
+   /** The metric values by ip and date dao. */
    private final MetricValuesByIpAndDateDAO<String, Long> metricValuesByIpAndDateDAO;
+
+   /** The metric values dao. */
    private final MetricValuesDAO<String> metricValuesDAO;
 
    /**
@@ -194,6 +238,13 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
 
    }
 
+   /**
+    * Decode metric name.
+    * 
+    * @param encodedMetricName
+    *           the encoded metric name
+    * @return the string
+    */
    private String decodeMetricName(String encodedMetricName) {
       String metricName;
       if ("CallCount".equals(encodedMetricName)) {
@@ -252,17 +303,26 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       }
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public List<MetricData> getCustomReportData(ReportCriteria reportCriteria, MetricCriteria metricCriteria) {
       return null;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public List<MetricData> getDetailData(String dc, MetricCriteria metricCriteria,
             MetricResourceCriteria metricResourceCriteria) {
       return null;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public List<MetricGraphData> getErrorGraph(final String serviceName, final String operationName,
             final String consumerName, final String errorId, final String errorCategory, final String errorSeverity,
@@ -320,6 +380,9 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
 
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public List<ErrorViewData> getErrorMetricsData(final String errorType, final List<String> serviceNames,
             final List<String> operationNames, final List<String> consumerNames, final String errorIdString,
@@ -436,6 +499,9 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       return result;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public ErrorInfos getErrorMetricsMetadata(String errorId, String errorName, String serviceName) {
       long id = Long.parseLong(errorId);
@@ -455,6 +521,9 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       return result;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public List<ExtendedErrorViewData> getExtendedErrorMetricsData(String errorType, List<String> serviceNames,
             List<String> operationNames, List<String> consumerNames, String errorIdString, String errorCategory,
@@ -580,6 +649,9 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       return result;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public List<MetricGroupData> getMetricsData(MetricCriteria metricCriteria,
             MetricResourceCriteria metricResourceCriteria) {
@@ -627,6 +699,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
                List<String> operationNames = metricsServiceOperationByIpDAO.findMetricOperationNames(serviceNames);
                operationNames = removeServiceNamePrefix(operationNames);
                filters.put("Operation", operationNames);
+
                data1 = metricValuesDAO.findMetricValuesByOperation(ipAddressList, metricName, firstStartTime,
                         firstStartTime + duration, serverSide, aggregationPeriod, filters);
                data2 = metricValuesDAO.findMetricValuesByOperation(ipAddressList, metricName, secondStartTime,
@@ -634,16 +707,16 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
                // Move data to a better data structure
                Map<String, Object> map1 = transformAggregatedMetricComponentValues(encodedMetricName, data1);
                Map<String, Object> map2 = transformAggregatedMetricComponentValues(encodedMetricName, data2);
-               for (String operation : operationNames) {
-                  // STEP 3. Create and populate the return values
-                  MetricGroupData metricGroupData = new MetricGroupData();
-                  metricGroupData.setCount1((Double) map1.get(operation));
-                  metricGroupData.setCount2((Double) map2.get(operation));
-                  CriteriaInfo criteriaInfo = new CriteriaInfo();
-                  criteriaInfo.setOperationName(operation);
-                  metricGroupData.setCriteriaInfo(criteriaInfo);
-                  result.add(metricGroupData);
-               }
+               // for (String operation : operationNames) {
+               // STEP 3. Create and populate the return values
+               MetricGroupData metricGroupData = new MetricGroupData();
+               metricGroupData.setCount1((Double) map1.get(serviceName));
+               metricGroupData.setCount2((Double) map2.get(serviceName));
+               CriteriaInfo criteriaInfo = new CriteriaInfo();
+               criteriaInfo.setServiceName(serviceName);
+               metricGroupData.setCriteriaInfo(criteriaInfo);
+               result.add(metricGroupData);
+               // }
             }
 
          } else if (ResourceEntity.OPERATION.value().equals(groupBy)) {
@@ -687,8 +760,11 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
                operationNames = metricsServiceOperationByIpDAO.findMetricOperationNames(serviceNames);
                operationNames = removeServiceNamePrefix(operationNames);
             }
-            List<String> consumerNames = metricsServiceConsumerByIpDAO.findMetricConsumerNames(serviceNames);
-            filters.put("Consumer", consumerNames);
+            List<String> consumerNames = filters.get("Consumer");
+            if (consumerNames == null || consumerNames.isEmpty()) {
+               consumerNames = metricsServiceConsumerByIpDAO.findMetricConsumerNames(serviceNames);
+               filters.put("Consumer", consumerNames);
+            }
             for (String serviceName : serviceNames) {
                List<String> ipAddressList = ipPerDayAndServiceNameDAO.findByDateAndServiceName(
                         System.currentTimeMillis(), serviceName);
@@ -756,6 +832,12 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       return result;
    }
 
+   /**
+    * Removes the zero rows from list.
+    * 
+    * @param result
+    *           the result
+    */
    private void removeZeroRowsFromList(List<MetricGroupData> result) {
       Iterator<MetricGroupData> iterator = result.iterator();
       while (iterator.hasNext()) {
@@ -766,6 +848,9 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       }
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public List<String> getMetricsMetadata(String resourceEntityType, List<String> resourceEntityName,
             String resourceEntityResponseType) {
@@ -789,12 +874,18 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
 
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public MetricData getMetricSummaryData(String dc, MetricCriteria metricCriteria,
             MetricResourceCriteria metricResourceCriteria) {
       return null;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public List<MetricGraphData> getMetricValue(CriteriaInfo criteriaInfo, long beginTime, long duration,
             int aggregationPeriod, String autoDelay) {
@@ -922,6 +1013,9 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       return result;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public List<PolicyMetricData> getPolicyMetricData(long startTime, long endTime, String policyType,
             String policyName, String serviceName, String operationName, String subjectTypeName, String subjectValue,
@@ -929,6 +1023,9 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       return null;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public List<PolicyMetricGraphData> getPolicyMetricDetailData(String policyName, String serviceName,
             String operationName, String subjectTypeName, String subjectValue, String listType, long startTime,
@@ -936,11 +1033,23 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       return null;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public List<MetricData> getStandardReportData(String reportType, MetricCriteria metricCriteria) {
       return null;
    }
 
+   /**
+    * Populate criteria info.
+    * 
+    * @param groupBy
+    *           the group by
+    * @param row
+    *           the row
+    * @return the criteria info
+    */
    private CriteriaInfo populateCriteriaInfo(String groupBy, Map<String, Object> row) {
       CriteriaInfo criteriaInfo = new CriteriaInfo();
       criteriaInfo.setServiceConsumerType(groupBy);
@@ -972,6 +1081,17 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       return criteriaInfo;
    }
 
+   /**
+    * Populate filters.
+    * 
+    * @param serviceNames
+    *           the service names
+    * @param operationNames
+    *           the operation names
+    * @param consumerNames
+    *           the consumer names
+    * @return the map
+    */
    private Map<String, List<String>> populateFilters(final List<String> serviceNames,
             final List<String> operationNames, final List<String> consumerNames) {
 
@@ -992,6 +1112,13 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       return filters;
    }
 
+   /**
+    * Removes the service name prefix.
+    * 
+    * @param operationNames
+    *           the operation names
+    * @return the list
+    */
    private List<String> removeServiceNamePrefix(List<String> operationNames) {
       List<String> result = new ArrayList<String>();
       for (String operationName : operationNames) {
@@ -1001,6 +1128,17 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       return result;
    }
 
+   /**
+    * Retrieve call counts.
+    * 
+    * @param startTime
+    *           the start time
+    * @param duration
+    *           the duration
+    * @param calls1
+    *           the calls1
+    * @return the double
+    */
    private double retrieveCallCounts(long startTime, long duration, double calls1) {
       List<String> metricValuesList = new ArrayList<String>();
       List<?> valuesByIpAndDateList = metricValuesByIpAndDateDAO.findByRange(Long.valueOf(startTime),
@@ -1036,6 +1174,13 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       return calls1;
    }
 
+   /**
+    * Transform aggregated error values.
+    * 
+    * @param rows
+    *           the rows
+    * @return the map
+    */
    private Map<String, Map<String, Object>> transformAggregatedErrorValues(List<Map<String, Object>> rows) {
       Map<String, Map<String, Object>> result = new HashMap<String, Map<String, Object>>();
       for (Map<String, Object> row : rows) {
@@ -1045,6 +1190,15 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       return result;
    }
 
+   /**
+    * Transform aggregated metric component values.
+    * 
+    * @param encodedMetricName
+    *           the encoded metric name
+    * @param rows
+    *           the rows
+    * @return the map
+    */
    private Map<String, Object> transformAggregatedMetricComponentValues(String encodedMetricName,
             Map<String, List<MetricValue<?>>> rows) {
       Map<String, Object> result = new TreeMap<String, Object>();
@@ -1081,6 +1235,14 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
 
    }
 
+   /**
+    * Trim result list.
+    * 
+    * @param list
+    *           the list
+    * @param maxRows
+    *           the max rows
+    */
    private void trimResultList(List<?> list, int maxRows) {
       if (maxRows > 0 && list.size() > maxRows) {
          list.subList(0, maxRows);

@@ -73,6 +73,8 @@ public class MetricValuesDAOImpl<K> extends
    /**
     * Creates the metric time series key.
     * 
+    * @param ipAddress
+    *           the ip address
     * @param metricName
     *           the metric name
     * @param serviceName
@@ -95,6 +97,25 @@ public class MetricValuesDAOImpl<K> extends
 
    }
 
+   /**
+    * Creates the metric time series key by consumer.
+    * 
+    * @param ipAddress
+    *           the ip address
+    * @param metricName
+    *           the metric name
+    * @param serviceName
+    *           the service name
+    * @param operationName
+    *           the operation name
+    * @param consumerName
+    *           the consumer name
+    * @param aggregationPeriod
+    *           the aggregation period
+    * @param serverSide
+    *           the server side
+    * @return the string
+    */
    private String createMetricTimeSeriesKeyByConsumer(String ipAddress, String metricName, String serviceName,
             String operationName, String consumerName, int aggregationPeriod, boolean serverSide) {
       return ipAddress + KEY_SEPARATOR + serviceName + KEY_SEPARATOR + operationName + KEY_SEPARATOR + consumerName
@@ -155,6 +176,9 @@ public class MetricValuesDAOImpl<K> extends
       return result;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public Map<String, List<MetricValue<?>>> findMetricValuesByConsumer(List<String> ipAddressList, String metricName,
             long begin, long end, boolean serverSide, int aggregationPeriod, String serviceName,
@@ -234,55 +258,103 @@ public class MetricValuesDAOImpl<K> extends
       List<String> operationNames = filters.get("Operation");
       List<String> consumerNames = filters.get("Consumer");
       String serviceName = serviceAdminNames.get(0);
+      String resultKey = null;
       Map<Long, MetricValue<?>> metricValuesByTime = new TreeMap<Long, MetricValue<?>>();
       for (String operation : operationNames) {
+         resultKey = operation;
          for (String ipAddress : ipAddressList) {
+            if (consumerNames == null || consumerNames.isEmpty()) {
+               Set<String> metricValuesToGet = new HashSet<String>();
+               SuperSliceQuery<String, Long, String, String> q = HFactory.createSuperSliceQuery(keySpace,
+                        StringSerializer.get(), LongSerializer.get(), StringSerializer.get(), StringSerializer.get());
+               q.setColumnFamily("MetricTimeSeries");
+               String metricTimeSeriesKey = createMetricTimeSeriesKey(ipAddress, metricName, serviceName, operation,
+                        aggregationPeriod, serverSide);
+               q.setKey(metricTimeSeriesKey);
+               q.setRange(begin, end, false, 100000000);
+               QueryResult<SuperSlice<Long, String, String>> r = q.execute();
+               SuperSlice<Long, String, String> columnSlice = r.get();
+               for (HSuperColumn<Long, String, String> column : columnSlice.getSuperColumns()) {
+                  for (HColumn<String, String> metricValuesKey : column.getColumns()) {
+                     if (metricValuesKey.getName() != null && metricValuesKey.getName().contains(metricName)) {
+                        metricValuesToGet.add(metricValuesKey.getName());
+                     }
+                  }
 
-            Set<String> metricValuesToGet = new HashSet<String>();
-            SuperSliceQuery<String, Long, String, String> q = HFactory.createSuperSliceQuery(keySpace,
-                     StringSerializer.get(), LongSerializer.get(), StringSerializer.get(), StringSerializer.get());
-            q.setColumnFamily("MetricTimeSeries");
-            String metricTimeSeriesKey = createMetricTimeSeriesKey(ipAddress, metricName, serviceName, operation,
-                     aggregationPeriod, serverSide);
-            q.setKey(metricTimeSeriesKey);
-            q.setRange(begin, end, false, 100000000);
-            QueryResult<SuperSlice<Long, String, String>> r = q.execute();
-            SuperSlice<Long, String, String> columnSlice = r.get();
-            for (HSuperColumn<Long, String, String> column : columnSlice.getSuperColumns()) {
-               for (HColumn<String, String> metricValuesKey : column.getColumns()) {
-                  if (metricValuesKey.getName() != null && metricValuesKey.getName().contains(metricName)) {
-                     metricValuesToGet.add(metricValuesKey.getName());
+               }
+               System.out.printf("findMetricValuesByOperation(%s,%d,%d,%s,%d). Columns found for key=[%s]={"
+                        + metricValuesToGet + "}\n", metricName, begin, end, serverSide, aggregationPeriod,
+                        metricTimeSeriesKey);
+               List<MetricValue<?>> metricValues = this.findByKeys(metricValuesToGet);
+               // now, I add them ordered by timestamp
+               for (MetricValue<?> metricValue : metricValues) {
+                  if (metricValuesByTime.containsKey(metricValue.getTimeMiliseconds())) {
+                     MetricValue<?> oldMetricValue = metricValuesByTime.get(metricValue.getTimeMiliseconds());
+                     if (SystemMetricDefs.OP_TIME_TOTAL.getMetricName().equals(metricName)) {
+                        Long count = (Long) oldMetricValue.getColumns().get("count");
+                        Double total = (Double) oldMetricValue.getColumns().get("totalTime");
+                        count += (Long) metricValue.getColumns().get("count");
+                        total += (Double) metricValue.getColumns().get("totalTime");
+                        oldMetricValue.getColumns().put("count", count);
+                        oldMetricValue.getColumns().put("totalTime", total);
+                     }
+                  } else {
+                     metricValuesByTime.put(metricValue.getTimeMiliseconds(), metricValue);
+                  }
+               }
+            } else {
+               resultKey = serviceName;
+               for (String consumerName : consumerNames) {// group by service name
+                  Set<String> metricValuesToGet = new HashSet<String>();
+                  SuperSliceQuery<String, Long, String, String> q = HFactory
+                           .createSuperSliceQuery(keySpace, StringSerializer.get(), LongSerializer.get(),
+                                    StringSerializer.get(), StringSerializer.get());
+                  q.setColumnFamily("MetricTimeSeries");
+                  String metricTimeSeriesKey = createMetricTimeSeriesKeyByConsumer(ipAddress, metricName, serviceName,
+                           operation, consumerName, aggregationPeriod, serverSide);
+                  q.setKey(metricTimeSeriesKey);
+                  q.setRange(begin, end, false, 100000000);
+                  QueryResult<SuperSlice<Long, String, String>> r = q.execute();
+                  SuperSlice<Long, String, String> columnSlice = r.get();
+                  for (HSuperColumn<Long, String, String> column : columnSlice.getSuperColumns()) {
+                     for (HColumn<String, String> metricValuesKey : column.getColumns()) {
+                        if (metricValuesKey.getName() != null && metricValuesKey.getName().contains(metricName)) {
+                           metricValuesToGet.add(metricValuesKey.getName());
+                        }
+                     }
+
+                  }
+                  System.out.printf("findMetricValuesByOperation(%s,%d,%d,%s,%d). Columns found for key=[%s]={"
+                           + metricValuesToGet + "}\n", metricName, begin, end, serverSide, aggregationPeriod,
+                           metricTimeSeriesKey);
+                  List<MetricValue<?>> metricValues = this.findByKeys(metricValuesToGet);
+                  // now, I add them ordered by timestamp
+                  for (MetricValue<?> metricValue : metricValues) {
+                     if (metricValuesByTime.containsKey(metricValue.getTimeMiliseconds())) {
+                        MetricValue<?> oldMetricValue = metricValuesByTime.get(metricValue.getTimeMiliseconds());
+                        if (SystemMetricDefs.OP_TIME_TOTAL.getMetricName().equals(metricName)) {
+                           Long count = (Long) oldMetricValue.getColumns().get("count");
+                           Double total = (Double) oldMetricValue.getColumns().get("totalTime");
+                           count += (Long) metricValue.getColumns().get("count");
+                           total += (Double) metricValue.getColumns().get("totalTime");
+                           oldMetricValue.getColumns().put("count", count);
+                           oldMetricValue.getColumns().put("totalTime", total);
+                        }
+                     } else {
+                        metricValuesByTime.put(metricValue.getTimeMiliseconds(), metricValue);
+                     }
                   }
                }
 
             }
-            System.out.printf("findMetricValuesByOperation(%s,%d,%d,%s,%d). Columns found for key=[%s]={"
-                     + metricValuesToGet + "}\n", metricName, begin, end, serverSide, aggregationPeriod,
-                     metricTimeSeriesKey);
-            List<MetricValue<?>> metricValues = this.findByKeys(metricValuesToGet);
-            // now, I add them ordered by timestamp
-            for (MetricValue<?> metricValue : metricValues) {
-               if (metricValuesByTime.containsKey(metricValue.getTimeMiliseconds())) {
-                  MetricValue<?> oldMetricValue = metricValuesByTime.get(metricValue.getTimeMiliseconds());
-                  if (SystemMetricDefs.OP_TIME_TOTAL.getMetricName().equals(metricName)) {
-                     Long count = (Long) oldMetricValue.getColumns().get("count");
-                     Double total = (Double) oldMetricValue.getColumns().get("totalTime");
-                     count += (Long) metricValue.getColumns().get("count");
-                     total += (Double) metricValue.getColumns().get("totalTime");
-                     oldMetricValue.getColumns().put("count", count);
-                     oldMetricValue.getColumns().put("totalTime", total);
-                  }
-               } else {
-                  metricValuesByTime.put(metricValue.getTimeMiliseconds(), metricValue);
-               }
-            }
+
          }
-         if (result.get(operation) != null) {
-            result.get(operation).addAll(metricValuesByTime.values());
+         if (result.get(resultKey) != null) {
+            result.get(resultKey).addAll(metricValuesByTime.values());
          } else {
             List<MetricValue<?>> theList = new ArrayList<MetricValue<?>>();
             theList.addAll(metricValuesByTime.values());
-            result.put(operation, theList);
+            result.put(resultKey, theList);
          }
 
          metricValuesByTime.clear();
