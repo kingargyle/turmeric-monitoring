@@ -37,7 +37,7 @@ public class GetMetricValueTest extends BaseTest {
 
    private long oneMinuteAgo = 0;
    private String opName = null;
-   private long sixMinuteAgo = 0;
+   private long sixMinutesAgo = 0;
    private String srvcAdminName = null;
    private long threeMinutesAgo = 0;
    private long twoMinutesAgo = 0;
@@ -45,21 +45,31 @@ public class GetMetricValueTest extends BaseTest {
    public void createTestData() throws ServiceException {
       MetricId metricId1 = new MetricId(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), srvcAdminName, opName);
       MetricValue metricValue1 = new AverageMetricValue(metricId1);
+
+      MetricId metricId2 = new MetricId(SystemMetricDefs.OP_TIME_TOTAL.getMetricName(), srvcAdminName,
+               "anotherOperation");
+      MetricValue metricValue2 = new AverageMetricValue(metricId2);
       MetricValueAggregatorTestImpl aggregator1 = new MetricValueAggregatorTestImpl(metricValue1,
+               MetricCategory.Timing, MonitoringLevel.NORMAL);
+
+      MetricValueAggregatorTestImpl aggregator2 = new MetricValueAggregatorTestImpl(metricValue2,
                MetricCategory.Timing, MonitoringLevel.NORMAL);
 
       MetricClassifier metricClassifier1 = new MetricClassifier(consumerName, "sourceDC1", "targetDC1");
       MetricClassifier metricClassifier2 = new MetricClassifier("anotherConsumer", "sourceDC1", "targetDC1");
       aggregator1.update(metricClassifier1, 1L);
+      aggregator2.update(metricClassifier1, 1l);
+      aggregator2.update(metricClassifier1, 1l);
       aggregator1.update(metricClassifier2, 1L);
 
-      List<MetricValueAggregator> aggregators = deepCopyAggregators(aggregator1);
-      metricsStorageProvider.saveMetricSnapshot(sixMinuteAgo, aggregators);
+      List<MetricValueAggregator> aggregators = deepCopyAggregators(aggregator1, aggregator2);
+      metricsStorageProvider.saveMetricSnapshot(sixMinutesAgo, aggregators);
 
       // // now, the second call
       aggregator1.update(metricClassifier1, 1L);
+      aggregator2.update(metricClassifier1, 1l);
       aggregator1.update(metricClassifier2, 1L);
-      aggregators = deepCopyAggregators(aggregator1);
+      aggregators = deepCopyAggregators(aggregator1, aggregator2);
       metricsStorageProvider.saveMetricSnapshot(threeMinutesAgo, aggregators);
       //
       // // now, at the third minute I do 5 calls for consumerName, 1 from "anotherConsumer"
@@ -101,7 +111,7 @@ public class GetMetricValueTest extends BaseTest {
 
       oneMinuteAgo = now - TimeUnit.SECONDS.toMillis(60);
       opName = "Operation1";
-      sixMinuteAgo = now - TimeUnit.SECONDS.toMillis(60 * 6);
+      sixMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 6);
       srvcAdminName = "ServiceAdminName1";
       threeMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 3);
       twoMinutesAgo = now - TimeUnit.SECONDS.toMillis(60 * 2);
@@ -123,15 +133,15 @@ public class GetMetricValueTest extends BaseTest {
 
    @Test
    public void testCallCountOneServiceNoOperationOneConsumer() throws ServiceException {// validated
-      long duration = 60 * 7;// in secs
+      long duration = 60 * 6;// in secs
       int aggregationPeriod = 20;// in secs
-      int expectedSum = 9;
+      int expectedSum = 12;
       CriteriaInfo criteriaInfo = new CriteriaInfo();
       criteriaInfo.setMetricName("CallCount");
       criteriaInfo.setServiceName(srvcAdminName);
       criteriaInfo.setRoleType("server");
       criteriaInfo.setConsumerName(consumerName);
-      List<MetricGraphData> response = queryprovider.getMetricValue(criteriaInfo, sixMinuteAgo, duration,
+      List<MetricGraphData> response = queryprovider.getMetricValue(criteriaInfo, sixMinutesAgo, duration,
                aggregationPeriod, "false");
       assertNotNull(response);
       assertEquals("The response must contain always duration/aggregationPeriod elements",
@@ -148,12 +158,12 @@ public class GetMetricValueTest extends BaseTest {
 
       long duration = 60 * 6;// in secs
       int aggregationPeriod = 20;// in secs
-      int expectedSum = 13;
+      int expectedSum = 16;
       CriteriaInfo criteriaInfo = new CriteriaInfo();
       criteriaInfo.setMetricName("CallCount");
       criteriaInfo.setServiceName(srvcAdminName);
       criteriaInfo.setRoleType("server");
-      List<MetricGraphData> response = queryprovider.getMetricValue(criteriaInfo, sixMinuteAgo, duration,
+      List<MetricGraphData> response = queryprovider.getMetricValue(criteriaInfo, sixMinutesAgo, duration,
                aggregationPeriod, "false");
       assertNotNull(response);
       assertEquals("The response must contain always duration/aggregationPeriod elements",
@@ -177,7 +187,7 @@ public class GetMetricValueTest extends BaseTest {
       criteriaInfo.setServiceName(srvcAdminName);
       criteriaInfo.setRoleType("server");
       criteriaInfo.setConsumerName("anotherConsumer");
-      List<MetricGraphData> response = queryprovider.getMetricValue(criteriaInfo, sixMinuteAgo, duration,
+      List<MetricGraphData> response = queryprovider.getMetricValue(criteriaInfo, sixMinutesAgo, duration,
                aggregationPeriod, "false");
       assertNotNull(response);
       assertEquals("The response must contain always duration/aggregationPeriod elements",

@@ -938,7 +938,6 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
                         long time = metricValue.getTimeMiliseconds();
                         if (startTime <= time && time < stopTime) {
                            value += metricValue.getValueForMetric(encodedMetricName);
-                           break;
                         }
                      }
                      MetricGraphData metricGraphData = new MetricGraphData();
@@ -960,6 +959,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
                      }
                   }
                }
+
             }
          } else {// go by operations instead
             for (String serviceName : serviceNames) {
