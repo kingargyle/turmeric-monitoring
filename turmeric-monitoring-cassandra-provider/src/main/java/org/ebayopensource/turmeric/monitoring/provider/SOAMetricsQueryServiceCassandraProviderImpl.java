@@ -584,7 +584,6 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
    public List<MetricGroupData> getMetricsData(MetricCriteria metricCriteria,
             MetricResourceCriteria metricResourceCriteria) {
       List<MetricGroupData> result = new ArrayList<MetricGroupData>();
-      Map<Long, MetricGraphData> metricGraphDataByTime = new TreeMap<Long, MetricGraphData>();
       try {
          // STEP 1. Decode the input parameters
          String encodedMetricName = metricCriteria.getMetricName();

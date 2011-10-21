@@ -31,6 +31,7 @@ import org.ebayopensource.turmeric.runtime.common.pipeline.LoggingHandler.InitCo
 import org.ebayopensource.turmeric.runtime.error.cassandra.handler.CassandraErrorLoggingHandler;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class GetMetricsDataTest extends BaseTest {
@@ -188,10 +189,8 @@ public class GetMetricsDataTest extends BaseTest {
    }
 
    @Test
-   public void testResponseTimeOneOperationNoConsumer() throws ServiceException {
+   public void testResponseTimeOneOperationNoConsumerOperationResponse() throws ServiceException {
       long duration = 60;// in secs
-      // according DAOErrorLoggingHandler.persistErrors aggregation period
-      // should always be 0
       int aggregationPeriod = 20;// in secs
       MetricCriteria metricCriteria = new MetricCriteria();
       metricCriteria.setFirstStartTime(twoMinutesAgo);
@@ -206,6 +205,70 @@ public class GetMetricsDataTest extends BaseTest {
       ResourceEntityRequest rer1 = new ResourceEntityRequest();
       rer1.setResourceEntityType(ResourceEntity.OPERATION);
       rer1.getResourceEntityName().add(opName);
+      metricResourceCriteria.getResourceRequestEntities().add(rer1);
+      ResourceEntityRequest rer2 = new ResourceEntityRequest();
+      rer2.setResourceEntityType(ResourceEntity.SERVICE);
+      rer2.getResourceEntityName().add(srvcAdminName);
+      metricResourceCriteria.getResourceRequestEntities().add(rer2);
+      List<MetricGroupData> response = queryprovider.getMetricsData(metricCriteria, metricResourceCriteria);
+      assertNotNull(response);
+      assertEquals(1, response.size());
+      MetricGroupData data = response.get(0);
+      assertNotNull(data);
+      assertEquals("Unexpected value for Count1.", 9, data.getCount1(), 0);
+      assertEquals("Unexpected value for Count2.", 0, data.getCount2(), 0);
+
+   }
+
+   @Test
+   public void testResponseTimeNoOperationNoConsumerOperationResponse() throws ServiceException {
+      long duration = 60;// in secs
+      int aggregationPeriod = 20;// in secs
+      MetricCriteria metricCriteria = new MetricCriteria();
+      metricCriteria.setFirstStartTime(twoMinutesAgo);
+      metricCriteria.setSecondStartTime(now);
+      metricCriteria.setDuration(duration);
+      metricCriteria.setAggregationPeriod(aggregationPeriod);
+      metricCriteria.setRoleType("server");
+      metricCriteria.setMetricName("ResponseTime");
+
+      MetricResourceCriteria metricResourceCriteria = new MetricResourceCriteria();
+      metricResourceCriteria.setResourceEntityResponseType("Operation");
+      ResourceEntityRequest rer1 = new ResourceEntityRequest();
+      rer1.setResourceEntityType(ResourceEntity.OPERATION);
+      metricResourceCriteria.getResourceRequestEntities().add(rer1);
+      ResourceEntityRequest rer2 = new ResourceEntityRequest();
+      rer2.setResourceEntityType(ResourceEntity.SERVICE);
+      rer2.getResourceEntityName().add(srvcAdminName);
+      metricResourceCriteria.getResourceRequestEntities().add(rer2);
+      List<MetricGroupData> response = queryprovider.getMetricsData(metricCriteria, metricResourceCriteria);
+      assertNotNull(response);
+      assertEquals(1, response.size());
+      MetricGroupData data = response.get(0);
+      assertNotNull(data);
+      assertEquals("Unexpected value for Count1.", 9, data.getCount1(), 0);
+      assertEquals("Unexpected value for Count2.", 0, data.getCount2(), 0);
+
+   }
+
+   @Ignore
+   @Test
+   public void testResponseTimeNoOperationOneConsumerConsumerResponse() throws ServiceException {
+      long duration = 60 * 6;// in secs
+      int aggregationPeriod = 20;// in secs
+      MetricCriteria metricCriteria = new MetricCriteria();
+      metricCriteria.setFirstStartTime(sixMinutesAgo);
+      metricCriteria.setSecondStartTime(now);
+      metricCriteria.setDuration(duration);
+      metricCriteria.setAggregationPeriod(aggregationPeriod);
+      metricCriteria.setRoleType("server");
+      metricCriteria.setMetricName("ResponseTime");
+
+      MetricResourceCriteria metricResourceCriteria = new MetricResourceCriteria();
+      metricResourceCriteria.setResourceEntityResponseType("Consumer");
+      ResourceEntityRequest rer1 = new ResourceEntityRequest();
+      rer1.setResourceEntityType(ResourceEntity.CONSUMER);
+      rer1.getResourceEntityName().add(consumerName);
       metricResourceCriteria.getResourceRequestEntities().add(rer1);
       ResourceEntityRequest rer2 = new ResourceEntityRequest();
       rer2.setResourceEntityType(ResourceEntity.SERVICE);
