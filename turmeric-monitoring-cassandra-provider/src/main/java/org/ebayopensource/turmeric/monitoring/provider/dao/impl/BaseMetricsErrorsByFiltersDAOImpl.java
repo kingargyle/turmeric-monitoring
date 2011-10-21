@@ -25,16 +25,33 @@ import org.ebayopensource.turmeric.monitoring.v1.services.ResourceEntity;
 import org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
 
+// TODO: Auto-generated Javadoc
 /**
  * The abstract class  BaseMetricsErrorsByFiltersDAO.
+ *
+ * @param <K> the key type
  * @author jose alvarez muguerza
  */
 public  class BaseMetricsErrorsByFiltersDAOImpl<K>  extends AbstractColumnFamilyDao<K, Model>
 	implements	BaseMetricsErrorsByFilterDAO<K> {
 
+    /** The error values dao impl. */
     private final MetricsErrorValuesDAO<String> errorValuesDaoImpl ;
+    
+    /** The error by id dao impl. */
     private final  MetricsErrorByIdDAO<Long> errorByIdDaoImpl; 
 
+	/**
+	 * Instantiates a new base metrics errors by filters dao impl.
+	 *
+	 * @param clusterName the cluster name
+	 * @param host the host
+	 * @param s_keyspace the s_keyspace
+	 * @param columnFamilyName the column family name
+	 * @param kTypeClass the k type class
+	 * @param errorValuesDaoImpl the error values dao impl
+	 * @param errorByIdDaoImpl the error by id dao impl
+	 */
 	public BaseMetricsErrorsByFiltersDAOImpl(final String clusterName, final String host,
 			final String s_keyspace,  final String columnFamilyName,final Class<K> kTypeClass,  final MetricsErrorValuesDAO<String> errorValuesDaoImpl, final MetricsErrorByIdDAO<Long> errorByIdDaoImpl) {
 		super(clusterName, host, s_keyspace, kTypeClass, Model.class, columnFamilyName);
@@ -44,6 +61,9 @@ public  class BaseMetricsErrorsByFiltersDAOImpl<K>  extends AbstractColumnFamily
 	
 	/* (non-Javadoc)
 	 * @see org.ebayopensource.turmeric.monitoring.provider.dao.BaseMetricsErrorsByFilterDAO#findErrorValuesByFilter(long, long, boolean, int, java.lang.Long, java.lang.String, java.util.Map)
+	 */
+	/**
+	 * {@inheritDoc}
 	 */
 	public List<Map<K, Object>> findErrorValuesByFilter(long beginTime,
 			long endTime, boolean serverSide, int aggregationPeriod,

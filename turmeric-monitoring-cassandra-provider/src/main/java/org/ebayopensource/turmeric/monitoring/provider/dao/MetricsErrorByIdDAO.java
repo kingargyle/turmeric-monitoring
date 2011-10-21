@@ -9,15 +9,35 @@
 package org.ebayopensource.turmeric.monitoring.provider.dao;
 
 import org.ebayopensource.turmeric.monitoring.provider.model.Error;
-import org.ebayopensource.turmeric.monitoring.provider.model.Model;
-
-
 
 /**
  * The Interface MetricsErrorDAO.
+ * 
+ * @param <K>
+ *           the key type
  * @author jose alvarez muguerza
  */
 public interface MetricsErrorByIdDAO<K> {
-	public Error<?>  find(K key );
-	public Long findCountByTimeRange(K key, Long startTime, Long endTime);
+
+   /**
+    * Find.
+    * 
+    * @param key
+    *           the key
+    * @return the error
+    */
+   public Error<?> find(K key);
+
+   /**
+    * Find count by time range.
+    * 
+    * @param key
+    *           the key
+    * @param startTime
+    *           the start time
+    * @param endTime
+    *           the end time
+    * @return the long
+    */
+   public Long findCountByTimeRange(K key, Long startTime, Long endTime);
 }

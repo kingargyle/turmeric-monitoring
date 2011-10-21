@@ -1,196 +1,392 @@
 package org.ebayopensource.turmeric.monitoring.provider.model;
 
+/**
+ * The Class ErrorValue.
+ * 
+ * @param <K>
+ *           the key type
+ */
 public class ErrorValue<K> extends Model<K> {
 
-	/** The aggregation period. */
-	protected Long aggregationPeriod;
+   /** The aggregation period. */
+   protected Long aggregationPeriod;
 
-	/** The category. */
-	protected String category;
+   /** The category. */
+   protected String category;
 
-	/** The consumer name. */
-	protected String consumerName;
+   /** The consumer name. */
+   protected String consumerName;
 
-	/** The domain. */
-	protected String domain;
+   /** The domain. */
+   protected String domain;
 
-	/** The error id. */
-	protected Long errorId;
+   /** The error id. */
+   protected Long errorId;
 
-	/** The error message. */
-	protected String errorMessage;
+   /** The error message. */
+   protected String errorMessage;
 
-	/** The key. */
-	protected K key;
+   /** The key. */
+   protected K key;
 
-	/** The name. */
-	protected String name;
+   /** The name. */
+   protected String name;
 
-	/** The operation name. */
-	protected String operationName;
+   /** The operation name. */
+   protected String operationName;
 
-	/** The organization. */
-	protected String organization;
+   /** The organization. */
+   protected String organization;
 
-	/** The random number. */
-	protected int randomNumber;
+   /** The random number. */
+   protected int randomNumber;
 
-	/** The server name. */
-	protected String serverName;
+   /** The server name. */
+   protected String serverName;
 
-	/** The server side. */
-	protected String serverSide;
+   /** The server side. */
+   protected String serverSide;
 
-	/** The service admin name. */
-	protected String serviceAdminName;
+   /** The service admin name. */
+   protected String serviceAdminName;
 
-	/** The severity. */
-	protected String severity;
+   /** The severity. */
+   protected String severity;
 
-	/** The sub domain. */
-	protected String subDomain;
+   /** The sub domain. */
+   protected String subDomain;
 
-	/** The time stamp. */
-	protected Long tstamp;
+   /** The time stamp. */
+   protected Long tstamp;
 
-	public Long getAggregationPeriod() {
-		return aggregationPeriod;
-	}
+   /**
+    * Gets the aggregation period.
+    * 
+    * @return the aggregation period
+    */
+   public Long getAggregationPeriod() {
+      return aggregationPeriod;
+   }
 
-	public void setAggregationPeriod(Long aggregationPeriod) {
-		this.aggregationPeriod = aggregationPeriod;
-	}
+   /**
+    * Sets the aggregation period.
+    * 
+    * @param aggregationPeriod
+    *           the new aggregation period
+    */
+   public void setAggregationPeriod(Long aggregationPeriod) {
+      this.aggregationPeriod = aggregationPeriod;
+   }
 
-	public String getCategory() {
-		return category;
-	}
+   /**
+    * Gets the category.
+    * 
+    * @return the category
+    */
+   public String getCategory() {
+      return category;
+   }
 
-	public void setCategory(String category) {
-		this.category = category;
-	}
+   /**
+    * Sets the category.
+    * 
+    * @param category
+    *           the new category
+    */
+   public void setCategory(String category) {
+      this.category = category;
+   }
 
-	public String getConsumerName() {
-		return consumerName;
-	}
+   /**
+    * Gets the consumer name.
+    * 
+    * @return the consumer name
+    */
+   public String getConsumerName() {
+      return consumerName;
+   }
 
-	public void setConsumerName(String consumerName) {
-		this.consumerName = consumerName;
-	}
+   /**
+    * Sets the consumer name.
+    * 
+    * @param consumerName
+    *           the new consumer name
+    */
+   public void setConsumerName(String consumerName) {
+      this.consumerName = consumerName;
+   }
 
-	public String getDomain() {
-		return domain;
-	}
+   /**
+    * Gets the domain.
+    * 
+    * @return the domain
+    */
+   public String getDomain() {
+      return domain;
+   }
 
-	public void setDomain(String domain) {
-		this.domain = domain;
-	}
+   /**
+    * Sets the domain.
+    * 
+    * @param domain
+    *           the new domain
+    */
+   public void setDomain(String domain) {
+      this.domain = domain;
+   }
 
-	public Long getErrorId() {
-		return errorId;
-	}
+   /**
+    * Gets the error id.
+    * 
+    * @return the error id
+    */
+   public Long getErrorId() {
+      return errorId;
+   }
 
-	public void setErrorId(Long errorId) {
-		this.errorId = errorId;
-	}
+   /**
+    * Sets the error id.
+    * 
+    * @param errorId
+    *           the new error id
+    */
+   public void setErrorId(Long errorId) {
+      this.errorId = errorId;
+   }
 
-	public String getErrorMessage() {
-		return errorMessage;
-	}
+   /**
+    * Gets the error message.
+    * 
+    * @return the error message
+    */
+   public String getErrorMessage() {
+      return errorMessage;
+   }
 
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
+   /**
+    * Sets the error message.
+    * 
+    * @param errorMessage
+    *           the new error message
+    */
+   public void setErrorMessage(String errorMessage) {
+      this.errorMessage = errorMessage;
+   }
 
-	public K getKey() {
-		return key;
-	}
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public K getKey() {
+      return key;
+   }
 
-	public void setKey(K key) {
-		this.key = key;
-	}
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public void setKey(K key) {
+      this.key = key;
+   }
 
-	public String getName() {
-		return name;
-	}
+   /**
+    * Gets the name.
+    * 
+    * @return the name
+    */
+   public String getName() {
+      return name;
+   }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+   /**
+    * Sets the name.
+    * 
+    * @param name
+    *           the new name
+    */
+   public void setName(String name) {
+      this.name = name;
+   }
 
-	public String getOperationName() {
-		return operationName;
-	}
+   /**
+    * Gets the operation name.
+    * 
+    * @return the operation name
+    */
+   public String getOperationName() {
+      return operationName;
+   }
 
-	public void setOperationName(String operationName) {
-		this.operationName = operationName;
-	}
+   /**
+    * Sets the operation name.
+    * 
+    * @param operationName
+    *           the new operation name
+    */
+   public void setOperationName(String operationName) {
+      this.operationName = operationName;
+   }
 
-	public String getOrganization() {
-		return organization;
-	}
+   /**
+    * Gets the organization.
+    * 
+    * @return the organization
+    */
+   public String getOrganization() {
+      return organization;
+   }
 
-	public void setOrganization(String organization) {
-		this.organization = organization;
-	}
+   /**
+    * Sets the organization.
+    * 
+    * @param organization
+    *           the new organization
+    */
+   public void setOrganization(String organization) {
+      this.organization = organization;
+   }
 
-	public int getRandomNumber() {
-		return randomNumber;
-	}
+   /**
+    * Gets the random number.
+    * 
+    * @return the random number
+    */
+   public int getRandomNumber() {
+      return randomNumber;
+   }
 
-	public void setRandomNumber(int randomNumber) {
-		this.randomNumber = randomNumber;
-	}
+   /**
+    * Sets the random number.
+    * 
+    * @param randomNumber
+    *           the new random number
+    */
+   public void setRandomNumber(int randomNumber) {
+      this.randomNumber = randomNumber;
+   }
 
-	public String getServerName() {
-		return serverName;
-	}
+   /**
+    * Gets the server name.
+    * 
+    * @return the server name
+    */
+   public String getServerName() {
+      return serverName;
+   }
 
-	public void setServerName(String serverName) {
-		this.serverName = serverName;
-	}
+   /**
+    * Sets the server name.
+    * 
+    * @param serverName
+    *           the new server name
+    */
+   public void setServerName(String serverName) {
+      this.serverName = serverName;
+   }
 
-	public String getServerSide() {
-		return serverSide;
-	}
+   /**
+    * Gets the server side.
+    * 
+    * @return the server side
+    */
+   public String getServerSide() {
+      return serverSide;
+   }
 
-	public void setServerSide(String serverSide) {
-		this.serverSide = serverSide;
-	}
+   /**
+    * Sets the server side.
+    * 
+    * @param serverSide
+    *           the new server side
+    */
+   public void setServerSide(String serverSide) {
+      this.serverSide = serverSide;
+   }
 
-	public String getServiceAdminName() {
-		return serviceAdminName;
-	}
+   /**
+    * Gets the service admin name.
+    * 
+    * @return the service admin name
+    */
+   public String getServiceAdminName() {
+      return serviceAdminName;
+   }
 
-	public void setServiceAdminName(String serviceAdminName) {
-		this.serviceAdminName = serviceAdminName;
-	}
+   /**
+    * Sets the service admin name.
+    * 
+    * @param serviceAdminName
+    *           the new service admin name
+    */
+   public void setServiceAdminName(String serviceAdminName) {
+      this.serviceAdminName = serviceAdminName;
+   }
 
-	public String getSeverity() {
-		return severity;
-	}
+   /**
+    * Gets the severity.
+    * 
+    * @return the severity
+    */
+   public String getSeverity() {
+      return severity;
+   }
 
-	public void setSeverity(String severity) {
-		this.severity = severity;
-	}
+   /**
+    * Sets the severity.
+    * 
+    * @param severity
+    *           the new severity
+    */
+   public void setSeverity(String severity) {
+      this.severity = severity;
+   }
 
-	public String getSubDomain() {
-		return subDomain;
-	}
+   /**
+    * Gets the sub domain.
+    * 
+    * @return the sub domain
+    */
+   public String getSubDomain() {
+      return subDomain;
+   }
 
-	public void setSubDomain(String subDomain) {
-		this.subDomain = subDomain;
-	}
+   /**
+    * Sets the sub domain.
+    * 
+    * @param subDomain
+    *           the new sub domain
+    */
+   public void setSubDomain(String subDomain) {
+      this.subDomain = subDomain;
+   }
 
-	public Long getTstamp() {
-		return tstamp;
-	}
+   /**
+    * Gets the tstamp.
+    * 
+    * @return the tstamp
+    */
+   public Long getTstamp() {
+      return tstamp;
+   }
 
-	public void setTstamp(Long tstamp) {
-		this.tstamp = tstamp;
-	}
+   /**
+    * Sets the tstamp.
+    * 
+    * @param tstamp
+    *           the new tstamp
+    */
+   public void setTstamp(Long tstamp) {
+      this.tstamp = tstamp;
+   }
 
-	public ErrorValue(K keyType) {
-		super(keyType);
-	}
+   /**
+    * Instantiates a new error value.
+    * 
+    * @param keyType
+    *           the key type
+    */
+   public ErrorValue(K keyType) {
+      super(keyType);
+   }
 
 }

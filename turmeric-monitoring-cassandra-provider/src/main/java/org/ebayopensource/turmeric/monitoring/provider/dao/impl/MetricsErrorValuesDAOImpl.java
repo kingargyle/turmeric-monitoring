@@ -22,10 +22,10 @@ import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorValuesDAO
 import org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class MetricsErrorValuesDAOImpl.
  *
- * @param <K> the key type
  * @author jamuguerza
  */
 public class MetricsErrorValuesDAOImpl extends AbstractColumnFamilyDao<String, org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue> implements

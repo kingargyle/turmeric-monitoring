@@ -2,18 +2,39 @@ package org.ebayopensource.turmeric.monitoring.provider.model;
 
 import java.util.HashMap;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MetricValue.
+ * 
+ * @param <K>
+ *           the key type
+ */
 public class MetricValue<K> extends Model<K> {
 
+   /**
+    * Instantiates a new metric value.
+    * 
+    * @param keyType
+    *           the key type
+    */
    public MetricValue(K keyType) {
       super(keyType);
       setColumns(new HashMap<String, Object>());
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public boolean equals(Object obj) {
       return super.equals(obj);
    }
 
+   /**
+    * Gets the time miliseconds.
+    * 
+    * @return the time miliseconds
+    */
    public long getTimeMiliseconds() {
       String strKey = (String) getKey();// the format is ipaddress|metricname|timestamp i.e :
                                         // servername|SoaFwk.Op.Time.Total|1318259966434
@@ -21,6 +42,13 @@ public class MetricValue<K> extends Model<K> {
       return Long.valueOf(timestampStr);
    }
 
+   /**
+    * Gets the value for metric.
+    * 
+    * @param metricName
+    *           the metric name
+    * @return the value for metric
+    */
    public Double getValueForMetric(String metricName) {
       Double result = 0.0D;
       if (getColumns() != null) {
@@ -35,11 +63,17 @@ public class MetricValue<K> extends Model<K> {
       return result;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public int hashCode() {
       return super.hashCode();
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public String toString() {
       StringBuilder result = new StringBuilder();

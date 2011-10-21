@@ -26,29 +26,32 @@ import org.ebayopensource.turmeric.monitoring.provider.model.MetricValue;
 import org.ebayopensource.turmeric.monitoring.provider.model.Model;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
 
+// TODO: Auto-generated Javadoc
 /**
+ * The Class MetricsErrorByIdDAOImpl.
+ *
+ * @param <K> the key type
  * @author jamuguerza
- * 
  */
 public class MetricsErrorByIdDAOImpl<K> extends AbstractColumnFamilyDao<K, Error> implements MetricsErrorByIdDAO<K> {
 
    /**
     * Instantiates a new metrics error dao impl.
-    * 
-    * @param clusterName
-    *           the cluster name
-    * @param host
-    *           the host
-    * @param s_keyspace
-    *           the s_keyspace
-    * @param columnFamilyName
-    *           the column family name
+    *
+    * @param clusterName the cluster name
+    * @param host the host
+    * @param s_keyspace the s_keyspace
+    * @param columnFamilyName the column family name
+    * @param kTypeClass the k type class
     */
    public MetricsErrorByIdDAOImpl(String clusterName, String host, String s_keyspace, String columnFamilyName,
             final Class<K> kTypeClass) {
       super(clusterName, host, s_keyspace, kTypeClass, Error.class, columnFamilyName);
    }
 
+   /**
+    * {@inheritDoc}
+    */
    public Long findCountByTimeRange(K key, Long startTime, Long endTime) {
       Long result = 0l;
 

@@ -28,9 +28,12 @@ import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractSuperColumnFamily
 
 import edu.emory.mathcs.backport.java.util.Collections;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class MetricsServiceOperationByIpDAOImpl.
- * 
+ *
+ * @param <SK> the generic type
+ * @param <K> the key type
  * @author jamuguerza
  */
 public class MetricsServiceConsumerByIpDAOImpl<SK, K> extends AbstractSuperColumnFamilyDao<SK, SuperModel, K, Model>
@@ -38,21 +41,22 @@ public class MetricsServiceConsumerByIpDAOImpl<SK, K> extends AbstractSuperColum
 
    /**
     * Instantiates a new metrics error values dao impl.
-    * 
-    * @param clusterName
-    *           the cluster name
-    * @param host
-    *           the host
-    * @param s_keyspace
-    *           the s_keyspace
-    * @param columnFamilyName
-    *           the column family name
+    *
+    * @param clusterName the cluster name
+    * @param host the host
+    * @param s_keyspace the s_keyspace
+    * @param columnFamilyName the column family name
+    * @param sKTypeClass the s k type class
+    * @param kTypeClass the k type class
     */
    public MetricsServiceConsumerByIpDAOImpl(String clusterName, String host, String s_keyspace,
             String columnFamilyName, final Class<SK> sKTypeClass, final Class<K> kTypeClass) {
       super(clusterName, host, s_keyspace, sKTypeClass, SuperModel.class, kTypeClass, Model.class, columnFamilyName);
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public List<String> findMetricConsumerNames(final List<String> serviceAdminNames) {
       Set<String> resultSet = new TreeSet<String>();

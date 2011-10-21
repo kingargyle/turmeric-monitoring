@@ -23,6 +23,12 @@ public class Model<K> {
    /** The key. */
    protected K key;
 
+   /**
+    * Instantiates a new model.
+    * 
+    * @param keyType
+    *           the key type
+    */
    public Model(K keyType) {
    }
 

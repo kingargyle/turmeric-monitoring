@@ -12,13 +12,25 @@ package org.ebayopensource.turmeric.monitoring.provider.dao.impl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricIndentifierDAO;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author jamuguerza
+ * The Class MetricIdentifierDAOImpl.
  *
+ * @param <K> the key type
+ * @author jamuguerza
  */
 public class MetricIdentifierDAOImpl<K> extends AbstractColumnFamilyDao<K, String> implements
 	MetricIndentifierDAO<K> {
 
+	/**
+	 * Instantiates a new metric identifier dao impl.
+	 *
+	 * @param clusterName the cluster name
+	 * @param host the host
+	 * @param s_keyspace the s_keyspace
+	 * @param columnFamilyName the column family name
+	 * @param kTypeClass the k type class
+	 */
 	public MetricIdentifierDAOImpl(String clusterName, String host,
 			String s_keyspace,  String columnFamilyName, final Class<K> kTypeClass) {
 		super(clusterName, host, s_keyspace, kTypeClass, String.class,

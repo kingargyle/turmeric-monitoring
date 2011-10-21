@@ -12,6 +12,9 @@ package org.ebayopensource.turmeric.monitoring.provider.dao;
 
 /**
  * The Interface MetricsServiceCallsByTimeDAO.
+ *
+ * @param <SK> the generic type
+ * @param <K> the key type
  * @author jose alvarez muguerza
  */
 public interface MetricServiceCallsByTimeDAO<SK, K>  {

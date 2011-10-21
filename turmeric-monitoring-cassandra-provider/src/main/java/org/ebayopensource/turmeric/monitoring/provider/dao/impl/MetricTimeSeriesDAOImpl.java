@@ -13,9 +13,12 @@ import org.ebayopensource.turmeric.monitoring.cassandra.storage.model.SuperModel
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricTimeSeriesDAO;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractSuperColumnFamilyDao;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class MetricsTimeSeriesDAOImpl.
- * 
+ *
+ * @param <SK> the generic type
+ * @param <K> the key type
  * @author jamuguerza
  */
 public class MetricTimeSeriesDAOImpl<SK, K> extends AbstractSuperColumnFamilyDao<SK, SuperModel, Long, BasicModel>
