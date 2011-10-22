@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricsServiceOperationByIpDAO;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.model.BasicModel;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.model.SuperModel;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractSuperColumnFamilyDao;
@@ -32,8 +31,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * @author jamuguerza
  */
 public class MetricsServiceOperationByIpDAOImpl<SK, K> extends
-         AbstractSuperColumnFamilyDao<SK, SuperModel, String, BasicModel> implements
-         MetricsServiceOperationByIpDAO<SK, K> {
+         AbstractSuperColumnFamilyDao<SK, SuperModel, String, BasicModel> {
 
    /**
     * Instantiates a new metrics error values dao impl.
@@ -60,7 +58,6 @@ public class MetricsServiceOperationByIpDAOImpl<SK, K> extends
    /**
     * {@inheritDoc}
     */
-   @Override
    public List<String> findMetricOperationNames(final List<String> serviceAdminNames) {
       List<String> resultList = new ArrayList<String>();
       if (serviceAdminNames == null || serviceAdminNames.isEmpty()) {
@@ -105,7 +102,6 @@ public class MetricsServiceOperationByIpDAOImpl<SK, K> extends
    /**
     * {@inheritDoc}
     */
-   @Override
    public List<String> findMetricServiceAdminNames(final List<String> serviceAdminNames) {
       Set<String> resultSet = new TreeSet<String>();
 

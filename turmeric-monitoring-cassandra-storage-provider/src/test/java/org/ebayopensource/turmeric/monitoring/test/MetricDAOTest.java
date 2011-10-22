@@ -9,7 +9,7 @@ import java.util.Date;
 
 import org.apache.cassandra.config.ConfigurationException;
 import org.apache.thrift.transport.TTransportException;
-import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricsDAO;
+import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.impl.MetricsDAO;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.model.MetricIdentifier;
 import org.ebayopensource.turmeric.monitoring.utils.CassandraTestHelper;
 import org.junit.After;

@@ -13,14 +13,14 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Map;
 
-import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricIdentifierDAO;
-import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.MetricsDAO;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.impl.IpPerDayAndServiceNameDAOImpl;
+import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.impl.MetricIdentifierDAO;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.impl.MetricIdentifierDAOImpl;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.impl.MetricServiceCallsByTimeDAOImpl;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.impl.MetricTimeSeriesDAOImpl;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.impl.MetricValuesByIpAndDateDAOImpl;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.impl.MetricValuesDAOImpl;
+import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.impl.MetricsDAO;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.impl.MetricsServiceConsumerByIpDAOImpl;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.impl.MetricsServiceOperationByIpDAOImpl;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.model.MetricIdentifier;

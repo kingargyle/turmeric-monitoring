@@ -6,7 +6,7 @@
  *  
  *    http://www.apache.org/licenses/LICENSE-2.0
  *******************************************************************************/
-package org.ebayopensource.turmeric.monitoring.cassandra.storage.dao;
+package org.ebayopensource.turmeric.monitoring.cassandra.storage.dao.impl;
 
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.model.MetricIdentifier;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
