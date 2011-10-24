@@ -25,6 +25,7 @@ import org.ebayopensource.turmeric.runtime.common.monitoring.MetricClassifier;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricId;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MonitoringLevel;
 import org.ebayopensource.turmeric.runtime.common.monitoring.value.AverageMetricValue;
+import org.ebayopensource.turmeric.runtime.common.monitoring.value.LongSumMetricValue;
 import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValue;
 import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValueAggregator;
 import org.ebayopensource.turmeric.runtime.common.pipeline.LoggingHandler.InitContext;
@@ -78,13 +79,19 @@ public class GetMetricsDataTest extends BaseTest {
       MetricValueAggregatorTestImpl aggregator2 = new MetricValueAggregatorTestImpl(metricValue2,
                MetricCategory.Timing, MonitoringLevel.NORMAL);
 
+      MetricId metricId3 = new MetricId(SystemMetricDefs.OP_ERR_TOTAL.getMetricName(), srvcAdminName,
+               "anotherOperation");
+      MetricValue metricValue3 = new LongSumMetricValue(metricId3);
+      MetricValueAggregatorTestImpl aggregator3 = new MetricValueAggregatorTestImpl(metricValue3,
+               MetricCategory.Timing, MonitoringLevel.NORMAL);
+
       MetricClassifier metricClassifier1 = new MetricClassifier(consumerName, "sourceDC1", "targetDC1");
       MetricClassifier metricClassifier2 = new MetricClassifier("anotherConsumer", "sourceDC1", "targetDC1");
       aggregator1.update(metricClassifier1, 1L);
       aggregator1.update(metricClassifier2, 1L);
       aggregator2.update(metricClassifier2, 1L);
-
-      List<MetricValueAggregator> aggregators = deepCopyAggregators(aggregator1, aggregator2);
+      aggregator3.update(metricClassifier2, 1L);
+      List<MetricValueAggregator> aggregators = deepCopyAggregators(aggregator1, aggregator2, aggregator3);
       metricsStorageProvider.saveMetricSnapshot(sixMinutesAgo, aggregators);
 
       // // now, the second call
@@ -258,21 +265,20 @@ public class GetMetricsDataTest extends BaseTest {
    }
 
    @Test
-   public void testResponseTimeNoOperationNoConsumerOperationResponse() throws ServiceException {
-      long duration = 60;// in secs
+   public void testErrorCountNoOperationNoConsumerOperationResponse() throws ServiceException {
+      long duration = 60 * 6;// in secs
       int aggregationPeriod = 20;// in secs
       MetricCriteria metricCriteria = new MetricCriteria();
-      metricCriteria.setFirstStartTime(twoMinutesAgo);
+      metricCriteria.setFirstStartTime(sixMinutesAgo);
       metricCriteria.setSecondStartTime(now);
       metricCriteria.setDuration(duration);
       metricCriteria.setAggregationPeriod(aggregationPeriod);
       metricCriteria.setRoleType("server");
-      metricCriteria.setMetricName("ResponseTime");
+      metricCriteria.setMetricName("ErrorCount");
 
       MetricResourceCriteria metricResourceCriteria = new MetricResourceCriteria();
-      metricResourceCriteria.setResourceEntityResponseType("Operation");
+      metricResourceCriteria.setResourceEntityResponseType("Error");
       ResourceEntityRequest rer1 = new ResourceEntityRequest();
-      rer1.setResourceEntityType(ResourceEntity.OPERATION);
       metricResourceCriteria.getResourceRequestEntities().add(rer1);
       ResourceEntityRequest rer2 = new ResourceEntityRequest();
       rer2.setResourceEntityType(ResourceEntity.SERVICE);
@@ -283,10 +289,12 @@ public class GetMetricsDataTest extends BaseTest {
       assertEquals(1, response.size());
       MetricGroupData data = response.get(0);
       assertNotNull(data);
-      assertEquals("Unexpected value for Count1.", 9, data.getCount1(), 0);
+      assertEquals("Unexpected value for Count1.", 1, data.getCount1(), 0);
       assertEquals("Unexpected value for Count2.", 0, data.getCount2(), 0);
-      assertEquals("The response should have the data grouped by operation.", opName, data.getCriteriaInfo()
-               .getOperationName());
+      assertEquals("The response should have the data grouped by error metric name.",
+               SystemMetricDefs.OP_ERR_TOTAL.getMetricName(), data.getCriteriaInfo().getMetricName());
+      assertEquals("The response should contain the service name", srvcAdminName, data.getCriteriaInfo()
+               .getServiceName());
 
    }
 
@@ -321,6 +329,39 @@ public class GetMetricsDataTest extends BaseTest {
       assertEquals("Unexpected value for Count2.", 0, data.getCount2(), 0);
       assertEquals("The response should have the data grouped by consumerName.", consumerName, data.getCriteriaInfo()
                .getConsumerName());
+
+   }
+
+   @Test
+   public void testResponseTimeNoOperationNoConsumerOperationResponse() throws ServiceException {
+      long duration = 60;// in secs
+      int aggregationPeriod = 20;// in secs
+      MetricCriteria metricCriteria = new MetricCriteria();
+      metricCriteria.setFirstStartTime(twoMinutesAgo);
+      metricCriteria.setSecondStartTime(now);
+      metricCriteria.setDuration(duration);
+      metricCriteria.setAggregationPeriod(aggregationPeriod);
+      metricCriteria.setRoleType("server");
+      metricCriteria.setMetricName("ResponseTime");
+
+      MetricResourceCriteria metricResourceCriteria = new MetricResourceCriteria();
+      metricResourceCriteria.setResourceEntityResponseType("Operation");
+      ResourceEntityRequest rer1 = new ResourceEntityRequest();
+      rer1.setResourceEntityType(ResourceEntity.OPERATION);
+      metricResourceCriteria.getResourceRequestEntities().add(rer1);
+      ResourceEntityRequest rer2 = new ResourceEntityRequest();
+      rer2.setResourceEntityType(ResourceEntity.SERVICE);
+      rer2.getResourceEntityName().add(srvcAdminName);
+      metricResourceCriteria.getResourceRequestEntities().add(rer2);
+      List<MetricGroupData> response = queryprovider.getMetricsData(metricCriteria, metricResourceCriteria);
+      assertNotNull(response);
+      assertEquals(1, response.size());
+      MetricGroupData data = response.get(0);
+      assertNotNull(data);
+      assertEquals("Unexpected value for Count1.", 9, data.getCount1(), 0);
+      assertEquals("Unexpected value for Count2.", 0, data.getCount2(), 0);
+      assertEquals("The response should have the data grouped by operation.", opName, data.getCriteriaInfo()
+               .getOperationName());
 
    }
 }
