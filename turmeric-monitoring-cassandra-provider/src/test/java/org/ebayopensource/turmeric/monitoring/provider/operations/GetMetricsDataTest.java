@@ -3,7 +3,6 @@ package org.ebayopensource.turmeric.monitoring.provider.operations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -118,15 +117,6 @@ public class GetMetricsDataTest extends BaseTest {
       // aggregator2.update(metricClassifier2, 1L);
       aggregators = deepCopyAggregators(aggregator1);
       metricsStorageProvider.saveMetricSnapshot(oneMinuteAgo, aggregators);
-   }
-
-   private List<MetricValueAggregator> deepCopyAggregators(MetricValueAggregator... aggregators) {
-      // The aggregator list passed to the storage provider is always a deep copy of the aggregators
-      List<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
-      for (MetricValueAggregator aggregator : aggregators) {
-         result.add((MetricValueAggregator) aggregator.deepCopy(false));
-      }
-      return result;
    }
 
    @Test
@@ -330,6 +320,72 @@ public class GetMetricsDataTest extends BaseTest {
       assertEquals("The response should have the data grouped by consumerName.", consumerName, data.getCriteriaInfo()
                .getConsumerName());
 
+   }
+
+   @Test
+   public void testResponseTimeNoOperationNoConsumerConsumerResponse() throws ServiceException {
+      long duration = 60 * 6;// in secs
+      int aggregationPeriod = 20;// in secs
+      MetricCriteria metricCriteria = new MetricCriteria();
+      metricCriteria.setFirstStartTime(sixMinutesAgo);
+      metricCriteria.setSecondStartTime(now);
+      metricCriteria.setDuration(duration);
+      metricCriteria.setAggregationPeriod(aggregationPeriod);
+      metricCriteria.setRoleType("server");
+      metricCriteria.setMetricName("ResponseTime");
+
+      MetricResourceCriteria metricResourceCriteria = new MetricResourceCriteria();
+      metricResourceCriteria.setResourceEntityResponseType("Consumer");
+      // // ResourceEntityRequest rer1 = new ResourceEntityRequest();
+      // // rer1.setResourceEntityType(ResourceEntity.CONSUMER);
+      // // rer1.getResourceEntityName().add(consumerName);
+      // metricResourceCriteria.getResourceRequestEntities().add(rer1);
+      ResourceEntityRequest rer2 = new ResourceEntityRequest();
+      rer2.setResourceEntityType(ResourceEntity.SERVICE);
+      rer2.getResourceEntityName().add(srvcAdminName);
+      metricResourceCriteria.getResourceRequestEntities().add(rer2);
+      List<MetricGroupData> response = queryprovider.getMetricsData(metricCriteria, metricResourceCriteria);
+      assertNotNull(response);
+      assertEquals(2, response.size());
+      MetricGroupData data = response.get(0);
+      assertNotNull(data);
+      assertEquals("Unexpected value for Count1.", 9, data.getCount1(), 0);
+      assertEquals("Unexpected value for Count2.", 0, data.getCount2(), 0);
+      assertEquals("The response should have the data grouped by consumerName.", consumerName, data.getCriteriaInfo()
+               .getConsumerName());
+
+      data = response.get(1); // now the 2nd row
+      assertNotNull(data);
+      assertEquals("Unexpected value for Count1.", 5, data.getCount1(), 0);
+      assertEquals("Unexpected value for Count2.", 0, data.getCount2(), 0);
+      assertEquals("The response should have the data grouped by consumerName.", "anotherConsumer", data
+               .getCriteriaInfo().getConsumerName());
+
+   }
+
+   @Test(expected = UnsupportedOperationException.class)
+   public void testInvalidResourceEntityResponseType() throws ServiceException {
+      long duration = 60 * 6;// in secs
+      int aggregationPeriod = 20;// in secs
+      MetricCriteria metricCriteria = new MetricCriteria();
+      metricCriteria.setFirstStartTime(sixMinutesAgo);
+      metricCriteria.setSecondStartTime(now);
+      metricCriteria.setDuration(duration);
+      metricCriteria.setAggregationPeriod(aggregationPeriod);
+      metricCriteria.setRoleType("server");
+      metricCriteria.setMetricName("ResponseTime");
+
+      MetricResourceCriteria metricResourceCriteria = new MetricResourceCriteria();
+      metricResourceCriteria.setResourceEntityResponseType("AnInvalidReponseType");
+      // // ResourceEntityRequest rer1 = new ResourceEntityRequest();
+      // // rer1.setResourceEntityType(ResourceEntity.CONSUMER);
+      // // rer1.getResourceEntityName().add(consumerName);
+      // metricResourceCriteria.getResourceRequestEntities().add(rer1);
+      ResourceEntityRequest rer2 = new ResourceEntityRequest();
+      rer2.setResourceEntityType(ResourceEntity.SERVICE);
+      rer2.getResourceEntityName().add(srvcAdminName);
+      metricResourceCriteria.getResourceRequestEntities().add(rer2);
+      List<MetricGroupData> response = queryprovider.getMetricsData(metricCriteria, metricResourceCriteria);
    }
 
    @Test

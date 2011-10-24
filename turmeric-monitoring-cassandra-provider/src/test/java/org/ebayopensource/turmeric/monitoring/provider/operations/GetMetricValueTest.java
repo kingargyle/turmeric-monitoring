@@ -3,7 +3,6 @@ package org.ebayopensource.turmeric.monitoring.provider.operations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -90,15 +89,6 @@ public class GetMetricValueTest extends BaseTest {
       // aggregator2.update(metricClassifier2, 1L);
       aggregators = deepCopyAggregators(aggregator1);
       metricsStorageProvider.saveMetricSnapshot(oneMinuteAgo, aggregators);
-   }
-
-   private List<MetricValueAggregator> deepCopyAggregators(MetricValueAggregator... aggregators) {
-      // The aggregator list passed to the storage provider is always a deep copy of the aggregators
-      List<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
-      for (MetricValueAggregator aggregator : aggregators) {
-         result.add((MetricValueAggregator) aggregator.deepCopy(false));
-      }
-      return result;
    }
 
    @Override

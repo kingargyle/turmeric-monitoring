@@ -102,7 +102,7 @@ public class MetricValuesDAOImpl<K> extends
     *            the service exception
     */
    private String createMetricTimeSeriesKey(String ipAddress, String metricName, String serviceName,
-            String operationName, int snapshotInterval, boolean isServerSide) throws ServiceException {
+            String operationName, int snapshotInterval, boolean isServerSide) {
 
       return ipAddress + KEY_SEPARATOR + serviceName + KEY_SEPARATOR + operationName + KEY_SEPARATOR + metricName
                + KEY_SEPARATOR + snapshotInterval + KEY_SEPARATOR + isServerSide;
@@ -194,7 +194,7 @@ public class MetricValuesDAOImpl<K> extends
    @Override
    public Map<String, List<MetricValue<?>>> findMetricValuesByConsumer(List<String> ipAddressList, String metricName,
             long begin, long end, boolean serverSide, int aggregationPeriod, String serviceName,
-            List<String> operationNames, List<String> consumerNames) throws ServiceException {
+            List<String> operationNames, List<String> consumerNames) {
       Map<String, List<MetricValue<?>>> result = new HashMap<String, List<MetricValue<?>>>();
       Map<Long, MetricValue<?>> metricValuesByTime = new TreeMap<Long, MetricValue<?>>();
       for (String operationName : operationNames) {
@@ -262,8 +262,7 @@ public class MetricValuesDAOImpl<K> extends
     */
    @Override
    public Map<String, List<MetricValue<?>>> findMetricValuesByOperation(List<String> ipAddressList, String metricName,
-            long begin, long end, boolean serverSide, int aggregationPeriod, Map<String, List<String>> filters)
-            throws ServiceException {
+            long begin, long end, boolean serverSide, int aggregationPeriod, Map<String, List<String>> filters) {
       Map<String, List<MetricValue<?>>> result = new HashMap<String, List<MetricValue<?>>>();
 
       List<String> serviceAdminNames = filters.get("Service");
@@ -392,8 +391,7 @@ public class MetricValuesDAOImpl<K> extends
 
    @Override
    public Map<String, List<MetricValue<?>>> findMetricErrorValuesByOperation(List<String> ipAddressList, long begin,
-            long end, boolean serverSide, int aggregationPeriod, Map<String, List<String>> filters)
-            throws ServiceException {
+            long end, boolean serverSide, int aggregationPeriod, Map<String, List<String>> filters) {
       Map<String, List<MetricValue<?>>> result = new HashMap<String, List<MetricValue<?>>>();
 
       List<String> serviceAdminNames = filters.get("Service");

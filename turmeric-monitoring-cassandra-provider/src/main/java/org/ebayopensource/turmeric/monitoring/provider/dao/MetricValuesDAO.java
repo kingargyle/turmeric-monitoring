@@ -60,7 +60,7 @@ public interface MetricValuesDAO<K> {
     */
    Map<String, List<MetricValue<?>>> findMetricValuesByConsumer(List<String> ipAddressList, String metricName,
             long begin, long end, boolean serverSide, int aggregationPeriod, String serviceName,
-            List<String> operationNames, List<String> consumerNames) throws ServiceException;
+            List<String> operationNames, List<String> consumerNames);
 
    /**
     * Find metric values by operation.
@@ -84,12 +84,10 @@ public interface MetricValuesDAO<K> {
     *            the service exception
     */
    public Map<String, List<MetricValue<?>>> findMetricValuesByOperation(List<String> ipaddressList, String metricName,
-            long firstStartTime, long l, boolean serverSide, int aggregationPeriod, Map<String, List<String>> filters)
-            throws ServiceException;
+            long firstStartTime, long l, boolean serverSide, int aggregationPeriod, Map<String, List<String>> filters);
 
    public Map<String, List<MetricValue<?>>> findMetricErrorValuesByOperation(List<String> ipAddressList, long begin,
-            long end, boolean serverSide, int aggregationPeriod, Map<String, List<String>> filters)
-            throws ServiceException;
+            long end, boolean serverSide, int aggregationPeriod, Map<String, List<String>> filters);
 
    public List<String> getErrorMetricNameList();
 

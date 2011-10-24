@@ -3,6 +3,7 @@ package org.ebayopensource.turmeric.monitoring.provider;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import me.prettyprint.cassandra.serializers.StringSerializer;
@@ -191,6 +192,15 @@ public abstract class BaseTest {
       errorStorageProvider = null;
       metricsStorageProvider = null;
       cleanUpTestData();
+   }
+
+   public List<MetricValueAggregator> deepCopyAggregators(MetricValueAggregator... aggregators) {
+      // The aggregator list passed to the storage provider is always a deep copy of the aggregators
+      List<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
+      for (MetricValueAggregator aggregator : aggregators) {
+         result.add((MetricValueAggregator) aggregator.deepCopy(false));
+      }
+      return result;
    }
 
 }
