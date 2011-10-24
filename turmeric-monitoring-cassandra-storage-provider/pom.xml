@@ -44,36 +44,42 @@
 					<forkMode>always</forkMode>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<configuration>
+					<includes>
+						<include>**/*ITCase.java</include>
+					</includes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.codehaus.mojo</groupId> -->
+<!-- 				<artifactId>cassandra-maven-plugin</artifactId> -->
+<!-- 				<version>0.8.0-1</version> -->
+<!-- 				<configuration> -->
+<!-- 					<yaml>${basedir}/src/test/resources/META-INF/config/cassandra/cassandra-test.yaml</yaml> -->
+<!-- 				</configuration> -->
+<!-- 				<executions> -->
+<!-- 					<execution> -->
+<!-- 						<goals> -->
+<!-- 							<goal>start</goal> -->
+<!-- 							<goal>stop</goal> -->
+<!-- 						</goals> -->
+<!-- 						<configuration> -->
+<!-- 							<loadAfterFirstStart>true</loadAfterFirstStart> -->
+<!-- 							<script>${basedir}/src/main/resources/schema-turmeric.txt</script> -->
+<!-- 						</configuration> -->
+<!-- 					</execution> -->
+<!-- 				</executions> -->
+<!-- 			</plugin> -->
 		</plugins>
-		<!-- <plugins> -->
-		<!-- <plugin> -->
-		<!-- <artifactId>maven-failsafe-plugin</artifactId> -->
-		<!-- <executions> -->
-		<!-- <execution> -->
-		<!-- <goals> -->
-		<!-- <goal>integration-test</goal> -->
-		<!-- <goal>verify</goal> -->
-		<!-- </goals> -->
-		<!-- </execution> -->
-		<!-- </executions> -->
-		<!-- </plugin> -->
-		<!-- <plugin> -->
-		<!-- <groupId>org.codehaus.mojo</groupId> -->
-		<!-- <artifactId>cassandra-maven-plugin</artifactId> -->
-		<!-- <version>0.8.0-1</version> -->
-		<!-- <executions> -->
-		<!-- <execution> -->
-		<!-- <goals> -->
-		<!-- <goal>start</goal> -->
-		<!-- <goal>stop</goal> -->
-		<!-- </goals> -->
-		<!-- <configuration> -->
-		<!-- <loadAfterFirstStart>true</loadAfterFirstStart> -->
-		<!-- <script>${basedir}/src/main/resources/schema-turmeric.txt</script> -->
-		<!-- </configuration> -->
-		<!-- </execution> -->
-		<!-- </executions> -->
-		<!-- </plugin> -->
-		<!-- </plugins> -->
 	</build>
 </project>

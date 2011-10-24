@@ -57,7 +57,16 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class CassandraMetricsStorageProviderTest extends CassandraTestHelper {
+   public boolean isEmbedded() {
+      return embedded;
+   }
+
+   public void setEmbedded(boolean embedded) {
+      this.embedded = embedded;
+   }
+
    CassandraMetricsStorageProvider provider = null;
+   protected boolean embedded = true;
 
    private void cleanUpTestData() {
       String[] columnFamilies = { "MetricIdentifier", "MetricValues" };
@@ -127,7 +136,7 @@ public class CassandraMetricsStorageProviderTest extends CassandraTestHelper {
       options.put("keyspace-name", keyspace_name);
       options.put("cluster-name", cluster_name);
       options.put("storeServiceMetrics", "false");
-      options.put("embedded", "true");
+      options.put("embedded", Boolean.valueOf(embedded).toString());
       return options;
    }
 
@@ -153,7 +162,9 @@ public class CassandraMetricsStorageProviderTest extends CassandraTestHelper {
 
    @Before
    public void setUp() throws TTransportException, IOException, InterruptedException, ConfigurationException {
-      initialize();
+      if (embedded) {
+         initialize();
+      }
       provider = new CassandraMetricsStorageProvider();
       kspace = new HectorManager().getKeyspace(cluster_name, cassandra_node_ip, keyspace_name, "MetricIdentifier",
                false, String.class, String.class);
