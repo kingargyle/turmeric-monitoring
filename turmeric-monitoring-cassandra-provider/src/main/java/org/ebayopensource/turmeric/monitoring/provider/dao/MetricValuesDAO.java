@@ -12,9 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.ebayopensource.turmeric.monitoring.provider.model.MetricValue;
-import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface MetricValuesDAO.
  * 
@@ -55,8 +53,6 @@ public interface MetricValuesDAO<K> {
     * @param consumerNames
     *           the consumer names
     * @return the mapString metricName,
-    * @throws ServiceException
-    *            the service exception
     */
    Map<String, List<MetricValue<?>>> findMetricValuesByConsumer(List<String> ipAddressList, String metricName,
             long begin, long end, boolean serverSide, int aggregationPeriod, String serviceName,
@@ -80,15 +76,35 @@ public interface MetricValuesDAO<K> {
     * @param filters
     *           the filters
     * @return the map
-    * @throws ServiceException
-    *            the service exception
     */
    public Map<String, List<MetricValue<?>>> findMetricValuesByOperation(List<String> ipaddressList, String metricName,
             long firstStartTime, long l, boolean serverSide, int aggregationPeriod, Map<String, List<String>> filters);
 
+   /**
+    * Find metric error values by operation.
+    * 
+    * @param ipAddressList
+    *           the ip address list
+    * @param begin
+    *           the begin
+    * @param end
+    *           the end
+    * @param serverSide
+    *           the server side
+    * @param aggregationPeriod
+    *           the aggregation period
+    * @param filters
+    *           the filters
+    * @return the map
+    */
    public Map<String, List<MetricValue<?>>> findMetricErrorValuesByOperation(List<String> ipAddressList, long begin,
             long end, boolean serverSide, int aggregationPeriod, Map<String, List<String>> filters);
 
+   /**
+    * Gets the error metric name list.
+    * 
+    * @return the error metric name list
+    */
    public List<String> getErrorMetricNameList();
 
 }
