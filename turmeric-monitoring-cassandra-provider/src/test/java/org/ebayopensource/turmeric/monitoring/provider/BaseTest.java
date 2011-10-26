@@ -1,5 +1,7 @@
 package org.ebayopensource.turmeric.monitoring.provider;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,6 +42,7 @@ import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsErrorsByS
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceConsumerByIpDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.impl.MetricsServiceOperationByIpDAOImpl;
 import org.ebayopensource.turmeric.monitoring.provider.manager.cassandra.server.CassandraTestManager;
+import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricCategory;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricClassifier;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricId;
@@ -201,6 +204,14 @@ public abstract class BaseTest {
          result.add((MetricValueAggregator) aggregator.deepCopy(false));
       }
       return result;
+   }
+
+   public String getInetAddress() throws ServiceException {
+      try {
+         return InetAddress.getLocalHost().getCanonicalHostName();
+      } catch (UnknownHostException x) {
+         throw new ServiceException("Unkonwn host name", x);
+      }
    }
 
 }

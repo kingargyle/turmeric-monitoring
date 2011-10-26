@@ -721,12 +721,18 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       } else if (ResourceEntity.OPERATION.value().equals(groupBy)) {
          List<String> operationNames = filters.get("Operation");
          List<String> serviceNames = filters.get("Service");
+         List<String> consumerNames = filters.get("Consumer");
+         boolean iterateByServiceName = false;
+         if (consumerNames != null && !consumerNames.isEmpty() && operationNames != null && !operationNames.isEmpty()) {
+            iterateByServiceName = true;
+         }
          // get the operation names for the service
          if (operationNames == null || operationNames.isEmpty()) {
             operationNames = metricsServiceOperationByIpDAO.findMetricOperationNames(serviceNames);
             operationNames = removeServiceNamePrefix(operationNames);
             filters.put("Operation", operationNames);
          }
+
          for (String serviceName : serviceNames) {
             List<String> ipAddressList = ipPerDayAndServiceNameDAO.findByDateAndServiceName(System.currentTimeMillis(),
                      serviceName);
@@ -738,13 +744,20 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
             Map<String, Object> map1 = transformAggregatedMetricComponentValues(encodedMetricName, data1);
             Map<String, Object> map2 = transformAggregatedMetricComponentValues(encodedMetricName, data2);
             operationNames = filters.get("Operation");
-            for (String operation : operationNames) {
+            List<String> iterateBy = iterateByServiceName ? serviceNames : operationNames;
+            for (String key : iterateBy) {
                // STEP 3. Create and populate the return values
                MetricGroupData metricGroupData = new MetricGroupData();
-               metricGroupData.setCount1((Double) map1.get(operation));
-               metricGroupData.setCount2((Double) map2.get(operation));
+               metricGroupData.setCount1((Double) map1.get(key));
+               metricGroupData.setCount2((Double) map2.get(key));
                CriteriaInfo criteriaInfo = new CriteriaInfo();
-               criteriaInfo.setOperationName(operation);
+               if (iterateByServiceName) {
+                  criteriaInfo.setServiceName(key);
+                  criteriaInfo.setOperationName(operationNames.get(0));
+               } else {
+                  criteriaInfo.setOperationName(key);
+                  criteriaInfo.setServiceName(serviceName);
+               }
                metricGroupData.setCriteriaInfo(criteriaInfo);
                result.add(metricGroupData);
             }

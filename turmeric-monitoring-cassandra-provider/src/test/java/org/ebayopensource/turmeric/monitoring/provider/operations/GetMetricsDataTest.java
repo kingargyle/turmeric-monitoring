@@ -187,6 +187,46 @@ public class GetMetricsDataTest extends BaseTest {
    }
 
    @Test
+   public void testCallCountOneServiceOneOperationOneConsumerOperationResponse() throws ServiceException {
+
+      long duration = 60 * 6;// in secs
+      int aggregationPeriod = 20;// in secs
+      MetricCriteria metricCriteria = new MetricCriteria();
+      metricCriteria.setFirstStartTime(sixMinutesAgo);
+      metricCriteria.setSecondStartTime(now);
+      metricCriteria.setDuration(duration);
+      metricCriteria.setAggregationPeriod(aggregationPeriod);
+      metricCriteria.setRoleType("server");
+      metricCriteria.setMetricName("CallCount");
+
+      MetricResourceCriteria metricResourceCriteria = new MetricResourceCriteria();
+      metricResourceCriteria.setResourceEntityResponseType("Operation");
+      ResourceEntityRequest rer1 = new ResourceEntityRequest();
+      rer1.setResourceEntityType(ResourceEntity.SERVICE);
+      rer1.getResourceEntityName().add(srvcAdminName);
+      metricResourceCriteria.getResourceRequestEntities().add(rer1);
+      ResourceEntityRequest rer2 = new ResourceEntityRequest();
+      rer2.setResourceEntityType(ResourceEntity.CONSUMER);
+      rer2.getResourceEntityName().add(consumerName);
+      metricResourceCriteria.getResourceRequestEntities().add(rer2);
+      ResourceEntityRequest rer3 = new ResourceEntityRequest();
+      rer3.setResourceEntityType(ResourceEntity.OPERATION);
+      rer3.getResourceEntityName().add(opName);
+      metricResourceCriteria.getResourceRequestEntities().add(rer3);
+      List<MetricGroupData> response = queryprovider.getMetricsData(metricCriteria, metricResourceCriteria);
+      assertNotNull(response);
+      assertEquals(1, response.size());
+      MetricGroupData data = response.get(0);
+      assertNotNull(data);
+      assertEquals(9, data.getCount1(), 0);
+      assertEquals(0, data.getCount2(), 0);
+      assertEquals("The response should have the data grouped by operation.", opName, data.getCriteriaInfo()
+               .getOperationName());
+      assertEquals("The response should contain the serviceName.", srvcAdminName, data.getCriteriaInfo()
+               .getServiceName());
+   }
+
+   @Test
    public void testCallCountNoOperationNoConsumer() throws ServiceException {
 
       long duration = 60 * 6;// in secs
