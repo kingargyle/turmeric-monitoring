@@ -88,8 +88,8 @@ public class GetErrorMetricsDataTest extends BaseTest {
       errorStorageProvider.persistErrors(Collections.singletonList(error2), getInetAddress(), srvcAdminName,
                "anotherOperation", true, consumerName, threeMinutesAgo);
 
-      errorStorageProvider.persistErrors(Collections.singletonList(error1), getInetAddress(), srvcAdminName, opName,
-               true, consumerName, twoMinutesAgo);
+      // errorStorageProvider.persistErrors(Collections.singletonList(error1), getInetAddress(), srvcAdminName, opName,
+      // true, consumerName, twoMinutesAgo);
 
       errorStorageProvider.persistErrors(Collections.singletonList(error1), getInetAddress(), srvcAdminName, opName,
                true, consumerName, oneMinuteAgo);
@@ -102,7 +102,7 @@ public class GetErrorMetricsDataTest extends BaseTest {
       int aggregationPeriod = 0;// in secs
       MetricCriteria metricCriteria = new MetricCriteria();
       metricCriteria.setFirstStartTime(sixMinutesAgo);
-      metricCriteria.setSecondStartTime(now);
+      metricCriteria.setSecondStartTime(oneMinuteAgo);
       metricCriteria.setDuration(duration);
       metricCriteria.setAggregationPeriod(aggregationPeriod);
       metricCriteria.setRoleType("server");
@@ -112,12 +112,44 @@ public class GetErrorMetricsDataTest extends BaseTest {
                ErrorCategory.APPLICATION.value(), ErrorSeverity.ERROR.value(), null, metricCriteria);
       assertNotNull(response);
       assertEquals("There must be 1 data row in the response", 1, response.size());
-      int expectedErrorCount1 = 3;
+      int expectedErrorCount1 = 2;
+      assertEquals("there must be " + expectedErrorCount1 + " errors for the errorCount1 field.", expectedErrorCount1,
+               response.get(0).getErrorCount1());
+      int expectedErrorCount2 = 1;
+      assertEquals("there must be " + expectedErrorCount2 + " errors for the errorCount2 field.", expectedErrorCount2,
+               response.get(0).getErrorCount2());
+
+   }
+
+   @Test
+   public void testGetApplicationErrorsByCategoryOneServiceOneOperationOneConsumerOneMinDiff() throws ServiceException {
+      long duration = 60 * 1;// in secs
+      int aggregationPeriod = 0;// in secs
+      MetricCriteria metricCriteria = new MetricCriteria();
+      metricCriteria.setFirstStartTime(threeMinutesAgo);
+      metricCriteria.setSecondStartTime(twoMinutesAgo);
+      metricCriteria.setDuration(duration);
+      metricCriteria.setAggregationPeriod(aggregationPeriod);
+      metricCriteria.setRoleType("server");
+
+      List<ExtendedErrorViewData> response = queryprovider.getExtendedErrorMetricsData("Category",
+               Arrays.asList(srvcAdminName), Arrays.asList(opName, "anotherOperation"), Arrays.asList(consumerName),
+               null, ErrorCategory.APPLICATION.value(), ErrorSeverity.ERROR.value(), null, metricCriteria);
+      assertNotNull(response);
+      assertEquals("There must be 2 data rows in the response", 2, response.size());
+      int expectedErrorCount1 = 1;
       assertEquals("there must be " + expectedErrorCount1 + " errors for the errorCount1 field.", expectedErrorCount1,
                response.get(0).getErrorCount1());
       int expectedErrorCount2 = 0;
       assertEquals("there must be " + expectedErrorCount2 + " errors for the errorCount2 field.", expectedErrorCount2,
                response.get(0).getErrorCount2());
+
+      expectedErrorCount1 = 0;
+      assertEquals("there must be " + expectedErrorCount1 + " errors for the errorCount1 field.", expectedErrorCount1,
+               response.get(1).getErrorCount1());
+      expectedErrorCount2 = 1;
+      assertEquals("there must be " + expectedErrorCount2 + " errors for the errorCount2 field.", expectedErrorCount2,
+               response.get(1).getErrorCount2());
 
    }
 
@@ -127,7 +159,7 @@ public class GetErrorMetricsDataTest extends BaseTest {
       int aggregationPeriod = 0;// in secs
       MetricCriteria metricCriteria = new MetricCriteria();
       metricCriteria.setFirstStartTime(sixMinutesAgo);
-      metricCriteria.setSecondStartTime(now);
+      metricCriteria.setSecondStartTime(oneMinuteAgo);
       metricCriteria.setDuration(duration);
       metricCriteria.setAggregationPeriod(aggregationPeriod);
       metricCriteria.setRoleType("server");
@@ -137,10 +169,10 @@ public class GetErrorMetricsDataTest extends BaseTest {
                ErrorCategory.APPLICATION.value(), ErrorSeverity.ERROR.value(), null, metricCriteria);
       assertNotNull(response);
       assertEquals("There must be 1 data row in the response", 1, response.size());
-      int expectedErrorCount1 = 3;
+      int expectedErrorCount1 = 2;
       assertEquals("there must be " + expectedErrorCount1 + " errors for the errorCount1 field.", expectedErrorCount1,
                response.get(0).getErrorCount1());
-      int expectedErrorCount2 = 0;
+      int expectedErrorCount2 = 1;
       assertEquals("there must be " + expectedErrorCount2 + " errors for the errorCount2 field.", expectedErrorCount2,
                response.get(0).getErrorCount2());
 
@@ -152,7 +184,7 @@ public class GetErrorMetricsDataTest extends BaseTest {
       int aggregationPeriod = 0;// in secs
       MetricCriteria metricCriteria = new MetricCriteria();
       metricCriteria.setFirstStartTime(sixMinutesAgo);
-      metricCriteria.setSecondStartTime(now);
+      metricCriteria.setSecondStartTime(oneMinuteAgo);
       metricCriteria.setDuration(duration);
       metricCriteria.setAggregationPeriod(aggregationPeriod);
       metricCriteria.setRoleType("server");
@@ -162,10 +194,10 @@ public class GetErrorMetricsDataTest extends BaseTest {
                ErrorCategory.APPLICATION.value(), ErrorSeverity.ERROR.value(), null, metricCriteria);
       assertNotNull(response);
       assertEquals("There must be 2 data rows in the response", 2, response.size());
-      int expectedErrorCount1 = 3;
+      int expectedErrorCount1 = 2;
       assertEquals("there must be " + expectedErrorCount1 + " errors for the errorCount1 field.", expectedErrorCount1,
                response.get(0).getErrorCount1());
-      int expectedErrorCount2 = 0;
+      int expectedErrorCount2 = 1;
       assertEquals("there must be " + expectedErrorCount2 + " errors for the errorCount2 field.", expectedErrorCount2,
                response.get(0).getErrorCount2());
 
@@ -184,7 +216,7 @@ public class GetErrorMetricsDataTest extends BaseTest {
       int aggregationPeriod = 0;// in secs
       MetricCriteria metricCriteria = new MetricCriteria();
       metricCriteria.setFirstStartTime(sixMinutesAgo);
-      metricCriteria.setSecondStartTime(now);
+      metricCriteria.setSecondStartTime(oneMinuteAgo);
       metricCriteria.setDuration(duration);
       metricCriteria.setAggregationPeriod(aggregationPeriod);
       metricCriteria.setRoleType("server");
@@ -194,10 +226,10 @@ public class GetErrorMetricsDataTest extends BaseTest {
                ErrorCategory.APPLICATION.value(), ErrorSeverity.ERROR.value(), null, metricCriteria);
       assertNotNull(response);
       assertEquals("There must be 2 data rows in the response", 2, response.size());
-      int expectedErrorCount1 = 3;
+      int expectedErrorCount1 = 2;
       assertEquals("there must be " + expectedErrorCount1 + " errors for the errorCount1 field.", expectedErrorCount1,
                response.get(0).getErrorCount1());
-      int expectedErrorCount2 = 0;
+      int expectedErrorCount2 = 1;
       assertEquals("there must be " + expectedErrorCount2 + " errors for the errorCount2 field.", expectedErrorCount2,
                response.get(0).getErrorCount2());
 
@@ -216,7 +248,7 @@ public class GetErrorMetricsDataTest extends BaseTest {
       int aggregationPeriod = 0;// in secs
       MetricCriteria metricCriteria = new MetricCriteria();
       metricCriteria.setFirstStartTime(sixMinutesAgo);
-      metricCriteria.setSecondStartTime(now);
+      metricCriteria.setSecondStartTime(oneMinuteAgo);
       metricCriteria.setDuration(duration);
       metricCriteria.setAggregationPeriod(aggregationPeriod);
       metricCriteria.setRoleType("server");
@@ -226,10 +258,10 @@ public class GetErrorMetricsDataTest extends BaseTest {
                ErrorCategory.APPLICATION.value(), ErrorSeverity.ERROR.value(), null, metricCriteria);
       assertNotNull(response);
       assertEquals("There must be 2 data rows in the response", 2, response.size());
-      int expectedErrorCount1 = 3;
+      int expectedErrorCount1 = 2;
       assertEquals("there must be " + expectedErrorCount1 + " errors for the errorCount1 field.", expectedErrorCount1,
                response.get(0).getErrorCount1());
-      int expectedErrorCount2 = 0;
+      int expectedErrorCount2 = 1;
       assertEquals("there must be " + expectedErrorCount2 + " errors for the errorCount2 field.", expectedErrorCount2,
                response.get(0).getErrorCount2());
 
@@ -248,7 +280,7 @@ public class GetErrorMetricsDataTest extends BaseTest {
       int aggregationPeriod = 0;// in secs
       MetricCriteria metricCriteria = new MetricCriteria();
       metricCriteria.setFirstStartTime(sixMinutesAgo);
-      metricCriteria.setSecondStartTime(now);
+      metricCriteria.setSecondStartTime(oneMinuteAgo);
       metricCriteria.setDuration(duration);
       metricCriteria.setAggregationPeriod(aggregationPeriod);
       metricCriteria.setRoleType("server");
@@ -258,10 +290,10 @@ public class GetErrorMetricsDataTest extends BaseTest {
                ErrorCategory.APPLICATION.value(), ErrorSeverity.ERROR.value(), null, metricCriteria);
       assertNotNull(response);
       assertEquals("There must be 2 data rows in the response", 2, response.size());
-      int expectedErrorCount1 = 3;
+      int expectedErrorCount1 = 2;
       assertEquals("there must be " + expectedErrorCount1 + " errors for the errorCount1 field.", expectedErrorCount1,
                response.get(0).getErrorCount1());
-      int expectedErrorCount2 = 0;
+      int expectedErrorCount2 = 1;
       assertEquals("there must be " + expectedErrorCount2 + " errors for the errorCount2 field.", expectedErrorCount2,
                response.get(0).getErrorCount2());
 
