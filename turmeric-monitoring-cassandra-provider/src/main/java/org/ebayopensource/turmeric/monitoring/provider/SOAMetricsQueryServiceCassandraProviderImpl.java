@@ -24,6 +24,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.collections.ListUtils;
 import org.ebayopensource.turmeric.common.v1.types.ErrorCategory;
 import org.ebayopensource.turmeric.common.v1.types.ErrorSeverity;
 import org.ebayopensource.turmeric.monitoring.provider.dao.BaseMetricsErrorsByFilterDAO;
@@ -365,7 +366,7 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
          for (Map<String, Object> row : queryResult) {
             long time = (Long) row.get("timeStamp");
             if (startTime <= time && time < stopTime) {
-               value += 1;
+               value += (Long) row.get("errorCount");
             }
          }
          MetricGraphData metricGraphData = new MetricGraphData();
@@ -693,8 +694,10 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
          List<String> serviceNames = filters.get("Service");
          for (String serviceName : serviceNames) {
             // get the ipaddress for the service name
-            List<String> ipAddressList = ipPerDayAndServiceNameDAO.findByDateAndServiceName(System.currentTimeMillis(),
-                     serviceName);
+            List<String> ipAddressList = ipPerDayAndServiceNameDAO
+                     .findByDateAndServiceName(firstStartTime, serviceName);
+            ipAddressList = ListUtils.sum(ipAddressList,
+                     ipPerDayAndServiceNameDAO.findByDateAndServiceName(secondStartTime, serviceName));
             List<String> operationNames = metricsServiceOperationByIpDAO.findMetricOperationNames(serviceNames);
             operationNames = removeServiceNamePrefix(operationNames);
             filters.put("Operation", operationNames);
@@ -734,8 +737,10 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
          }
 
          for (String serviceName : serviceNames) {
-            List<String> ipAddressList = ipPerDayAndServiceNameDAO.findByDateAndServiceName(System.currentTimeMillis(),
-                     serviceName);
+            List<String> ipAddressList = ipPerDayAndServiceNameDAO
+                     .findByDateAndServiceName(firstStartTime, serviceName);
+            ipAddressList = ListUtils.sum(ipAddressList,
+                     ipPerDayAndServiceNameDAO.findByDateAndServiceName(secondStartTime, serviceName));
             data1 = metricValuesDAO.findMetricValuesByOperation(ipAddressList, metricName, firstStartTime,
                      firstStartTime + duration, serverSide, aggregationPeriod, filters);
             data2 = metricValuesDAO.findMetricValuesByOperation(ipAddressList, metricName, secondStartTime,
@@ -778,8 +783,10 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
             filters.put("Consumer", consumerNames);
          }
          for (String serviceName : serviceNames) {
-            List<String> ipAddressList = ipPerDayAndServiceNameDAO.findByDateAndServiceName(System.currentTimeMillis(),
-                     serviceName);
+            List<String> ipAddressList = ipPerDayAndServiceNameDAO
+                     .findByDateAndServiceName(firstStartTime, serviceName);
+            ipAddressList = ListUtils.sum(ipAddressList,
+                     ipPerDayAndServiceNameDAO.findByDateAndServiceName(secondStartTime, serviceName));
             data1 = metricValuesDAO.findMetricValuesByConsumer(ipAddressList, metricName, firstStartTime,
                      firstStartTime + duration, serverSide, aggregationPeriod, serviceName, operationNames,
                      consumerNames);
@@ -825,8 +832,10 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
             filters.put("Consumer", consumerNames);
          }
          for (String serviceName : serviceNames) {
-            List<String> ipAddressList = ipPerDayAndServiceNameDAO.findByDateAndServiceName(System.currentTimeMillis(),
-                     serviceName);
+            List<String> ipAddressList = ipPerDayAndServiceNameDAO
+                     .findByDateAndServiceName(firstStartTime, serviceName);
+            ipAddressList = ListUtils.sum(ipAddressList,
+                     ipPerDayAndServiceNameDAO.findByDateAndServiceName(secondStartTime, serviceName));
             data1 = metricValuesDAO.findMetricErrorValuesByOperation(ipAddressList, firstStartTime, firstStartTime
                      + duration, serverSide, aggregationPeriod, filters);
             data2 = metricValuesDAO.findMetricErrorValuesByOperation(ipAddressList, secondStartTime, secondStartTime
@@ -970,8 +979,9 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       if (consumerNames != null && !consumerNames.isEmpty()) {// iterate by consumer
          for (String serviceName : serviceNames) {
             // get the ipaddress for the service name
-            List<String> ipAddressList = ipPerDayAndServiceNameDAO.findByDateAndServiceName(System.currentTimeMillis(),
-                     serviceName);
+            List<String> ipAddressList = ipPerDayAndServiceNameDAO.findByDateAndServiceName(beginTime, serviceName);
+            ipAddressList = ListUtils.sum(ipAddressList,
+                     ipPerDayAndServiceNameDAO.findByDateAndServiceName(endTime, serviceName));
             metricValuesMap = metricValuesDAO.findMetricValuesByConsumer(ipAddressList, metricName, beginTime, endTime,
                      serverSide, aggregationPeriod, serviceName, operationNames, consumerNames);
             for (String consumerName : consumerNames) {
@@ -981,10 +991,12 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
                   long startTime = beginTime + TimeUnit.SECONDS.toMillis(i * aggregationPeriod);
                   long stopTime = startTime + TimeUnit.SECONDS.toMillis(aggregationPeriod);
                   double value = 0;
-                  for (MetricValue<?> metricValue : metricValues) {
-                     long time = metricValue.getTimeMiliseconds();
-                     if (startTime <= time && time < stopTime) {
-                        value += metricValue.getValueForMetric(encodedMetricName);
+                  if (metricValues != null) {
+                     for (MetricValue<?> metricValue : metricValues) {
+                        long time = metricValue.getTimeMiliseconds();
+                        if (startTime <= time && time < stopTime) {
+                           value += metricValue.getValueForMetric(encodedMetricName);
+                        }
                      }
                   }
                   MetricGraphData metricGraphData = new MetricGraphData();
@@ -1011,8 +1023,9 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       } else {// go by operations instead
          for (String serviceName : serviceNames) {
             // get the ipaddress for the service name
-            List<String> ipAddressList = ipPerDayAndServiceNameDAO.findByDateAndServiceName(System.currentTimeMillis(),
-                     serviceName);
+            List<String> ipAddressList = ipPerDayAndServiceNameDAO.findByDateAndServiceName(beginTime, serviceName);
+            ipAddressList = ListUtils.sum(ipAddressList,
+                     ipPerDayAndServiceNameDAO.findByDateAndServiceName(endTime, serviceName));
             metricValuesMap = metricValuesDAO.findMetricValuesByOperation(ipAddressList, metricName, beginTime,
                      endTime, serverSide, aggregationPeriod, filters);
             operationNames = filters.get("Operation");
@@ -1023,11 +1036,13 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
                   long startTime = beginTime + TimeUnit.SECONDS.toMillis(i * aggregationPeriod);
                   long stopTime = startTime + TimeUnit.SECONDS.toMillis(aggregationPeriod);
                   double value = 0;
-                  for (MetricValue<?> metricValue : metricValues) {
-                     long time = metricValue.getTimeMiliseconds();
-                     if (startTime <= time && time < stopTime) {
-                        value += metricValue.getValueForMetric(encodedMetricName);
-                        break;
+                  if (metricValues != null) {
+                     for (MetricValue<?> metricValue : metricValues) {
+                        long time = metricValue.getTimeMiliseconds();
+                        if (startTime <= time && time < stopTime) {
+                           value += metricValue.getValueForMetric(encodedMetricName);
+                           break;
+                        }
                      }
                   }
                   MetricGraphData metricGraphData = new MetricGraphData();
@@ -1188,7 +1203,14 @@ public class SOAMetricsQueryServiceCassandraProviderImpl implements SOAMetricsQu
       Map<String, Map<String, Object>> result = new HashMap<String, Map<String, Object>>();
       for (Map<String, Object> row : rows) {
          long errorId = (Long) row.get("errorId");
-         result.put(String.valueOf(errorId), row);
+         if (result.containsKey(String.valueOf(errorId))) {
+            Map<String, Object> oldRow = result.get(String.valueOf(errorId));
+            Long oldErrorCount = (Long) oldRow.get("errorCount");
+            oldErrorCount += (Long) row.get("errorCount");
+            oldRow.put("errorCount", oldErrorCount);
+         } else {
+            result.put(String.valueOf(errorId), row);
+         }
       }
       return result;
    }

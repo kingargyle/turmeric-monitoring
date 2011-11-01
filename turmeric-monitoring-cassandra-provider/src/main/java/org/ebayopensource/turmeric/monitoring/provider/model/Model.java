@@ -10,9 +10,12 @@ package org.ebayopensource.turmeric.monitoring.provider.model;
 
 import java.util.Map;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class Model.
  * 
+ * @param <K>
+ *           the key type
  * @author jamuguerza
  */
 public class Model<K> {
@@ -32,6 +35,9 @@ public class Model<K> {
    public Model(K keyType) {
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public boolean equals(Object obj) {
       if (this == obj) {
@@ -61,6 +67,11 @@ public class Model<K> {
       return true;
    }
 
+   /**
+    * Gets the columns.
+    * 
+    * @return the columns
+    */
    public Map<String, Object> getColumns() {
       return columns;
    }
@@ -74,6 +85,9 @@ public class Model<K> {
       return key;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public int hashCode() {
       final int prime = 31;
@@ -83,6 +97,12 @@ public class Model<K> {
       return result;
    }
 
+   /**
+    * Sets the columns.
+    * 
+    * @param columns
+    *           the columns
+    */
    public void setColumns(Map<String, Object> columns) {
       this.columns = columns;
    }
@@ -97,6 +117,12 @@ public class Model<K> {
       this.key = key;
    }
 
+   /**
+    * Sets the key.
+    * 
+    * @param key
+    *           the new key
+    */
    public void setKey(String key) {
       this.key = (K) key;
    }

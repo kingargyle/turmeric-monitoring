@@ -39,5 +39,8 @@ public interface MetricsErrorByIdDAO<K> {
     *           the end time
     * @return the long
     */
-   public Long findCountByTimeRange(K key, Long startTime, Long endTime);
+   // public Long findCountByTimeRange(K key, Long startTime, Long endTime);
+
+   // public Long findCountByFilter(K key, Long startTime, Long endTime, String serviceName, String operationName,
+   // String consumerName);
 }

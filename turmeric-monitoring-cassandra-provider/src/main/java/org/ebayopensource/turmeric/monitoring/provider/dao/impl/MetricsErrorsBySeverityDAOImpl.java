@@ -11,30 +11,38 @@ package org.ebayopensource.turmeric.monitoring.provider.dao.impl;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorByIdDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorValuesDAO;
 
-
 // TODO: Auto-generated Javadoc
 /**
  * The Class MetricsErrorsBySeverityDAOImpl.
- *
- * @param <K> the key type
+ * 
+ * @param <K>
+ *           the key type
  * @author jamuguerza
  */
 public class MetricsErrorsBySeverityDAOImpl<K> extends BaseMetricsErrorsByFiltersDAOImpl<K> {
 
-	/**
-	 * Instantiates a new metrics errors by severity dao impl.
-	 *
-	 * @param clusterName the cluster name
-	 * @param host the host
-	 * @param s_keyspace the s_keyspace
-	 * @param columnFamilyName the column family name
-	 * @param kTypeClass the k type class
-	 * @param errorValuesDaoImpl the error values dao impl
-	 * @param errorByIdDaoImpl the error by id dao impl
-	 */
-	public MetricsErrorsBySeverityDAOImpl(final String clusterName, final String host,
-			final String s_keyspace,  final String columnFamilyName, final Class<K> kTypeClass, final MetricsErrorValuesDAO errorValuesDaoImpl, MetricsErrorByIdDAO<Long> errorByIdDaoImpl) {
-		super(clusterName, host, s_keyspace, columnFamilyName, kTypeClass, errorValuesDaoImpl, errorByIdDaoImpl);
-	}
+   /**
+    * Instantiates a new metrics errors by severity dao impl.
+    * 
+    * @param clusterName
+    *           the cluster name
+    * @param host
+    *           the host
+    * @param s_keyspace
+    *           the s_keyspace
+    * @param columnFamilyName
+    *           the column family name
+    * @param kTypeClass
+    *           the k type class
+    * @param errorValuesDaoImpl
+    *           the error values dao impl
+    * @param errorByIdDaoImpl
+    *           the error by id dao impl
+    */
+   public MetricsErrorsBySeverityDAOImpl(final String clusterName, final String host, final String s_keyspace,
+            final String columnFamilyName, final Class<K> kTypeClass, final MetricsErrorValuesDAO errorValuesDaoImpl,
+            MetricsErrorByIdDAO<Long> errorByIdDaoImpl) {
+      super(clusterName, host, s_keyspace, columnFamilyName, kTypeClass, errorValuesDaoImpl, errorByIdDaoImpl);
+   }
 
 }

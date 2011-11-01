@@ -22,6 +22,7 @@ import me.prettyprint.hector.api.query.RangeSuperSlicesQuery;
 
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.CassandraMetricsStorageProvider;
 import org.ebayopensource.turmeric.monitoring.provider.dao.BaseMetricsErrorsByFilterDAO;
+import org.ebayopensource.turmeric.monitoring.provider.dao.IpPerDayAndServiceNameDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricServiceCallsByTimeDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricTimeSeriesDAO;
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricValueAggregatorTestImpl;
@@ -84,6 +85,7 @@ public abstract class BaseTest {
    protected final Map<String, String> options = loadProperties();
    protected SOAMetricsQueryServiceProvider queryprovider;
    protected MetricServiceCallsByTimeDAO<String, Long> serviceCallsByTimeDAO;
+   protected IpPerDayAndServiceNameDAO<String, String> ipPerDayAndServiceNameDAO;
 
    protected void cleanUpTestData() {
       System.out.println("######### CLEANING DATA ##############");
@@ -187,6 +189,9 @@ public abstract class BaseTest {
                "ErrorCountsByCategory", String.class, metricsErrorValuesDAO, metricsErrorByIdDAOImpl);
       metricsErrorsBySeverityDAO = new MetricsErrorsBySeverityDAOImpl<String>(TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE,
                "ErrorCountsBySeverity", String.class, metricsErrorValuesDAO, metricsErrorByIdDAOImpl);
+
+      ipPerDayAndServiceNameDAO = new org.ebayopensource.turmeric.monitoring.provider.dao.impl.IpPerDayAndServiceNameDAOImpl<String, String>(
+               TURMERIC_TEST_CLUSTER, HOST, KEY_SPACE, "IpPerDayAndServiceName", String.class, String.class);
    }
 
    @After

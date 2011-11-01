@@ -85,6 +85,12 @@ public class GetErrorMetricsDataTest extends BaseTest {
       errorStorageProvider.persistErrors(Collections.singletonList(error1), getInetAddress(), srvcAdminName, opName,
                true, consumerName, sixMinutesAgo);
 
+      errorStorageProvider.persistErrors(Collections.singletonList(error1), getInetAddress(), "anotherService", opName,
+               true, consumerName, sixMinutesAgo);
+
+      errorStorageProvider.persistErrors(Collections.singletonList(error1), getInetAddress(), "anotherService", opName,
+               true, consumerName, threeMinutesAgo);
+
       errorStorageProvider.persistErrors(Collections.singletonList(error2), getInetAddress(), srvcAdminName,
                "anotherOperation", true, consumerName, threeMinutesAgo);
 
