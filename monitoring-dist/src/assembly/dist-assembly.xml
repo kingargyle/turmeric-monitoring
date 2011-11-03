@@ -37,7 +37,7 @@
 				</include>
 			</includes>
                         <excludes>
-                                <exclude>org.ebayopensource.turmeric.monitoring:console</exclude>
+                                <exclude>org.ebayopensource.turmeric.monitoring:mgmt-console</exclude>
                         </excludes>
 		</dependencySet>
 		<dependencySet>
