@@ -225,6 +225,8 @@ public class SOAMetricsQueryServiceImpl implements SOAMetricsQueryService {
                             getErrorMetricsDataRequest.getMetricCriteria());
             updateErrorDiffValues(result);
             response.getReturnData().addAll(result);
+        }catch(Error err){
+        	err.printStackTrace();
         }
         catch (Exception e) {
             response.setErrorMessage(new ErrorMessage());
@@ -430,6 +432,7 @@ public class SOAMetricsQueryServiceImpl implements SOAMetricsQueryService {
             response.getReturnData().addAll(result);
         }
         catch (Exception e) {
+           e.printStackTrace();
             response.setErrorMessage(new ErrorMessage());
             response.getErrorMessage()
                             .getError()

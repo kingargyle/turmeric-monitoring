@@ -8,14 +8,13 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.dao;
 
-import java.util.List;
-import java.util.Set;
-
-
 /**
  * The Interface MetricIndentifierDAO.
+ * 
+ * @param <K>
+ *           the key type
  * @author jose alvarez muguerza
  */
-public interface MetricIndentifierDAO<K>  {
-	
+public interface MetricIndentifierDAO<K> {
+
 }

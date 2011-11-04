@@ -15,15 +15,28 @@ import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractSuperColumnFamily
 
 
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class ServiceCallsByTimeDAOImpl.
- * 
+ *
+ * @param <SK> the generic type
+ * @param <K> the key type
  * @author jamuguerza
  */
 public class MetricServiceCallsByTimeDAOImpl<SK, K>  extends
 		AbstractSuperColumnFamilyDao<SK, SuperModel, K, Model>
 		implements MetricServiceCallsByTimeDAO<SK, K>  {
 
+	/**
+	 * Instantiates a new metric service calls by time dao impl.
+	 *
+	 * @param clusterName the cluster name
+	 * @param host the host
+	 * @param s_keyspace the s_keyspace
+	 * @param columnFamilyName the column family name
+	 * @param sKTypeClass the s k type class
+	 * @param kTypeClass the k type class
+	 */
 	public MetricServiceCallsByTimeDAOImpl(final String clusterName, final String host,
 			final String s_keyspace, final String columnFamilyName, final Class<SK> sKTypeClass, final Class<K> kTypeClass) {
 		super(clusterName, host, s_keyspace, sKTypeClass, SuperModel.class,

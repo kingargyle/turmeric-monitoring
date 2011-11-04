@@ -8,13 +8,29 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.dao;
 
+import java.util.List;
+
+import org.ebayopensource.turmeric.monitoring.provider.model.SuperModel;
 
 
+
+// TODO: Auto-generated Javadoc
 /**
  * The Interface MetricValuesByIpAndDateDAO.
+ *
+ * @param <SK> the generic type
+ * @param <K> the key type
  * @author jose alvarez muguerza
  */
 public interface MetricValuesByIpAndDateDAO<SK, K>  {
-
+	 
+ 	/**
+ 	 * Find by range.
+ 	 *
+ 	 * @param fromSCNmame the from sc nmame
+ 	 * @param toSCNmame the to sc nmame
+ 	 * @return the list
+ 	 */
+ 	List<?> findByRange(K fromSCNmame, K toSCNmame);
 
 }

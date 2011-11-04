@@ -11,27 +11,36 @@ package org.ebayopensource.turmeric.monitoring.provider.dao;
 import java.util.List;
 import java.util.Map;
 
-
-
 /**
  * The Interface BaseMetricsErrorsByFilterDAO.
+ * 
+ * @param <K>
+ *           the key type
  * @author jose alvarez muguerza
  */
 public interface BaseMetricsErrorsByFilterDAO<K> {
 
-    /**
-	 * Given a <code>beginTime</code> and a <code>endTime</code> and a <code>aggregationPeriod</code>
-	 * retrieve the Error values by Severity.
-     * 
-     * @param beginTime The beginning time since the epoch
-     * @param endTime The end time since the epoch
-     * @param serverSide true or false
-     * @param aggregationPeriod The aggregation period to retrieve for.
-     * @param errorId The errorId
-     * @param filter The category/The severity
-     * @param filters Filter values.
-     * @return A List of Maps with resulting values.
-     */
-    List<Map<K, Object>> findErrorValuesByFilter(long beginTime, long endTime, boolean serverSide, int aggregationPeriod, Long errorId, String filter, Map<String,List<String>> filters);
+   /**
+    * Given a <code>beginTime</code> and a <code>endTime</code> and a <code>aggregationPeriod</code> retrieve the Error
+    * values by Severity.
+    * 
+    * @param beginTime
+    *           The beginning time since the epoch
+    * @param endTime
+    *           The end time since the epoch
+    * @param serverSide
+    *           true or false
+    * @param aggregationPeriod
+    *           The aggregation period to retrieve for.
+    * @param errorId
+    *           The errorId
+    * @param filter
+    *           The category/The severity
+    * @param filters
+    *           Filter values.
+    * @return A List of Maps with resulting values.
+    */
+   List<Map<K, Object>> findErrorValuesByFilter(long beginTime, long endTime, boolean serverSide,
+            int aggregationPeriod, Long errorId, String filter, Map<String, List<String>> filters);
 
 }

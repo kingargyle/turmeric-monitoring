@@ -11,13 +11,37 @@ package org.ebayopensource.turmeric.monitoring.provider.dao;
 import java.util.List;
 import java.util.Set;
 
-
+// TODO: Auto-generated Javadoc
 /**
  * The Interface MetricsErrorDAO.
+ * 
+ * @param <K>
+ *           the key type
  * @author jose alvarez muguerza
  */
-public interface MetricsErrorValuesDAO<K>  {
-	Set<org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue> findItems(List<K> keys, String rangeFrom, String rangeTo );
+public interface MetricsErrorValuesDAO<K> {
 
-	
+   /**
+    * Find items.
+    * 
+    * @param keys
+    *           the keys
+    * @param rangeFrom
+    *           the range from
+    * @param rangeTo
+    *           the range to
+    * @return the sets the
+    */
+   Set<org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue> findItems(List<K> keys, String rangeFrom,
+            String rangeTo);
+
+   /**
+    * Find.
+    * 
+    * @param key
+    *           the key
+    * @return the org.ebayopensource.turmeric.runtime.error.cassandra.model. error value
+    */
+   org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue find(K key);
+
 }

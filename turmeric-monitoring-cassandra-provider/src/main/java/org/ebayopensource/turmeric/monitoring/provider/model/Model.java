@@ -10,47 +10,121 @@ package org.ebayopensource.turmeric.monitoring.provider.model;
 
 import java.util.Map;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class Model.
  * 
+ * @param <K>
+ *           the key type
  * @author jamuguerza
  */
 public class Model<K> {
 
-	public Model(K keyType) {
-	}
+   /** The operation name List. */
+   protected Map<String, Object> columns;
 
-	/** The key. */
-	private K key;
+   /** The key. */
+   protected K key;
 
-	/** The operation name List. */
-	private Map<String, Object> columns;
+   /**
+    * Instantiates a new model.
+    * 
+    * @param keyType
+    *           the key type
+    */
+   public Model(K keyType) {
+   }
 
-	/**
-	 * Sets the key.
-	 * 
-	 * @param key
-	 *            the new key
-	 */
-	public void setKey(K key) {
-		this.key = key;
-	}
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+         return true;
+      }
+      if (obj == null) {
+         return false;
+      }
+      if (getClass() != obj.getClass()) {
+         return false;
+      }
+      Model other = (Model) obj;
+      if (columns == null) {
+         if (other.columns != null) {
+            return false;
+         }
+      } else if (!columns.equals(other.columns)) {
+         return false;
+      }
+      if (key == null) {
+         if (other.key != null) {
+            return false;
+         }
+      } else if (!key.equals(other.key)) {
+         return false;
+      }
+      return true;
+   }
 
-	/**
-	 * Gets the key.
-	 * 
-	 * @return the key
-	 */
-	public K getKey() {
-		return key;
-	}
+   /**
+    * Gets the columns.
+    * 
+    * @return the columns
+    */
+   public Map<String, Object> getColumns() {
+      return columns;
+   }
 
-	public void setColumns(Map<String, Object> columns) {
-		this.columns = columns;
-	}
+   /**
+    * Gets the key.
+    * 
+    * @return the key
+    */
+   public K getKey() {
+      return key;
+   }
 
-	public Map<String, Object> getColumns() {
-		return columns;
-	}
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((columns == null) ? 0 : columns.hashCode());
+      result = prime * result + ((key == null) ? 0 : key.hashCode());
+      return result;
+   }
+
+   /**
+    * Sets the columns.
+    * 
+    * @param columns
+    *           the columns
+    */
+   public void setColumns(Map<String, Object> columns) {
+      this.columns = columns;
+   }
+
+   /**
+    * Sets the key.
+    * 
+    * @param key
+    *           the new key
+    */
+   public void setKey(K key) {
+      this.key = key;
+   }
+
+   /**
+    * Sets the key.
+    * 
+    * @param key
+    *           the new key
+    */
+   public void setKey(String key) {
+      this.key = (K) key;
+   }
 
 }

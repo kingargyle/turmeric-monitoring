@@ -8,18 +8,28 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.dao.impl;
 
+import java.util.List;
+import java.util.Set;
+
+import me.prettyprint.cassandra.serializers.ObjectSerializer;
+import me.prettyprint.cassandra.serializers.StringSerializer;
+import me.prettyprint.hector.api.beans.ColumnSlice;
+import me.prettyprint.hector.api.factory.HFactory;
+import me.prettyprint.hector.api.query.QueryResult;
+import me.prettyprint.hector.api.query.SliceQuery;
+
 import org.ebayopensource.turmeric.monitoring.provider.dao.MetricsErrorValuesDAO;
 import org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue;
 import org.ebayopensource.turmeric.utils.cassandra.dao.AbstractColumnFamilyDao;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class MetricsErrorValuesDAOImpl.
  *
- * @param <K> the key type
  * @author jamuguerza
  */
-public class MetricsErrorValuesDAOImpl<K> extends AbstractColumnFamilyDao<K, org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue> implements
-		MetricsErrorValuesDAO<K> {
+public class MetricsErrorValuesDAOImpl extends AbstractColumnFamilyDao<String, org.ebayopensource.turmeric.runtime.error.cassandra.model.ErrorValue> implements
+		MetricsErrorValuesDAO<String> {
 		
 
 
@@ -33,7 +43,7 @@ public class MetricsErrorValuesDAOImpl<K> extends AbstractColumnFamilyDao<K, org
 	 * @param kTypeClass the k type class
 	 */
 	public MetricsErrorValuesDAOImpl(String clusterName, String host,
-			String s_keyspace, String columnFamilyName, final Class<K> kTypeClass) {
+			String s_keyspace, String columnFamilyName, final Class<String> kTypeClass) {
 		super(clusterName, host, s_keyspace, kTypeClass, ErrorValue.class,
 				columnFamilyName);
 	}

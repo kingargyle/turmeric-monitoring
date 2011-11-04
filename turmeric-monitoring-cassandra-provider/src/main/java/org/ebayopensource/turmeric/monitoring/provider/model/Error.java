@@ -8,53 +8,107 @@
  *******************************************************************************/
 package org.ebayopensource.turmeric.monitoring.provider.model;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Error.
+ * 
+ * @param <K>
+ *           the key type
+ */
 public class Error<K> extends Model<K> {
-	private String category;
-	private String name;
-	private String domain;
-	private String subDomain;
-	private String severity;
-	private Long errorId;
-	private String organization;
-	
-	
-	public String getCategory() {
-		return category;
-	}
 
+   /** The category. */
+   private String category;
 
-	public String getName() {
-		return name;
-	}
+   /** The name. */
+   private String name;
 
+   /** The domain. */
+   private String domain;
 
-	public String getDomain() {
-		return domain;
-	}
+   /** The sub domain. */
+   private String subDomain;
 
+   /** The severity. */
+   private String severity;
 
-	public String getSubDomain() {
-		return subDomain;
-	}
+   /** The error id. */
+   private Long errorId;
 
+   /** The organization. */
+   private String organization;
 
-	public String getSeverity() {
-		return severity;
-	}
+   /**
+    * Gets the category.
+    * 
+    * @return the category
+    */
+   public String getCategory() {
+      return category;
+   }
 
+   /**
+    * Gets the name.
+    * 
+    * @return the name
+    */
+   public String getName() {
+      return name;
+   }
 
-	public Long getErrorId() {
-		return errorId;
-	}
+   /**
+    * Gets the domain.
+    * 
+    * @return the domain
+    */
+   public String getDomain() {
+      return domain;
+   }
 
+   /**
+    * Gets the sub domain.
+    * 
+    * @return the sub domain
+    */
+   public String getSubDomain() {
+      return subDomain;
+   }
 
-	public String getOrganization() {
-		return organization;
-	}
+   /**
+    * Gets the severity.
+    * 
+    * @return the severity
+    */
+   public String getSeverity() {
+      return severity;
+   }
 
+   /**
+    * Gets the error id.
+    * 
+    * @return the error id
+    */
+   public Long getErrorId() {
+      return errorId;
+   }
 
-	public Error(K keyType){ 
-		super(keyType);
-	}
+   /**
+    * Gets the organization.
+    * 
+    * @return the organization
+    */
+   public String getOrganization() {
+      return organization;
+   }
+
+   /**
+    * Instantiates a new error.
+    * 
+    * @param keyType
+    *           the key type
+    */
+   public Error(K keyType) {
+      super(keyType);
+   }
 
 }

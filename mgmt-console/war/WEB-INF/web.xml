@@ -14,7 +14,7 @@
         <param-name>Prefix</param-name><param-value>/console/smqs</param-value>
       </init-param>
       <init-param>
-        <param-name>ProxyTo</param-name><param-value>https://localhost:8443/security/SOAMetricsQueryServiceV1</param-value>
+        <param-name>ProxyTo</param-name><param-value>https://localhost:8443/sqms/SOAMetricsQueryServiceV1</param-value>
       </init-param>
       <load-on-startup>1</load-on-startup> 
   </servlet>
@@ -43,7 +43,7 @@
         <param-name>myPrefix</param-name><param-value>/console/dwnld</param-value>
       </init-param>
       <init-param>
-        <param-name>SOAMetricsQueryServiceURL</param-name><param-value>https://localhost:8443/security/SOAMetricsQueryServiceV1</param-value>
+        <param-name>SOAMetricsQueryServiceURL</param-name><param-value>https://localhost:8443/sqms/SOAMetricsQueryServiceV1</param-value>
       </init-param>
       <load-on-startup>1</load-on-startup> 
   </servlet>
@@ -61,7 +61,7 @@
         <param-name>Prefix</param-name><param-value>/console/policy</param-value>
       </init-param>
       <init-param>
-        <param-name>ProxyTo</param-name><param-value>https://localhost:8443/security/PolicyServiceV1</param-value>
+        <param-name>ProxyTo</param-name><param-value>https://localhost:8443/sqms/PolicyServiceV1</param-value>
       </init-param>
       <load-on-startup>1</load-on-startup> 
   </servlet>
@@ -79,7 +79,7 @@
         <param-name>Prefix</param-name><param-value>/console/policyEnforcement</param-value>
       </init-param>
       <init-param>
-        <param-name>ProxyTo</param-name><param-value>https://localhost:8443/security/PolicyEnforcementServiceV1</param-value>
+        <param-name>ProxyTo</param-name><param-value>https://localhost:8443/sqms/PolicyEnforcementServiceV1</param-value>
       </init-param>
       <load-on-startup>1</load-on-startup> 
   </servlet>
