@@ -2,12 +2,19 @@ package org.ebayopensource.turmeric.monitoring.aggregation;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
-public abstract class ColumnFamilyReader {
+import me.prettyprint.cassandra.serializers.LongSerializer;
+import me.prettyprint.cassandra.serializers.StringSerializer;
+
+public abstract class ColumnFamilyReader<KeyType> {
    protected static final int ROWS_NUMBER_MAX_VALUE = 20000000;
    protected Date startTime;
    protected Date endTime;
    protected CassandraConnectionInfo connectionInfo;
+
+   protected static final LongSerializer LONG_SERIALIZER = LongSerializer.get();
+   protected static final StringSerializer STR_SERIALIZER = StringSerializer.get();
 
    public ColumnFamilyReader(Date startTime, Date endTime, CassandraConnectionInfo connectionInfo) {
       super();
@@ -16,11 +23,8 @@ public abstract class ColumnFamilyReader {
       this.connectionInfo = connectionInfo;
    }
 
-   public Object read(CassandraConnectionInfo conInfo) {
+   public abstract Map<KeyType, List<Map<Object, Object>>> readData();
 
-      return null;
-   }
-
-   public abstract List retrieveKeysInRange();
+   public abstract List<KeyType> retrieveKeysInRange();
 
 }

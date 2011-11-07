@@ -1,21 +1,26 @@
-package org.ebayopensource.turmeric.monitoring.aggregation.error;
+package org.ebayopensource.turmeric.monitoring.aggregation.error.reader;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
+import me.prettyprint.hector.api.beans.HColumn;
 import me.prettyprint.hector.api.beans.OrderedRows;
 import me.prettyprint.hector.api.beans.Row;
+import me.prettyprint.hector.api.beans.Rows;
 import me.prettyprint.hector.api.factory.HFactory;
+import me.prettyprint.hector.api.query.MultigetSliceQuery;
 import me.prettyprint.hector.api.query.QueryResult;
 import me.prettyprint.hector.api.query.RangeSlicesQuery;
 
 import org.ebayopensource.turmeric.monitoring.aggregation.CassandraConnectionInfo;
 import org.ebayopensource.turmeric.monitoring.aggregation.ColumnFamilyReader;
 
-public class ErrorsByIdReader extends ColumnFamilyReader {
+public class ErrorsByIdReader extends ColumnFamilyReader<Long> {
 
    private static final String columnFamilyName = "ErrorsById";
 
@@ -52,6 +57,41 @@ public class ErrorsByIdReader extends ColumnFamilyReader {
       }
 
       return rowKeys;
+   }
+
+   @Override
+   public Map<Long, List<Map<Object, Object>>> readData() {
+      Map<Long, List<Map<Object, Object>>> result = new HashMap<Long, List<Map<Object, Object>>>();
+      try {
+
+         List<Long> keysToRead = retrieveKeysInRange();
+         MultigetSliceQuery<Long, String, String> multigetSliceQuery = HFactory.createMultigetSliceQuery(
+                  connectionInfo.getKeyspace(), LONG_SERIALIZER, STR_SERIALIZER, STR_SERIALIZER);
+         multigetSliceQuery.setColumnFamily(columnFamilyName);
+         multigetSliceQuery.setKeys(keysToRead);
+         multigetSliceQuery.setRange("", "", false, ROWS_NUMBER_MAX_VALUE);
+         QueryResult<Rows<Long, String, String>> queryResult = multigetSliceQuery.execute();
+         if (queryResult != null) {
+            for (Row<Long, String, String> row : queryResult.get()) {
+               Map<Object, Object> rowMap = new HashMap<Object, Object>();
+               for (HColumn<String, String> column : row.getColumnSlice().getColumns()) {
+                  rowMap.put(column.getName(), column.getValue());
+               }
+               if (result.get(row.getKey()) == null) {
+                  result.put(row.getKey(), new ArrayList<Map<Object, Object>>());
+               }
+               result.get(row.getKey()).add(rowMap);
+            }
+         } else {
+
+         }
+      } catch (Exception e) {
+         e.printStackTrace();
+         if (e.getCause() != null) {
+            e.getCause().printStackTrace();
+         }
+      }
+      return result;
    }
 
 }

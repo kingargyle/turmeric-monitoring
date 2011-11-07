@@ -1,4 +1,4 @@
-package org.ebayopensource.turmeric.monitoring.aggregation.error;
+package org.ebayopensource.turmeric.monitoring.aggregation.error.reader;
 
 import java.util.Date;
 

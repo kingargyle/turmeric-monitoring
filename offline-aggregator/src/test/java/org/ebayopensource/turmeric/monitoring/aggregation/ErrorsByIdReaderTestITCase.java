@@ -2,16 +2,20 @@ package org.ebayopensource.turmeric.monitoring.aggregation;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.ebayopensource.turmeric.monitoring.aggregation.error.ErrorsByIdReader;
+import org.apache.cassandra.config.ConfigurationException;
+import org.apache.thrift.transport.TTransportException;
+import org.ebayopensource.turmeric.monitoring.aggregation.error.reader.ErrorsByIdReader;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ErrorsByIdReaderTestITCase extends BaseErrorTestClass {
+public class ErrorsByIdReaderTestITCase extends BaseTest {
 
    protected Long[] keysToFind1MinAgo;
    protected Long[] keysToFind2MinsAgos;
@@ -21,18 +25,20 @@ public class ErrorsByIdReaderTestITCase extends BaseErrorTestClass {
       return new Long[] { 0l, 1l, 2l };
    }
 
+   @Override
    @Before
-   public void setUp() throws Exception {
-      super.setup();
-      keysToFind1MinAgo = createKeysToFind(serviceNameToStore1MinAgo, operationName1MinAgo, twoMinutesAgo);
-      keysToFind2MinsAgos = createKeysToFind(serviceNameToStore2MinsAgo, operationName2MinsAgo, twoMinutesAgo);
-      keysToFind3MinsAgos = createKeysToFind(serviceNameToStore3MinsAgo, operationName3MinsAgo, threeMinutesAgo);
-      errorStorageProvider.persistErrors(createTestCommonErrorDataList(3), serverName, serviceNameToStore3MinsAgo,
-               operationName3MinsAgo, serverSide, consumerName, threeMinutesAgo);
-      errorStorageProvider.persistErrors(createTestCommonErrorDataList(3), serverName, serviceNameToStore2MinsAgo,
-               operationName2MinsAgo, serverSide, consumerName, twoMinutesAgo);
-      errorStorageProvider.persistErrors(createTestCommonErrorDataList(3), serverName, serviceNameToStore1MinAgo,
-               operationName1MinAgo, serverSide, consumerName, oneMinuteAgo);
+   public void setUp() throws TTransportException, ServiceException, IOException, InterruptedException,
+            ConfigurationException {
+      super.setUp();
+      keysToFind1MinAgo = createKeysToFind(srvcAdminName, opName, twoMinutesAgo);
+      keysToFind2MinsAgos = createKeysToFind(srvcAdminName, opName, twoMinutesAgo);
+      keysToFind3MinsAgos = createKeysToFind(srvcAdminName, opName, threeMinutesAgo);
+      errorStorageProvider.persistErrors(createTestCommonErrorDataList(3), serverName, srvcAdminName, opName,
+               serverSide, consumerName, threeMinutesAgo);
+      errorStorageProvider.persistErrors(createTestCommonErrorDataList(3), serverName, srvcAdminName, opName,
+               serverSide, consumerName, twoMinutesAgo);
+      errorStorageProvider.persistErrors(createTestCommonErrorDataList(3), serverName, srvcAdminName, opName,
+               serverSide, consumerName, oneMinuteAgo);
    }
 
    @Test
@@ -91,6 +97,12 @@ public class ErrorsByIdReaderTestITCase extends BaseErrorTestClass {
       assertTrue(keys.containsAll(Arrays.asList(keysToFind1MinAgo)));
       assertTrue(keys.containsAll(Arrays.asList(keysToFind2MinsAgos)));
       assertTrue(keys.containsAll(Arrays.asList(keysToFind3MinsAgos)));
+   }
+
+   @Override
+   @After
+   public void tearDown() {
+      super.tearDown();
    }
 
 }
