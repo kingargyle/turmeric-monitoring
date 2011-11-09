@@ -1,5 +1,6 @@
-package org.ebayopensource.turmeric.monitoring.aggregation;
+package org.ebayopensource.turmeric.monitoring.aggregation.reader;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -9,13 +10,14 @@ import java.util.List;
 
 import org.apache.cassandra.config.ConfigurationException;
 import org.apache.thrift.transport.TTransportException;
+import org.ebayopensource.turmeric.monitoring.aggregation.BaseTest;
 import org.ebayopensource.turmeric.monitoring.aggregation.error.reader.ErrorsBySeverityReader;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ErrorsBySeverityReaderTestITCase extends BaseTest {
+public class ErrorsBySeverityReaderTest extends BaseTest {
    private String[] createKeysToFind(String serviceNameToStore, String operationName, long time) {
       return new String[] { "localhost|" + serviceNameToStore + "|All|All|ERROR|true",
                "localhost|" + serviceNameToStore + "|ConsumerName1|" + operationName + "|ERROR|true",
@@ -39,8 +41,8 @@ public class ErrorsBySeverityReaderTestITCase extends BaseTest {
             ConfigurationException {
       super.setUp();
       keysToFind1MinAgo = createKeysToFind(srvcAdminName, opName, twoMinutesAgo);
-      keysToFind2MinsAgos = createKeysToFind(srvcAdminName, opName, twoMinutesAgo);
-      keysToFind3MinsAgos = createKeysToFind(srvcAdminName, opName, threeMinutesAgo);
+      keysToFind2MinsAgo = createKeysToFind(srvcAdminName, opName, twoMinutesAgo);
+      keysToFind3MinsAgo = createKeysToFind(srvcAdminName, opName, threeMinutesAgo);
       errorStorageProvider.persistErrors(createTestCommonErrorDataList(3), serverName, srvcAdminName, opName,
                serverSide, consumerName, threeMinutesAgo);
       errorStorageProvider.persistErrors(createTestCommonErrorDataList(3), serverName, srvcAdminName, opName,
@@ -56,7 +58,7 @@ public class ErrorsBySeverityReaderTestITCase extends BaseTest {
       reader = new ErrorsBySeverityReader(startTime, endTime, connectionInfo);
 
       List<String> keys = reader.retrieveKeysInRange();
-
+      assertNotNull(keys);
       assertTrue(keys.containsAll(Arrays.asList(keysToFind1MinAgo)));
    }
 
@@ -67,8 +69,8 @@ public class ErrorsBySeverityReaderTestITCase extends BaseTest {
       reader = new ErrorsBySeverityReader(startTime, endTime, connectionInfo);
 
       List<String> keys = reader.retrieveKeysInRange();
-
-      assertTrue(keys.containsAll(Arrays.asList(keysToFind2MinsAgos)));
+      assertNotNull(keys);
+      assertTrue(keys.containsAll(Arrays.asList(keysToFind2MinsAgo)));
    }
 
    @Test
@@ -78,7 +80,9 @@ public class ErrorsBySeverityReaderTestITCase extends BaseTest {
       reader = new ErrorsBySeverityReader(startTime, endTime, connectionInfo);
 
       List<String> keys = reader.retrieveKeysInRange();
-      assertTrue(keys.containsAll(Arrays.asList(keysToFind3MinsAgos)));
+      assertNotNull(keys);
+      assertTrue("The response must contain " + Arrays.toString(keysToFind3MinsAgo),
+               keys.containsAll(Arrays.asList(keysToFind3MinsAgo)));
    }
 
    @Test
@@ -88,10 +92,10 @@ public class ErrorsBySeverityReaderTestITCase extends BaseTest {
       reader = new ErrorsBySeverityReader(startTime, endTime, connectionInfo);
 
       List<String> keys = reader.retrieveKeysInRange();
-
+      assertNotNull(keys);
       assertTrue(keys.isEmpty());
       assertTrue(!keys.containsAll(Arrays.asList(keysToFind1MinAgo)));
-      assertTrue(!keys.containsAll(Arrays.asList(keysToFind2MinsAgos)));
-      assertTrue(!keys.containsAll(Arrays.asList(keysToFind3MinsAgos)));
+      assertTrue(!keys.containsAll(Arrays.asList(keysToFind2MinsAgo)));
+      assertTrue(!keys.containsAll(Arrays.asList(keysToFind3MinsAgo)));
    }
 }

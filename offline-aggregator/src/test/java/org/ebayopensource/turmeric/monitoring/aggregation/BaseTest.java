@@ -8,11 +8,15 @@ import java.util.List;
 import java.util.Map;
 
 import me.prettyprint.cassandra.serializers.StringSerializer;
+import me.prettyprint.cassandra.service.ThriftKsDef;
+import me.prettyprint.hector.api.Cluster;
 import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.beans.OrderedRows;
 import me.prettyprint.hector.api.beans.OrderedSuperRows;
 import me.prettyprint.hector.api.beans.Row;
 import me.prettyprint.hector.api.beans.SuperRow;
+import me.prettyprint.hector.api.ddl.KeyspaceDefinition;
+import me.prettyprint.hector.api.exceptions.HectorException;
 import me.prettyprint.hector.api.factory.HFactory;
 import me.prettyprint.hector.api.mutation.Mutator;
 import me.prettyprint.hector.api.query.QueryResult;
@@ -50,10 +54,9 @@ public class BaseTest {
    protected CassandraErrorLoggingHandler errorStorageProvider;
    protected long fiveMinutesAgo;
    protected long fourMinutesAgo;
-   private final String[] keyArray = null;
    protected String[] keysToFind1MinAgo;
-   protected String[] keysToFind2MinsAgos;
-   protected String[] keysToFind3MinsAgos;
+   protected String[] keysToFind2MinsAgo;
+   protected String[] keysToFind3MinsAgo;
    protected CassandraMetricsStorageProvider metricsStorageProvider;
    protected long now;
    protected CassandraConnectionInfo offlineConnectionInfo;
@@ -123,13 +126,42 @@ public class BaseTest {
       metricsStorageProvider.init(options, null, MonitoringSystem.COLLECTION_LOCATION_SERVER, 20);
       connectionInfo = new CassandraConnectionInfo(TURMERIC_CLUSTER, HOST, PORT, ONLINE_KEYSPACE_NAME);
       offlineConnectionInfo = new CassandraConnectionInfo(TURMERIC_CLUSTER, HOST, PORT, OFFLINE_KEYSPACE_NAME);
+      // now I need to create the keyspace for the offline data
+      createOfflineKeyspace();
+   }
 
+   private void createOfflineKeyspace() throws ServiceException {
+      try {
+         Cluster cluster = HFactory.getOrCreateCluster(TURMERIC_CLUSTER, HOST + ":" + PORT);
+         KeyspaceDefinition ksDefinition = new ThriftKsDef(OFFLINE_KEYSPACE_NAME);
+         Keyspace keyspace = HFactory.createKeyspace(OFFLINE_KEYSPACE_NAME, cluster);
+         // createKeyspace(kspace, cluster);
+         cluster.addKeyspace(ksDefinition);
+      } catch (HectorException e) {
+         // ugly I know
+      }
+      // I create a error Logging provider to get the cf created for us
+      Map<String, String> offlineOptions = createOptionsForOfflineKeyspace();
+      new CassandraErrorLoggingHandler().init(new MockInitContext(offlineOptions));
+      new CassandraMetricsStorageProvider().init(offlineOptions, null, MonitoringSystem.COLLECTION_LOCATION_SERVER, 20);
    }
 
    @After
    public void tearDown() {
       errorStorageProvider = null;
       metricsStorageProvider = null;
+      keysToFind1MinAgo = null;
+      keysToFind2MinsAgo = null;
+      keysToFind3MinsAgo = null;
+      now = -1;
+      fiveMinutesAgo = -1;
+      fourMinutesAgo = -1;
+      threeMinutesAgo = -1;
+      twoMinutesAgo = -1;
+      oneMinuteAgo = -1;
+      startTime = null;
+      endTime = null;
+      reader = null;
       cleanUpTestData();
       // CassandraTestManager.cleanUpCassandraDirs();
    }

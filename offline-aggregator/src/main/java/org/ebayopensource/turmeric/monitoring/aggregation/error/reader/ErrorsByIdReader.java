@@ -19,6 +19,7 @@ import me.prettyprint.hector.api.query.RangeSlicesQuery;
 
 import org.ebayopensource.turmeric.monitoring.aggregation.CassandraConnectionInfo;
 import org.ebayopensource.turmeric.monitoring.aggregation.ColumnFamilyReader;
+import org.ebayopensource.turmeric.monitoring.aggregation.data.AggregationData;
 
 public class ErrorsByIdReader extends ColumnFamilyReader<Long> {
 
@@ -60,8 +61,8 @@ public class ErrorsByIdReader extends ColumnFamilyReader<Long> {
    }
 
    @Override
-   public Map<Long, List<Map<Object, Object>>> readData() {
-      Map<Long, List<Map<Object, Object>>> result = new HashMap<Long, List<Map<Object, Object>>>();
+   public Map<Long, AggregationData<Long>> readData() {
+      Map<Long, AggregationData<Long>> result = new HashMap<Long, AggregationData<Long>>();
       try {
 
          List<Long> keysToRead = retrieveKeysInRange();
@@ -73,14 +74,11 @@ public class ErrorsByIdReader extends ColumnFamilyReader<Long> {
          QueryResult<Rows<Long, String, String>> queryResult = multigetSliceQuery.execute();
          if (queryResult != null) {
             for (Row<Long, String, String> row : queryResult.get()) {
-               Map<Object, Object> rowMap = new HashMap<Object, Object>();
+               AggregationData<Long> rowData = new AggregationData<Long>(row.getKey());
                for (HColumn<String, String> column : row.getColumnSlice().getColumns()) {
-                  rowMap.put(column.getName(), column.getValue());
+                  rowData.addColumn(column.getName(), column.getValue());
                }
-               if (result.get(row.getKey()) == null) {
-                  result.put(row.getKey(), new ArrayList<Map<Object, Object>>());
-               }
-               result.get(row.getKey()).add(rowMap);
+               result.put(row.getKey(), rowData);
             }
          } else {
 

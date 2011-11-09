@@ -1,4 +1,4 @@
-package org.ebayopensource.turmeric.monitoring.aggregation;
+package org.ebayopensource.turmeric.monitoring.aggregation.reader;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -12,13 +12,15 @@ import java.util.Map;
 
 import org.apache.cassandra.config.ConfigurationException;
 import org.apache.thrift.transport.TTransportException;
+import org.ebayopensource.turmeric.monitoring.aggregation.BaseTest;
+import org.ebayopensource.turmeric.monitoring.aggregation.data.AggregationData;
 import org.ebayopensource.turmeric.monitoring.aggregation.error.reader.ErrorsByCategoryReader;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ErrorsByCategoryReaderTestITCase extends BaseTest {
+public class ErrorsByCategoryReaderTest extends BaseTest {
    private String[] createKeysToFind(String serviceNameToStore, String operationName, long time) {
       return new String[] { "localhost|" + serviceNameToStore + "|All|All|APPLICATION|true",
                "localhost|" + serviceNameToStore + "|ConsumerName1|" + operationName + "|APPLICATION|true",
@@ -36,8 +38,8 @@ public class ErrorsByCategoryReaderTestITCase extends BaseTest {
             ConfigurationException {
       super.setUp();
       keysToFind1MinAgo = createKeysToFind(srvcAdminName, opName, oneMinuteAgo);
-      keysToFind2MinsAgos = createKeysToFind(srvcAdminName, opName, twoMinutesAgo);
-      keysToFind3MinsAgos = createKeysToFind(srvcAdminName, opName, threeMinutesAgo);
+      keysToFind2MinsAgo = createKeysToFind(srvcAdminName, opName, twoMinutesAgo);
+      keysToFind3MinsAgo = createKeysToFind(srvcAdminName, opName, threeMinutesAgo);
       errorStorageProvider.persistErrors(createTestCommonErrorDataList(3), serverName, srvcAdminName, opName,
                serverSide, consumerName, threeMinutesAgo);
       errorStorageProvider.persistErrors(createTestCommonErrorDataList(3), serverName, srvcAdminName, opName,
@@ -57,9 +59,8 @@ public class ErrorsByCategoryReaderTestITCase extends BaseTest {
       startTime = new Date(oneMinuteAgo);
       endTime = new Date(now);
       reader = new ErrorsByCategoryReader(startTime, endTime, connectionInfo);
-
       List<String> keys = reader.retrieveKeysInRange();
-
+      assertNotNull(keys);
       assertTrue(keys.containsAll(Arrays.asList(keysToFind1MinAgo)));
    }
 
@@ -69,7 +70,8 @@ public class ErrorsByCategoryReaderTestITCase extends BaseTest {
       endTime = new Date(now);
       reader = new ErrorsByCategoryReader(startTime, endTime, connectionInfo);
       List<String> keys = reader.retrieveKeysInRange();
-      assertTrue(keys.containsAll(Arrays.asList(keysToFind2MinsAgos)));
+      assertNotNull(keys);
+      assertTrue(keys.containsAll(Arrays.asList(keysToFind2MinsAgo)));
    }
 
    @Test
@@ -79,7 +81,7 @@ public class ErrorsByCategoryReaderTestITCase extends BaseTest {
       reader = new ErrorsByCategoryReader(startTime, endTime, connectionInfo);
 
       List<String> keys = reader.retrieveKeysInRange();
-
+      assertNotNull(keys);
       assertTrue(keys.isEmpty());
    }
 
@@ -88,32 +90,26 @@ public class ErrorsByCategoryReaderTestITCase extends BaseTest {
       startTime = new Date(threeMinutesAgo);
       endTime = new Date(now);
       reader = new ErrorsByCategoryReader(startTime, endTime, connectionInfo);
-      Map<String, List<Map<Object, Object>>> readData = reader.readData();
+      Map<String, AggregationData<String>> readData = reader.readData();
       assertNotNull("readData should not be null", readData);
       for (int i = 0; i < keysToFind1MinAgo.length; i++) {
-         List<Map<Object, Object>> columns = readData.get(keysToFind1MinAgo[i]);
-         assertNotNull(columns);
-         int columnSize = columns.size();
+         AggregationData<String> rowData = readData.get(keysToFind1MinAgo[i]);
+         assertNotNull(rowData);
+         int columnSize = rowData.size();
          assertEquals("There must be 3 column timestamps", 3, columnSize);
-         for (Map<Object, Object> map : columns) {
-            System.out.println("keysToFind1MinAgo[" + i + "]->" + keysToFind1MinAgo[i] + "=" + map);
-            // each map should have 1 key with the
-         }
-         Map<Object, Object> map = columns.get(0);
-         assertTrue("Each map must have as key the timestamp", map.containsKey(threeMinutesAgo));
-         assertNotNull(map.get(threeMinutesAgo));
+
+         assertTrue("Each map must have as key the timestamp", rowData.contains(threeMinutesAgo));
+         assertNotNull(rowData.getValue(threeMinutesAgo));
          assertEquals("Each map must contain the corresponding errorValueKey.", threeMinutesAgo + "|1",
-                  map.get(threeMinutesAgo));
-         map = columns.get(1);
-         assertTrue("Each map must have as key the timestamp", map.containsKey(twoMinutesAgo));
-         assertNotNull(map.get(twoMinutesAgo));
+                  rowData.getValue(threeMinutesAgo));
+         assertTrue("Each map must have as key the timestamp", rowData.contains(twoMinutesAgo));
+         assertNotNull(rowData.getValue(twoMinutesAgo));
          assertEquals("Each map must contain the corresponding errorValueKey.", twoMinutesAgo + "|1",
-                  map.get(twoMinutesAgo));
-         map = columns.get(2);
-         assertTrue("Each map must have as key the timestamp", map.containsKey(oneMinuteAgo));
-         assertNotNull(map.get(oneMinuteAgo));
+                  rowData.getValue(twoMinutesAgo));
+         assertTrue("Each map must have as key the timestamp", rowData.contains(oneMinuteAgo));
+         assertNotNull(rowData.getValue(oneMinuteAgo));
          assertEquals("Each map must contain the corresponding errorValueKey.", oneMinuteAgo + "|1",
-                  map.get(oneMinuteAgo));
+                  rowData.getValue(oneMinuteAgo));
       }
    }
 }

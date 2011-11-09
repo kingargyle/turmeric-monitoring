@@ -17,14 +17,14 @@ import me.prettyprint.hector.api.query.RangeSlicesQuery;
 
 import org.ebayopensource.turmeric.monitoring.aggregation.CassandraConnectionInfo;
 import org.ebayopensource.turmeric.monitoring.aggregation.ColumnFamilyReader;
+import org.ebayopensource.turmeric.monitoring.aggregation.data.AggregationData;
 
 public abstract class AbstractErrorCountsReader extends ColumnFamilyReader<String> {
 
    @Override
-   public Map<String, List<Map<Object, Object>>> readData() {
-      Map<String, List<Map<Object, Object>>> result = new HashMap<String, List<Map<Object, Object>>>();
+   public Map<String, AggregationData<String>> readData() {
+      Map<String, AggregationData<String>> result = new HashMap<String, AggregationData<String>>();
       try {
-
          List<String> keysToRead = retrieveKeysInRange();
          MultigetSliceQuery<String, Long, String> multigetSliceQuery = HFactory.createMultigetSliceQuery(
                   connectionInfo.getKeyspace(), STR_SERIALIZER, LONG_SERIALIZER, STR_SERIALIZER);
@@ -34,14 +34,11 @@ public abstract class AbstractErrorCountsReader extends ColumnFamilyReader<Strin
          QueryResult<Rows<String, Long, String>> queryResult = multigetSliceQuery.execute();
          if (queryResult != null) {
             for (Row<String, Long, String> row : queryResult.get()) {
+               AggregationData<String> rowData = new AggregationData<String>(row.getKey());
                for (HColumn<Long, String> column : row.getColumnSlice().getColumns()) {
-                  Map<Object, Object> rowMap = new HashMap<Object, Object>();
-                  rowMap.put(column.getName(), column.getValue());
-                  if (result.get(row.getKey()) == null) {
-                     result.put(row.getKey(), new ArrayList<Map<Object, Object>>());
-                  }
-                  result.get(row.getKey()).add(rowMap);
+                  rowData.addColumn(column.getName(), column.getValue());
                }
+               result.put(row.getKey(), rowData);
             }
          } else {
 
@@ -65,7 +62,6 @@ public abstract class AbstractErrorCountsReader extends ColumnFamilyReader<Strin
    @Override
    public List<String> retrieveKeysInRange() {
       List<String> rowKeys = new ArrayList<String>();
-
       try {
          RangeSlicesQuery<String, Long, String> rangeSlicesQuery = HFactory.createRangeSlicesQuery(
                   connectionInfo.getKeyspace(), STR_SERIALIZER, LONG_SERIALIZER, STR_SERIALIZER);

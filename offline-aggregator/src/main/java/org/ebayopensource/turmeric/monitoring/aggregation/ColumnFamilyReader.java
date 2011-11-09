@@ -4,26 +4,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import me.prettyprint.cassandra.serializers.LongSerializer;
-import me.prettyprint.cassandra.serializers.StringSerializer;
+import org.ebayopensource.turmeric.monitoring.aggregation.data.AggregationData;
 
-public abstract class ColumnFamilyReader<KeyType> {
-   protected static final int ROWS_NUMBER_MAX_VALUE = 20000000;
-   protected Date startTime;
-   protected Date endTime;
-   protected CassandraConnectionInfo connectionInfo;
-
-   protected static final LongSerializer LONG_SERIALIZER = LongSerializer.get();
-   protected static final StringSerializer STR_SERIALIZER = StringSerializer.get();
-
+public abstract class ColumnFamilyReader<KeyType> extends CassandraObject<KeyType> {
    public ColumnFamilyReader(Date startTime, Date endTime, CassandraConnectionInfo connectionInfo) {
-      super();
-      this.startTime = startTime;
-      this.endTime = endTime;
-      this.connectionInfo = connectionInfo;
+      super(startTime, endTime, connectionInfo);
    }
 
-   public abstract Map<KeyType, List<Map<Object, Object>>> readData();
+   public abstract Map<KeyType, AggregationData<KeyType>> readData();
 
    public abstract List<KeyType> retrieveKeysInRange();
 
