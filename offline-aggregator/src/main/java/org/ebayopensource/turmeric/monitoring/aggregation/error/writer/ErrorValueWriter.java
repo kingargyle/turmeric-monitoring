@@ -12,12 +12,27 @@ import org.ebayopensource.turmeric.monitoring.aggregation.CassandraConnectionInf
 import org.ebayopensource.turmeric.monitoring.aggregation.CassandraObject;
 import org.ebayopensource.turmeric.monitoring.aggregation.data.AggregationData;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ErrorValueWriter.
+ */
 public class ErrorValueWriter extends CassandraObject implements CassandraDataWriter<String> {
 
+   /**
+    * Instantiates a new error value writer.
+    * 
+    * @param startTime
+    *           the start time
+    * @param endTime
+    *           the end time
+    * @param connectionInfo
+    *           the connection info
+    */
    public ErrorValueWriter(Date startTime, Date endTime, CassandraConnectionInfo connectionInfo) {
       super(startTime, endTime, connectionInfo);
    }
 
+   /** The Constant columnFamilyName. */
    protected static final String columnFamilyName = "ErrorValues";
 
    /**

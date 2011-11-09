@@ -21,18 +21,42 @@ import org.ebayopensource.turmeric.monitoring.aggregation.CassandraConnectionInf
 import org.ebayopensource.turmeric.monitoring.aggregation.ColumnFamilyReader;
 import org.ebayopensource.turmeric.monitoring.aggregation.data.AggregationData;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ErrorValueReader.
+ */
 public class ErrorValueReader extends ColumnFamilyReader<String> {
 
+   /**
+    * Instantiates a new error value reader.
+    * 
+    * @param startTime
+    *           the start time
+    * @param endTime
+    *           the end time
+    * @param connectionInfo
+    *           the connection info
+    */
    public ErrorValueReader(Date startTime, Date endTime, CassandraConnectionInfo connectionInfo) {
       super(startTime, endTime, connectionInfo);
    }
 
+   /** The Constant columnFamilyName. */
    private static final String columnFamilyName = "ErrorValues";
+
+   /** The Constant countsColumnFamilyName. */
    private static final String countsColumnFamilyName = "ErrorCountsByCategory";
+
+   /** The Constant longColumnNames. */
    private static final List<String> longColumnNames = java.util.Arrays
             .asList("aggregationPeriod", "errorId", "tstamp");
+
+   /** The Constant intColumnNames. */
    private static final List<String> intColumnNames = java.util.Arrays.asList("randomNumber");
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public Map<String, AggregationData<String>> readData() {
       Map<String, AggregationData<String>> result = new HashMap<String, AggregationData<String>>();
@@ -81,6 +105,9 @@ public class ErrorValueReader extends ColumnFamilyReader<String> {
       return result;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public List<String> retrieveKeysInRange() {
       List<String> result = new ArrayList<String>();

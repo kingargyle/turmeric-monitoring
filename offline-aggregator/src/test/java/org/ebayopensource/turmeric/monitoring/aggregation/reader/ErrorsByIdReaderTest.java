@@ -65,7 +65,7 @@ public class ErrorsByIdReaderTest extends BaseTest {
       startTime = new Date(threeMinutesAgo);
       endTime = new Date(now);
       reader = new ErrorsByIdReader(startTime, endTime, connectionInfo);
-      Map<String, AggregationData<Long>> readData = reader.readData();
+      Map<Long, AggregationData<Long>> readData = reader.readData();
       assertNotNull("readData should not be null", readData);
       for (int i = 0; i < keysToFind.length; i++) {
          AggregationData<Long> rowData = readData.get(keysToFind[i]);

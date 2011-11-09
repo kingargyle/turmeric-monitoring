@@ -55,6 +55,7 @@
         <module>turmeric-monitoring-cassandra-storage-provider</module>
         <module>turmeric-monitoring-cassandra-provider</module>
         <module>monitoring-service-war</module>
+	<module>offline-aggregator</module>
   </modules>
 
 </project>

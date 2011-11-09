@@ -12,7 +12,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class CassandraConnectionInfoTestITCase extends BaseTest {
+public class CassandraConnectionInfoTest extends BaseTest {
    CassandraConnectionInfo connectionInfo;
 
    @Before

@@ -12,12 +12,30 @@ import org.ebayopensource.turmeric.monitoring.aggregation.CassandraConnectionInf
 import org.ebayopensource.turmeric.monitoring.aggregation.CassandraObject;
 import org.ebayopensource.turmeric.monitoring.aggregation.data.AggregationData;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class AbstractErrorCountsWriter.
+ * 
+ * @param <KeyType>
+ *           the generic type
+ */
 public class AbstractErrorCountsWriter<KeyType> extends CassandraObject implements CassandraDataWriter<KeyType> {
 
+   /**
+    * Instantiates a new abstract error counts writer.
+    * 
+    * @param startTime
+    *           the start time
+    * @param endTime
+    *           the end time
+    * @param connectionInfo
+    *           the connection info
+    */
    public AbstractErrorCountsWriter(Date startTime, Date endTime, CassandraConnectionInfo connectionInfo) {
       super(startTime, endTime, connectionInfo);
    }
 
+   /** The column family name. */
    protected String columnFamilyName;
 
    /**

@@ -21,15 +21,33 @@ import org.ebayopensource.turmeric.monitoring.aggregation.CassandraConnectionInf
 import org.ebayopensource.turmeric.monitoring.aggregation.ColumnFamilyReader;
 import org.ebayopensource.turmeric.monitoring.aggregation.data.AggregationData;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ErrorsByIdReader.
+ */
 public class ErrorsByIdReader extends ColumnFamilyReader<Long> {
 
+   /** The Constant columnFamilyName. */
    private static final String columnFamilyName = "ErrorsById";
 
+   /**
+    * Instantiates a new errors by id reader.
+    * 
+    * @param startTime
+    *           the start time
+    * @param endTime
+    *           the end time
+    * @param connectionInfo
+    *           the connection info
+    */
    public ErrorsByIdReader(Date startTime, Date endTime, CassandraConnectionInfo connectionInfo) {
       super(startTime, endTime, connectionInfo);
 
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public List<Long> retrieveKeysInRange() {
       List<Long> rowKeys = new ArrayList<Long>();
@@ -60,6 +78,9 @@ public class ErrorsByIdReader extends ColumnFamilyReader<Long> {
       return rowKeys;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public Map<Long, AggregationData<Long>> readData() {
       Map<Long, AggregationData<Long>> result = new HashMap<Long, AggregationData<Long>>();

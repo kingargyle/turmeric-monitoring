@@ -19,8 +19,15 @@ import org.ebayopensource.turmeric.monitoring.aggregation.CassandraConnectionInf
 import org.ebayopensource.turmeric.monitoring.aggregation.ColumnFamilyReader;
 import org.ebayopensource.turmeric.monitoring.aggregation.data.AggregationData;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class AbstractErrorCountsReader.
+ */
 public abstract class AbstractErrorCountsReader extends ColumnFamilyReader<String> {
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public Map<String, AggregationData<String>> readData() {
       Map<String, AggregationData<String>> result = new HashMap<String, AggregationData<String>>();
@@ -52,13 +59,27 @@ public abstract class AbstractErrorCountsReader extends ColumnFamilyReader<Strin
       return result;
    }
 
+   /** The column family name. */
    protected String columnFamilyName;
 
+   /**
+    * Instantiates a new abstract error counts reader.
+    * 
+    * @param startTime
+    *           the start time
+    * @param endTime
+    *           the end time
+    * @param connectionInfo
+    *           the connection info
+    */
    public AbstractErrorCountsReader(Date startTime, Date endTime, CassandraConnectionInfo connectionInfo) {
       super(startTime, endTime, connectionInfo);
 
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public List<String> retrieveKeysInRange() {
       List<String> rowKeys = new ArrayList<String>();
