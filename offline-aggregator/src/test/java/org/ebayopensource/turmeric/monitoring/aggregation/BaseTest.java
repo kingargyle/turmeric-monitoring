@@ -33,6 +33,7 @@ import org.ebayopensource.turmeric.monitoring.aggregation.util.MockInitContext;
 import org.ebayopensource.turmeric.monitoring.cassandra.storage.provider.CassandraMetricsStorageProvider;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.MonitoringSystem;
+import org.ebayopensource.turmeric.runtime.common.monitoring.value.MetricValueAggregator;
 import org.ebayopensource.turmeric.runtime.common.pipeline.LoggingHandler.InitContext;
 import org.ebayopensource.turmeric.runtime.error.cassandra.handler.CassandraErrorLoggingHandler;
 import org.ebayopensource.turmeric.utils.cassandra.hector.HectorManager;
@@ -134,7 +135,7 @@ public class BaseTest {
       try {
          Cluster cluster = HFactory.getOrCreateCluster(TURMERIC_CLUSTER, HOST + ":" + PORT);
          KeyspaceDefinition ksDefinition = new ThriftKsDef(OFFLINE_KEYSPACE_NAME);
-         Keyspace keyspace = HFactory.createKeyspace(OFFLINE_KEYSPACE_NAME, cluster);
+         HFactory.createKeyspace(OFFLINE_KEYSPACE_NAME, cluster);
          // createKeyspace(kspace, cluster);
          cluster.addKeyspace(ksDefinition);
       } catch (HectorException e) {
@@ -201,7 +202,15 @@ public class BaseTest {
             deleteMutator.delete(row.getKey(), scf, null, StringSerializer.get());
          }
       }
+   }
 
+   public List<MetricValueAggregator> deepCopyAggregators(MetricValueAggregator... aggregators) {
+      // The aggregator list passed to the storage provider is always a deep copy of the aggregators
+      List<MetricValueAggregator> result = new ArrayList<MetricValueAggregator>();
+      for (MetricValueAggregator aggregator : aggregators) {
+         result.add((MetricValueAggregator) aggregator.deepCopy(false));
+      }
+      return result;
    }
 
 }

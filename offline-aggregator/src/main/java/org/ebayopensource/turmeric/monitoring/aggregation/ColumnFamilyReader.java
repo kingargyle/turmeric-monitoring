@@ -13,7 +13,7 @@ import org.ebayopensource.turmeric.monitoring.aggregation.data.AggregationData;
  * @param <KeyType>
  *           the generic type
  */
-public abstract class ColumnFamilyReader<KeyType> extends CassandraObject<KeyType> {
+public abstract class ColumnFamilyReader<KeyType> extends CassandraObject {
 
    /**
     * Instantiates a new column family reader.

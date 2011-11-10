@@ -52,6 +52,7 @@ public class ErrorValueReaderTest extends BaseTest {
       endTime = new Date(now);
       reader = new ErrorValueReader(startTime, endTime, connectionInfo);
       List<String> keys = reader.retrieveKeysInRange();
+      assertNotNull("the key list must not be null", keys);
       assertTrue(keys.containsAll(Arrays.asList(keysToFind3MinsAgo)));
       assertTrue(keys.containsAll(Arrays.asList(keysToFind2MinsAgo)));
       assertTrue(keys.containsAll(Arrays.asList(keysToFind1MinAgo)));

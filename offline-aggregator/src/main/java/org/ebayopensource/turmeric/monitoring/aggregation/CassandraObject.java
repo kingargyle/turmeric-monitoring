@@ -5,14 +5,10 @@ import java.util.Date;
 import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class CassandraObject.
- * 
- * @param <KeyType>
- *           the generic type
  */
-public class CassandraObject<KeyType> {
+public class CassandraObject {
 
    /**
     * Instantiates a new cassandra object.

@@ -1,4 +1,4 @@
-package org.ebayopensource.turmeric.monitoring.aggregation.error.writer;
+package org.ebayopensource.turmeric.monitoring.aggregation;
 
 import java.util.Map;
 

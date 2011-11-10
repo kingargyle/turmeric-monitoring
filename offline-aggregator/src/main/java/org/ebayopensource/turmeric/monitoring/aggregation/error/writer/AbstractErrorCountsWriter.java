@@ -9,6 +9,7 @@ import me.prettyprint.hector.api.factory.HFactory;
 import me.prettyprint.hector.api.mutation.Mutator;
 
 import org.ebayopensource.turmeric.monitoring.aggregation.CassandraConnectionInfo;
+import org.ebayopensource.turmeric.monitoring.aggregation.CassandraDataWriter;
 import org.ebayopensource.turmeric.monitoring.aggregation.CassandraObject;
 import org.ebayopensource.turmeric.monitoring.aggregation.data.AggregationData;
 

@@ -13,10 +13,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class CassandraConnectionInfoTest extends BaseTest {
-   CassandraConnectionInfo connectionInfo;
 
+   @Override
    @Before
-   public void setup() throws TTransportException, ServiceException, IOException, InterruptedException,
+   public void setUp() throws TTransportException, ServiceException, IOException, InterruptedException,
             ConfigurationException {
       super.setUp();
       connectionInfo = new CassandraConnectionInfo("TestCluster", "127.0.0.1", "9160", "TurmericMonitoring");
