@@ -61,6 +61,7 @@ public class ErrorsByCategoryReaderTest extends BaseTest {
       reader = new ErrorsByCategoryReader(startTime, endTime, connectionInfo);
       List<String> keys = reader.retrieveKeysInRange();
       assertNotNull(keys);
+      assertEquals(keysToFind1MinAgo.length, keys.size());
       assertTrue(keys.containsAll(Arrays.asList(keysToFind1MinAgo)));
    }
 
@@ -71,6 +72,7 @@ public class ErrorsByCategoryReaderTest extends BaseTest {
       reader = new ErrorsByCategoryReader(startTime, endTime, connectionInfo);
       List<String> keys = reader.retrieveKeysInRange();
       assertNotNull(keys);
+      assertEquals(keysToFind2MinsAgo.length, keys.size());
       assertTrue(keys.containsAll(Arrays.asList(keysToFind2MinsAgo)));
    }
 

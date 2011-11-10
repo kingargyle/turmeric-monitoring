@@ -3,8 +3,10 @@ package org.ebayopensource.turmeric.monitoring.aggregation.metric.reader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import me.prettyprint.hector.api.beans.HColumn;
 import me.prettyprint.hector.api.beans.HSuperColumn;
@@ -65,7 +67,7 @@ public class MetricTimeSeriesReader extends ColumnFamilyReader<String> {
             AggregationData<String> rowData = new AggregationData<String>(row.getKey());
             List<HSuperColumn<Long, String, String>> superColumns = row.getSuperSlice().getSuperColumns();
             if (superColumns != null && !superColumns.isEmpty()) {
-               List<String> metricKeys = new ArrayList<String>();
+               Set<String> metricKeys = new HashSet<String>();
                for (HSuperColumn<Long, String, String> hSuperColumn : superColumns) {
                   for (HColumn<String, String> hColumn : hSuperColumn.getColumns()) {
                      metricKeys.add(hColumn.getName());
@@ -105,7 +107,9 @@ public class MetricTimeSeriesReader extends ColumnFamilyReader<String> {
          for (SuperRow<String, Long, String, String> row : orderedRows) {
             List<HSuperColumn<Long, String, String>> superColumns = row.getSuperSlice().getSuperColumns();
             if (superColumns != null && !superColumns.isEmpty()) {
-               result.add(row.getKey());
+               if (!result.contains(row.getKey())) {
+                  result.add(row.getKey());
+               }
             }
          }
       } catch (Exception e) {

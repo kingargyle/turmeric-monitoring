@@ -126,7 +126,9 @@ public class ErrorValueReader extends ColumnFamilyReader<String> {
             List<HColumn<Long, String>> columns = row.getColumnSlice().getColumns();
             if (columns != null && !columns.isEmpty()) {
                for (HColumn<Long, String> hColumn : columns) {
-                  result.add(hColumn.getValue());
+                  if (!result.contains(hColumn.getValue())) {
+                     result.add(hColumn.getValue());
+                  }
                }
             }
          }

@@ -47,12 +47,13 @@ public class ErrorValueReaderTest extends BaseTest {
    }
 
    @Test
-   public void testRetrieveKeysInRange2MinsToNow() throws ServiceException {
+   public void testRetrieveKeysInRange3MinsToNow() throws ServiceException {
       startTime = new Date(threeMinutesAgo);
       endTime = new Date(now);
       reader = new ErrorValueReader(startTime, endTime, connectionInfo);
       List<String> keys = reader.retrieveKeysInRange();
       assertNotNull("the key list must not be null", keys);
+      assertEquals(keysToFind3MinsAgo.length + keysToFind2MinsAgo.length + keysToFind1MinAgo.length, keys.size());
       assertTrue(keys.containsAll(Arrays.asList(keysToFind3MinsAgo)));
       assertTrue(keys.containsAll(Arrays.asList(keysToFind2MinsAgo)));
       assertTrue(keys.containsAll(Arrays.asList(keysToFind1MinAgo)));

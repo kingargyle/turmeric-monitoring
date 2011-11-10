@@ -50,7 +50,7 @@ public class ErrorsByIdReaderTest extends BaseTest {
       reader = new ErrorsByIdReader(startTime, endTime, connectionInfo);
 
       List<String> keys = reader.retrieveKeysInRange();
-
+      assertEquals(keysToFind.length, keys.size());
       assertTrue(keys.containsAll(Arrays.asList(keysToFind)));
    }
 

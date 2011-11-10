@@ -1,5 +1,6 @@
 package org.ebayopensource.turmeric.monitoring.aggregation.reader;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -59,6 +60,7 @@ public class ErrorsBySeverityReaderTest extends BaseTest {
 
       List<String> keys = reader.retrieveKeysInRange();
       assertNotNull(keys);
+      assertEquals(keysToFind1MinAgo.length, keys.size());
       assertTrue(keys.containsAll(Arrays.asList(keysToFind1MinAgo)));
    }
 
@@ -70,6 +72,7 @@ public class ErrorsBySeverityReaderTest extends BaseTest {
 
       List<String> keys = reader.retrieveKeysInRange();
       assertNotNull(keys);
+      assertEquals(keysToFind2MinsAgo.length, keys.size());
       assertTrue(keys.containsAll(Arrays.asList(keysToFind2MinsAgo)));
    }
 
@@ -81,6 +84,7 @@ public class ErrorsBySeverityReaderTest extends BaseTest {
 
       List<String> keys = reader.retrieveKeysInRange();
       assertNotNull(keys);
+      assertEquals(keysToFind3MinsAgo.length, keys.size());
       assertTrue("The response must contain " + Arrays.toString(keysToFind3MinsAgo),
                keys.containsAll(Arrays.asList(keysToFind3MinsAgo)));
    }

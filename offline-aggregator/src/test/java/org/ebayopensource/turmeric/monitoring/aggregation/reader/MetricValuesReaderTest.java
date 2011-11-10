@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.cassandra.config.ConfigurationException;
 import org.apache.commons.lang.ArrayUtils;
@@ -20,7 +19,7 @@ import org.apache.thrift.transport.TTransportException;
 import org.ebayopensource.turmeric.monitoring.aggregation.BaseTest;
 import org.ebayopensource.turmeric.monitoring.aggregation.MetricValueAggregatorTestImpl;
 import org.ebayopensource.turmeric.monitoring.aggregation.data.AggregationData;
-import org.ebayopensource.turmeric.monitoring.aggregation.metric.reader.MetricTimeSeriesReader;
+import org.ebayopensource.turmeric.monitoring.aggregation.metric.reader.MetricValuesReader;
 import org.ebayopensource.turmeric.runtime.common.exceptions.ServiceException;
 import org.ebayopensource.turmeric.runtime.common.impl.internal.monitoring.SystemMetricDefs;
 import org.ebayopensource.turmeric.runtime.common.monitoring.MetricCategory;
@@ -35,16 +34,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class MetricTimeSeriesReaderTest extends BaseTest {
+public class MetricValuesReaderTest extends BaseTest {
    protected String[] keysToFind;
 
    private String[] createKeysToFind(String serverName, String serviceName, String operationName, String consumerName,
-            String metricName, int aggregationPeriod, boolean isServerSide) {
+            String metricName, long timestamp) {
       // manuelchinea-desktop|ServiceAdminName1|Operation1|ConsumerName1|SoaFwk.Op.Time.Total|20|true,
       // manuelchinea-desktop|ServiceAdminName1|Operation1|anotherConsumer|SoaFwk.Op.Time.Total|20|true,
       // manuelchinea-desktop|ServiceAdminName1|Operation1|SoaFwk.Op.Time.Total|20|true
       return new String[] { serverName + "|" + serviceName + "|" + operationName + "|" + consumerName + "|"
-               + metricName + "|" + aggregationPeriod + "|" + isServerSide };
+               + metricName + "|" + timestamp };
    }
 
    @Override
@@ -52,27 +51,35 @@ public class MetricTimeSeriesReaderTest extends BaseTest {
    public void setUp() throws TTransportException, ServiceException, IOException, InterruptedException,
             ConfigurationException {
       super.setUp();
-      keysToFind = createKeysToFind(getIPAddress(), srvcAdminName, opName, consumerName, "SoaFwk.Op.Time.Total", 20,
-               true);
+      keysToFind = createKeysToFind(getIPAddress(), srvcAdminName, opName, consumerName, "SoaFwk.Op.Time.Total",
+               threeMinutesAgo);
       keysToFind = (String[]) ArrayUtils.addAll(
                keysToFind,
-               createKeysToFind(getIPAddress(), srvcAdminName, opName, "anotherConsumer", "SoaFwk.Op.Time.Total", 20,
-                        true));
+               createKeysToFind(getIPAddress(), srvcAdminName, opName, "anotherConsumer", "SoaFwk.Op.Time.Total",
+                        threeMinutesAgo));
+      keysToFind = (String[]) ArrayUtils.addAll(
+               keysToFind,
+               createKeysToFind(getIPAddress(), srvcAdminName, opName, "anotherConsumer", "SoaFwk.Op.Time.Total",
+                        twoMinutesAgo));
+      keysToFind = (String[]) ArrayUtils.addAll(
+               keysToFind,
+               createKeysToFind(getIPAddress(), srvcAdminName, opName, consumerName, "SoaFwk.Op.Time.Total",
+                        twoMinutesAgo));
 
-      keysToFind = (String[]) ArrayUtils.addAll(keysToFind,
-               createKeysToFindNoConsumer(getIPAddress(), srvcAdminName, opName, "SoaFwk.Op.Time.Total", 20, true));
+      keysToFind = (String[]) ArrayUtils.addAll(
+               keysToFind,
+               createKeysToFind(getIPAddress(), srvcAdminName, opName, "anotherConsumer", "SoaFwk.Op.Time.Total",
+                        oneMinuteAgo));
+      keysToFind = (String[]) ArrayUtils.addAll(
+               keysToFind,
+               createKeysToFind(getIPAddress(), srvcAdminName, opName, consumerName, "SoaFwk.Op.Time.Total",
+                        oneMinuteAgo));
 
       createTestData();
 
       startTime = new Date(threeMinutesAgo);
       endTime = new Date(now);
-      reader = new MetricTimeSeriesReader(startTime, endTime, connectionInfo);
-   }
-
-   private Object[] createKeysToFindNoConsumer(String serverName, String srvcAdminName, String opName,
-            String metricName, int aggregationPeriod, boolean isServerSide) {
-      return new String[] { serverName + "|" + srvcAdminName + "|" + opName + "|" + metricName + "|"
-               + aggregationPeriod + "|" + isServerSide };
+      reader = new MetricValuesReader(startTime, endTime, connectionInfo);
    }
 
    public void createTestData() throws ServiceException {
@@ -129,7 +136,7 @@ public class MetricTimeSeriesReaderTest extends BaseTest {
    }
 
    @Test
-   public void testRetrieveKeysInRange2MinsToNow() throws ServiceException {
+   public void testRetrieveKeysInRange() throws ServiceException {
 
       List<String> keys = reader.retrieveKeysInRange();
       assertNotNull("keys must not be null", keys);
@@ -153,7 +160,7 @@ public class MetricTimeSeriesReaderTest extends BaseTest {
    }
 
    @Test
-   public void testReadDataInRange3MinsToNow() throws ServiceException {
+   public void testReadData() throws ServiceException {
       Map<String, AggregationData<Long>> readData = reader.readData();
       assertNotNull("readData should not be null", readData);
       for (int i = 0; i < keysToFind.length; i++) {
@@ -161,16 +168,7 @@ public class MetricTimeSeriesReaderTest extends BaseTest {
          assertNotNull("the readData must not contain null data elements.", rowData);
          for (Entry<Object, Object> column : rowData.getColumns().entrySet()) {
             assertNotNull("the rowData must not contain null columns", column);
-            Long timestamp = (Long) column.getKey();
-            boolean isValidTimestamp = ((timestamp.equals(threeMinutesAgo) || timestamp.equals(twoMinutesAgo) || timestamp
-                     .equals(oneMinuteAgo)) && !timestamp.equals(now));
-            assertTrue("the timestamp must be one value beetwen " + threeMinutesAgo + " and " + oneMinuteAgo,
-                     isValidTimestamp);
-            Set metricValueKeys = (Set) column.getValue();
-            assertNotNull(metricValueKeys);
-            for (Object metricValueKey : metricValueKeys) {
-               assertNotNull("There should not be null metric value keys", metricValueKey);
-            }
+
          }
       }
    }
