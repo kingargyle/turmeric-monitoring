@@ -112,8 +112,8 @@ public class MetricsDAO {
     *           the ip address
     * @return the string
     */
-   public String createKeyForMetricValuesByIpAndDate(String ipAddress) {
-      String date = DATE_FORMATER.format(new Date());
+   public String createKeyForMetricValuesByIpAndDate(String ipAddress, long timestamp) {
+      String date = DATE_FORMATER.format(new Date(timestamp));
       String result = ipAddress + KEY_SEPARATOR + date;
       return result;
    }
@@ -201,7 +201,7 @@ public class MetricsDAO {
                consumerName);
 
       String metricValueKey = createKeyForMetricValue(ipAddress, cmetricIdentifier, consumerName, now);
-      String metricValuesByIpDate = createKeyForMetricValuesByIpAndDate(ipAddress);
+      String metricValuesByIpDate = createKeyForMetricValuesByIpAndDate(ipAddress, now);
       String ipByDateAndServiceName = createKeyForIpDateAndServiceName();
 
       Mutator<String> metricValuesMutator = HFactory.createMutator(keySpace, STR_SERIALIZER);

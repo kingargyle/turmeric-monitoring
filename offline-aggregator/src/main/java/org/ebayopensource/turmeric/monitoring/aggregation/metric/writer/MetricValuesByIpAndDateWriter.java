@@ -21,9 +21,9 @@ import org.ebayopensource.turmeric.monitoring.aggregation.data.AggregationData;
 /**
  * The Class MetricTimeSeriesWriter.
  */
-public class MetricTimeSeriesWriter extends CassandraObject implements CassandraDataWriter<String> {
+public class MetricValuesByIpAndDateWriter extends CassandraObject implements CassandraDataWriter<String> {
 
-   private static final String columnFamilyName = "MetricTimeSeries";
+   private static final String columnFamilyName = "MetricValuesByIpAndDate";
 
    /**
     * Instantiates a new metric time series writer.
@@ -35,7 +35,7 @@ public class MetricTimeSeriesWriter extends CassandraObject implements Cassandra
     * @param connectionInfo
     *           the connection info
     */
-   public MetricTimeSeriesWriter(Date startTime, Date endTime, CassandraConnectionInfo connectionInfo) {
+   public MetricValuesByIpAndDateWriter(Date startTime, Date endTime, CassandraConnectionInfo connectionInfo) {
       super(startTime, endTime, connectionInfo);
 
    }
