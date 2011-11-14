@@ -19,6 +19,7 @@ public class Launcher {
     * @param args
     *           the arguments
     * @throws ParseException
+    *            the parse exception
     */
    public static void main(String[] args) throws ParseException {
       String onlineClusterName = "OnlineCluster";
@@ -33,8 +34,8 @@ public class Launcher {
       CassandraConnectionInfo offlineCluster = new CassandraConnectionInfo(offlineClusterName, offlineHostAddress,
                offlineCLusterPort, keyspaceName);
       SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy-HH:mm");
-      Date startTime = formatter.parse("12/11/2011-23:00");
-      Date endTime = formatter.parse("12/11/2011-23:30");
+      Date startTime = formatter.parse("13/11/2011-18:00");
+      Date endTime = formatter.parse("13/11/2011-22:00");
       Aggregator aggregator = new Aggregator(startTime, endTime, realtimeCluster, offlineCluster);
       aggregator.export();
       System.exit(0);

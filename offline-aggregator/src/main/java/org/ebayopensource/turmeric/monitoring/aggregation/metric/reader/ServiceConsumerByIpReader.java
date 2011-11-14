@@ -67,8 +67,8 @@ public class ServiceConsumerByIpReader extends ColumnFamilyReader<String> {
             AggregationData<String> rowData = new AggregationData<String>(row.getKey());
             List<HSuperColumn<String, String, String>> superColumns = row.getSuperSlice().getSuperColumns();
             if (superColumns != null && !superColumns.isEmpty()) {
-               Set<String> operations = new HashSet<String>();
                for (HSuperColumn<String, String, String> hSuperColumn : superColumns) {
+                  Set<String> operations = new HashSet<String>();
                   for (HColumn<String, String> hColumn : hSuperColumn.getColumns()) {
                      operations.add(hColumn.getName());
                   }

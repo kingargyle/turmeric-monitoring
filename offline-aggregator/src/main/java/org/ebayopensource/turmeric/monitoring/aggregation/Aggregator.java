@@ -4,10 +4,19 @@ import java.util.Date;
 import java.util.Map;
 
 import org.ebayopensource.turmeric.monitoring.aggregation.data.AggregationData;
+import org.ebayopensource.turmeric.monitoring.aggregation.error.eraser.ErrorValuesEraser;
+import org.ebayopensource.turmeric.monitoring.aggregation.error.eraser.ErrorsByCategoryEraser;
+import org.ebayopensource.turmeric.monitoring.aggregation.error.eraser.ErrorsBySeverityEraser;
+import org.ebayopensource.turmeric.monitoring.aggregation.error.reader.ErrorValueReader;
 import org.ebayopensource.turmeric.monitoring.aggregation.error.reader.ErrorsByCategoryReader;
+import org.ebayopensource.turmeric.monitoring.aggregation.error.reader.ErrorsByIdReader;
 import org.ebayopensource.turmeric.monitoring.aggregation.error.reader.ErrorsBySeverityReader;
+import org.ebayopensource.turmeric.monitoring.aggregation.error.writer.ErrorValueWriter;
 import org.ebayopensource.turmeric.monitoring.aggregation.error.writer.ErrorsByCategoryWriter;
+import org.ebayopensource.turmeric.monitoring.aggregation.error.writer.ErrorsByIdWriter;
 import org.ebayopensource.turmeric.monitoring.aggregation.error.writer.ErrorsBySeverityWriter;
+import org.ebayopensource.turmeric.monitoring.aggregation.metric.eraser.MetricTimeSeriesEraser;
+import org.ebayopensource.turmeric.monitoring.aggregation.metric.eraser.MetricValuesEraser;
 import org.ebayopensource.turmeric.monitoring.aggregation.metric.reader.IpPerDayAndServiceNameReader;
 import org.ebayopensource.turmeric.monitoring.aggregation.metric.reader.MetricTimeSeriesReader;
 import org.ebayopensource.turmeric.monitoring.aggregation.metric.reader.MetricValuesByIpAndDateReader;
@@ -90,6 +99,28 @@ public class Aggregator {
 
    private ServiceConsumerByIpWriter serviceConsumerByIpWriter;
 
+   private ErrorsByIdReader errorsByIdReader;
+
+   private ErrorValueReader errorValuesReader;
+
+   private Map<Long, AggregationData<Long>> errorsByIdData;
+
+   private Map<String, AggregationData<String>> errorValuesData;
+
+   private ErrorsByIdWriter errorByIdWriter;
+
+   private ErrorValueWriter errorValueWriter;
+
+   private ErrorsByCategoryEraser errorByCategoryEraser;
+
+   private ErrorsBySeverityEraser errorBySeverityEraser;
+
+   private ErrorValuesEraser errorValueEraser;
+
+   private MetricTimeSeriesEraser metricTimeSeriesEraser;
+
+   private MetricValuesEraser metricValuesEraser;
+
    /**
     * Instantiates a new aggregator.
     * 
@@ -111,6 +142,15 @@ public class Aggregator {
       this.offlineCluster = offlineCluster;
       initReaders();
       initWriters();
+      initErasers();
+   }
+
+   private void initErasers() {
+      errorByCategoryEraser = new ErrorsByCategoryEraser(startTime, endTime, realtimeCluster);
+      errorBySeverityEraser = new ErrorsBySeverityEraser(startTime, endTime, realtimeCluster);
+      errorValueEraser = new ErrorValuesEraser(startTime, endTime, realtimeCluster);
+      metricTimeSeriesEraser = new MetricTimeSeriesEraser(startTime, endTime, realtimeCluster);
+      metricValuesEraser = new MetricValuesEraser(startTime, endTime, realtimeCluster);
    }
 
    /**
@@ -119,6 +159,8 @@ public class Aggregator {
    private void initWriters() {
       errorByCategoryWriter = new ErrorsByCategoryWriter(startTime, endTime, offlineCluster);
       errorBySeverityWriter = new ErrorsBySeverityWriter(startTime, endTime, offlineCluster);
+      errorByIdWriter = new ErrorsByIdWriter(startTime, endTime, offlineCluster);
+      errorValueWriter = new ErrorValueWriter(startTime, endTime, offlineCluster);
       metricTimeSeriesWriter = new MetricTimeSeriesWriter(startTime, endTime, offlineCluster);
       metricValuesWriter = new MetricValuesWriter(startTime, endTime, offlineCluster);
       metricValuesByIpAndDateWriter = new MetricValuesByIpAndDateWriter(startTime, endTime, offlineCluster);
@@ -133,6 +175,8 @@ public class Aggregator {
    private void initReaders() {
       errorsByCategoryReader = new ErrorsByCategoryReader(startTime, endTime, realtimeCluster);
       errorsBySeverityReader = new ErrorsBySeverityReader(startTime, endTime, realtimeCluster);
+      errorsByIdReader = new ErrorsByIdReader(startTime, endTime, realtimeCluster);
+      errorValuesReader = new ErrorValueReader(startTime, endTime, realtimeCluster);
       metricTimeSeriesReader = new MetricTimeSeriesReader(startTime, endTime, realtimeCluster);
       metricValuesReader = new MetricValuesReader(startTime, endTime, realtimeCluster);
       metricValuesByIpAndDateReader = new MetricValuesByIpAndDateReader(startTime, endTime, realtimeCluster);
@@ -154,7 +198,7 @@ public class Aggregator {
    public void export() {
       extractDataFromOnlineCluster();
       insertDataIntoOfflineCluster();
-      // deleteExtractedDataFromRealTimeCluster();
+      deleteExtractedDataFromRealTimeCluster();
    }
 
    /**
@@ -163,6 +207,8 @@ public class Aggregator {
    private void extractDataFromOnlineCluster() {
       errorsByCategoryData = errorsByCategoryReader.readData();
       errorsBySeverityData = errorsBySeverityReader.readData();
+      errorsByIdData = errorsByIdReader.readData();
+      errorValuesData = errorValuesReader.readData();
       metricTimeSeriesData = metricTimeSeriesReader.readData();
       metricValuesData = metricValuesReader.readData();
       metricValuesByIpAndDateData = metricValuesByIpAndDateReader.readData();
@@ -177,6 +223,8 @@ public class Aggregator {
    private void insertDataIntoOfflineCluster() {
       errorByCategoryWriter.writeData(errorsByCategoryData);
       errorBySeverityWriter.writeData(errorsBySeverityData);
+      errorByIdWriter.writeData(errorsByIdData);
+      errorValueWriter.writeData(errorValuesData);
       metricValuesWriter.writeData(metricValuesData);
       metricValuesByIpAndDateWriter.writeData(metricValuesByIpAndDateData);
       metricTimeSeriesWriter.writeData(metricTimeSeriesData);
@@ -189,8 +237,11 @@ public class Aggregator {
     * Delete extracted data from real time cluster.
     */
    private void deleteExtractedDataFromRealTimeCluster() {
-      // TODO Auto-generated method stub
-
+      errorByCategoryEraser.eraseData(errorsByCategoryData);
+      errorBySeverityEraser.eraseData(errorsBySeverityData);
+      errorValueEraser.eraseData(errorValuesData);
+      metricTimeSeriesEraser.eraseData(metricTimeSeriesData);
+      metricValuesEraser.eraseData(metricValuesData);
    }
 
 }

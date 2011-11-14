@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import me.prettyprint.cassandra.serializers.LongSerializer;
@@ -53,9 +54,9 @@ public class MetricTimeSeriesWriterTest extends BaseTest {
       Map<String, AggregationData<String>> data = new HashMap<String, AggregationData<String>>();
       String key = "somemetrictimeserieskey";
       AggregationData<String> dataRow = new AggregationData<String>(key);
-      dataRow.addColumn(threeMinutesAgo, Arrays.asList("metricvaluekey1", "metricvaluekey2"));
-      dataRow.addColumn(twoMinutesAgo, Arrays.asList("metricvaluekey3", "metricvaluekey4"));
-      dataRow.addColumn(oneMinuteAgo, Arrays.asList("metricvaluekey5", "metricvaluekey6"));
+      dataRow.addColumn(threeMinutesAgo, new HashSet(Arrays.asList("metricvaluekey1", "metricvaluekey2")));
+      dataRow.addColumn(twoMinutesAgo, new HashSet(Arrays.asList("metricvaluekey3", "metricvaluekey4")));
+      dataRow.addColumn(oneMinuteAgo, new HashSet(Arrays.asList("metricvaluekey5", "metricvaluekey6")));
 
       data.put(key, dataRow);
       metricTimeSeriesWriter.writeData(data);

@@ -129,7 +129,7 @@ public class MetricTimeSeriesReaderTest extends BaseTest {
    }
 
    @Test
-   public void testRetrieveKeysInRange2MinsToNow() throws ServiceException {
+   public void testRetrieveKeysInRange() throws ServiceException {
 
       List<String> keys = reader.retrieveKeysInRange();
       assertNotNull("keys must not be null", keys);

@@ -1,27 +1,28 @@
-package org.ebayopensource.turmeric.monitoring.aggregation.error.writer;
+package org.ebayopensource.turmeric.monitoring.aggregation.error.eraser;
 
 import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import me.prettyprint.cassandra.serializers.SerializerTypeInferer;
-import me.prettyprint.hector.api.beans.HColumn;
 import me.prettyprint.hector.api.factory.HFactory;
 import me.prettyprint.hector.api.mutation.Mutator;
 
 import org.ebayopensource.turmeric.monitoring.aggregation.CassandraConnectionInfo;
-import org.ebayopensource.turmeric.monitoring.aggregation.CassandraDataWriter;
+import org.ebayopensource.turmeric.monitoring.aggregation.CassandraDataEraser;
 import org.ebayopensource.turmeric.monitoring.aggregation.CassandraObject;
 import org.ebayopensource.turmeric.monitoring.aggregation.data.AggregationData;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class ErrorValueWriter.
+ * The Class ErrorValuesEraser.
  */
-public class ErrorValueWriter extends CassandraObject implements CassandraDataWriter<String> {
+public class ErrorValuesEraser extends CassandraObject implements CassandraDataEraser<String> {
+
+   /** The column family name. */
+   private final String columnFamilyName = "ErrorValues";
 
    /**
-    * Instantiates a new error value writer.
+    * Instantiates a new error values eraser.
     * 
     * @param startTime
     *           the start time
@@ -30,29 +31,27 @@ public class ErrorValueWriter extends CassandraObject implements CassandraDataWr
     * @param connectionInfo
     *           the connection info
     */
-   public ErrorValueWriter(Date startTime, Date endTime, CassandraConnectionInfo connectionInfo) {
+   public ErrorValuesEraser(Date startTime, Date endTime, CassandraConnectionInfo connectionInfo) {
       super(startTime, endTime, connectionInfo);
-   }
 
-   /** The Constant columnFamilyName. */
-   protected static final String columnFamilyName = "ErrorValues";
+   }
 
    /**
     * {@inheritDoc}
     */
    @Override
-   public void writeData(Map<String, AggregationData<String>> data) {
+   public void eraseData(Map<String, AggregationData<String>> data) {
       Mutator<String> mutator = HFactory.createMutator(connectionInfo.getKeyspace(), STR_SERIALIZER);
       for (Entry<String, AggregationData<String>> entry : data.entrySet()) {
          AggregationData<String> dataRow = entry.getValue();
          Map<Object, Object> columns = dataRow.getColumns();
          for (Entry<Object, Object> column : columns.entrySet()) {
-            HColumn<String, Object> hColumn = HFactory.createColumn((String) column.getKey(), column.getValue(),
-                     STR_SERIALIZER, SerializerTypeInferer.getSerializer(column.getValue()));
-            mutator.addInsertion(dataRow.getKey(), columnFamilyName, hColumn);
+            // HColumn<String, Object> hColumn = HFactory.createColumn((String) column.getKey(), column.getValue(),
+            // STR_SERIALIZER, SerializerTypeInferer.getSerializer(column.getValue()));
+            // mutator.addInsertion(dataRow.getKey(), columnFamilyName, hColumn);
+            mutator.addDeletion(dataRow.getKey(), columnFamilyName, (String) column.getKey(), STR_SERIALIZER);
          }
       }
       mutator.execute();
    }
-
 }
