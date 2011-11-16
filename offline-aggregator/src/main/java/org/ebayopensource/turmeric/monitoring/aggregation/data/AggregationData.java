@@ -6,22 +6,25 @@ import java.util.Map;
 // TODO: Auto-generated Javadoc
 /**
  * The Class AggregationData.
- *
- * @param <KeyType> the generic type
+ * 
+ * @param <KeyType>
+ *           the generic type
  */
 public class AggregationData<KeyType> {
-   
+
    /** The key. */
    protected KeyType key;
-   
+
    /** The columns. */
    protected Map<Object, Object> columns;
 
    /**
     * Instantiates a new aggregation data.
-    *
-    * @param key the key
-    * @param columns the columns
+    * 
+    * @param key
+    *           the key
+    * @param columns
+    *           the columns
     */
    private AggregationData(KeyType key, Map<Object, Object> columns) {
       super();
@@ -31,8 +34,9 @@ public class AggregationData<KeyType> {
 
    /**
     * Instantiates a new aggregation data.
-    *
-    * @param key the key
+    * 
+    * @param key
+    *           the key
     */
    public AggregationData(KeyType key) {
       this(key, new HashMap<Object, Object>());
@@ -40,7 +44,7 @@ public class AggregationData<KeyType> {
 
    /**
     * Gets the key.
-    *
+    * 
     * @return the key
     */
    public KeyType getKey() {
@@ -49,7 +53,7 @@ public class AggregationData<KeyType> {
 
    /**
     * Gets the columns.
-    *
+    * 
     * @return the columns
     */
    public Map<Object, Object> getColumns() {
@@ -58,9 +62,11 @@ public class AggregationData<KeyType> {
 
    /**
     * Adds the column.
-    *
-    * @param columnKey the column key
-    * @param columnValue the column value
+    * 
+    * @param columnKey
+    *           the column key
+    * @param columnValue
+    *           the column value
     */
    public void addColumn(Object columnKey, Object columnValue) {
       this.columns.put(columnKey, columnValue);
@@ -68,8 +74,9 @@ public class AggregationData<KeyType> {
 
    /**
     * Contains.
-    *
-    * @param columnKey the column key
+    * 
+    * @param columnKey
+    *           the column key
     * @return true, if successful
     */
    public boolean contains(Object columnKey) {
@@ -78,8 +85,9 @@ public class AggregationData<KeyType> {
 
    /**
     * Gets the value.
-    *
-    * @param columnKey the column key
+    * 
+    * @param columnKey
+    *           the column key
     * @return the value
     */
    public Object getValue(Object columnKey) {
@@ -88,11 +96,14 @@ public class AggregationData<KeyType> {
 
    /**
     * Size.
-    *
+    * 
     * @return the int
     */
    public int size() {
       return this.columns.size();
    }
 
+   public void addAllColumns(Map<Object, Object> newColumns) {
+      this.columns.putAll(newColumns);
+   }
 }

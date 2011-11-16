@@ -61,6 +61,7 @@
 			<groupId>org.ebayopensource.turmeric.utils</groupId>
 			<artifactId>turmeric-utils-cassandra</artifactId>
 			<version>1.0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.ebayopensource.turmeric.runtime</groupId>
@@ -78,37 +79,18 @@
 					<forkMode>always</forkMode>
 				</configuration>
 			</plugin>
-			<!-- <plugin> -->
-			<!-- <artifactId>maven-failsafe-plugin</artifactId> -->
-			<!-- <configuration> -->
-			<!-- <forkMode>always</forkMode> -->
-			<!-- </configuration> -->
-			<!-- <executions> -->
-			<!-- <execution> -->
-			<!-- <goals> -->
-			<!-- <goal>integration-test</goal> -->
-			<!-- <goal>verify</goal> -->
-			<!-- </goals> -->
-			<!-- </execution> -->
-			<!-- </executions> -->
-			<!-- </plugin> -->
-			<!-- <plugin> -->
-			<!-- <groupId>org.codehaus.mojo</groupId> -->
-			<!-- <artifactId>cassandra-maven-plugin</artifactId> -->
-			<!-- <version>0.8.0-1</version> -->
-			<!-- <executions> -->
-			<!-- <execution> -->
-			<!-- <goals> -->
-			<!-- <goal>start</goal> -->
-			<!-- <goal>stop</goal> -->
-			<!-- </goals> -->
-			<!-- <configuration> -->
-			<!-- <loadAfterFirstStart>true</loadAfterFirstStart> -->
-			<!-- <script>${basedir}/src/main/resources/schema-turmeric.txt</script> -->
-			<!-- </configuration> -->
-			<!-- </execution> -->
-			<!-- </executions> -->
-			<!-- </plugin> -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>org.ebayopensource.turmeric.monitoring.launcher.Launcher</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>

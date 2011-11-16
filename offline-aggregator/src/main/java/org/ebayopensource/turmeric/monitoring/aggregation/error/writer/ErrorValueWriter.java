@@ -47,9 +47,11 @@ public class ErrorValueWriter extends CassandraObject implements CassandraDataWr
          AggregationData<String> dataRow = entry.getValue();
          Map<Object, Object> columns = dataRow.getColumns();
          for (Entry<Object, Object> column : columns.entrySet()) {
-            HColumn<String, Object> hColumn = HFactory.createColumn((String) column.getKey(), column.getValue(),
-                     STR_SERIALIZER, SerializerTypeInferer.getSerializer(column.getValue()));
-            mutator.addInsertion(dataRow.getKey(), columnFamilyName, hColumn);
+            if (column != null && column.getKey() != null && column.getValue() != null) {
+               HColumn<String, Object> hColumn = HFactory.createColumn((String) column.getKey(), column.getValue(),
+                        STR_SERIALIZER, SerializerTypeInferer.getSerializer(column.getValue()));
+               mutator.addInsertion(dataRow.getKey(), columnFamilyName, hColumn);
+            }
          }
       }
       mutator.execute();

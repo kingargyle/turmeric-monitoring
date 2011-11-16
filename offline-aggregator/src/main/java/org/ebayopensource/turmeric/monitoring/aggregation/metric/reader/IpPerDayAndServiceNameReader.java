@@ -20,7 +20,7 @@ import me.prettyprint.hector.api.query.QueryResult;
 import org.ebayopensource.turmeric.monitoring.aggregation.CassandraConnectionInfo;
 import org.ebayopensource.turmeric.monitoring.aggregation.ColumnFamilyReader;
 import org.ebayopensource.turmeric.monitoring.aggregation.data.AggregationData;
-import org.ebayopensource.turmeric.monitoring.aggregation.utils.DateRange;
+import org.ebayopensource.turmeric.monitoring.aggregation.utils.DateRangeHelper;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -31,7 +31,7 @@ public class IpPerDayAndServiceNameReader extends ColumnFamilyReader<String> {
    /** The Constant columnFamilyName. */
    private static final String columnFamilyName = "IpPerDayAndServiceName";
    private static final SimpleDateFormat formatter = new SimpleDateFormat("ddMMyyyy");
-   private final DateRange dateRangeCalculator;
+   private final DateRangeHelper dateRangeCalculator;
 
    /**
     * Instantiates a new metric time series reader.
@@ -45,7 +45,7 @@ public class IpPerDayAndServiceNameReader extends ColumnFamilyReader<String> {
     */
    public IpPerDayAndServiceNameReader(Date startTime, Date endTime, CassandraConnectionInfo connectionInfo) {
       super(startTime, endTime, connectionInfo);
-      dateRangeCalculator = new DateRange(startTime, endTime);
+      dateRangeCalculator = new DateRangeHelper(startTime, endTime);
    }
 
    /**

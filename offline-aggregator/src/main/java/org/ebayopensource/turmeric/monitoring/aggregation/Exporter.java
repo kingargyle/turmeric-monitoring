@@ -34,7 +34,7 @@ import org.ebayopensource.turmeric.monitoring.aggregation.metric.writer.ServiceO
 /**
  * The Class Aggregator.
  */
-public class Aggregator {
+public class Exporter {
 
    /** The start time. */
    private final Date startTime;
@@ -133,7 +133,7 @@ public class Aggregator {
     * @param offlineCluster
     *           the offline cluster
     */
-   public Aggregator(Date startTime, Date endTime, CassandraConnectionInfo realtimeCluster,
+   public Exporter(Date startTime, Date endTime, CassandraConnectionInfo realtimeCluster,
             CassandraConnectionInfo offlineCluster) {
       super();
       this.startTime = startTime;

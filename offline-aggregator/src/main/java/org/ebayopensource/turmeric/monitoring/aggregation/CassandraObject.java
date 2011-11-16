@@ -8,7 +8,7 @@ import me.prettyprint.cassandra.serializers.StringSerializer;
 /**
  * The Class CassandraObject.
  */
-public class CassandraObject {
+public class CassandraObject extends DateRangedObject {
 
    /**
     * Instantiates a new cassandra object.
@@ -21,20 +21,12 @@ public class CassandraObject {
     *           the connection info
     */
    public CassandraObject(Date startTime, Date endTime, CassandraConnectionInfo connectionInfo) {
-      super();
-      this.startTime = startTime;
-      this.endTime = endTime;
+      super(startTime, endTime);
       this.connectionInfo = connectionInfo;
    }
 
    /** The Constant ROWS_NUMBER_MAX_VALUE. */
    protected static final int ROWS_NUMBER_MAX_VALUE = 20000000;
-
-   /** The start time. */
-   protected Date startTime;
-
-   /** The end time. */
-   protected Date endTime;
 
    /** The connection info. */
    protected CassandraConnectionInfo connectionInfo;
