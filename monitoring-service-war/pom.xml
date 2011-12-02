@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>org.ebayopensource.turmeric.monitoring</groupId>
 		<artifactId>turmeric-monitoring-parent</artifactId>
-		<version>1.0.0-Beta</version>
+		<version>1.0.0.5-SNAPSHOT</version>
 	</parent>
 	<artifactId>monitoring-service</artifactId>
         <name>Turmeric :: Monitoring :: Monitoring Service WAR</name>
