@@ -19,12 +19,6 @@
 	<artifactId>mgmt-console</artifactId>
 	<name>Turmeric Monitoring :: Management Console</name>
 	<packaging>war</packaging>
-	<properties>
-		<gwt.version>2.2.0</gwt.version>
-		<gwt.visualization.version>1.1.0</gwt.visualization.version>
-		<jetty.version>7.2.1.v20101111</jetty.version>
-		<jetty.plugin.version>7.2.1.v20101111</jetty.plugin.version>
-	</properties>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<resources>
@@ -99,7 +93,6 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
-				<version>${gwt.version}</version>
 				<configuration>
 					<module>org.ebayopensource.turmeric.monitoring.Console</module>
 					<runTarget>/</runTarget>
@@ -199,13 +192,11 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
-			<version>1.8.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.octo.gwt.test</groupId>
 			<artifactId>gwt-test-utils</artifactId>
-			<version>0.28.7</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -216,18 +207,15 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-servlet</artifactId>
-			<version>${jetty.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-servlets</artifactId>
-			<version>${jetty.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
-			<version>${jetty.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>javax.servlet</groupId>
@@ -238,35 +226,29 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-continuation</artifactId>
-			<version>${jetty.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-client</artifactId>
-			<version>${jetty.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-servlet</artifactId>
-			<version>${gwt.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
-			<version>${gwt.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-dev</artifactId>
-			<version>${gwt.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-visualization</artifactId>
-			<version>${gwt.visualization.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

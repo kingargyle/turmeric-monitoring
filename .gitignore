@@ -9,4 +9,5 @@ deploy
 gen-src
 ConfigRoot
 turmeric.log
+gwt-unitCache
 
